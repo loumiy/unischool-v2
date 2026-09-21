@@ -129,6 +129,8 @@ Six deep systems, one cross-cutting mechanic. The discipline of pillar 1: **no s
 - **Debt service** — construction can be debt-financed; the board caps leverage.
 - **Program & student life costs** — per active program, club, and varsity team.
 
+**The fiscal year and the founding gift.** The fiscal year is the calendar year: the budget approved at Budget & Hiring (Summer, Week 4) takes effect at the next Convocation (Fall, Week 1), when the old year closes into the treasury's history. Year 1 runs on a founding budget struck at the default draw. The founding gift is two `tuning.ts` constants, cash in hand and an invested endowment; the endowment earns each fiscal year's **market return**, drawn around a mean with a spread and accrued in equal weekly slices, and pays out its draw the same way. Market years are the world's weather, not the run's dice: the return is derived from the seed and the year, so nothing the player does changes what the markets did. Budget lines that later systems fill (tuition, aid, faculty payroll, maintenance, debt, programs) exist at zero from the start, labelled with the phase that fills them.
+
 ### §5.3 Presentation
 
 One Treasury screen: a cashflow strip (weekly in/out), the year budget, tuition dependence gauge, endowment, backlog total, and administrative share of payroll. Every number on it must be explainable in one tooltip sentence. The weekly cashflow figure is always visible in the app chrome (as in v1).

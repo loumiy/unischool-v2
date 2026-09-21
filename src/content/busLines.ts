@@ -1,6 +1,7 @@
 import { BUS_KINDS, type BusEntry, type BusKind } from '../sim/bus.ts';
 import { termLabel } from '../sim/calendar.ts';
 import { institutionName } from '../sim/identity.ts';
+import { formatMoney, formatPercent } from '../sim/treasury.ts';
 import type { GameState } from '../sim/state.ts';
 import { findBuilding } from './buildings.ts';
 import { findBeat } from './calendarBeats.ts';
@@ -17,7 +18,18 @@ export interface BusLine {
   tone?: 'good' | 'bad';
 }
 
-const PLACEHOLDERS = ['school', 'building', 'term', 'year', 'beat', 'line', 'label'] as const;
+const PLACEHOLDERS = [
+  'school',
+  'building',
+  'term',
+  'year',
+  'beat',
+  'line',
+  'label',
+  'rate',
+  'net',
+  'ledger',
+] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
 const lineSchema = obj({ text: str, tone: optional(oneOf(['good', 'bad'])) });
@@ -70,6 +82,17 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       vars.beat = beat?.name ?? entry.beatId;
       vars.line = (entry.kind === 'beatFired' ? beat?.firedLine : beat?.resolvedLine) ?? vars.beat;
       break;
+    }
+    case 'budgetApproved':
+      vars.year = String(entry.year);
+      vars.rate = formatPercent(entry.drawRate, 2);
+      break;
+    case 'yearClosed': {
+      // The one line whose tone is the number's: in the black or in the red.
+      vars.year = String(entry.year);
+      vars.net = formatMoney(Math.abs(entry.net));
+      vars.ledger = entry.net < 0 ? 'in the red' : 'in the black';
+      return { text: fill(line.text, vars), tone: entry.net < 0 ? 'bad' : 'good' };
     }
     case 'mark':
       vars.label = entry.label;

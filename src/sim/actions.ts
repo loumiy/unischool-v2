@@ -13,6 +13,7 @@ import { isValidName, MOTIFS, type Motif, type SchoolColors } from './identity.t
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { tileKey, TREE_SEED_RANGE } from './terrain.ts';
+import { approveBudget } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
 // records; the sim replays a run from its seed and this log alone (DD §15),
@@ -27,9 +28,11 @@ export type Action =
   | { type: 'placeBuilding'; buildingId: string; col: number; row: number; rotated: boolean }
   | { type: 'demolish'; placementId: string }
   | { type: 'paint'; tool: PaintTool; col: number; row: number }
-  // Resolves the calendar beat holding the clock (beats.ts). Phase 4's beats
-  // have nothing to decide; later phases add the decision's fields here.
-  | { type: 'resolveBeat'; beatId: string }
+  // Resolves the calendar beat holding the clock (beats.ts), carrying the
+  // beat's decision. Every field is optional: absent, the beat resolves to
+  // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
+  // for next year's budget (DD §5.1).
+  | { type: 'resolveBeat'; beatId: string; drawRate?: number }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -196,8 +199,11 @@ export function applyAction(state: GameState, action: Action): GameState {
       }
       return state;
     }
-    case 'resolveBeat':
-      return emit({ ...state, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
+    case 'resolveBeat': {
+      let next = state;
+      if (action.beatId === 'budget-and-hiring') next = approveBudget(next, action.drawRate);
+      return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
+    }
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
   }
