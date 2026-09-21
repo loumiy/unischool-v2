@@ -1,0 +1,33 @@
+{
+  "seed": 20260921,
+  "road": { "rows": [61, 63] },
+  "stream": {
+    "width": 2,
+    "points": [
+      [61, 0],
+      [59, 8],
+      [60, 16],
+      [57, 26],
+      [58, 36],
+      [55, 46],
+      [57, 54],
+      [56, 60]
+    ]
+  },
+  "woodland": {
+    "clearing": { "col": 32, "row": 30, "radius": 13 },
+    "scatterPerTile": 0.012,
+    "groves": [
+      { "col": 6, "row": 4, "radius": 9, "trees": 46 },
+      { "col": 20, "row": 3, "radius": 8, "trees": 34 },
+      { "col": 36, "row": 4, "radius": 7, "trees": 30 },
+      { "col": 50, "row": 5, "radius": 7, "trees": 28 },
+      { "col": 4, "row": 18, "radius": 7, "trees": 32 },
+      { "col": 3, "row": 34, "radius": 8, "trees": 36 },
+      { "col": 5, "row": 50, "radius": 7, "trees": 30 },
+      { "col": 46, "row": 22, "radius": 5, "trees": 14 },
+      { "col": 22, "row": 50, "radius": 6, "trees": 20 },
+      { "col": 44, "row": 48, "radius": 6, "trees": 22 }
+    ]
+  }
+}

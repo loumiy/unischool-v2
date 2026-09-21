@@ -67,14 +67,26 @@ describe('founding (DD §2.4)', () => {
   it('placing Founders Hall is the first action and starts the clock', () => {
     const founded = applyAction(createNewGame(1), FOUND);
     expect(
-      canApply(createNewGame(1), { type: 'placeFoundersHall', col: 10, row: 10 }),
+      canApply(createNewGame(1), {
+        type: 'placeBuilding',
+        buildingId: 'founders-hall',
+        col: 10,
+        row: 10,
+        rotated: false,
+      }),
     ).toMatchObject({
       ok: false,
     });
-    const placed = applyAction(founded, { type: 'placeFoundersHall', col: 10, row: 10 });
+    const placed = applyAction(founded, {
+      type: 'placeBuilding',
+      buildingId: 'founders-hall',
+      col: 10,
+      row: 10,
+      rotated: false,
+    });
     expect(placed.phase).toBe('running');
     expect(hasFoundersHall(placed.campus)).toBe(true);
-    expect(placed.campus.placements[0]).toMatchObject({ col: 10, row: 10, w: 7, h: 5 });
+    expect(placed.campus.placements[0]).toMatchObject({ id: 'p1', col: 10, row: 10, w: 7, h: 5 });
     expect(clockRuns(placed)).toBe(true);
   });
 
@@ -86,15 +98,31 @@ describe('founding (DD §2.4)', () => {
       [0, GRID_HEIGHT - 4],
       [1.5, 2],
     ]) {
-      expect(canApply(founded, { type: 'placeFoundersHall', col: col!, row: row! })).toMatchObject({
+      expect(
+        canApply(founded, {
+          type: 'placeBuilding',
+          buildingId: 'founders-hall',
+          col: col!,
+          row: row!,
+          rotated: false,
+        }),
+      ).toMatchObject({
         ok: false,
       });
     }
-    expect(footprintIsClear({ placements: [] }, GRID_WIDTH - 7, GRID_HEIGHT - 5, 7, 5)).toBe(true);
+    // The road along the south edge is never buildable.
+    expect(
+      footprintIsClear({ placements: [], paths: [], trees: {}, nextPlacementId: 1 }, 0, 59, 7, 5),
+    ).toBe(false);
   });
 
   it('detects overlap', () => {
-    const campus = { placements: [{ id: 'a', buildingId: 'a', col: 10, row: 10, w: 7, h: 5 }] };
+    const campus = {
+      placements: [{ id: 'a', buildingId: 'a', col: 10, row: 10, w: 7, h: 5 }],
+      paths: [],
+      trees: {},
+      nextPlacementId: 2,
+    };
     expect(footprintIsClear(campus, 16, 14, 7, 5)).toBe(false);
     expect(footprintIsClear(campus, 17, 10, 7, 5)).toBe(true);
     expect(footprintIsClear(campus, 10, 15, 7, 5)).toBe(true);
@@ -102,7 +130,13 @@ describe('founding (DD §2.4)', () => {
 
   it('dispatch drops a refused action without logging it', () => {
     const run = newRun(1);
-    const same = dispatch(run, { type: 'placeFoundersHall', col: 1, row: 1 });
+    const same = dispatch(run, {
+      type: 'placeBuilding',
+      buildingId: 'founders-hall',
+      col: 1,
+      row: 1,
+      rotated: false,
+    });
     expect(same).toBe(run);
     expect(same.log).toHaveLength(0);
   });
@@ -110,7 +144,13 @@ describe('founding (DD §2.4)', () => {
   it('replays the whole opening from the log', () => {
     let run = newRun(2024);
     run = dispatch(run, FOUND);
-    run = dispatch(run, { type: 'placeFoundersHall', col: 20, row: 22 });
+    run = dispatch(run, {
+      type: 'placeBuilding',
+      buildingId: 'founders-hall',
+      col: 20,
+      row: 22,
+      rotated: false,
+    });
     run = tickRunWeeks(run, 40);
     run = dispatch(run, { type: 'debug/mark', label: 'year two' });
     expect(replay(2024, run.log, run.state.clock.absoluteWeek)).toEqual(run.state);
@@ -137,7 +177,7 @@ describe('save migration v1 → v2', () => {
     if (!result.ok) return;
     expect(result.save.version).toBe(SCHEMA_VERSION);
     expect(result.save.state).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       phase: 'founding',
       identity: null,
       campus: { placements: [] },
@@ -148,7 +188,13 @@ describe('save migration v1 → v2', () => {
   it('round-trips a founded run', () => {
     let run = newRun(9);
     run = dispatch(run, FOUND);
-    run = dispatch(run, { type: 'placeFoundersHall', col: 3, row: 4 });
+    run = dispatch(run, {
+      type: 'placeBuilding',
+      buildingId: 'founders-hall',
+      col: 28,
+      row: 28,
+      rotated: false,
+    });
     const result = loadSaveFile(JSON.parse(JSON.stringify(serializeRun(run))));
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.save.state).toEqual(run.state);

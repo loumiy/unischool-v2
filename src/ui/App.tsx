@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { PaletteChoice } from '../content/palettes.ts';
-import { clockRuns, type Motif, type Speed } from '../sim/index.ts';
+import { clockRuns, FOUNDERS_HALL_ID, type Motif, type Speed } from '../sim/index.ts';
 import { autosave, boot, eraseAndRestart } from './boot.ts';
+import BuildPopup from './BuildPopup.tsx';
 import CampusMap from './CampusMap.tsx';
 import DebugPanel from './DebugPanel.tsx';
 import { isActivationTarget, useHotkeys } from './hotkeys.ts';
@@ -14,21 +15,25 @@ import TabOverlay, { StubScreen } from './TabOverlay.tsx';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
+import type { CampusTool } from './tools.ts';
 import { useCssHeightVar } from './useCssHeightVar.ts';
 import { useGame } from './useGame.ts';
 
 // THE SHELL (DD §13.2, ported from v1's layout grammar): the campus map is a
 // full-viewport background, always present; every piece of chrome floats
-// over it. A tab is a full screen with the dock laid over it; the build menu
-// (Phase 3) and a tab are two states of one slot; and one Escape ladder,
-// here, backs out of whatever is open.
+// over it. A tab is a full screen with the dock laid over it. The build
+// menu and a tab are two states of one slot. A picked-up building and a
+// tool are two states of another. One Escape ladder, here, backs out of
+// whatever is open: the build menu, then a tab, then the map's own.
 
 const TAB_HOTKEYS: Record<string, TabId> = { c: 'curriculum', f: 'faculty', t: 'treasury' };
 
 export default function App() {
   const { run, speed, weekProgress } = useGame();
   const [overlay, setOverlay] = useState<TabId | null>(null);
-  const [buildOpen, setBuildOpen] = useState(false);
+  const [buildOpen, setBuildOpenState] = useState(false);
+  const [placingId, setPlacingIdState] = useState<string | null>(null);
+  const [tool, setToolState] = useState<CampusTool | null>(null);
   const [debugOpen, setDebugOpen] = useState(false);
   const toolbarRef = useCssHeightVar('--toolbar-height');
   const resumeSpeed = useRef<Speed>('x1');
@@ -41,9 +46,8 @@ export default function App() {
   const state = run?.state ?? null;
   const identity = state?.identity ?? null;
   const started = state !== null && state.phase !== 'founding';
+  const siting = state?.phase === 'siting';
 
-  // The school's colours are the theme, written once the run has them —
-  // a fresh founding and a loaded save alike.
   useEffect(() => {
     if (identity) applySchoolColors(identity.colors);
   }, [identity]);
@@ -52,14 +56,43 @@ export default function App() {
     if (speed !== 'paused') resumeSpeed.current = speed;
   }, [speed]);
 
+  // The founding moment (DD §2.4): while siting, Founders Hall is the thing
+  // in hand, no tool is, and the build menu stays shut. Derived rather than
+  // synced, so there is no frame in which the shell disagrees with the sim.
+  const effectivePlacingId = siting ? FOUNDERS_HALL_ID : placingId;
+  const effectiveTool = siting ? null : tool;
+  const effectiveBuildOpen = siting ? false : buildOpen;
+
+  // Picking up a building and using a tool are two jobs for the same click,
+  // so exactly one is ever live.
+  function setPlacingId(id: string | null) {
+    setPlacingIdState(id);
+    if (id !== null) setToolState(null);
+  }
+  function setTool(next: CampusTool) {
+    setToolState((cur) => (cur === next ? null : next));
+    setPlacingIdState(null);
+  }
+  function closeBuild() {
+    setBuildOpenState(false);
+    setToolState(null);
+  }
   function openTab(tab: TabId | null) {
     setOverlay(tab);
-    if (tab !== null) setBuildOpen(false);
+    if (tab !== null) {
+      closeBuild();
+      setPlacingIdState(null);
+    }
+  }
+  function setBuildOpen(open: boolean) {
+    if (!open) {
+      closeBuild();
+      return;
+    }
+    setBuildOpenState(true);
+    setOverlay(null);
   }
 
-  // Space toggles pause, 1–4 set the gears, C/F/T toggle the three tabs a
-  // player dips into most, backtick toggles the debug panel, and Escape is
-  // the ladder: the build menu, then an open tab.
   useHotkeys((e) => {
     if (!state) return;
     if (e.key === '`') {
@@ -67,7 +100,7 @@ export default function App() {
       return;
     }
     if (e.key === 'Escape') {
-      if (buildOpen) setBuildOpen(false);
+      if (effectiveBuildOpen) closeBuild();
       else if (overlay) openTab(null);
       return;
     }
@@ -75,6 +108,10 @@ export default function App() {
     const tab = TAB_HOTKEYS[e.key.toLowerCase()];
     if (tab) {
       openTab(overlay === tab ? null : tab);
+      return;
+    }
+    if (e.key.toLowerCase() === 'b' && !siting) {
+      setBuildOpen(!effectiveBuildOpen);
       return;
     }
     if (!clockRuns(state)) return;
@@ -111,26 +148,42 @@ export default function App() {
     );
   }
 
-  const siting = state.phase === 'siting';
   const next: NextPrompt | null = siting
     ? { text: 'Place Founders Hall on the land', go: overlay ? 'campus' : undefined }
     : null;
+  // The map's own keys go quiet under a tab; Escape reaches it only when the
+  // shell has nothing of its own left to close.
+  const mapControls = overlay === null;
+  const mapBackOut = overlay === null && !effectiveBuildOpen;
 
   return (
     <>
       <CampusMap
         state={state}
-        controlsEnabled={overlay === null}
-        onPlaceFoundersHall={(col, row) => {
-          const applied = store.dispatch({ type: 'placeFoundersHall', col, row });
-          if (applied) void autosave(store.getSnapshot().run!);
+        placingId={effectivePlacingId}
+        onArmPlacement={setPlacingId}
+        tool={effectiveTool}
+        onSetTool={setTool}
+        onPlace={(buildingId, col, row, rotated) => {
+          const applied = store.dispatch({ type: 'placeBuilding', buildingId, col, row, rotated });
+          if (applied && buildingId === FOUNDERS_HALL_ID) void autosave(store.getSnapshot().run!);
+          return applied;
         }}
+        onPaint={(t, col, row) => {
+          store.dispatch({ type: 'paint', tool: t, col, row });
+        }}
+        onDemolish={(placementId) => {
+          store.dispatch({ type: 'demolish', placementId });
+        }}
+        backOutEnabled={mapBackOut}
+        controlsEnabled={mapControls}
       />
       <MainMenu
         onSave={() => void autosave(run)}
         onNewGame={() => {
           setOverlay(null);
-          setBuildOpen(false);
+          closeBuild();
+          setPlacingIdState(null);
           void eraseAndRestart();
         }}
       />
@@ -147,15 +200,23 @@ export default function App() {
           active={overlay}
           onChangeTab={openTab}
           onSetSpeed={(s) => store.setSpeed(s)}
-          buildOpen={buildOpen}
+          buildOpen={effectiveBuildOpen}
           onToggleBuild={() => {
-            // The build menu is Phase 3's; the pill is here so the band has
-            // its shape, and it only closes any open screen for now.
-            setBuildOpen((v) => !v);
-            setOverlay(null);
+            if (siting) return;
+            setBuildOpen(!effectiveBuildOpen);
           }}
           ringBuild={false}
         />
+        {buildOpen && (
+          <BuildPopup
+            state={state}
+            placingId={placingId}
+            onArmPlacement={setPlacingId}
+            tool={tool}
+            onSetTool={setTool}
+            onClose={closeBuild}
+          />
+        )}
         {overlay && (
           <TabOverlay title={tabById(overlay).label} onClose={() => openTab(null)}>
             <StubScreen phase={tabById(overlay).phase}>{tabById(overlay).stub}</StubScreen>

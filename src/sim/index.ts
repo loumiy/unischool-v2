@@ -10,3 +10,4 @@ export * from './save.ts';
 export * from './clock.ts';
 export * from './identity.ts';
 export * from './campus.ts';
+export * from './terrain.ts';
