@@ -174,7 +174,9 @@ describe('calendar beats (DD §3.3)', () => {
       'Summer Term begins.',
       termLine(1),
       'Budget & Hiring. The ledger is open, and so is the market.',
+      'The hiring market opens: 8 candidates listed.',
       'The Year 2 budget is approved at a 4.5% draw.',
+      'The market closes; 8 candidates take other offers.',
       'The budget is approved and the market closes for the year.',
       'Fall Term begins.',
       'Year 2.',
@@ -211,7 +213,11 @@ describe('calendar beats (DD §3.3)', () => {
       expect(b.prompt.length).toBeGreaterThan(0);
       expect(b.blurb.length).toBeGreaterThan(0);
       expect(b.resolveLabel.length).toBeGreaterThan(0);
-      expect(b.phase).toBeGreaterThan(4);
+      // A beat still owed a phase names it and says what is coming.
+      if (b.phase !== undefined) {
+        expect(b.phase).toBeGreaterThan(4);
+        expect(b.stub?.length ?? 0).toBeGreaterThan(0);
+      }
     }
   });
 });

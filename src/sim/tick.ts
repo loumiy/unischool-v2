@@ -5,6 +5,7 @@ import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
 import { estateWeek } from './estate.ts';
+import { openMarket } from './faculty.ts';
 import { peopleWeek } from './people.ts';
 import { treasuryWeek } from './treasury.ts';
 
@@ -54,7 +55,10 @@ function calendarTurn(state: GameState): GameState {
 function fireBeat(state: GameState): GameState {
   const beat = beatDue(state.clock);
   if (!beat) return state;
-  return emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
+  let s = emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
+  // Budget & Hiring lists the summer market (DD §7.3).
+  if (beat.id === 'budget-and-hiring') s = openMarket(s);
+  return s;
 }
 
 // Advance up to `weeks` weeks, stopping early if the clock is held.

@@ -7,6 +7,7 @@ import {
   boardPolicy,
   campusCapacity,
   cutAvailable,
+  frozen,
   inAusterity,
   inReceivership,
   netTuition,
@@ -41,6 +42,8 @@ import {
 } from '../tuning.ts';
 import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import { BOARD_WORDS, CUT_WORDS, rungWords } from '../content/board.ts';
+import { FACULTY_WORDS } from '../content/faculty.ts';
+import FacultyCard from './FacultyCard.tsx';
 import Figure from './Figure.tsx';
 import TabOverlay from './TabOverlay.tsx';
 
@@ -64,11 +67,14 @@ export default function BeatScreen({
   state,
   onResolve,
   onClose,
+  onHire,
 }: {
   beat: CalendarBeat;
   state: GameState;
   onResolve: (decision: BeatDecision) => void;
   onClose: () => void;
+  // Budget & Hiring: a candidate hired off the market (DD §7.3).
+  onHire: (candidateId: string, programId: string | null) => void;
 }) {
   const [decision, setDecision] = useState<BeatDecision>({});
   return (
@@ -77,7 +83,7 @@ export default function BeatScreen({
         <div className="eyebrow">{formatClock(state.clock)}</div>
         <p className="beat-lede">{beat.blurb}</p>
         {beat.id === 'budget-and-hiring' && (
-          <BudgetBody state={state} decision={decision} onChange={setDecision} />
+          <BudgetBody state={state} decision={decision} onChange={setDecision} onHire={onHire} />
         )}
         {beat.id === 'admissions-day' && (
           <AdmissionsBody state={state} decision={decision} onChange={setDecision} />
@@ -86,10 +92,12 @@ export default function BeatScreen({
         {beat.id === 'board-meeting' && (
           <BoardBody state={state} decision={decision} onChange={setDecision} />
         )}
-        <div className="beat-stub">
-          <div className="eyebrow">Arrives in Phase {beat.phase}</div>
-          <p>{beat.stub}</p>
-        </div>
+        {beat.stub && (
+          <div className="beat-stub">
+            <div className="eyebrow">Arrives in Phase {beat.phase}</div>
+            <p>{beat.stub}</p>
+          </div>
+        )}
         <div className="beat-actions">
           <button type="button" className="beat-resolve" onClick={() => onResolve(decision)}>
             {beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
@@ -102,16 +110,20 @@ export default function BeatScreen({
   );
 }
 
-// The Budget & Hiring decision (DD §5.1): next year's budget at a draw
-// rate, the lines the sim can foresee shown as they would land.
+// The Budget & Hiring decision (DD §5.1, §7.3): next year's budget at a
+// draw rate, the lines the sim can foresee shown as they would land — the
+// faculty payroll among them, moving as the market below is hired from.
+// The market closes when the budget is approved.
 function BudgetBody({
   state,
   decision,
   onChange,
+  onHire,
 }: {
   state: GameState;
   decision: BeatDecision;
   onChange: (d: BeatDecision) => void;
+  onHire: (candidateId: string, programId: string | null) => void;
 }) {
   const t = state.treasury;
   const rate = decision.drawRate ?? t.drawRate;
@@ -202,6 +214,27 @@ function BudgetBody({
         />
         <Figure label="Operating funds now" value={formatMoney(t.cash)} hint={READING_WORDS.cash} />
       </div>
+      {state.faculty.marketOpen && (
+        <section className="faculty-market beat-market">
+          <div className="faculty-section-head">
+            <h3>The market</h3>
+            <span className="faculty-section-note">
+              {frozen(state)
+                ? FACULTY_WORDS.frozen
+                : state.faculty.market.length === 0
+                  ? FACULTY_WORDS.marketEmpty
+                  : fillWords(FACULTY_WORDS.marketOpen, { count: state.faculty.market.length })}
+            </span>
+          </div>
+          {state.faculty.market.length > 0 && (
+            <ul className="faculty-list">
+              {state.faculty.market.map((f) => (
+                <FacultyCard key={f.id} f={f} state={state} onHire={(p) => onHire(f.id, p)} />
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </div>
   );
 }

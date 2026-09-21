@@ -41,6 +41,10 @@ export type BusEvent =
   | { kind: 'schoolFounded'; schoolId: string; buildingId: string; placementId: string }
   | { kind: 'programOpened'; programId: string }
   | { kind: 'programClosed'; programId: string }
+  | { kind: 'marketOpened'; count: number }
+  | { kind: 'marketClosed'; count: number } // candidates who took other offers
+  | { kind: 'facultyHired'; facultyId: string; name: string; programId: string | null }
+  | { kind: 'facultyDismissed'; facultyId: string; name: string }
   | { kind: 'termClosed'; year: number; term: Term; net: number }
   | { kind: 'rungChanged'; from: number; to: number }
   | { kind: 'boardLetter'; letter: string }
@@ -71,6 +75,10 @@ export const BUS_KINDS: readonly BusKind[] = [
   'schoolFounded',
   'programOpened',
   'programClosed',
+  'marketOpened',
+  'marketClosed',
+  'facultyHired',
+  'facultyDismissed',
   'termClosed',
   'rungChanged',
   'boardLetter',

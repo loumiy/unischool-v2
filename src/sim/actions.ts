@@ -42,6 +42,16 @@ import {
   readLetter,
   type AusterityCut,
 } from './distress.ts';
+import {
+  assignFaculty,
+  candidate,
+  canTeach,
+  closeMarket,
+  dismissFaculty,
+  facultyById,
+  hireCandidate,
+  severanceFor,
+} from './faculty.ts';
 import { closeAdmissions } from './people.ts';
 import { approveBudget } from './treasury.ts';
 
@@ -91,6 +101,12 @@ export type Action =
   | { type: 'foundSchool'; schoolId: string; placementId: string; financing?: Financing }
   | { type: 'openProgram'; programId: string; financing?: Financing }
   | { type: 'closeProgram'; programId: string }
+  // Faculty (DD §7.3): a candidate hired off the summer market, to a
+  // program in their field or to none yet; a hire moved between programs;
+  // a hire dismissed with severance.
+  | { type: 'hire'; candidateId: string; programId?: string | null }
+  | { type: 'assignFaculty'; facultyId: string; programId: string | null }
+  | { type: 'dismiss'; facultyId: string }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -220,6 +236,32 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (state.phase !== 'running') return no('the college is not open yet');
       if (!openProgram(state, action.programId)) return no('the program is not open');
       return YES;
+    case 'hire': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      // The freeze (DD §5.5) is a hiring freeze first of all.
+      if (frozen(state)) return no('the board has frozen hiring');
+      if (!state.faculty.marketOpen) return no('the market is closed');
+      const c = candidate(state, action.candidateId);
+      if (!c) return no('no such candidate');
+      if (action.programId && !canTeach(state, c, action.programId))
+        return no('the program is not open in their field');
+      return YES;
+    }
+    case 'assignFaculty': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const f = facultyById(state, action.facultyId);
+      if (!f) return no('no such hire');
+      if (action.programId !== null && !canTeach(state, f, action.programId))
+        return no('the program is not open in their field');
+      return YES;
+    }
+    case 'dismiss': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const f = facultyById(state, action.facultyId);
+      if (!f) return no('no such hire');
+      if (!canPay(state, severanceFor(f), 'cash')) return no('not enough cash for severance');
+      return YES;
+    }
     case 'debug/mark':
       return YES;
   }
@@ -347,8 +389,10 @@ export function applyAction(state: GameState, action: Action): GameState {
     }
     case 'resolveBeat': {
       let next = state;
-      if (action.beatId === 'budget-and-hiring')
+      if (action.beatId === 'budget-and-hiring') {
         next = approveBudget(next, action.drawRate, action.maintenanceFunding);
+        next = closeMarket(next);
+      }
       if (action.beatId === 'admissions-day')
         next = closeAdmissions(next, action.tuition, action.selectivity);
       if (action.beatId === 'board-meeting') next = imposeCuts(next, action.cuts);
@@ -362,6 +406,12 @@ export function applyAction(state: GameState, action: Action): GameState {
       return openProgramIn(state, action.programId, action.financing ?? 'cash');
     case 'closeProgram':
       return closeProgramIn(state, action.programId);
+    case 'hire':
+      return hireCandidate(state, action.candidateId, action.programId ?? null);
+    case 'assignFaculty':
+      return assignFaculty(state, action.facultyId, action.programId);
+    case 'dismiss':
+      return dismissFaculty(state, action.facultyId);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
   }

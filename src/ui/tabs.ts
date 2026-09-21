@@ -24,6 +24,7 @@ export const TABS: readonly TabDef[] = [
     id: 'faculty',
     label: 'Faculty',
     phase: 10,
+    // Live since Phase 10 (FacultyScreen.tsx); the stub line is never shown.
     stub: 'Competence and cost, one quirk each. The hiring market opens at the summer Budget & Hiring beat.',
   },
   {

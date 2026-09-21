@@ -13,6 +13,8 @@ export interface TierDef {
   name: string;
   seats: number;
   costFactor: number;
+  // The tier's multiplier on program quality (DD §7.4).
+  qualityFactor: number;
   levels: number; // course levels on the catalogue at this tier (1–3)
 }
 
@@ -35,7 +37,9 @@ export interface SchoolDef {
 }
 
 const fileSchema = obj({
-  tiers: arr(obj({ id: str, name: str, seats: int, costFactor: num, levels: int })),
+  tiers: arr(
+    obj({ id: str, name: str, seats: int, costFactor: num, qualityFactor: num, levels: int }),
+  ),
   schools: arr(
     obj({
       id: str,

@@ -42,6 +42,8 @@ const PLACEHOLDERS = [
   'title',
   'cuts',
   'program',
+  'name',
+  'assignment',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -128,6 +130,19 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'programOpened':
     case 'programClosed':
       vars.program = findProgram(entry.programId)?.name ?? entry.programId;
+      break;
+    case 'marketOpened':
+    case 'marketClosed':
+      vars.count = String(entry.count);
+      break;
+    case 'facultyHired': {
+      vars.name = entry.name;
+      const program = entry.programId ? findProgram(entry.programId) : undefined;
+      vars.assignment = program ? ` to teach ${program.name}` : '';
+      break;
+    }
+    case 'facultyDismissed':
+      vars.name = entry.name;
       break;
     case 'termClosed': {
       vars.term = termLabel(entry.term);

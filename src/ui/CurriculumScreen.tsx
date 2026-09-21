@@ -8,12 +8,14 @@ import {
   type ProgramDef,
   type SchoolDef,
 } from '../content/schools.ts';
+import { FACULTY_READINGS, FACULTY_WORDS } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
 import {
   affordableFinancing,
   annualProgramCost,
   annualProgramCosts,
   canPay,
+  facultyOf,
   foundedSchool,
   formatMoney,
   frozen,
@@ -21,7 +23,9 @@ import {
   hallsAvailable,
   openProgram,
   programOpeningCost,
+  programQuality,
   schoolFoundingCost,
+  staffingNeed,
   type Financing,
   type GameState,
   type OpenProgram,
@@ -37,15 +41,20 @@ import Figure from './Figure.tsx';
 function ProgramRow({
   def,
   program,
+  state,
   onClose,
 }: {
   def: ProgramDef;
   program: OpenProgram;
+  state: GameState;
   onClose: () => void;
 }) {
   const [armed, setArmed] = useState(false);
   const tier = tierById(program.tier);
   const listings = courseListings(def);
+  const staff = facultyOf(state, program.programId);
+  const need = staffingNeed(program);
+  const quality = programQuality(state, program);
   return (
     <div className="program-row">
       <div className="program-row-head">
@@ -79,7 +88,24 @@ function ProgramRow({
           );
         })}
       </div>
+      <p className={`program-row-faculty ${staff.length === 0 ? 'bad' : ''}`}>
+        {staff.length === 0
+          ? FACULTY_WORDS.nobodyTeaches
+          : fillWords(FACULTY_WORDS.taughtBy, { names: staff.map((f) => f.name).join(', ') })}
+      </p>
       <div className="program-row-foot">
+        <span className={`figure ${staff.length < need ? 'bad' : ''}`} tabIndex={0}>
+          {staff.length} / {need} staffed
+          <span className="figure-hint" role="tooltip">
+            {FACULTY_READINGS.staffing}
+          </span>
+        </span>
+        <span className="figure" tabIndex={0}>
+          Quality {quality.toFixed(0)}
+          <span className="figure-hint" role="tooltip">
+            {FACULTY_READINGS.programQuality}
+          </span>
+        </span>
         <span className="figure" tabIndex={0}>
           {tier.seats} seats
           <span className="figure-hint" role="tooltip">
@@ -217,6 +243,7 @@ function SchoolGroup({
                 key={def.id}
                 def={def}
                 program={openProgram(state, def.id)!}
+                state={state}
                 onClose={() => onClose(def.id)}
               />
             ))}

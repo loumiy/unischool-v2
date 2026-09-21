@@ -1,0 +1,277 @@
+{
+  "ranks": [
+    { "id": "assistant", "name": "Assistant Professor", "short": "Asst. Prof." },
+    { "id": "associate", "name": "Associate Professor", "short": "Assoc. Prof." },
+    { "id": "full", "name": "Professor", "short": "Prof." }
+  ],
+  "quirks": [
+    {
+      "id": "beloved-lecturer",
+      "name": "Beloved lecturer",
+      "line": "Students would follow them into a fire. Publishes nothing.",
+      "effects": { "teaching": 10, "research": -10, "morale": 2 }
+    },
+    {
+      "id": "grant-magnet",
+      "name": "Grant magnet",
+      "line": "Writes proposals in their sleep, and occasionally in lectures.",
+      "effects": { "research": 12, "salary": 1.1 }
+    },
+    {
+      "id": "never-on-fridays",
+      "name": "Never on campus Fridays",
+      "line": "Or, it is beginning to appear, Thursdays.",
+      "effects": { "teaching": -6, "salary": 0.95 }
+    },
+    {
+      "id": "harsh-grader",
+      "name": "Harsh grader",
+      "line": "The median is a C, and the median is proud of it.",
+      "effects": { "teaching": 4, "morale": -2 }
+    },
+    {
+      "id": "came-for-the-view",
+      "name": "Came for the view",
+      "line": "Will work for the view. Asks very little else.",
+      "effects": { "salary": 0.85 }
+    },
+    {
+      "id": "a-name",
+      "name": "A name",
+      "line": "People have heard of them. The name costs extra.",
+      "effects": { "teaching": 5, "research": 8, "salary": 1.25 }
+    },
+    {
+      "id": "office-hours",
+      "name": "Office hours that happen",
+      "line": "Holds office hours at the posted time, in the posted room. Legendary.",
+      "effects": { "teaching": 6, "morale": 1 }
+    },
+    {
+      "id": "committee-creature",
+      "name": "Committee creature",
+      "line": "Sits on every committee, chairs three, and calls this service.",
+      "effects": { "teaching": -4, "research": -4, "salary": 0.95 }
+    },
+    {
+      "id": "bench-hermit",
+      "name": "Bench hermit",
+      "line": "Lives in the lab. Students report a lamp under the door.",
+      "effects": { "research": 10, "teaching": -8 }
+    },
+    {
+      "id": "teaches-to-the-back-row",
+      "name": "Teaches to the back row",
+      "line": "Loudly, with props. The props have a budget line.",
+      "effects": { "teaching": 8, "research": -6, "salary": 1.05 }
+    },
+    {
+      "id": "one-book",
+      "name": "One book",
+      "line": "Twenty years, one book. A terrific book, by every account but the dean's.",
+      "effects": { "research": -5, "salary": 0.9 }
+    },
+    {
+      "id": "the-easy-a",
+      "name": "The easy A",
+      "line": "The course is always full, everyone leaves happy, and nobody knows anything.",
+      "effects": { "teaching": -5, "morale": 3 }
+    },
+    {
+      "id": "remembers-every-advisee",
+      "name": "Remembers every advisee",
+      "line": "Their name, their thesis, and which of the two they should have chosen.",
+      "effects": { "teaching": 5, "morale": 2 }
+    },
+    {
+      "id": "serial-sabbatical",
+      "name": "Serial sabbatical",
+      "line": "Applied for a sabbatical the week they arrived. Will apply again.",
+      "effects": { "teaching": -3, "research": 5 }
+    },
+    {
+      "id": "the-feud",
+      "name": "The feud",
+      "line": "Has a feud with a rival department that predates the rival department.",
+      "effects": { "research": 3, "morale": -1 }
+    }
+  ],
+  "names": {
+    "given": {
+      "male": [
+        "Aaron",
+        "Adrian",
+        "Amir",
+        "Andrei",
+        "Arjun",
+        "Benedict",
+        "Carlos",
+        "Chen",
+        "Daniel",
+        "Desmond",
+        "Elias",
+        "Emeka",
+        "Felix",
+        "Hiroshi",
+        "Ibrahim",
+        "Jonas",
+        "Julian",
+        "Kwame",
+        "Leon",
+        "Marcus",
+        "Mateo",
+        "Nikolai",
+        "Omar",
+        "Rafael",
+        "Samuel",
+        "Sanjay",
+        "Tariq",
+        "Theodore",
+        "Vikram",
+        "Wen",
+        "Yusuf",
+        "Zhen"
+      ],
+      "female": [
+        "Ada",
+        "Amara",
+        "Anika",
+        "Beatrice",
+        "Chiara",
+        "Clara",
+        "Dana",
+        "Eleanor",
+        "Esther",
+        "Fatima",
+        "Grace",
+        "Hana",
+        "Ingrid",
+        "Irene",
+        "Julia",
+        "Keiko",
+        "Lena",
+        "Lucia",
+        "Maya",
+        "Mei",
+        "Miriam",
+        "Nadia",
+        "Nia",
+        "Olga",
+        "Priya",
+        "Rosa",
+        "Sofia",
+        "Tamsin",
+        "Vera",
+        "Yara",
+        "Yuki",
+        "Zainab"
+      ]
+    },
+    "surnames": {
+      "Anglo/Western European": [
+        "Whitfield",
+        "Marsh",
+        "Delacroix",
+        "Hartley",
+        "Lindqvist",
+        "Beaumont",
+        "Fischer",
+        "Osborne"
+      ],
+      "Slavic/Eastern European": [
+        "Novak",
+        "Petrova",
+        "Kowalski",
+        "Horvat",
+        "Dimitrov",
+        "Sokolov",
+        "Havel",
+        "Zielinski"
+      ],
+      "Hispanic/Latin American": [
+        "Alvarez",
+        "Ortega",
+        "Salazar",
+        "Mendoza",
+        "Castillo",
+        "Reyes",
+        "Duarte",
+        "Ibarra"
+      ],
+      "Arabic/Middle Eastern": [
+        "Haddad",
+        "Farouk",
+        "Nasser",
+        "Khoury",
+        "Rahimi",
+        "Sabbagh",
+        "Mansour",
+        "Barakat"
+      ],
+      "South Asian": [
+        "Chatterjee",
+        "Menon",
+        "Rao",
+        "Iyer",
+        "Banerjee",
+        "Sharma",
+        "Pillai",
+        "Desai"
+      ],
+      "Chinese": ["Zhang", "Lin", "Huang", "Zhou", "Xu", "Sun", "Tang", "Wu"],
+      "Korean": ["Kim", "Park", "Choi", "Jung", "Kang", "Yoon", "Han", "Seo"],
+      "Japanese": ["Tanaka", "Sato", "Nakamura", "Kobayashi", "Ito", "Hayashi", "Mori", "Ishikawa"],
+      "West African": [
+        "Okafor",
+        "Adeyemi",
+        "Mensah",
+        "Boateng",
+        "Diallo",
+        "Okonkwo",
+        "Owusu",
+        "Sow"
+      ],
+      "East African": [
+        "Mwangi",
+        "Abebe",
+        "Otieno",
+        "Tesfaye",
+        "Kamau",
+        "Bekele",
+        "Wanjiru",
+        "Haile"
+      ]
+    }
+  },
+  "readings": {
+    "headcount": "Everyone on the faculty roster, hired or not yet assigned to a program.",
+    "payroll": "Every hire's salary for a year; it is paid week by week whether they teach or not.",
+    "adminShare": "Administration's share of all payroll: it only ever creeps up.",
+    "teaching": "Program quality averaged over the open programs: faculty skill, damped by understaffing, lifted by tier, worn by the hall.",
+    "market": "Candidates listed this summer; the list closes when the budget is approved.",
+    "teachingSkill": "How well they teach, 0 to 100, with their quirk counted.",
+    "researchSkill": "How well they publish, 0 to 100, with their quirk counted; research lines arrive in Phase 12.",
+    "salary": "What they cost a year, on the faculty payroll from the week they are hired.",
+    "programQuality": "This program's quality: its faculty's teaching, damped by understaffing, lifted by tier, worn by the hall.",
+    "staffing": "Hires assigned against the hires this tier needs; below the need, quality is damped."
+  },
+  "lines": {
+    "noFaculty": "No one is on the faculty yet. The market opens at Budget & Hiring, in the summer.",
+    "marketClosed": "The market is closed until Budget & Hiring.",
+    "marketOpen": "The market is open: {count} candidates are listed, and every one of them is very excited about the opportunity.",
+    "marketEmpty": "Every candidate is hired. The rest of the summer is quiet.",
+    "frozen": "The board has frozen hiring.",
+    "hire": "Hire",
+    "dismiss": "Dismiss…",
+    "dismissConfirm": "Dismiss {name} for {severance} in severance?",
+    "unassigned": "Not assigned to a program",
+    "assignLabel": "Teaching",
+    "noProgramsForSchool": "No open program in {school}; they can be assigned when one opens.",
+    "unfoundedField": "Their field, {school}, is not founded here.",
+    "taughtBy": "Taught by {names}",
+    "nobodyTeaches": "No faculty assigned",
+    "unassignedNote": "{count} on the roster are not teaching anything.",
+    "quirkLabel": "Quirk",
+    "rankAndField": "{rank} · {school}"
+  }
+}

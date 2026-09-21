@@ -8,6 +8,7 @@ import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
+import { foundingFaculty } from './faculty.ts';
 import { foundingPeople } from './people.ts';
 import { foundingTreasury } from './treasury.ts';
 
@@ -326,6 +327,31 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 9, state: migrated };
   },
+  // v9 → v10 (Phase 10): the faculty roster and the summer market. Replay
+  // first; else nobody is hired and the market is closed.
+  9: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 10,
+      faculty: foundingFaculty(),
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 10, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -461,6 +487,21 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   for (const pr of academics.programs as Record<string, unknown>[]) {
     if (typeof pr.programId !== 'string' || typeof pr.tier !== 'string')
       return 'an open program is malformed';
+  }
+  const faculty = s.faculty as Record<string, unknown> | undefined;
+  if (typeof faculty !== 'object' || faculty === null) return 'state.faculty is invalid';
+  if (!Array.isArray(faculty.roster) || !Array.isArray(faculty.market))
+    return 'state.faculty lists are invalid';
+  if (typeof faculty.marketOpen !== 'boolean') return 'state.faculty.marketOpen is invalid';
+  if (typeof faculty.marketYear !== 'number' || typeof faculty.nextId !== 'number')
+    return 'state.faculty counters are invalid';
+  for (const f of [...faculty.roster, ...faculty.market] as Record<string, unknown>[]) {
+    if (typeof f !== 'object' || f === null) return 'a hire is malformed';
+    for (const k of ['id', 'name', 'rank', 'quirkId', 'schoolId'])
+      if (typeof f[k] !== 'string') return 'a hire is malformed';
+    for (const k of ['teaching', 'research', 'salary'])
+      if (typeof f[k] !== 'number') return 'a hire is malformed';
+    if (f.programId !== null && typeof f.programId !== 'string') return 'a hire is malformed';
   }
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';

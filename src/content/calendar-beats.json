@@ -48,12 +48,10 @@
       "term": "summer",
       "week": 4,
       "dd": "§7.3",
-      "phase": 10,
       "prompt": "The budget is on the desk",
       "firedLine": "Budget & Hiring. The ledger is open, and so is the market.",
       "resolvedLine": "The budget is approved and the market closes for the year.",
       "blurb": "Next year's budget wants approving, and the hiring market is open for the summer. Every candidate is very excited about the opportunity.",
-      "stub": "The summer hiring market.",
       "resolveLabel": "Approve and adjourn"
     }
   ]
