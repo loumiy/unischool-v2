@@ -183,7 +183,7 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
                     'condition',
                     'teaching',
                     'morale',
-                    'beauty',
+                    'placement',
                     'conditions',
                   ] as const
                 ).map((k) => (

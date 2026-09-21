@@ -10,6 +10,7 @@ import {
   type GameState,
   type Motif,
   type Placement,
+  quadAt,
 } from '../sim/index.ts';
 import BuildingInfoPanel from './BuildingInfoPanel.tsx';
 import HelpHint from './HelpHint.tsx';
@@ -23,6 +24,8 @@ import {
   siteHeightOf,
 } from './map/works.tsx';
 import AmbientLayer from './map/ambient.tsx';
+import QuadLayer, { QuadNameLayer } from './map/quadLabels.tsx';
+import QuadPanel from './QuadPanel.tsx';
 import { seasonOf } from './map/season.ts';
 import {
   DERELICT_CONDITION,
@@ -294,12 +297,16 @@ const CampusScene = memo(function CampusScene({
   state,
   inspectedId,
   onInspect,
+  inspectedQuad,
+  onInspectQuad,
   labelLayerRef,
   camera,
 }: {
   state: GameState;
   inspectedId: string | null;
   onInspect: (id: string) => void;
+  inspectedQuad: string | null;
+  onInspectQuad: (key: string) => void;
   labelLayerRef: React.RefObject<SVGGElement | null>;
   camera: Camera;
 }) {
@@ -350,6 +357,12 @@ const CampusScene = memo(function CampusScene({
       <polygon className="campus-ground" points={ground.plate} />
       <path className="campus-grid" d={ground.grid} />
       <TerrainLayer camera={camera} />
+      <QuadLayer
+        campus={state.campus}
+        selectedKey={inspectedQuad}
+        onSelect={onInspectQuad}
+        camera={camera}
+      />
       <PathwayLayer paths={state.campus.paths} camera={camera} />
       <CastShadows placements={placements} scene={scene} motif={motif} camera={camera} />
       {groundPlaced.map((p) => (
@@ -380,6 +393,12 @@ const CampusScene = memo(function CampusScene({
         ),
       )}
       <AmbientLayer state={state} camera={camera} />
+      <QuadNameLayer
+        campus={state.campus}
+        selectedKey={inspectedQuad}
+        onSelect={onInspectQuad}
+        camera={camera}
+      />
       <g ref={labelLayerRef}>
         {placements.map((p) => (
           <BuildingLabel
@@ -406,6 +425,7 @@ export default function CampusMap({
   financing,
   onPaint,
   onDemolish,
+  onNameQuad,
   backOutEnabled,
   controlsEnabled,
 }: {
@@ -421,11 +441,13 @@ export default function CampusMap({
   financing: Financing;
   onPaint: (tool: Exclude<CampusTool, 'demolish'>, col: number, row: number) => void;
   onDemolish: (placementId: string) => void;
+  onNameQuad: (key: string, name: string) => void;
   backOutEnabled: boolean;
   controlsEnabled: boolean;
 }) {
   const [rotated, setRotated] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(null);
+  const [inspectedQuad, setInspectedQuad] = useState<string | null>(null);
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
@@ -765,6 +787,7 @@ export default function CampusMap({
     if (tool) onSetTool(tool);
     else if (selected) onArmPlacement(null);
     else if (inspectedId) setInspectedId(null);
+    else if (inspectedQuad) setInspectedQuad(null);
   }, backOutEnabled);
 
   const consumePanClick = () => {
@@ -796,6 +819,7 @@ export default function CampusMap({
       return;
     }
     if (inspectedId) setInspectedId(null);
+    if (inspectedQuad) setInspectedQuad(null);
   }
   const inspectBuilding = (id: string) => {
     if (consumePanClick()) return;
@@ -815,6 +839,11 @@ export default function CampusMap({
   });
   const onInspect = useCallback((id: string) => inspectRef.current(id), []);
 
+  const onInspectQuad = useCallback((key: string) => {
+    setInspectedQuad(key);
+    setInspectedId(null);
+  }, []);
+  const inspectedQuadObj = inspectedQuad ? quadAt(state.campus, inspectedQuad) : null;
   const inspected = inspectedId
     ? (state.campus.placements.find((p) => p.id === inspectedId) ?? null)
     : null;
@@ -871,6 +900,8 @@ export default function CampusMap({
               state={state}
               inspectedId={inspectedId}
               onInspect={onInspect}
+              inspectedQuad={inspectedQuad}
+              onInspectQuad={onInspectQuad}
               labelLayerRef={labelLayerRef}
               camera={camera}
             />
@@ -922,6 +953,13 @@ export default function CampusMap({
             )}
           </g>
         </svg>
+        {inspectedQuadObj && (
+          <QuadPanel
+            quad={inspectedQuadObj}
+            onRename={(name) => onNameQuad(inspectedQuadObj.key, name)}
+            onClose={() => setInspectedQuad(null)}
+          />
+        )}
         {inspected && (
           <BuildingInfoPanel
             placement={inspected}

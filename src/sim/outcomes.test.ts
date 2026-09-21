@@ -3,13 +3,12 @@ import { describeEntry } from '../content/busLines.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import {
   ATTRITION_BASE,
-  BEAUTY_WEIGHT,
   OUTCOME_ADRIFT_BASE,
   QUALITY_DRIFT,
   RUNG_SATISFACTION_PENALTY,
   SATISFACTION_BASE,
 } from '../tuning.ts';
-import { campusBeauty } from './beauty.ts';
+import { placementSatisfaction } from './placement.ts';
 import { defaultResolution } from './beats.ts';
 import { entriesOfKind } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
@@ -60,11 +59,11 @@ describe('satisfaction as a sum of terms (DD §8.3)', () => {
       b.condition +
       b.teaching +
       b.morale +
-      b.beauty +
+      b.placement +
       b.conditions;
     expect(b.total).toBe(Number(Math.min(100, Math.max(0, sum)).toFixed(1)));
     expect(b.base).toBe(SATISFACTION_BASE);
-    expect(b.beauty).toBeCloseTo(((campusBeauty(run.state) - 50) / 50) * BEAUTY_WEIGHT, 5);
+    expect(b.placement).toBe(placementSatisfaction(run.state).applied);
     expect(b.conditions).toBe(-RUNG_SATISFACTION_PENALTY[RUNG_SOUND]);
     expect(satisfactionFor(run.state, total)).toBe(b.total);
     const austere = { ...run.state, distress: { ...run.state.distress, rung: RUNG_AUSTERITY } };

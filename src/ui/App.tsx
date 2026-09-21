@@ -271,6 +271,9 @@ export default function App() {
         onDemolish={(placementId) => {
           store.dispatch({ type: 'demolish', placementId });
         }}
+        onNameQuad={(key, name) => {
+          store.dispatch({ type: 'nameQuad', key, name });
+        }}
         backOutEnabled={mapBackOut}
         controlsEnabled={mapControls}
       />

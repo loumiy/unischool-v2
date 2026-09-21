@@ -40,6 +40,17 @@ export function serializeRun(run: Run, savedAt: Date = new Date()): SaveFile {
 // framework exists from day one so the first shape change has somewhere to
 // go. Each step receives the raw (already-parsed) file at version N and
 // returns it at version N + 1, bumping `version` itself.
+// A migration's replay check compares the campus as the version being
+// migrated FROM knew it — the placements, the paving and the trees — so a
+// field added to Campus later never changes which branch an old save takes.
+function sameCampus(rebuilt: unknown, saved: unknown): boolean {
+  const strip = (c: unknown) => {
+    const campus = (c ?? {}) as Record<string, unknown>;
+    return JSON.stringify([campus.placements, campus.paths, campus.trees]);
+  };
+  return strip(rebuilt) === strip(saved);
+}
+
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
 export const MIGRATIONS: Readonly<Record<number, Migration>> = {
   // v1 → v2 (Phase 2): the run phase, the identity, and the campus. A v1
@@ -150,7 +161,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       const same =
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === pendingBeat &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus) &&
+        sameCampus(rebuilt.campus, state.campus) &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
@@ -179,7 +190,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -269,7 +280,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -296,7 +307,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -320,7 +331,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -345,7 +356,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -383,7 +394,7 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
@@ -416,12 +427,24 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         rebuilt.phase === state.phase &&
         rebuilt.pendingBeat === state.pendingBeat &&
         JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
-        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+        sameCampus(rebuilt.campus, state.campus);
       if (same) migrated = rebuilt as unknown as Record<string, unknown>;
     } catch {
       // Fall through with the in-place migration.
     }
     return { ...raw, version: 12, state: migrated };
+  },
+  // v12 → v13 (Phase 14): the names the player has given the quads their
+  // buildings enclose. An old run has named none, and the game names every
+  // quad it detects, so nothing else changes.
+  12: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const campus = (state.campus ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 13,
+      state: { ...state, schemaVersion: 13, campus: { ...campus, quadNames: {} } },
+    };
   },
 };
 
@@ -613,6 +636,11 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   }
   if (typeof campus.trees !== 'object' || campus.trees === null)
     return 'state.campus.trees is invalid';
+  if (typeof campus.quadNames !== 'object' || campus.quadNames === null)
+    return 'state.campus.quadNames is invalid';
+  for (const name of Object.values(campus.quadNames as Record<string, unknown>)) {
+    if (typeof name !== 'string') return 'a quad name is invalid';
+  }
   if (typeof campus.nextPlacementId !== 'number') return 'state.campus.nextPlacementId is invalid';
   for (const p of campus.placements as Record<string, unknown>[]) {
     if (typeof p.id !== 'string' || typeof p.buildingId !== 'string')

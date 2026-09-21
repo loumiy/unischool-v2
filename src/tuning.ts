@@ -248,12 +248,17 @@ export const OUTCOME_ADRIFT_BASE = 0.05;
 // Beauty, 0–100, is a weighted mean of its terms (beauty.ts): greenery is
 // the trees standing against this share of the founding woodland; landmarks
 // are the buildings' beauty marks (content/buildings.json) against this
-// many; upkeep is the open buildings' mean condition. Enclosed spaces and
-// coherent motifs take their share when quads (Ph.14) and per-building
-// motifs arrive.
+// many; upkeep is the open buildings' mean condition; enclosure is the
+// quads the buildings make (quads.ts). Coherent motifs take their share
+// when motifs become per-building.
 export const GREENERY_TARGET_SHARE = 0.6;
 export const LANDMARK_TARGET = 6;
-export const BEAUTY_WEIGHTS = { greenery: 0.4, landmarks: 0.3, upkeep: 0.3 } as const;
+export const BEAUTY_WEIGHTS = {
+  greenery: 0.3,
+  landmarks: 0.25,
+  upkeep: 0.25,
+  enclosure: 0.2,
+} as const;
 // Beauty's swing on the applicant pool, either way, under the ~12% cap on
 // placement-derived effects (DD §6.2).
 export const BEAUTY_POOL_SWING = 0.12;
@@ -263,3 +268,26 @@ export const BEAUTY_POOL_SWING = 0.12;
 export const MAX_WALKERS = 60;
 export const STUDENTS_PER_WALKER = 6;
 export const AMBIENT_DENSITY = { fall: 1, spring: 1, summer: 0.15 } as const;
+
+// ---------- Quads, pairings and the cap (DD §6.2, §17.2, Phase 14) ----------
+
+// THE HARD CAP (DD §6.2, guardrail §17.2): no placement-derived effect may
+// exceed this share of any output. Every such effect is aggregated once
+// (placement.ts) and clamped here, so the player who ignores layout and
+// builds for beauty stays fully viable.
+export const PLACEMENT_CAP = 0.12;
+
+// A quad is an enclosed open space: at least this many tiles, at most this
+// many (beyond it, it is just the rest of the campus), and at least this
+// much of its boundary against building walls.
+export const QUAD_MIN_AREA = 6;
+export const QUAD_MAX_AREA = 150;
+export const QUAD_MIN_ENCLOSURE = 0.55;
+// A quad's quality is its enclosure, lifted by how green it is; this many
+// good quads make a full enclosure mark for beauty.
+export const QUAD_GREEN_WEIGHT = 0.5;
+export const QUAD_TARGET = 3;
+
+// How far apart two buildings can stand and still count as paired: tiles
+// between their nearest edges.
+export const PAIRING_RADIUS = 8;

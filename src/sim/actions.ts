@@ -59,6 +59,7 @@ import {
   severanceFor,
 } from './faculty.ts';
 import { closeAdmissions } from './people.ts';
+import { quadAt } from './quads.ts';
 import { approveBudget } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
@@ -84,6 +85,9 @@ export type Action =
   // Pays the backlog off and closes the building for the works (DD §6.4).
   | { type: 'renovate'; placementId: string; financing?: Financing }
   | { type: 'paint'; tool: PaintTool; col: number; row: number }
+  // A quad the buildings enclose, renamed (DD §6.2); an empty name gives it
+  // back the name the game chose.
+  | { type: 'nameQuad'; key: string; name: string }
   // Resolves the calendar beat holding the clock (beats.ts), carrying the
   // beat's decision. Every field is optional: absent, the beat resolves to
   // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
@@ -207,6 +211,12 @@ export function canApply(state: GameState, action: Action): Verdict {
           return hasTree ? YES : no('no tree here');
       }
       return no('unknown tool');
+    }
+    case 'nameQuad': {
+      if (state.phase !== 'running') return no('the campus is not open yet');
+      if (action.name.length > 48) return no('that name is too long');
+      if (!quadAt(state.campus, action.key)) return no('no quad there');
+      return YES;
     }
     case 'resolveBeat':
       if (state.distress.pendingLetter !== null) return no('a letter from the board is waiting');
@@ -349,6 +359,7 @@ export function applyAction(state: GameState, action: Action): GameState {
           ...paid,
           phase: opening ? 'running' : state.phase,
           campus: {
+            ...state.campus,
             placements: [...state.campus.placements, placement],
             paths: state.campus.paths.filter((k) => !covered.has(k)),
             trees,
@@ -434,6 +445,13 @@ export function applyAction(state: GameState, action: Action): GameState {
         next = closeAdmissions(next, action.tuition, action.selectivity);
       if (action.beatId === 'board-meeting') next = imposeCuts(next, action.cuts);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
+    }
+    case 'nameQuad': {
+      const quadNames = { ...state.campus.quadNames };
+      const name = action.name.trim();
+      if (name === '') delete quadNames[action.key];
+      else quadNames[action.key] = name;
+      return { ...state, campus: { ...state.campus, quadNames } };
     }
     case 'readLetter':
       return readLetter(state);
