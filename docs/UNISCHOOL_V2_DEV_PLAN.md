@@ -1,6 +1,6 @@
 # UniSchool v2 — Development Plan
 
-**Companion to:** `UNISCHOOL_V2_DESIGN.md` (referenced throughout as **DD §n**)
+**Companion to:** `docs/UNISCHOOL_V2_DESIGN.md` (referenced throughout as **DD §n**). This plan lives at `docs/UNISCHOOL_V2_DEV_PLAN.md`.
 **Method:** Numbered phases sized for ~1–2 hours of Claude Code work each. Feed one phase at a time to Claude Code and let it propose the PRs to execute it. Phases within a stage are ordered by dependency; stages are strictly sequential.
 
 ## Conventions for every phase
@@ -18,7 +18,7 @@
 Fresh Vite + React + TS repo. Establish the architecture of DD §15: `sim/` (pure TS: state tree, action types, `tick()`, seeded RNG), `ui/` (React), `content/` (JSON + schema validation), `tuning.ts`. Weekly tick driver with pause/1×/2×/4×/8× (gating stubbed open). Serializable state, autosave/load to IndexedDB, schema version 1, seed captured at new-game. A debug panel (state inspector, time controls, action log). *Done when a blank "campus" advances through calendar weeks (DD §3.1) and survives save/reload.*
 
 **2. App shell and identity flow, ported from v1.**
-Port and adapt v1's startup flow (name, motif, palette — DD §13.1) and UI chrome grammar (DD §13.2): bottom bar with stubbed screens, identity chip, date/speed controls, ticker strip with a NEXT slot. Establish the design-token layer (cream/maroon/gold, typography) as the single styling source. *Done when a player can found "Blackmoor," pick colors, land on an empty map with live chrome.*
+Port and adapt v1's startup flow (name, motif, palette — DD §13.1) and UI chrome grammar (DD §13.2): bottom bar with stubbed screens, identity chip, date/speed controls, ticker strip with a NEXT slot. Establish the design-token layer (cream/maroon/gold, typography) as the single styling source. *Done when a player can found "Blackmoor," pick colors, land on an empty map with live chrome, then place Founders Hall as the run's first action (DD §2.4).*
 
 **3. The canvas and building placement.**
 The fixed 64×64 parcel with its terrain frame (DD §6.1). Grid placement/demolition of buildings from a data-driven building catalog (~10 seed types for now), motif + palette rendering per building, paths and trees. Camera pan/zoom. *Done when a campus can be laid out, saved, reloaded, and looks like UniSchool.*

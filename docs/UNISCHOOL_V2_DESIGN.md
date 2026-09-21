@@ -60,6 +60,10 @@ This budget is a tuning target (Plan Phase 31), not an enforced clock. Sessions 
 
 At Year 50, Week 1: the run formally ends. The Chronicle (§12) is generated, the Final Report grades the run, the school receives its title, and the hall-of-fame entry is written. Then the player may continue in **Epilogue mode**: the sim runs on indefinitely, with a light "decade addendum" appended to the chronicle every ten years. Nothing new unlocks in epilogue; it exists so no one is ripped away from a campus they love.
 
+### §2.4 The founding moment (starting state)
+
+The founding hall is the player's first act, not a pre-placed fixture. Completing the startup flow (name, motif, palette — §13.1) leads directly into placing **Founders Hall** — one multi-purpose building rendered in the chosen motif and palette — as the literal first action of the run. It anchors §6.5's founding-hall historic candidacy and gives every run a founding moment the chronicle can name. The land is otherwise empty at the start; starting cash is a `tuning.ts` constant; the first class arrives at the first Convocation (§3.3).
+
 ---
 
 ## §3. Time and the Calendar
@@ -67,6 +71,8 @@ At Year 50, Week 1: the run formally ends. The Chronicle (§12) is generated, th
 ### §3.1 Continuous time
 
 Time is continuous with pause, Cities: Skylines style. The base tick is one **week**. The year has three terms — Fall (14 wks), Spring (14 wks), Summer (8 wks) — totaling 36 ticks per year. The campus map is always the home screen; management screens overlay it; the sim keeps running under open screens unless paused.
+
+**Dates are run-relative.** Time is labeled "Year 1" through "Year 50" everywhere — the chrome clock, the ticker, the chronicle, the final report — in v1's format: *Year 12 · Fall Term · Week 3*, where the week counts within the current term (Fall 1–14, Spring 1–14, Summer 1–8). Class labels derive from the run year: the class graduating in Year 34 is "the Class of '34." There are no real-world calendar years anywhere: §16 excludes historical eras, and real years would promise era content the game deliberately does not build.
 
 ### §3.2 Speed tiers are earned by delegation
 
