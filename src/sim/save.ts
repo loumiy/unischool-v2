@@ -1,5 +1,6 @@
 import { TERMS, WEEKS_IN_TERM } from './calendar.ts';
 import { MOTIFS } from './identity.ts';
+import { foundingWoodland, tileKey } from './terrain.ts';
 import type { LoggedAction, Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 
@@ -48,6 +49,54 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         identity: null,
         campus: { placements: [] },
       },
+    };
+  },
+  // v2 → v3 (Phase 3): paths and trees on the campus, placement ids, and the
+  // generic placeBuilding action in place of placeFoundersHall — in the log
+  // too, so a v2 run still replays. The founding woodland is seeded under
+  // whatever already stands, minus the tiles it stands on.
+  2: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const campus = (state.campus ?? {}) as Record<string, unknown>;
+    const oldPlacements = Array.isArray(campus.placements)
+      ? (campus.placements as Record<string, unknown>[])
+      : [];
+    const placements: Record<string, unknown>[] = oldPlacements.map((p, i) => ({
+      ...p,
+      id: `p${i + 1}`,
+    }));
+    const trees = foundingWoodland();
+    for (const p of placements) {
+      const col = Number(p.col);
+      const row = Number(p.row);
+      const w = Number(p.w);
+      const h = Number(p.h);
+      for (let r = row; r < row + h; r++)
+        for (let c = col; c < col + w; c++) delete trees[tileKey(c, r)];
+    }
+    const log = Array.isArray(raw.log) ? (raw.log as Record<string, unknown>[]) : [];
+    return {
+      ...raw,
+      version: 3,
+      state: {
+        ...state,
+        schemaVersion: 3,
+        campus: { placements, paths: [], trees, nextPlacementId: placements.length + 1 },
+      },
+      log: log.map((entry) => {
+        const action = entry.action as Record<string, unknown> | undefined;
+        if (action?.type !== 'placeFoundersHall') return entry;
+        return {
+          ...entry,
+          action: {
+            type: 'placeBuilding',
+            buildingId: 'founders-hall',
+            col: action.col,
+            row: action.row,
+            rotated: false,
+          },
+        };
+      }),
     };
   },
 };
@@ -125,6 +174,18 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   const campus = s.campus as Record<string, unknown> | undefined;
   if (typeof campus !== 'object' || campus === null || !Array.isArray(campus.placements)) {
     return 'state.campus is invalid';
+  }
+  if (!Array.isArray(campus.paths) || !campus.paths.every((k) => typeof k === 'string')) {
+    return 'state.campus.paths is invalid';
+  }
+  if (typeof campus.trees !== 'object' || campus.trees === null)
+    return 'state.campus.trees is invalid';
+  if (typeof campus.nextPlacementId !== 'number') return 'state.campus.nextPlacementId is invalid';
+  for (const p of campus.placements as Record<string, unknown>[]) {
+    if (typeof p.id !== 'string' || typeof p.buildingId !== 'string')
+      return 'a placement is malformed';
+    for (const k of ['col', 'row', 'w', 'h'])
+      if (typeof p[k] !== 'number') return 'a placement is malformed';
   }
   return null;
 }

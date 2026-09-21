@@ -2,13 +2,14 @@ import { FOUNDING_CLOCK, type Clock } from './calendar.ts';
 import type { Campus } from './campus.ts';
 import type { Identity } from './identity.ts';
 import { Rng, type RngState } from './rng.ts';
+import { foundingWoodland } from './terrain.ts';
 
 // The one serialisable state tree (DD §15). Everything the sim knows lives
 // here; nothing here is a class, a function, or a reference into the UI.
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export interface Mark {
   week: number;
@@ -44,7 +45,7 @@ export function createNewGame(seed: number): GameState {
     schemaVersion: SCHEMA_VERSION,
     phase: 'founding',
     identity: null,
-    campus: { placements: [] },
+    campus: { placements: [], paths: [], trees: foundingWoodland(), nextPlacementId: 1 },
     seed,
     rng: Rng.fromSeed(seed).snapshot(),
     clock: { ...FOUNDING_CLOCK },
