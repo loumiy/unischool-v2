@@ -1,4 +1,5 @@
 import { buildingById, findBuilding } from '../content/buildings.ts';
+import { emit } from './bus.ts';
 import {
   FOUNDERS_HALL_ID,
   footprintIsClear,
@@ -26,6 +27,9 @@ export type Action =
   | { type: 'placeBuilding'; buildingId: string; col: number; row: number; rotated: boolean }
   | { type: 'demolish'; placementId: string }
   | { type: 'paint'; tool: PaintTool; col: number; row: number }
+  // Resolves the calendar beat holding the clock (beats.ts). Phase 4's beats
+  // have nothing to decide; later phases add the decision's fields here.
+  | { type: 'resolveBeat'; beatId: string }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -90,6 +94,11 @@ export function canApply(state: GameState, action: Action): Verdict {
       }
       return no('unknown tool');
     }
+    case 'resolveBeat':
+      if (state.pendingBeat === null) return no('no beat is waiting');
+      if (state.pendingBeat !== action.beatId)
+        return no(`${action.beatId} is not the pending beat`);
+      return YES;
     case 'debug/mark':
       return YES;
   }
@@ -98,17 +107,22 @@ export function canApply(state: GameState, action: Action): Verdict {
 export function applyAction(state: GameState, action: Action): GameState {
   if (!canApply(state, action).ok) return state;
   switch (action.type) {
-    case 'found':
-      return {
-        ...state,
-        phase: 'siting',
-        identity: {
-          name: action.name.trim(),
-          motif: action.motif,
-          paletteId: action.paletteId,
-          colors: { ...action.colors },
+    case 'found': {
+      const name = action.name.trim();
+      return emit(
+        {
+          ...state,
+          phase: 'siting',
+          identity: {
+            name,
+            motif: action.motif,
+            paletteId: action.paletteId,
+            colors: { ...action.colors },
+          },
         },
-      };
+        { kind: 'founded', name, motif: action.motif },
+      );
+    }
     case 'placeBuilding': {
       const def = buildingById(action.buildingId);
       const { w, h } = orientedFootprint(def.footprint, action.rotated);
@@ -123,25 +137,38 @@ export function applyAction(state: GameState, action: Action): GameState {
         w,
         h,
       };
-      return {
-        ...state,
-        phase: state.phase === 'siting' ? 'running' : state.phase,
-        campus: {
-          placements: [...state.campus.placements, placement],
-          paths: state.campus.paths.filter((k) => !covered.has(k)),
-          trees,
-          nextPlacementId: state.campus.nextPlacementId + 1,
+      const opening = state.phase === 'siting';
+      let next = emit(
+        {
+          ...state,
+          phase: opening ? 'running' : state.phase,
+          campus: {
+            placements: [...state.campus.placements, placement],
+            paths: state.campus.paths.filter((k) => !covered.has(k)),
+            trees,
+            nextPlacementId: state.campus.nextPlacementId + 1,
+          },
         },
-      };
+        { kind: 'buildingPlaced', placementId: placement.id, buildingId: def.id },
+      );
+      // The founding moment (DD §2.4): Founders Hall standing is what opens
+      // the doors, and the clock starts with it.
+      if (opening) next = emit(next, { kind: 'doorsOpened', placementId: placement.id });
+      return next;
     }
-    case 'demolish':
-      return {
-        ...state,
-        campus: {
-          ...state.campus,
-          placements: state.campus.placements.filter((p) => p.id !== action.placementId),
+    case 'demolish': {
+      const gone = state.campus.placements.find((p) => p.id === action.placementId)!;
+      return emit(
+        {
+          ...state,
+          campus: {
+            ...state.campus,
+            placements: state.campus.placements.filter((p) => p.id !== action.placementId),
+          },
         },
-      };
+        { kind: 'buildingDemolished', placementId: gone.id, buildingId: gone.buildingId },
+      );
+    }
     case 'paint': {
       const key = tileKey(action.col, action.row);
       const campus = state.campus;
@@ -169,10 +196,9 @@ export function applyAction(state: GameState, action: Action): GameState {
       }
       return state;
     }
+    case 'resolveBeat':
+      return emit({ ...state, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
     case 'debug/mark':
-      return {
-        ...state,
-        marks: [...state.marks, { week: state.clock.absoluteWeek, label: action.label }],
-      };
+      return emit(state, { kind: 'mark', label: action.label });
   }
 }

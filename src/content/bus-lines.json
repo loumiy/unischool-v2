@@ -1,0 +1,13 @@
+{
+  "lines": {
+    "founded": { "text": "{school} is chartered.", "tone": "good" },
+    "doorsOpened": { "text": "{school} opens its doors.", "tone": "good" },
+    "buildingPlaced": { "text": "{building} goes up." },
+    "buildingDemolished": { "text": "{building} comes down.", "tone": "bad" },
+    "termBegan": { "text": "{term} begins." },
+    "yearTurned": { "text": "Year {year}." },
+    "beatFired": { "text": "{line}" },
+    "beatResolved": { "text": "{line}" },
+    "mark": { "text": "{label}" }
+  }
+}

@@ -1,8 +1,11 @@
-import { TERMS, WEEKS_IN_TERM } from './calendar.ts';
+import { beatDue } from './beats.ts';
+import { BUS_KINDS } from './bus.ts';
+import { clockFromAbsoluteWeek, TERMS, WEEKS_IN_TERM } from './calendar.ts';
+import { FOUNDERS_HALL_ID } from './campus.ts';
 import { MOTIFS } from './identity.ts';
-import { foundingWoodland, tileKey } from './terrain.ts';
-import type { LoggedAction, Run } from './run.ts';
+import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
+import { foundingWoodland, tileKey } from './terrain.ts';
 
 // The save file: state + version + action log (DD §15). Storage (IndexedDB,
 // file export) is the UI's business; the FORMAT is the sim's, because the
@@ -99,6 +102,57 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       }),
     };
   },
+  // v3 → v4 (Phase 4): the journal and the calendar beats. A v3 run never
+  // sat a board meeting, so its log gets a default resolution inserted at
+  // every beat week the doors were open for, and the whole state is then
+  // REBUILT BY REPLAY — which is the only way the journal can hold the
+  // run's real history rather than start blank at the migration. If the
+  // replay does not land on the saved state (it should; this is belt and
+  // braces), the state is migrated in place and the journal starts here.
+  3: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const oldLog = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    const opened = oldLog.find(
+      (e) => e.action.type === 'placeBuilding' && e.action.buildingId === FOUNDERS_HALL_ID,
+    );
+    const resolutions: LoggedAction[] = [];
+    let pendingBeat: string | null = null;
+    if (opened) {
+      for (let week = opened.week + 1; week <= savedWeek; week++) {
+        const beat = beatDue(clockFromAbsoluteWeek(week));
+        if (!beat) continue;
+        if (week === savedWeek) pendingBeat = beat.id;
+        else resolutions.push({ week, action: { type: 'resolveBeat', beatId: beat.id } });
+      }
+    }
+    // Stable by week, a week's resolution ahead of its other actions: the
+    // beat fired on the tick that landed there, before anything the player
+    // did that week.
+    const log = [...resolutions, ...oldLog].sort((a, b) => a.week - b.week);
+    const marks = Array.isArray(state.marks) ? (state.marks as Record<string, unknown>[]) : [];
+    const rest = { ...state };
+    delete rest.marks;
+    let migrated: Record<string, unknown> = {
+      ...rest,
+      schemaVersion: 4,
+      bus: marks.map((m, i) => ({ seq: i + 1, week: m.week, kind: 'mark', label: m.label })),
+      pendingBeat,
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === pendingBeat &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus) &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 4, state: migrated, log };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -156,7 +210,16 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   if (typeof clock.absoluteWeek !== 'number' || clock.absoluteWeek < 0) {
     return 'state.clock.absoluteWeek is invalid';
   }
-  if (!Array.isArray(s.marks)) return 'state.marks is not an array';
+  if (!Array.isArray(s.bus)) return 'state.bus is not an array';
+  for (const e of s.bus as Record<string, unknown>[]) {
+    if (typeof e !== 'object' || e === null) return 'a journal entry is malformed';
+    if (typeof e.seq !== 'number' || typeof e.week !== 'number')
+      return 'a journal entry is malformed';
+    if (!BUS_KINDS.includes(e.kind as never)) return `unknown journal entry kind ${String(e.kind)}`;
+  }
+  if (s.pendingBeat !== null && typeof s.pendingBeat !== 'string') {
+    return 'state.pendingBeat is invalid';
+  }
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }

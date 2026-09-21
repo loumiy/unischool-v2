@@ -54,7 +54,7 @@ describe('run and replay', () => {
 
     const rebuilt = replay(run.state.seed, run.log, run.state.clock.absoluteWeek);
     expect(rebuilt).toEqual(run.state);
-    expect(rebuilt.marks.map((m) => m.week)).toEqual([3, 3, 43]);
+    expect(rebuilt.bus.filter((e) => e.kind === 'mark').map((e) => e.week)).toEqual([3, 3, 43]);
   });
 
   it('applies an action logged in the current week without ticking past it', () => {

@@ -3,6 +3,7 @@ import { BUILDINGS } from '../content/buildings.ts';
 import { DEFAULT_MOTIF, MOTIF_CHOICES } from '../content/motifs.ts';
 import { DEFAULT_PALETTE, pairIsReadable, PALETTES } from '../content/palettes.ts';
 import { applyAction, canApply } from './actions.ts';
+import { defaultResolution } from './beats.ts';
 import {
   footprintIsClear,
   foundersHallFootprint,
@@ -151,8 +152,9 @@ describe('founding (DD §2.4)', () => {
       row: 22,
       rotated: false,
     });
-    run = tickRunWeeks(run, 40);
+    run = tickRunWeeks(run, 40, defaultResolution);
     run = dispatch(run, { type: 'debug/mark', label: 'year two' });
+    expect(run.state.clock.absoluteWeek).toBe(40);
     expect(replay(2024, run.log, run.state.clock.absoluteWeek)).toEqual(run.state);
   });
 });
@@ -177,7 +179,7 @@ describe('save migration v1 → v2', () => {
     if (!result.ok) return;
     expect(result.save.version).toBe(SCHEMA_VERSION);
     expect(result.save.state).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: SCHEMA_VERSION,
       phase: 'founding',
       identity: null,
       campus: { placements: [] },

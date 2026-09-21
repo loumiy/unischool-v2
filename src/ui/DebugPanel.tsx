@@ -1,9 +1,12 @@
 import { useEffect, useState, type ChangeEvent } from 'react';
-import { CALENDAR_BEATS, beatsAt } from '../content/calendarBeats.ts';
+import { describeEntry } from '../content/busLines.ts';
+import { beatsAt, CALENDAR_BEATS } from '../content/calendarBeats.ts';
 import {
   clockFromAbsoluteWeek,
   clockRuns,
   formatClock,
+  formatClockShort,
+  pendingBeat,
   serializeRun,
   SPEEDS,
   WEEKS_PER_YEAR,
@@ -44,6 +47,7 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
   if (!run) return null;
   const { state, log } = run;
   const running = clockRuns(state);
+  const held = pendingBeat(state);
 
   const stepToNextBeat = () => {
     for (let weeks = 1; weeks <= WEEKS_PER_YEAR; weeks++) {
@@ -110,11 +114,21 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           <dd>{formatClock(state.clock)}</dd>
           <dt>Absolute week</dt>
           <dd>{state.clock.absoluteWeek}</dd>
-          <dt>Beats now</dt>
+          <dt>Pending beat</dt>
           <dd>
-            {beatsAt(state.clock.term, state.clock.week)
-              .map((b) => b.name)
-              .join(', ') || '—'}
+            {held ? (
+              <>
+                {held.name}{' '}
+                <button
+                  type="button"
+                  onClick={() => store.dispatch({ type: 'resolveBeat', beatId: held.id })}
+                >
+                  resolve
+                </button>
+              </>
+            ) : (
+              '—'
+            )}
           </dd>
           <dt>Autosaved</dt>
           <dd>{lastAutosave ? formatSaved(lastAutosave) : 'never'}</dd>
@@ -177,6 +191,22 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
             ))}
         </ol>
         {log.length === 0 && <p className="muted">No actions yet.</p>}
+      </section>
+
+      <section>
+        <h3>Journal ({state.bus.length})</h3>
+        <ol className="log" reversed>
+          {state.bus
+            .slice(-20)
+            .reverse()
+            .map((entry) => (
+              <li key={entry.seq}>
+                <code>{formatClockShort(clockFromAbsoluteWeek(entry.week))}</code>{' '}
+                {describeEntry(entry, state).text}
+              </li>
+            ))}
+        </ol>
+        {state.bus.length === 0 && <p className="muted">Nothing yet.</p>}
       </section>
 
       <section>
