@@ -126,7 +126,7 @@ Six deep systems, one cross-cutting mechanic. The discipline of pillar 1: **no s
 - **Payroll** — faculty and administration. Administration only ratchets (§5.4).
 - **Maintenance** — per building, scaling with size and age. Underfunding is allowed and creates Backlog (§6.4).
 - **Financial aid** — the gap between sticker and net tuition; the primary access lever.
-- **Debt service** — construction can be debt-financed; the board caps leverage.
+- **Debt service** — construction can be debt-financed; the board caps leverage at a share of the endowment. Interest accrues weekly on the balance and each loan's principal retires over a fixed term.
 - **Program & student life costs** — per active program, club, and varsity team.
 
 **The fiscal year and the founding gift.** The fiscal year is the calendar year: the budget approved at Budget & Hiring (Summer, Week 4) takes effect at the next Convocation (Fall, Week 1), when the old year closes into the treasury's history. Year 1 runs on a founding budget struck at the default draw. The founding gift is two `tuning.ts` constants, cash in hand and an invested endowment; the endowment earns each fiscal year's **market return**, drawn around a mean with a spread and accrued in equal weekly slices, and pays out its draw the same way. Market years are the world's weather, not the run's dice: the return is derived from the seed and the year, so nothing the player does changes what the markets did. Budget lines that later systems fill (tuition, aid, faculty payroll, maintenance, debt, programs) exist at zero from the start, labelled with the phase that fills them.
@@ -176,6 +176,8 @@ The map is the watch-state between decisions: students walk paths between the bu
 ### §6.4 Condition, backlog, and renovation
 
 Buildings age. Funded maintenance holds condition; underfunding accrues **Backlog** per building. High-backlog buildings visibly weather, throw failure events (§10.1), and sap satisfaction. Renovation clears backlog and can **upgrade in place** — more capacity, a new motif, or (mid-game unlock) additional stories, the release valve for a full canvas.
+
+**Construction, upkeep and the bill for neglect.** Every building type carries a build cost, an annual upkeep and a build time in the catalogue. Placing one breaks ground: the cost is paid at once, in cash or borrowed against the board's line, and the site rises on the map over its build weeks before the doors open — Founders Hall included, so the run's first year is spent building it. Upkeep grows with a building's age. At Budget & Hiring the player sets how much of the year's required maintenance the budget funds; the unfunded share accrues to each open building's **Backlog**, which compounds while it waits, and a building's **condition** is simply how much of its value the backlog has eaten — it weathers on the map as condition falls. Renovation pays the backlog plus a contractor's fee and closes the building for the works; demolition costs a share of the build cost. Construction money sits outside the income statement as the year's capital spend.
 
 ### §6.5 Historic status and the politics of demolition
 

@@ -119,7 +119,21 @@ describe('founding (DD §2.4)', () => {
 
   it('detects overlap', () => {
     const campus = {
-      placements: [{ id: 'a', buildingId: 'a', col: 10, row: 10, w: 7, h: 5 }],
+      placements: [
+        {
+          id: 'a',
+          buildingId: 'a',
+          col: 10,
+          row: 10,
+          w: 7,
+          h: 5,
+          status: 'open' as const,
+          completesWeek: null,
+          openedWeek: 0,
+          backlog: 0,
+          condition: 1,
+        },
+      ],
       paths: [],
       trees: {},
       nextPlacementId: 2,

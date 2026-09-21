@@ -18,6 +18,7 @@ import {
   ENDOWMENT_DRAW_MIN,
   ENDOWMENT_DRAW_PRUDENT,
   ENDOWMENT_DRAW_STEP,
+  MAINTENANCE_FUNDING_STEP,
 } from '../tuning.ts';
 import Figure from './Figure.tsx';
 import TabOverlay from './TabOverlay.tsx';
@@ -31,6 +32,7 @@ import TabOverlay from './TabOverlay.tsx';
 
 export interface BeatDecision {
   drawRate?: number;
+  maintenanceFunding?: number;
 }
 
 export default function BeatScreen({
@@ -80,7 +82,8 @@ function BudgetBody({
 }) {
   const t = state.treasury;
   const rate = decision.drawRate ?? t.drawRate;
-  const budget = proposeBudget(state, state.clock.year + 1, rate);
+  const funding = decision.maintenanceFunding ?? t.maintenanceFunding;
+  const budget = proposeBudget(state, state.clock.year + 1, rate, funding);
   const net = netOf(budget);
   return (
     <div className="budget-body">
@@ -102,6 +105,25 @@ function BudgetBody({
           value={rate}
           aria-label="Endowment draw rate"
           onChange={(e) => onChange({ ...decision, drawRate: Number(e.target.value) })}
+        />
+      </label>
+      <label className="draw-slider">
+        <span className="draw-slider-label">
+          Maintenance funded <strong>{formatPercent(funding, 0)}</strong>
+          <span className="draw-slider-note">
+            {funding >= 1
+              ? `${formatMoney(budget.expenses.maintenance)} holds every building's condition`
+              : `${formatMoney(budget.expenses.maintenance)} funded; the rest becomes Backlog`}
+          </span>
+        </span>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={MAINTENANCE_FUNDING_STEP}
+          value={funding}
+          aria-label="Maintenance funding"
+          onChange={(e) => onChange({ ...decision, maintenanceFunding: Number(e.target.value) })}
         />
       </label>
       <div className="income-statement compact">

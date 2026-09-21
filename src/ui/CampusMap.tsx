@@ -2,8 +2,11 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { buildingById } from '../content/buildings.ts';
 import {
   footprintIsClear,
+  formatMoney,
+  FOUNDERS_HALL_ID,
   orientedFootprint,
   parseTileKey,
+  type Financing,
   type GameState,
   type Motif,
   type Placement,
@@ -12,6 +15,19 @@ import BuildingInfoPanel from './BuildingInfoPanel.tsx';
 import HelpHint from './HelpHint.tsx';
 import { isTypingTarget, useHotkeys } from './hotkeys.ts';
 import BuildingMotif, { drawnHeightOf, labelHeightOf, materialOf } from './map/buildingMotifs.tsx';
+import {
+  ConstructionSite,
+  ProgressBar,
+  ScaffoldPattern,
+  Scaffolding,
+  siteHeightOf,
+} from './map/works.tsx';
+import {
+  DERELICT_CONDITION,
+  RENOVATION_WEEKS,
+  WEATHERED_CONDITION,
+  WORN_CONDITION,
+} from '../tuning.ts';
 import { depthOrder, type DepthBox } from './map/depthSort.ts';
 import { groundGeometry, TerrainLayer } from './map/ground.tsx';
 import {
@@ -100,43 +116,81 @@ type SceneEntry = DepthBox &
     | { kind: 'tree'; key: string; seed: number }
   );
 
+// The weathering class a condition earns (DD §6.4).
+function conditionClass(p: Placement): string {
+  if (p.status !== 'open') return '';
+  if (p.condition < DERELICT_CONDITION) return 'derelict';
+  if (p.condition < WEATHERED_CONDITION) return 'weathered';
+  if (p.condition < WORN_CONDITION) return 'worn';
+  return '';
+}
+
+// How far along a site or a renovation is, 0–1.
+function progressOf(p: Placement, week: number): number {
+  if (p.completesWeek === null) return 1;
+  const total = p.status === 'building' ? buildingById(p.buildingId).buildWeeks : RENOVATION_WEEKS;
+  return total <= 0 ? 1 : 1 - (p.completesWeek - week) / total;
+}
+
 function PlacedBuilding({
   p,
   motif,
+  week,
   onInspect,
   inspected,
   camera,
 }: {
   p: Placement;
   motif: Motif;
+  week: number;
   onInspect: () => void;
   inspected: boolean;
   camera: Camera;
 }) {
   const def = buildingById(p.buildingId);
   const d = drawnFootprint(p);
+  const site = p.status === 'building';
+  const works = p.status !== 'open';
+  const title = site
+    ? `${def.name} · under construction`
+    : p.status === 'renovating'
+      ? `${def.name} · renovating`
+      : `${def.name} · ${p.w}×${p.h}`;
   return (
     <g
-      className={`campus-building ${inspected ? 'inspected' : ''}`}
+      className={`campus-building ${inspected ? 'inspected' : ''} ${p.status} ${conditionClass(p)}`}
       aria-label={def.name}
+      data-status={p.status}
       role="button"
       onClick={onInspect}
     >
-      <BuildingMotif
-        def={def}
-        p={d}
-        material={materialOf(def, motif)}
-        motif={motif}
-        shadeSeed={p.id}
-        camera={camera}
-      />
+      {site ? (
+        <ConstructionSite def={def} motif={motif} col={d.col} row={d.row} w={d.w} h={d.h} />
+      ) : (
+        <g className="building-mass">
+          <BuildingMotif
+            def={def}
+            p={d}
+            material={materialOf(def, motif)}
+            motif={motif}
+            shadeSeed={p.id}
+            camera={camera}
+          />
+        </g>
+      )}
+      {p.status === 'renovating' && def.form !== 'grounds' && (
+        <Scaffolding col={d.col} row={d.row} w={d.w} h={d.h} height={drawnHeightOf(def, motif)} />
+      )}
+      {works && (
+        <ProgressBar col={p.col} row={p.row} w={p.w} h={p.h} fraction={progressOf(p, week)} />
+      )}
       {inspected && (
         <polygon
           className="campus-building-halo"
           points={polyPoints(boxFaces(p.col, p.row, p.w, p.h, 0, 0).top)}
         />
       )}
-      {def.form !== 'grounds' && <title>{`${def.name} · ${p.w}×${p.h}`}</title>}
+      {(def.form !== 'grounds' || works) && <title>{title}</title>}
     </g>
   );
 }
@@ -157,7 +211,8 @@ function CastShadows({
     const sub = (pts: { x: number; y: number }[]) => `M${polyPoints(pts).replace(/ /g, 'L')}Z`;
     const buildings: string[] = [];
     for (const p of placements) {
-      const height = drawnHeightOf(buildingById(p.buildingId), motif);
+      const def = buildingById(p.buildingId);
+      const height = p.status === 'building' ? siteHeightOf(def) : drawnHeightOf(def, motif);
       if (height <= 0) continue;
       const f = drawnFootprint(p);
       buildings.push(sub(castShadow(f.col, f.row, f.w, f.h, height)));
@@ -284,8 +339,12 @@ const CampusScene = memo(function CampusScene({
   // The camera is read by the projection, not here; it is what changes the grid.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ground = useMemo(() => groundGeometry(), [camera]);
+  const week = state.clock.absoluteWeek;
   return (
     <>
+      <defs>
+        <ScaffoldPattern />
+      </defs>
       <polygon className="campus-ground" points={ground.plate} />
       <path className="campus-grid" d={ground.grid} />
       <TerrainLayer camera={camera} />
@@ -296,6 +355,7 @@ const CampusScene = memo(function CampusScene({
           key={p.id}
           p={p}
           motif={motif}
+          week={week}
           onInspect={() => onInspect(p.id)}
           inspected={p.id === inspectedId}
           camera={camera}
@@ -309,6 +369,7 @@ const CampusScene = memo(function CampusScene({
             <PlacedBuilding
               p={entry.placement}
               motif={motif}
+              week={week}
               onInspect={() => onInspect(entry.placement.id)}
               inspected={entry.placement.id === inspectedId}
               camera={camera}
@@ -338,6 +399,8 @@ export default function CampusMap({
   tool,
   onSetTool,
   onPlace,
+  onRenovate,
+  financing,
   onPaint,
   onDemolish,
   backOutEnabled,
@@ -350,6 +413,9 @@ export default function CampusMap({
   onSetTool: (tool: CampusTool) => void;
   // Returns whether the sim accepted the placement.
   onPlace: (buildingId: string, col: number, row: number, rotated: boolean) => boolean;
+  onRenovate: (placementId: string, financing: Financing) => void;
+  // How construction is being paid for, chosen in the build menu.
+  financing: Financing;
   onPaint: (tool: Exclude<CampusTool, 'demolish'>, col: number, row: number) => void;
   onDemolish: (placementId: string) => void;
   backOutEnabled: boolean;
@@ -856,7 +922,10 @@ export default function CampusMap({
         {inspected && (
           <BuildingInfoPanel
             placement={inspected}
+            state={state}
+            financing={financing}
             onClose={() => setInspectedId(null)}
+            onRenovate={(f) => onRenovate(inspected.id, f)}
             onDemolish={() => {
               onDemolish(inspected.id);
               setInspectedId(null);
@@ -867,8 +936,9 @@ export default function CampusMap({
           <div className="siting-card" role="status">
             <strong>Place Founders Hall</strong>
             <br />
-            One hall, seven tiles by five, in the {state.identity?.motif ?? ''} style. Click the
-            land to set it down; R turns it. The clock starts once it stands.
+            One hall, seven tiles by five, in the {state.identity?.motif ?? ''} style, for{' '}
+            {formatMoney(buildingById(FOUNDERS_HALL_ID).cost)} of the founding gift. Click the land
+            to break ground; R turns it. The clock starts with the works.
           </div>
         )}
         <div className="campus-map-zoom-controls">

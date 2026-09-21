@@ -64,9 +64,51 @@
     "marketReturn": "What the markets returned on the endowment this fiscal year, accrued weekly.",
     "tuitionDependence": "Tuition's share of revenue; above 75% an enrollment miss becomes a crisis.",
     "adminShare": "Administration's share of payroll; the DD's guardrail is 25–40%.",
-    "backlog": "Deferred maintenance across the campus, the debt the buildings carry.",
+    "backlog": "Deferred maintenance across the campus: the bill the buildings carry, growing as it waits.",
     "budgetLine": "This year's plan for the line, approved the summer before.",
     "actualLine": "What the line has actually done so far this year.",
-    "yearNet": "Revenue less expenses for the year so far."
+    "yearNet": "Revenue less expenses for the year so far.",
+    "debt": "Construction borrowing outstanding; interest accrues weekly and the principal retires over twenty years.",
+    "borrowingRoom": "What the board will still lend: its cap is a share of the endowment, less what is already owed.",
+    "capital": "Construction money this year, outside the income statement: it buys buildings, not weeks.",
+    "maintenanceFunding": "The share of required maintenance this year's budget funds; the rest becomes Backlog."
+  },
+  "estate": {
+    "status": {
+      "building": "Under construction · {weeks} weeks to go",
+      "open": "Open since Year {year}",
+      "renovating": "Closed for renovation · {weeks} weeks to go"
+    },
+    "condition": [
+      {
+        "atLeast": 0.9,
+        "word": "sound"
+      },
+      {
+        "atLeast": 0.6,
+        "word": "worn"
+      },
+      {
+        "atLeast": 0.3,
+        "word": "weathered"
+      },
+      {
+        "atLeast": 0,
+        "word": "derelict"
+      }
+    ],
+    "hints": {
+      "cost": "What it costs to build, paid in cash or borrowed from the board's line.",
+      "buildWeeks": "Ground broken to doors open.",
+      "upkeep": "What the building wants spent on it this year to hold its condition; it rises with age.",
+      "condition": "How much of the building the backlog has eaten: sound at 1, derelict at 0.",
+      "backlog": "Maintenance this building was owed and never got, compounding while it waits.",
+      "renovate": "Pays the backlog and a contractor's fee, and closes the building for eight weeks.",
+      "demolish": "Taking it down costs a share of what it cost to put up."
+    },
+    "pay": {
+      "cash": "Pay cash",
+      "debt": "Borrow"
+    }
   }
 }

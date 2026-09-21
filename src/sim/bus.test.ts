@@ -76,8 +76,8 @@ describe('the journal (event bus)', () => {
     const lines = run.state.bus.map((e) => describeEntry(e, run.state).text);
     expect(lines).toEqual([
       'Blackmoor College is chartered.',
-      'Founders Hall goes up.',
-      'Blackmoor College opens its doors.',
+      'Ground is broken for Founders Hall.',
+      'Blackmoor College breaks ground.',
     ]);
     expect(describeEntry(run.state.bus[0]!, run.state).tone).toBe('good');
   });
@@ -157,13 +157,14 @@ describe('calendar beats (DD §3.3)', () => {
     const history = run.state.bus.map((e) => describeEntry(e, run.state).text);
     expect(history).toEqual([
       'Blackmoor College is chartered.',
-      'Founders Hall goes up.',
-      'Blackmoor College opens its doors.',
+      'Ground is broken for Founders Hall.',
+      'Blackmoor College breaks ground.',
       'The board is in session.',
       'The board adjourns.',
       'Spring Term begins.',
       'Admissions Day. The applications are in.',
       'The admissions file closes.',
+      'Founders Hall opens.',
       'Summer Term begins.',
       'Budget & Hiring. The ledger is open, and so is the market.',
       'The Year 2 budget is approved at a 4.5% draw.',

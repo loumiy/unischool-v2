@@ -1,9 +1,12 @@
 {
   "lines": {
     "founded": { "text": "{school} is chartered.", "tone": "good" },
-    "doorsOpened": { "text": "{school} opens its doors.", "tone": "good" },
-    "buildingPlaced": { "text": "{building} goes up." },
+    "doorsOpened": { "text": "{school} breaks ground.", "tone": "good" },
+    "buildingPlaced": { "text": "Ground is broken for {building}." },
     "buildingDemolished": { "text": "{building} comes down.", "tone": "bad" },
+    "buildingCompleted": { "text": "{building} opens.", "tone": "good" },
+    "renovationBegun": { "text": "Scaffolding goes up on {building}." },
+    "renovated": { "text": "{building} reopens, renovated.", "tone": "good" },
     "termBegan": { "text": "{term} begins." },
     "yearTurned": { "text": "Year {year}." },
     "beatFired": { "text": "{line}" },

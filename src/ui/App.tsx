@@ -8,6 +8,7 @@ import {
   FOUNDERS_HALL_ID,
   lastEntry,
   pendingBeat,
+  type Financing,
   type Motif,
   type Speed,
 } from '../sim/index.ts';
@@ -52,6 +53,8 @@ export default function App() {
   const [journalOpen, setJournalOpen] = useState(false);
   const [placingId, setPlacingIdState] = useState<string | null>(null);
   const [tool, setToolState] = useState<CampusTool | null>(null);
+  // How the next construction is paid for (DD §5.2); cash unless told otherwise.
+  const [financing, setFinancing] = useState<Financing>('cash');
   const [debugOpen, setDebugOpen] = useState(false);
   const toolbarRef = useCssHeightVar('--toolbar-height');
   const resumeSpeed = useRef<Speed>('x1');
@@ -220,10 +223,21 @@ export default function App() {
         tool={effectiveTool}
         onSetTool={setTool}
         onPlace={(buildingId, col, row, rotated) => {
-          const applied = store.dispatch({ type: 'placeBuilding', buildingId, col, row, rotated });
+          const applied = store.dispatch({
+            type: 'placeBuilding',
+            buildingId,
+            col,
+            row,
+            rotated,
+            financing,
+          });
           if (applied && buildingId === FOUNDERS_HALL_ID) void autosave(store.getSnapshot().run!);
           return applied;
         }}
+        onRenovate={(placementId, payWith) => {
+          store.dispatch({ type: 'renovate', placementId, financing: payWith });
+        }}
+        financing={financing}
         onPaint={(t, col, row) => {
           store.dispatch({ type: 'paint', tool: t, col, row });
         }}
@@ -277,6 +291,8 @@ export default function App() {
             onArmPlacement={setPlacingId}
             tool={tool}
             onSetTool={setTool}
+            financing={financing}
+            onSetFinancing={setFinancing}
             onClose={closeBuild}
           />
         )}

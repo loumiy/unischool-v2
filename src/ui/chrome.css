@@ -1333,3 +1333,61 @@ button.build-tile {
 .toolbar-funds-net.money-negative {
   color: var(--bad-on-dark);
 }
+
+/* ---------- Phase 6: prices on the tiles, the pay-by toggle ---------- */
+.build-tile-price {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--school-primary);
+}
+.build-tile.unaffordable {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.build-tile.unaffordable .build-tile-price {
+  color: var(--bad-on-light);
+}
+.pay-toggle {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 6px;
+}
+.pay-toggle button {
+  background: transparent;
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-pill);
+  padding: 2px 10px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+.pay-toggle button.active {
+  background: var(--outline);
+  color: var(--cream);
+}
+.building-panel-status {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--school-primary);
+}
+.building-panel-status.building,
+.building-panel-status.renovating {
+  color: var(--ok-on-light);
+}
+.building-panel-facts dd.figure {
+  display: block;
+  position: relative;
+}
+.building-panel-actions .save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

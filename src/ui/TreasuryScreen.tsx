@@ -6,6 +6,7 @@ import {
 } from '../content/treasury.ts';
 import {
   adminShareOfPayroll,
+  borrowingRoom,
   EXPENSE_CATEGORIES,
   formatMoney,
   formatPercent,
@@ -13,6 +14,7 @@ import {
   REVENUE_CATEGORIES,
   sumExpenses,
   sumRevenue,
+  totalBacklog,
   tuitionDependence,
   type Flows,
   type GameState,
@@ -83,6 +85,7 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
   const dependence = tuitionDependence(t.actual);
   const adminShare = adminShareOfPayroll(t.actual);
   const overdrawn = t.budget.drawRate > ENDOWMENT_DRAW_PRUDENT;
+  const backlog = totalBacklog(state);
   return (
     <div className="treasury">
       <div className="figure-row">
@@ -189,11 +192,40 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
           note={t.actual.expenses.facultyPayroll === 0 ? 'no faculty yet' : undefined}
         />
         <Figure
+          label="Maintenance funded"
+          value={formatPercent(t.budget.maintenanceFunding, 0)}
+          hint={READING_WORDS.maintenanceFunding}
+          tone={t.budget.maintenanceFunding < 1 ? 'bad' : undefined}
+        />
+        <Figure
           label="Backlog"
-          value={formatMoney(0)}
+          value={formatMoney(backlog)}
           hint={READING_WORDS.backlog}
-          tone="muted"
-          note="arrives in Phase 6"
+          tone={backlog > 0 ? 'bad' : undefined}
+        />
+      </div>
+
+      <div className="figure-row">
+        <Figure
+          label="Debt"
+          value={formatMoney(t.debt)}
+          hint={READING_WORDS.debt}
+          tone={t.debt > 0 ? 'bad' : undefined}
+        />
+        <Figure
+          label="Borrowing room"
+          value={formatMoney(borrowingRoom(state))}
+          hint={READING_WORDS.borrowingRoom}
+        />
+        <Figure
+          label="Construction this year"
+          value={formatMoney(t.capitalThisYear.spent)}
+          note={
+            t.capitalThisYear.borrowed > 0
+              ? `${formatMoney(t.capitalThisYear.borrowed)} of it borrowed`
+              : undefined
+          }
+          hint={READING_WORDS.capital}
         />
       </div>
 
@@ -209,6 +241,7 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
                 <th>Net</th>
                 <th>Endowment</th>
                 <th>Markets</th>
+                <th>Built</th>
               </tr>
             </thead>
             <tbody>
@@ -220,6 +253,7 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
                   <td>{formatMoney(y.net, { sign: true })}</td>
                   <td>{formatMoney(y.endowmentEnd)}</td>
                   <td>{formatPercent(y.marketReturn, 1)}</td>
+                  <td>{formatMoney(y.capital.spent)}</td>
                 </tr>
               ))}
             </tbody>

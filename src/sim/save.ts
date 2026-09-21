@@ -182,6 +182,71 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 5, state: migrated };
   },
+  // v5 → v6 (Phase 6): buildings as economic objects. Replay is tried
+  // first, but a v5 run placed its buildings for free, so the reducer will
+  // usually refuse the same placements now and the fallback is the common
+  // case: every standing building is open, paid for, in good repair, its
+  // age counted from the founding; the treasury funds maintenance in full.
+  5: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    const campus = (state.campus ?? {}) as Record<string, unknown>;
+    const placements = (Array.isArray(campus.placements) ? campus.placements : []) as Record<
+      string,
+      unknown
+    >[];
+    const treasury = (state.treasury ?? {}) as Record<string, unknown>;
+    const withFunding = (b: unknown) =>
+      typeof b === 'object' && b !== null ? { ...b, maintenanceFunding: 1 } : b;
+    const history = Array.isArray(treasury.history) ? treasury.history : [];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 6,
+      campus: {
+        ...campus,
+        placements: placements.map((p) => ({
+          ...p,
+          status: 'open',
+          completesWeek: null,
+          openedWeek: 0,
+          backlog: 0,
+          condition: 1,
+        })),
+      },
+      treasury: {
+        ...treasury,
+        maintenanceFunding: 1,
+        debtRepayment: 0,
+        budget: withFunding(treasury.budget),
+        pendingBudget: treasury.pendingBudget ? withFunding(treasury.pendingBudget) : null,
+        capitalThisYear: { spent: 0, borrowed: 0 },
+        history: history.map((y: unknown) =>
+          typeof y === 'object' && y !== null ? { capital: { spent: 0, borrowed: 0 }, ...y } : y,
+        ),
+      },
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const strip = (ps: Record<string, unknown>[]) =>
+        JSON.stringify(
+          ps.map(({ id, buildingId, col, row, w, h }) => [id, buildingId, col, row, w, h]),
+        );
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        strip(rebuilt.campus.placements as unknown as Record<string, unknown>[]) ===
+          strip(placements) &&
+        JSON.stringify(rebuilt.campus.paths) === JSON.stringify(campus.paths) &&
+        JSON.stringify(rebuilt.campus.trees) === JSON.stringify(campus.trees);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 6, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -251,7 +316,16 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   }
   const treasury = s.treasury as Record<string, unknown> | undefined;
   if (typeof treasury !== 'object' || treasury === null) return 'state.treasury is invalid';
-  for (const k of ['cash', 'endowment', 'drawRate', 'marketReturn', 'endowmentBasis', 'debt']) {
+  for (const k of [
+    'cash',
+    'endowment',
+    'drawRate',
+    'maintenanceFunding',
+    'marketReturn',
+    'endowmentBasis',
+    'debt',
+    'debtRepayment',
+  ]) {
     if (typeof treasury[k] !== 'number' || !Number.isFinite(treasury[k]))
       return `state.treasury.${k} is invalid`;
   }
@@ -261,6 +335,9 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return `state.treasury.${k} is invalid`;
   }
   if (!Array.isArray(treasury.history)) return 'state.treasury.history is invalid';
+  const capital = treasury.capitalThisYear as Record<string, unknown> | undefined;
+  if (typeof capital?.spent !== 'number' || typeof capital?.borrowed !== 'number')
+    return 'state.treasury.capitalThisYear is invalid';
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }
@@ -288,8 +365,12 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   for (const p of campus.placements as Record<string, unknown>[]) {
     if (typeof p.id !== 'string' || typeof p.buildingId !== 'string')
       return 'a placement is malformed';
-    for (const k of ['col', 'row', 'w', 'h'])
+    for (const k of ['col', 'row', 'w', 'h', 'backlog', 'condition'])
       if (typeof p[k] !== 'number') return 'a placement is malformed';
+    if (p.status !== 'building' && p.status !== 'open' && p.status !== 'renovating')
+      return 'a placement has an invalid status';
+    for (const k of ['completesWeek', 'openedWeek'])
+      if (p[k] !== null && typeof p[k] !== 'number') return 'a placement is malformed';
   }
   return null;
 }

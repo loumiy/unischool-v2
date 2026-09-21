@@ -6,7 +6,17 @@ import {
   type BuildingDef,
   type BuildingIcon,
 } from '../content/buildings.ts';
-import { FOUNDERS_HALL_ID, hasFoundersHall, type GameState } from '../sim/index.ts';
+import { ESTATE_WORDS } from '../content/treasury.ts';
+import {
+  borrowingRoom,
+  canPay,
+  FINANCINGS,
+  formatMoney,
+  FOUNDERS_HALL_ID,
+  hasFoundersHall,
+  type Financing,
+  type GameState,
+} from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
 import {
   AcademicIcon,
@@ -32,7 +42,9 @@ import type { CampusTool } from './tools.ts';
 // 25). A row of category tabs across the top and the buildings of the picked
 // category as a strip of tiles below, the way a city-builder's build bar
 // does it. Clicking a tile picks the building up; the map sets it down.
-// Costs are Phase 6: for now every tile is free to place.
+// Every tile carries its price and its build time (DD §6.4); the pay-by
+// toggle in the head decides whether the next placement is cash or
+// borrowed against the board's line (DD §5.2).
 
 const CATEGORY_LABELS: Record<BuildingCategory, string> = {
   academic: 'Academic',
@@ -117,17 +129,20 @@ const TOOL_TILES: {
 function BuildTile({
   def,
   state,
+  financing,
   armed,
   onArm,
 }: {
   def: BuildingDef;
   state: GameState;
+  financing: Financing;
   armed: boolean;
   onArm: () => void;
 }) {
   const Icon = TILE_ICONS[def.icon];
   const isFounders = def.id === FOUNDERS_HALL_ID;
   const placed = isFounders && hasFoundersHall(state.campus);
+  const affordable = canPay(state, def.cost, financing);
   if (placed) {
     return (
       <div className="build-tile done" title={`${def.name} · standing`}>
@@ -140,12 +155,19 @@ function BuildTile({
     );
   }
   const ringed = isFounders && state.phase === 'siting' && !armed;
+  const why = affordable
+    ? null
+    : financing === 'cash'
+      ? `Not enough cash: ${formatMoney(def.cost)} to build.`
+      : `The board will not lend ${formatMoney(def.cost)} more.`;
   return (
     <button
       type="button"
-      className={`build-tile available ${armed ? 'placing' : ''} ${ringed ? 'opening-target' : ''}`}
+      className={`build-tile available ${armed ? 'placing' : ''} ${ringed ? 'opening-target' : ''} ${affordable ? '' : 'unaffordable'}`}
+      disabled={!affordable}
       title={
-        armed ? 'Click empty ground to set it down, or click again to put it back.' : def.blurb
+        why ??
+        (armed ? 'Click empty ground to break ground, or click again to put it back.' : def.blurb)
       }
       onClick={onArm}
     >
@@ -154,9 +176,12 @@ function BuildTile({
       </span>
       <span className="build-tile-name">{def.name}</span>
       <span className="build-tile-sub">
-        {def.footprint.w}×{def.footprint.h} tiles
+        {def.footprint.w}×{def.footprint.h} tiles · {def.buildWeeks} wks
       </span>
-      <span className="build-tile-foot">{armed ? 'placing…' : 'place'}</span>
+      <span className="build-tile-price">{formatMoney(def.cost)}</span>
+      <span className="build-tile-foot">
+        {armed ? 'placing…' : affordable ? 'place' : "can't afford"}
+      </span>
     </button>
   );
 }
@@ -167,6 +192,8 @@ export default function BuildPopup({
   onArmPlacement,
   tool,
   onSetTool,
+  financing,
+  onSetFinancing,
   onClose,
 }: {
   state: GameState;
@@ -174,6 +201,8 @@ export default function BuildPopup({
   onArmPlacement: (id: string | null) => void;
   tool: CampusTool | null;
   onSetTool: (tool: CampusTool) => void;
+  financing: Financing;
+  onSetFinancing: (f: Financing) => void;
   onClose: () => void;
 }) {
   const categories = BUILDING_CATEGORIES.filter((c) => BUILDINGS.some((b) => b.category === c));
@@ -188,7 +217,27 @@ export default function BuildPopup({
       onClose={onClose}
       className="build-popup"
       headExtra={
-        <HelpHint text="Pick a category, then a building: click a tile to pick it up, then click empty ground on the map to set it down. R turns it a quarter turn. The stream and the road are never buildable; trees under a new building are felled. Campus Tools lays walkways, plants and fells trees, and demolishes." />
+        <>
+          <HelpHint text="Pick a category, then a building: click a tile to pick it up, then click empty ground on the map to break ground. R turns it a quarter turn. Construction is paid in cash or borrowed against the board's line; the toggle here decides which. The stream and the road are never buildable; trees under a new building are felled. Campus Tools lays walkways, plants and fells trees, and demolishes." />
+          <span className="pay-toggle" role="group" aria-label="Pay for construction with">
+            {FINANCINGS.map((f) => (
+              <button
+                key={f}
+                type="button"
+                className={financing === f ? 'active' : ''}
+                aria-pressed={financing === f}
+                title={
+                  f === 'cash'
+                    ? `Operating funds: ${formatMoney(state.treasury.cash)}`
+                    : `Borrowing room: ${formatMoney(borrowingRoom(state))}`
+                }
+                onClick={() => onSetFinancing(f)}
+              >
+                {ESTATE_WORDS.pay[f]}
+              </button>
+            ))}
+          </span>
+        </>
       }
     >
       <div className="build-mode">
@@ -242,6 +291,7 @@ export default function BuildPopup({
                     key={def.id}
                     def={def}
                     state={state}
+                    financing={financing}
                     armed={placingId === def.id}
                     onArm={() => onArmPlacement(placingId === def.id ? null : def.id)}
                   />

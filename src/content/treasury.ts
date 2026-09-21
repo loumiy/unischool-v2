@@ -5,7 +5,7 @@ import {
   type RevenueCategory,
 } from '../sim/treasury.ts';
 import raw from './treasury.json' with { type: 'json' };
-import { int, obj, optional, str, validate } from './schema.ts';
+import { arr, int, num, obj, optional, str, validate } from './schema.ts';
 
 // The words on the Treasury screen (DD §5.3, §13.2): a label and the one
 // tooltip sentence for every line and every reading. Content, so the
@@ -35,6 +35,24 @@ const fileSchema = obj({
     budgetLine: str,
     actualLine: str,
     yearNet: str,
+    debt: str,
+    borrowingRoom: str,
+    capital: str,
+    maintenanceFunding: str,
+  }),
+  estate: obj({
+    status: obj({ building: str, open: str, renovating: str }),
+    condition: arr(obj({ atLeast: num, word: str })),
+    hints: obj({
+      cost: str,
+      buildWeeks: str,
+      upkeep: str,
+      condition: str,
+      backlog: str,
+      renovate: str,
+      demolish: str,
+    }),
+    pay: obj({ cash: str, debt: str }),
   }),
 });
 
@@ -43,3 +61,9 @@ const file = validate(fileSchema, raw, 'content/treasury.json');
 export const REVENUE_WORDS = file.revenue as Record<RevenueCategory, LineWords>;
 export const EXPENSE_WORDS = file.expenses as Record<ExpenseCategory, LineWords>;
 export const READING_WORDS = file.readings;
+export const ESTATE_WORDS = file.estate;
+
+// The word for a condition, from the first band it clears.
+export function conditionWord(condition: number): string {
+  return ESTATE_WORDS.condition.find((b) => condition >= b.atLeast)?.word ?? 'derelict';
+}

@@ -4,7 +4,13 @@
       "id": "founders-hall",
       "name": "Founders Hall",
       "category": "academic",
-      "footprint": { "w": 7, "h": 5 },
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 8000000,
+      "upkeep": 160000,
+      "buildWeeks": 24,
       "form": "hall",
       "material": "brickRed",
       "storeys": 4,
@@ -17,7 +23,13 @@
       "id": "academic-hall",
       "name": "Academic Hall",
       "category": "academic",
-      "footprint": { "w": 7, "h": 5 },
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 7000000,
+      "upkeep": 140000,
+      "buildWeeks": 24,
       "form": "hall",
       "material": "brickRed",
       "storeys": 4,
@@ -29,7 +41,13 @@
       "id": "library",
       "name": "Library",
       "category": "academic",
-      "footprint": { "w": 7, "h": 5 },
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 9000000,
+      "upkeep": 150000,
+      "buildWeeks": 28,
       "form": "portico",
       "material": "limestone",
       "storeys": 3,
@@ -41,7 +59,13 @@
       "id": "lab",
       "name": "Laboratory",
       "category": "academic",
-      "footprint": { "w": 5, "h": 3 },
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 5000000,
+      "upkeep": 120000,
+      "buildWeeks": 16,
       "form": "works",
       "material": "render",
       "storeys": 2,
@@ -53,7 +77,13 @@
       "id": "residence-hall",
       "name": "Residence Hall",
       "category": "residential",
-      "footprint": { "w": 9, "h": 4 },
+      "footprint": {
+        "w": 9,
+        "h": 4
+      },
+      "cost": 8000000,
+      "upkeep": 180000,
+      "buildWeeks": 24,
       "form": "residential",
       "material": "brickDark",
       "storeys": 4,
@@ -65,7 +95,13 @@
       "id": "dining-hall",
       "name": "Dining Hall",
       "category": "dining",
-      "footprint": { "w": 5, "h": 4 },
+      "footprint": {
+        "w": 5,
+        "h": 4
+      },
+      "cost": 4000000,
+      "upkeep": 110000,
+      "buildWeeks": 14,
       "form": "pavilion",
       "material": "brickBuff",
       "storeys": 2,
@@ -77,7 +113,13 @@
       "id": "student-center",
       "name": "Student Center",
       "category": "life",
-      "footprint": { "w": 5, "h": 4 },
+      "footprint": {
+        "w": 5,
+        "h": 4
+      },
+      "cost": 4500000,
+      "upkeep": 100000,
+      "buildWeeks": 14,
       "form": "pavilion",
       "material": "brickBuff",
       "storeys": 2,
@@ -89,7 +131,13 @@
       "id": "health-center",
       "name": "Health Center",
       "category": "life",
-      "footprint": { "w": 3, "h": 3 },
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "cost": 3500000,
+      "upkeep": 90000,
+      "buildWeeks": 12,
       "form": "pavilion",
       "material": "clinical",
       "storeys": 2,
@@ -101,7 +149,13 @@
       "id": "recreation-center",
       "name": "Recreation Center",
       "category": "athletics",
-      "footprint": { "w": 5, "h": 4 },
+      "footprint": {
+        "w": 5,
+        "h": 4
+      },
+      "cost": 6000000,
+      "upkeep": 130000,
+      "buildWeeks": 18,
       "form": "hangar",
       "material": "render",
       "storeys": 0,
@@ -113,7 +167,13 @@
       "id": "playing-field",
       "name": "Playing Field",
       "category": "athletics",
-      "footprint": { "w": 12, "h": 7 },
+      "footprint": {
+        "w": 12,
+        "h": 7
+      },
+      "cost": 800000,
+      "upkeep": 40000,
+      "buildWeeks": 6,
       "form": "grounds",
       "material": "render",
       "storeys": 0,
@@ -125,7 +185,13 @@
       "id": "admin-building",
       "name": "Administration",
       "category": "admin",
-      "footprint": { "w": 5, "h": 3 },
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 3000000,
+      "upkeep": 80000,
+      "buildWeeks": 12,
       "form": "pavilion",
       "material": "limestone",
       "storeys": 2,
