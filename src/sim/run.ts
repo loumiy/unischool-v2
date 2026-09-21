@@ -38,15 +38,35 @@ export function tickRun(run: Run): Run {
   return { state: tick(run.state), log: run.log };
 }
 
-export function tickRunWeeks(run: Run, weeks: number): Run {
+// Advance up to `weeks` weeks. When a beat holds the clock, `onHold` is
+// asked for the action that releases it (beats.ts's defaultResolution is
+// the usual answer); with no answer, or one that does not release the
+// clock, the run stops there — held, exactly as the live game would be.
+export function tickRunWeeks(
+  run: Run,
+  weeks: number,
+  onHold: ((state: GameState) => Action | null) | null = null,
+): Run {
   let r = run;
-  for (let i = 0; i < weeks; i++) r = tickRun(r);
+  for (let i = 0; i < weeks; i++) {
+    let next = tickRun(r);
+    if (next.state === r.state) {
+      const release = onHold?.(r.state) ?? null;
+      if (!release) return r;
+      r = dispatch(r, release);
+      next = tickRun(r);
+      if (next.state === r.state) return r;
+    }
+    r = next;
+  }
   return r;
 }
 
 // Rebuild the state at `toWeek` from a seed and a log. Actions logged in
 // week w are applied before the tick that ends week w, in log order — the
-// same order dispatch() and tickRun() interleave them live.
+// same order dispatch() and tickRun() interleave them live. A log that
+// leaves a beat unresolved and then carries on is not a run that happened,
+// and is refused rather than replayed at the wrong weeks.
 export function replay(seed: number, log: readonly LoggedAction[], toWeek: number): GameState {
   let state = createNewGame(seed);
   let i = 0;
@@ -58,7 +78,13 @@ export function replay(seed: number, log: readonly LoggedAction[], toWeek: numbe
     if (i < log.length && log[i]!.week < week) {
       throw new Error(`action log is not in week order at index ${i}`);
     }
-    if (week < toWeek) state = tick(state);
+    if (week < toWeek) {
+      const next = tick(state);
+      if (next === state) {
+        throw new Error(`replay stalled at week ${week}: beat ${state.pendingBeat} never resolved`);
+      }
+      state = next;
+    }
   }
   return state;
 }

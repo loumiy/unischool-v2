@@ -66,6 +66,16 @@ export function formatClock(c: Clock): string {
   return `Year ${c.year} · ${termLabel(c.term)} · Week ${c.week}`;
 }
 
+export function termName(term: Term): string {
+  return termLabel(term).replace(' Term', '');
+}
+
+// The same date as a stamp for a ticker line or a journal row, where the
+// full form would crowd the sentence: "Y12 · Fall · W3".
+export function formatClockShort(c: Clock): string {
+  return `Y${c.year} · ${termName(c.term)} · W${c.week}`;
+}
+
 // Class labels derive from the run year: the class graduating in Year 34 is
 // "the Class of '34" (DD §3.1). Two digits, zero-padded, so Year 5 is '05.
 export function classLabel(graduationYear: number): string {

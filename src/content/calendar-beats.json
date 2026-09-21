@@ -1,20 +1,60 @@
 {
   "beats": [
-    { "id": "convocation", "name": "Convocation", "term": "fall", "week": 1, "dd": "§3.3" },
-    { "id": "board-meeting", "name": "Board Meeting", "term": "fall", "week": 12, "dd": "§5.5" },
+    {
+      "id": "convocation",
+      "name": "Convocation",
+      "term": "fall",
+      "week": 1,
+      "dd": "§3.3",
+      "phase": 7,
+      "prompt": "Convocation is on the lawn",
+      "firedLine": "Convocation. The new class is on the lawn.",
+      "resolvedLine": "The new class is welcomed, at some length.",
+      "blurb": "The new class files onto the lawn and is told, at some length, that these will be the best years of their lives. Nobody has mentioned the parking.",
+      "stub": "The year's report card, the incoming class by the numbers, and any ambitions the board is minded to deal.",
+      "resolveLabel": "Welcome the class"
+    },
+    {
+      "id": "board-meeting",
+      "name": "Board Meeting",
+      "term": "fall",
+      "week": 12,
+      "dd": "§5.5",
+      "phase": 8,
+      "prompt": "The board is in session",
+      "firedLine": "The board is in session.",
+      "resolvedLine": "The board adjourns.",
+      "blurb": "The trustees have read the year's numbers, or have had them read to them over lunch. They have views.",
+      "stub": "Confidence, demands, and, in a hard year, impositions.",
+      "resolveLabel": "Adjourn"
+    },
     {
       "id": "admissions-day",
       "name": "Admissions Day",
       "term": "spring",
       "week": 10,
-      "dd": "§8.2"
+      "dd": "§8.2",
+      "phase": 7,
+      "prompt": "Admissions Day: the applications are in",
+      "firedLine": "Admissions Day. The applications are in.",
+      "resolvedLine": "The admissions file closes.",
+      "blurb": "The applications are in, stacked by a student worker with opinions about the essays. Tuition and selectivity are yours to set; the class that results will simply happen to you.",
+      "stub": "Tuition and selectivity, the applicant pool, and the class they produce.",
+      "resolveLabel": "Close the file"
     },
     {
       "id": "budget-and-hiring",
       "name": "Budget & Hiring",
       "term": "summer",
       "week": 4,
-      "dd": "§7.3"
+      "dd": "§7.3",
+      "phase": 5,
+      "prompt": "The budget is on the desk",
+      "firedLine": "Budget & Hiring. The ledger is open, and so is the market.",
+      "resolvedLine": "The budget is approved and the market closes for the year.",
+      "blurb": "Next year's budget wants approving, and the hiring market is open for the summer. Every candidate is very excited about the opportunity.",
+      "stub": "Next year's budget line by line, and the summer hiring market.",
+      "resolveLabel": "Approve and adjourn"
     }
   ]
 }

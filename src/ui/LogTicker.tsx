@@ -1,18 +1,20 @@
 import { LogIcon } from './icons.tsx';
 
 // The ticker strip (DD §13.2): one line above the toolbar. The newest
-// notice on the left; the NEXT slot on the right — the highest-value thing
-// the game is currently offering, a button when it names somewhere to go.
-// Phase 4's event bus feeds the notices and Phase 17 makes the strip the
-// event-resolution surface; until then the left half only says so.
+// journal line on the left, behind a small button that opens the whole
+// journal; the NEXT slot on the right — the highest-value thing the game
+// is currently offering, a button when it names somewhere to go, and
+// pulsing when the clock is holding for it. Phase 17 makes the strip the
+// event-resolution surface.
 
 export interface NextPrompt {
   text: string;
-  go?: 'campus';
+  go?: 'campus' | 'beat';
+  urgent?: boolean;
 }
 
 export interface Notice {
-  stamp: string; // "Y1W3"
+  stamp: string; // "Y1 · Fall · W3"
   text: string;
   tone?: 'good' | 'bad';
 }
@@ -21,16 +23,27 @@ export default function LogTicker({
   notice,
   next,
   onGo,
+  journalOpen,
+  onToggleJournal,
 }: {
   notice: Notice | null;
   next: NextPrompt | null;
   onGo: (go: NonNullable<NextPrompt['go']>) => void;
+  journalOpen: boolean;
+  onToggleJournal: () => void;
 }) {
   return (
     <div className="log-ticker">
-      <span className="log-ticker-icon" aria-hidden="true">
+      <button
+        type="button"
+        className="log-ticker-toggle"
+        aria-expanded={journalOpen}
+        aria-label={journalOpen ? 'Close the journal' : 'Open the journal'}
+        title="Journal (L)"
+        onClick={onToggleJournal}
+      >
         <LogIcon />
-      </span>
+      </button>
       {notice ? (
         <span className={notice.tone ?? ''}>
           <span className="ts">{notice.stamp}</span>
@@ -40,7 +53,7 @@ export default function LogTicker({
         <span className="log-ticker-empty">No news yet.</span>
       )}
       {next && (
-        <span className="log-ticker-next">
+        <span className={`log-ticker-next ${next.urgent ? 'urgent' : ''}`}>
           <span className="log-ticker-next-label">Next</span>
           {next.go ? (
             <button

@@ -867,3 +867,161 @@ button.build-tile {
   left: auto;
   right: 0;
 }
+
+/* ---------- Phase 4: the journal, the beats, the held clock ---------- */
+
+/* The ticker's icon is a button now: the journal is one click away. */
+.log-ticker-toggle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+.log-ticker-toggle svg {
+  width: 14px;
+  height: 14px;
+  display: block;
+}
+.log-ticker-toggle:hover,
+.log-ticker-toggle[aria-expanded='true'] {
+  color: var(--ink);
+  background: var(--cream-lo);
+}
+.log-ticker .good {
+  color: var(--ok-on-light);
+}
+.log-ticker .bad {
+  color: var(--bad-on-light);
+}
+/* While a beat holds the clock the NEXT chip breathes: it is the one thing
+   to do. */
+.log-ticker-next.urgent .log-ticker-next-label {
+  animation: next-pulse 1.1s ease-in-out infinite;
+}
+@keyframes next-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--school-secondary);
+  }
+  50% {
+    box-shadow: 0 0 0 3px var(--school-secondary);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .log-ticker-next.urgent .log-ticker-next-label {
+    animation: none;
+    box-shadow: 0 0 0 3px var(--school-secondary);
+  }
+}
+
+/* The journal popup: a list of short lines anchored under the ticker's
+   button, smaller than the build menu (ported from v1's .log-popup). */
+.journal-popup {
+  left: 16px;
+  width: min(460px, calc(100vw - 32px));
+  max-height: 46vh;
+}
+.journal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.journal li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.journal .ts {
+  flex: none;
+  color: var(--school-primary);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  white-space: nowrap;
+  min-width: 96px;
+}
+.journal li.good {
+  color: var(--ok-on-light);
+}
+.journal li.bad {
+  color: var(--bad-on-light);
+}
+.journal-empty {
+  margin: 0;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* A beat's screen: one card in the overlay, the lede in the voice, the
+   placeholder note, and the one verb that resolves it. */
+.beat-screen {
+  max-width: 620px;
+  margin: 24px auto;
+  background: var(--cream-hi);
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-lg);
+  padding: 22px 26px 20px;
+  box-shadow: var(--shadow-1);
+}
+.beat-screen .eyebrow {
+  color: var(--school-primary);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.beat-lede {
+  margin: 10px 0 0;
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+.beat-stub {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border: 1px dashed var(--parchment-line);
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+}
+.beat-stub p {
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.beat-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.beat-resolve {
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+  border: 3px solid var(--outline);
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-1);
+}
+.beat-resolve:hover {
+  background: var(--outline);
+  color: var(--cream);
+}
+
+/* The clock while a beat holds it. */
+.toolbar-clock.held {
+  color: var(--school-secondary);
+}

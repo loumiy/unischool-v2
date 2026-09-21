@@ -1,6 +1,7 @@
 import {
   advanceWeekProgress,
   canApply,
+  clockAdvances,
   clockRuns,
   dispatch as dispatchAction,
   isYearTurn,
@@ -94,6 +95,9 @@ export class GameStore {
     let yearTurned = false;
     for (let i = 0; i < ticks; i++) {
       const after = tickRun(next);
+      // A held clock (a beat awaiting the player) refuses the week: stop
+      // here rather than spin on it.
+      if (after.state === next.state) break;
       if (isYearTurn(next.state.clock, after.state.clock)) yearTurned = true;
       next = after;
     }
@@ -118,7 +122,7 @@ export class GameStore {
     const delta = Math.min(now - this.lastSample, MAX_SAMPLE_MS);
     this.lastSample = now;
     const { run, speed, weekProgress } = this.snap;
-    if (!run || !clockRuns(run.state)) return;
+    if (!run || !clockAdvances(run.state)) return;
     const { progress, ticks } = advanceWeekProgress(weekProgress, delta, msPerWeek(speed));
     if (ticks === 0 && progress === weekProgress) return;
     if (ticks > 0) this.applyTicks(run, ticks);

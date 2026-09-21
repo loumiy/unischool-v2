@@ -75,6 +75,7 @@ export default function Toolbar({
   buildOpen,
   onToggleBuild,
   ringBuild,
+  heldFor,
 }: {
   ref: Ref<HTMLDivElement>;
   state: GameState;
@@ -86,6 +87,8 @@ export default function Toolbar({
   buildOpen: boolean;
   onToggleBuild: () => void;
   ringBuild: boolean;
+  // The beat holding the clock, by name, or null while time moves.
+  heldFor: string | null;
 }) {
   const running = clockRuns(state);
   return (
@@ -163,7 +166,12 @@ export default function Toolbar({
 
       <div className="toolbar-right">
         <div className="toolbar-school">
-          <span className="toolbar-clock">{formatClock(state.clock)}</span>
+          <span
+            className={`toolbar-clock ${heldFor ? 'held' : ''}`}
+            title={heldFor ? `The clock holds for ${heldFor}` : undefined}
+          >
+            {formatClock(state.clock)}
+          </span>
           <DayTicker weekProgress={weekProgress} />
         </div>
         <div className="toolbar-speed">

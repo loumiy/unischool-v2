@@ -1,3 +1,4 @@
+import type { BusEntry } from './bus.ts';
 import { FOUNDING_CLOCK, type Clock } from './calendar.ts';
 import type { Campus } from './campus.ts';
 import type { Identity } from './identity.ts';
@@ -9,12 +10,7 @@ import { foundingWoodland } from './terrain.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 3;
-
-export interface Mark {
-  week: number;
-  label: string;
-}
+export const SCHEMA_VERSION = 4;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -31,10 +27,11 @@ export interface GameState {
   seed: number;
   rng: RngState;
   clock: Clock;
-  // Debug markers written by the `debug/mark` action. Phase 1's only
-  // state-changing action, kept so that replay determinism (run.ts) is
-  // exercised by something real. Phase 4's event bus is the proper journal.
-  marks: Mark[];
+  // The journal (bus.ts): everything notable, in the order it happened.
+  bus: BusEntry[];
+  // The calendar beat awaiting the player (beats.ts), by id. While one is
+  // pending the clock holds.
+  pendingBeat: string | null;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -49,10 +46,13 @@ export function createNewGame(seed: number): GameState {
     seed,
     rng: Rng.fromSeed(seed).snapshot(),
     clock: { ...FOUNDING_CLOCK },
-    marks: [],
+    bus: [],
+    pendingBeat: null,
   };
 }
 
+// The run is under way: the doors are open and weeks pass (unless a beat
+// holds them — beats.ts's clockAdvances is the driver's whole question).
 export function clockRuns(state: GameState): boolean {
   return state.phase === 'running';
 }

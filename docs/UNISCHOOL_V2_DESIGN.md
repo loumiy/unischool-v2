@@ -91,6 +91,8 @@ Fixed annual moments create the decide/watch rhythm. Each is a bounded screen, e
 
 Everything else — building, curriculum development, event resolution — is continuous and interruptible.
 
+**Beats hold the clock.** A beat fires on the week-tick that lands on its week, and no further week passes until its screen is resolved by an action; the ticker's NEXT slot carries the prompt, and closing the screen without deciding leaves the beat waiting. Speed may still be set while a beat waits, and the clock resumes at that speed. The hold is the sim's, not the UI's, so a replay, a headless run and the live game wait at the same weeks; every beat has a stated default (§10.1's rule, applied to beats) that a headless run or a delegated seat resolves it with. Year 1 is the founding year: the doors open in its first week, so the first Convocation proper — and with it the first class (§2.4) — is Year 2's, after the run's first Admissions Day.
+
 ---
 
 ## §4. Systems Overview
@@ -355,6 +357,7 @@ A small, state-aware music system: a founding theme, a growth theme, a distress 
 - **State shape.** One serializable state tree; save = state + version + action log tail. Saves in IndexedDB with autosave every year-turn and manual slots; export/import as file. Schema versioning with migrations from day one.
 - **Rendering.** The map remains SVG/DOM (proven in v1) unless profiling in Phase 31 forces a canvas layer for ambient students; ambient life is interpolated presentation from sim state, decoupled from tick rate.
 - **Content as data.** Events, ambitions, programs, buildings, quirks, era templates: JSON with a small condition/effect DSL, validated at build time. Writing lives in content files, not code.
+- **The journal (event bus).** The sim records what is notable — the charter, the doors opening, a building placed or demolished, a term begun, a year turned, a beat fired and resolved — as typed entries in state, each stamped with its week. The ticker, the History screen (§12.1), class memory (§8.4) and the event engine (§10.1) read this journal rather than watching state change; the words for an entry live in a content file, so an entry is worded once for every surface.
 - **Performance target.** 50 years at 8× with a full campus at 60fps on a mid-range laptop; headless 50-year sim in under 60 seconds.
 
 ---
