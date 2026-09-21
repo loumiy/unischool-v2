@@ -4,6 +4,7 @@ import type { Campus } from './campus.ts';
 import type { Identity } from './identity.ts';
 import { Rng, type RngState } from './rng.ts';
 import { foundingWoodland } from './terrain.ts';
+import { foundingDistress, type Distress } from './distress.ts';
 import { foundingPeople, type People } from './people.ts';
 import { foundingTreasury, type Treasury } from './treasury.ts';
 
@@ -12,7 +13,7 @@ import { foundingTreasury, type Treasury } from './treasury.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 7;
+export const SCHEMA_VERSION = 8;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -39,6 +40,8 @@ export interface GameState {
   treasury: Treasury;
   // Students, the admissions terms and the alumni ledger (people.ts).
   people: People;
+  // The distress ladder and the board (distress.ts).
+  distress: Distress;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -57,6 +60,7 @@ export function createNewGame(seed: number): GameState {
     pendingBeat: null,
     treasury: foundingTreasury(seed),
     people: foundingPeople(),
+    distress: foundingDistress(),
   };
 }
 

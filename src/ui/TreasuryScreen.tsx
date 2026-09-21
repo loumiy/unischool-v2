@@ -7,6 +7,12 @@ import {
 import {
   adminShareOfPayroll,
   borrowingRoom,
+  reservesTight,
+  RUNG_FREEZE,
+  RUNG_RECEIVERSHIP,
+  RUNG_SOUND,
+  termExpenses,
+  termName,
   EXPENSE_CATEGORIES,
   formatMoney,
   formatPercent,
@@ -19,7 +25,13 @@ import {
   type Flows,
   type GameState,
 } from '../sim/index.ts';
-import { ENDOWMENT_DRAW_PRUDENT, TUITION_DEPENDENCE_FLAG } from '../tuning.ts';
+import {
+  DEFICIT_TERMS,
+  ENDOWMENT_DRAW_PRUDENT,
+  SURPLUS_TERMS_TO_EXIT,
+  TUITION_DEPENDENCE_FLAG,
+} from '../tuning.ts';
+import { BOARD_WORDS, rungWords } from '../content/board.ts';
 import Figure from './Figure.tsx';
 
 // THE TREASURY SCREEN (DD §5.3): one screen — the cashflow strip, the year
@@ -85,6 +97,7 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
   const dependence = tuitionDependence(t.actual);
   const adminShare = adminShareOfPayroll(t.actual);
   const overdrawn = t.budget.drawRate > ENDOWMENT_DRAW_PRUDENT;
+  const d = state.distress;
   const backlog = totalBacklog(state);
   return (
     <div className="treasury">
@@ -228,6 +241,74 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
           hint={READING_WORDS.capital}
         />
       </div>
+
+      <section className="treasury-panel">
+        <h3>The board</h3>
+        <div className="figure-row inner">
+          <Figure
+            label="Standing"
+            value={rungWords(d.rung).name}
+            hint={BOARD_WORDS.rung}
+            tone={d.rung === RUNG_SOUND ? 'good' : 'bad'}
+            size="lg"
+          />
+          <Figure
+            label="Confidence"
+            value={String(d.confidence)}
+            hint={BOARD_WORDS.confidence}
+            tone={d.confidence < 40 ? 'bad' : undefined}
+          />
+          <Figure
+            label="Reserves"
+            value={`${formatMoney(t.cash)} / ${formatMoney(termExpenses(state))}`}
+            note="against one term of expenses"
+            hint={BOARD_WORDS.reserves}
+            tone={reservesTight(state) ? 'bad' : undefined}
+          />
+          <Figure
+            label="Surplus terms"
+            value={`${d.surplusRun} / ${SURPLUS_TERMS_TO_EXIT}`}
+            hint={BOARD_WORDS.surplusRun}
+            tone={d.surplusRun >= SURPLUS_TERMS_TO_EXIT ? 'good' : undefined}
+          />
+          <Figure
+            label="Deficit terms"
+            value={`${d.deficitRun} / ${DEFICIT_TERMS}`}
+            hint={BOARD_WORDS.deficitRun}
+            tone={d.deficitRun > 0 ? 'bad' : undefined}
+          />
+          {d.rung >= RUNG_FREEZE && d.rung < RUNG_RECEIVERSHIP && (
+            <Figure
+              label="Terms on this rung"
+              value={String(d.termsAtRung)}
+              hint={BOARD_WORDS.termsAtRung}
+            />
+          )}
+          {d.rung === RUNG_RECEIVERSHIP && (
+            <Figure
+              label="CFO's terms left"
+              value={String(d.receivershipTermsLeft)}
+              hint={BOARD_WORDS.receivership}
+            />
+          )}
+        </div>
+        <p className="treasury-note">{rungWords(d.rung).rule}</p>
+        {d.terms.length > 0 && (
+          <ul className="term-strip" aria-label="Recent terms">
+            {d.terms.map((term) => (
+              <li
+                key={`${term.year}-${term.term}`}
+                className={term.net < 0 ? 'deficit' : 'surplus'}
+                title={`Year ${term.year} ${termName(term.term)}: ${formatMoney(term.net, { sign: true })}`}
+              >
+                <span className="term-strip-label">
+                  Y{term.year} {termName(term.term).slice(0, 2)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {t.history.length > 0 && (
         <section className="treasury-panel">

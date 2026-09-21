@@ -78,6 +78,9 @@ export interface AlumniClass {
 
 export interface People {
   terms: AdmissionTerms;
+  // The aid discount on the sticker (DD §5.2): a standing rate the board
+  // can cut under austerity.
+  aidRate: number;
   cohorts: Cohort[];
   incoming: Admissions | null;
   lastAdmissions: Admissions | null;
@@ -87,6 +90,7 @@ export interface People {
 export function foundingPeople(): People {
   return {
     terms: { tuition: TUITION_DEFAULT, selectivity: SELECTIVITY_DEFAULT },
+    aidRate: AID_DISCOUNT_RATE,
     cohorts: [],
     incoming: null,
     lastAdmissions: null,
@@ -166,10 +170,19 @@ export function intakeCap(state: GameState): number {
 
 // ---------- the funnel (DD §8.2) ----------
 
-export function applicantPool(terms: AdmissionTerms): number {
+// The price the pool feels: the net of aid, against the market's own net.
+export function netTuition(tuition: number, aidRate: number): number {
+  return Math.round(tuition * (1 - aidRate));
+}
+
+export function marketNetTuition(): number {
+  return netTuition(MARKET_TUITION, AID_DISCOUNT_RATE);
+}
+
+export function applicantPool(terms: AdmissionTerms, aidRate: number = AID_DISCOUNT_RATE): number {
   const prestige = 0.5 + PRESTIGE_STUB / 100;
   const beauty = 0.75 + BEAUTY_STUB / 200;
-  const price = Math.pow(MARKET_TUITION / terms.tuition, PRICE_ELASTICITY);
+  const price = Math.pow(marketNetTuition() / netTuition(terms.tuition, aidRate), PRICE_ELASTICITY);
   return Math.round(BASE_APPLICANTS * prestige * beauty * price);
 }
 
@@ -177,8 +190,11 @@ export function admitRate(selectivity: number): number {
   return Math.min(ADMIT_RATE_MAX, Math.max(ADMIT_RATE_MIN, 1 - selectivity));
 }
 
-export function yieldRate(terms: AdmissionTerms): number {
-  const price = Math.pow(MARKET_TUITION / terms.tuition, YIELD_PRICE_ELASTICITY);
+export function yieldRate(terms: AdmissionTerms, aidRate: number = AID_DISCOUNT_RATE): number {
+  const price = Math.pow(
+    marketNetTuition() / netTuition(terms.tuition, aidRate),
+    YIELD_PRICE_ELASTICITY,
+  );
   return Number(Math.min(0.95, Math.max(0.05, YIELD_BASE * price)).toFixed(4));
 }
 
@@ -237,10 +253,10 @@ export function inverseNormal(p: number): number {
 // The whole funnel for a set of terms, against the campus as it stands:
 // what the Admissions Day screen previews and what resolving it commits.
 export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissions {
-  const applicants = applicantPool(terms);
+  const applicants = applicantPool(terms, state.people.aidRate);
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
-  const yr = yieldRate(terms);
+  const yr = yieldRate(terms, state.people.aidRate);
   const wanted = Math.round(admitted * yr);
   const cap = intakeCap(state);
   const size = Math.min(wanted, cap);
@@ -289,7 +305,7 @@ export function annualTuition(state: GameState): number {
 }
 
 export function annualAid(state: GameState): number {
-  return Math.round(annualTuition(state) * AID_DISCOUNT_RATE);
+  return Math.round(annualTuition(state) * state.people.aidRate);
 }
 
 export function annualAuxiliaries(state: GameState): number {

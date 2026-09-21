@@ -513,3 +513,8 @@
 .campus-building.renovating .building-mass {
   opacity: 0.92;
 }
+
+/* Austerity dulls the campus slightly (DD §5.5). */
+.austerity .campus-map-svg {
+  filter: saturate(0.8) brightness(0.95);
+}

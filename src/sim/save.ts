@@ -6,6 +6,7 @@ import { MOTIFS } from './identity.ts';
 import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
+import { foundingDistress } from './distress.ts';
 import { foundingPeople } from './people.ts';
 import { foundingTreasury } from './treasury.ts';
 
@@ -273,6 +274,33 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 7, state: migrated };
   },
+  // v7 → v8 (Phase 8): the distress ladder, and aid as state. Replay first;
+  // else the ladder starts sound and the aid discount at its default.
+  7: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    const people = (state.people ?? {}) as Record<string, unknown>;
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 8,
+      people: { ...people, aidRate: foundingPeople().aidRate },
+      distress: foundingDistress(),
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 8, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -376,6 +404,27 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     for (const k of ['classYear', 'size', 'quality', 'satisfaction'])
       if (typeof c[k] !== 'number') return 'a cohort is malformed';
   }
+  if (typeof people.aidRate !== 'number') return 'state.people.aidRate is invalid';
+  const distress = s.distress as Record<string, unknown> | undefined;
+  if (typeof distress !== 'object' || distress === null) return 'state.distress is invalid';
+  for (const k of [
+    'rung',
+    'termsAtRung',
+    'confidence',
+    'surplusRun',
+    'deficitRun',
+    'receivershipTermsLeft',
+  ]) {
+    if (typeof distress[k] !== 'number') return `state.distress.${k} is invalid`;
+  }
+  if (
+    !Array.isArray(distress.terms) ||
+    !Array.isArray(distress.scars) ||
+    !Array.isArray(distress.cutsTaken)
+  )
+    return 'state.distress lists are invalid';
+  if (distress.pendingLetter !== null && typeof distress.pendingLetter !== 'string')
+    return 'state.distress.pendingLetter is invalid';
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }

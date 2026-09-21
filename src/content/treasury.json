@@ -2,8 +2,7 @@
   "revenue": {
     "tuition": {
       "label": "Tuition",
-      "hint": "Enrollment times net tuition, the sticker price less financial aid.",
-      "phase": 7
+      "hint": "Enrollment times net tuition, the sticker price less financial aid."
     },
     "endowmentDraw": {
       "label": "Endowment draw",
@@ -21,8 +20,7 @@
     },
     "auxiliaries": {
       "label": "Auxiliaries",
-      "hint": "Housing and dining margins, and ticket revenue once there is somewhere to sell tickets.",
-      "phase": 7
+      "hint": "Housing and dining margins, and ticket revenue once there is somewhere to sell tickets."
     }
   },
   "expenses": {
@@ -42,8 +40,7 @@
     },
     "financialAid": {
       "label": "Financial aid",
-      "hint": "The gap between sticker and net tuition, the primary access lever.",
-      "phase": 7
+      "hint": "The gap between sticker and net tuition, the primary access lever."
     },
     "debtService": {
       "label": "Debt service",
