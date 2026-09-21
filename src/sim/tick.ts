@@ -1,7 +1,6 @@
 import { emit } from './bus.ts';
 import { beatDue, clockHeld } from './beats.ts';
 import { advanceClock } from './calendar.ts';
-import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
 import { academicsWeek } from './academics.ts';
@@ -19,12 +18,12 @@ import { treasuryWeek } from './treasury.ts';
 // week passed from a week refused by identity alone.
 //
 // Systems land here phase by phase in a fixed order (calendar, treasury,
-// distress, estate, people, academics, events, reputation). Each takes the state and
-// the RNG and returns the state; the RNG's state is written back at the end
-// so a tick is a pure function of (state) including its own randomness.
+// distress, estate, people, academics, events, reputation). A system that
+// needs randomness draws it from the state's own stream and writes the
+// stream back (people.ts does, for the named students), so a tick stays a
+// pure function of (state) including its own dice.
 export function tick(state: GameState): GameState {
   if (clockHeld(state)) return state;
-  const rng = Rng.fromState(state.rng);
   let next: GameState = { ...state, clock: advanceClock(state.clock) };
   next = calendarTurn(next);
   if (next.phase === 'running') {
@@ -35,7 +34,7 @@ export function tick(state: GameState): GameState {
     next = peopleWeek(next);
     next = fireBeat(next);
   }
-  return { ...next, rng: rng.snapshot() };
+  return next;
 }
 
 // The calendar system, first: journals the turn of a term and a year.

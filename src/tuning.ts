@@ -291,3 +291,19 @@ export const QUAD_TARGET = 3;
 // How far apart two buildings can stand and still count as paired: tiles
 // between their nearest edges.
 export const PAIRING_RADIUS = 8;
+
+// ---------- Named students (DD §8.1, §17.4, Phase 15) ----------
+
+// How many of each arriving class the game follows, and how much it says
+// about them: a few beats at each term's turn rather than a year's worth
+// in one week, and a handful in a lifetime, so the ticker stays a ticker
+// (§17.3) and everyone the game named is heard from (§8.1's 3–5 beats).
+export const NAMED_PER_CLASS_MIN = 3;
+export const NAMED_PER_CLASS_MAX = 5;
+export const ARC_BEATS_PER_YEAR = 4;
+export const ARC_BEATS_PER_TERM = 3;
+export const ARC_BEATS_PER_STUDENT = 4;
+// A named student leaves at their class's attrition rate, times this: the
+// ones the game follows are no likelier to go than anyone else, but a
+// class bleeding students should visibly lose one of them.
+export const STUDENT_LEAVES_ODDS = 2.5;

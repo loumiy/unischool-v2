@@ -183,8 +183,17 @@ describe('calendar beats (DD §3.3)', () => {
       `Year 1 closes ${formatMoney(run.state.treasury.history[0]!.net)} in the black.`,
       termLine(2),
       line('classArrived'),
+      // The class arrives with the handful the game will follow, and the
+      // first of their beats (students.ts).
+      ...run.state.bus
+        .filter((e) => e.kind === 'studentsNamed' || e.kind === 'studentBeat')
+        .map((e) => describeEntry(e, run.state).text),
       'Convocation. The new class is on the lawn.',
     ]);
+    expect(entriesOfKind(run.state, 'studentsNamed')).toHaveLength(1);
+    expect(describeEntry(entriesOfKind(run.state, 'studentsNamed')[0]!, run.state).text).toMatch(
+      /^The game will be following .+ of the Class of '05\.$/,
+    );
   });
 
   it('runs fifty years with default resolutions and four beats a year', () => {

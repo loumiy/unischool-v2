@@ -15,6 +15,7 @@ import {
 } from '../sim/index.ts';
 import { AID_DISCOUNT_RATE } from '../tuning.ts';
 import Figure from './Figure.tsx';
+import NamedStudents from './NamedStudents.tsx';
 import PlacementPanel from './PlacementPanel.tsx';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
@@ -180,6 +181,8 @@ export default function StudentsScreen({ state }: { state: GameState }) {
           </p>
         )}
       </section>
+
+      <NamedStudents state={state} />
 
       <section className="treasury-panel">
         <h3>{PEOPLE_WORDS.breakdownTitle}</h3>

@@ -8,6 +8,8 @@ import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
 import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
+import { findArc, STUDENT_WORDS } from './students.ts';
+import { beatLine, studentById } from '../sim/students.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
 
@@ -75,6 +77,21 @@ function load(): Readonly<Record<BusKind, BusLine>> {
 
 export const BUS_LINES = load();
 
+// The arc templates carry their own placeholders, filled from the sim
+// rather than from the journal entry.
+function fillArc(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (whole, key: string) => vars[key] ?? whole);
+}
+
+// A beat reads as good or bad from the stage it belongs to: leaving and
+// drifting are losses, distinction is not.
+function arcToneOf(arcId: string): 'good' | 'bad' | undefined {
+  const stage = findArc(arcId)?.stage;
+  if (stage === 'distinguished') return 'good';
+  if (stage === 'leaving' || stage === 'adrift') return 'bad';
+  return undefined;
+}
+
 function fill(template: string, vars: Partial<Record<Placeholder, string>>): string {
   return template.replace(/\{(\w+)\}/g, (whole, key: string) => vars[key as Placeholder] ?? whole);
 }
@@ -124,6 +141,26 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'studentsLeft':
       vars.count = String(entry.count);
       break;
+    case 'studentsNamed': {
+      const names = entry.names;
+      const list =
+        names.length <= 1
+          ? (names[0] ?? 'nobody')
+          : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+      vars.line = fillArc(STUDENT_WORDS.introduced, {
+        names: list,
+        label: classLabel(entry.classYear),
+      });
+      break;
+    }
+    case 'studentBeat': {
+      // The beat's own words, from content/students.json, filled from the
+      // student and the campus they are on.
+      const student = studentById(state, entry.studentId);
+      const arc = findArc(entry.arcId);
+      vars.line = student ? beatLine(state, student, entry.arcId) : (arc?.line ?? entry.arcId);
+      return { text: fill(line.text, vars), tone: arcToneOf(entry.arcId) };
+    }
     case 'classGraduated': {
       vars.label = classLabel(entry.classYear);
       vars.size = String(entry.size);
