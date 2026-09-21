@@ -18,6 +18,11 @@
     "classArrived": { "text": "The {label} arrives: {size} students{triples}." },
     "studentsLeft": { "text": "{count} students leave.", "tone": "bad" },
     "studentsNamed": { "text": "{line}" },
+    "classRemembered": { "text": "{line}" },
+    "reunionHeld": {
+      "text": "The {label} comes back for a reunion, and leaves a little warmer.",
+      "tone": "good"
+    },
     "studentBeat": { "text": "{line}" },
     "classGraduated": { "text": "The {label} graduates, {size} strong{outcomes}.", "tone": "good" },
     "schoolFounded": { "text": "The School of {school} is founded in {building}.", "tone": "good" },

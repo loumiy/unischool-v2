@@ -10,8 +10,7 @@
     },
     "donations": {
       "label": "Donations",
-      "hint": "The annual fund from the alumni ledger, plus gifts that arrive as events, often with strings.",
-      "phase": 16
+      "hint": "The annual fund from the alumni ledger, plus gifts that arrive as events, often with strings."
     },
     "researchOverhead": {
       "label": "Research overhead",

@@ -9,7 +9,8 @@ import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingFaculty } from './faculty.ts';
-import { foundingPeople, outcomesFor } from './people.ts';
+import { foundingPeople, outcomesFor, type Cohort, type Outcomes } from './people.ts';
+import { memoryFor, warmthFor } from './alumni.ts';
 import { foundingTreasury } from './treasury.ts';
 
 // The save file: state + version + action log (DD §15). Storage (IndexedDB,
@@ -469,7 +470,59 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v14 → v15 (Phase 16): the alumni ledger. A class that graduated
+  // before the ledger existed is remembered by what it left with — the
+  // same stamp it would have been given, minus the journal it no longer
+  // has — so an old run's giving starts from something true.
+  14: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const people = (state.people ?? {}) as Record<string, unknown>;
+    const alumni = (Array.isArray(people.alumni) ? people.alumni : []) as Record<string, unknown>[];
+    return {
+      ...raw,
+      version: 15,
+      state: {
+        ...state,
+        schemaVersion: 15,
+        people: {
+          ...people,
+          alumni: alumni.map((a) => {
+            const cohort = {
+              classYear: Number(a.classYear),
+              size: Number(a.size),
+              quality: Number(a.quality),
+              satisfaction: Number(a.satisfaction),
+            };
+            const outcomes = (a.outcomes ?? {
+              distinguished: 0,
+              placed: cohort.size,
+              adrift: 0,
+            }) as Outcomes;
+            const memory = memoryWithoutJournal(cohort, outcomes);
+            return {
+              memory,
+              warmth: warmthFor(cohort, outcomes, memory),
+              nudged: 0,
+              lastReunion: null,
+              ...a,
+            };
+          }),
+        },
+      },
+    };
+  },
 };
+
+// An old class has no journal to read, so its memory comes from the
+// numbers alone: the same conditions, on an empty four years.
+function memoryWithoutJournal(cohort: Cohort, outcomes: Outcomes): string[] {
+  const blank = {
+    clock: { absoluteWeek: 0, year: cohort.classYear, term: 'summer' as const, week: 1 },
+    bus: [],
+    campus: { placements: [], paths: [], trees: {}, quadNames: {}, nextPlacementId: 1 },
+  } as unknown as GameState;
+  return memoryFor(blank, cohort, outcomes);
+}
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
 
@@ -573,6 +626,11 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       if (typeof c[k] !== 'number') return 'a cohort is malformed';
   }
   for (const a of people.alumni as Record<string, unknown>[]) {
+    if (!Array.isArray(a.memory)) return 'an alumni class is malformed';
+    if (typeof a.warmth !== 'number' || typeof a.nudged !== 'number')
+      return 'an alumni class is malformed';
+    if (a.lastReunion !== null && typeof a.lastReunion !== 'number')
+      return 'an alumni class is malformed';
     const o = a.outcomes as Record<string, unknown> | undefined;
     if (
       typeof o?.distinguished !== 'number' ||

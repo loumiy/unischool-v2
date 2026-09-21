@@ -1,0 +1,140 @@
+{
+  "clauses": [
+    {
+      "id": "overcrowded",
+      "when": "overcrowded",
+      "text": "turned out of their rooms",
+      "warmth": -9
+    },
+    {
+      "id": "thinned",
+      "when": "thinned",
+      "text": "thinned by the years",
+      "warmth": -6
+    },
+    {
+      "id": "under-taught",
+      "when": "poorlyTaught",
+      "text": "under-taught",
+      "warmth": -8
+    },
+    {
+      "id": "well-taught",
+      "when": "wellTaught",
+      "text": "properly taught",
+      "warmth": 8
+    },
+    {
+      "id": "happy",
+      "when": "happy",
+      "text": "happy in it",
+      "warmth": 9
+    },
+    {
+      "id": "unhappy",
+      "when": "unhappy",
+      "text": "miserable in it",
+      "warmth": -10
+    },
+    {
+      "id": "building-years",
+      "when": "building",
+      "text": "there for the building years",
+      "warmth": 6
+    },
+    {
+      "id": "scaffolding",
+      "when": "renovated",
+      "text": "four years of scaffolding",
+      "warmth": -2
+    },
+    {
+      "id": "new-school",
+      "when": "newSchool",
+      "text": "there when the new school was founded",
+      "warmth": 5
+    },
+    {
+      "id": "first-of-program",
+      "when": "firstOfProgram",
+      "text": "the first to read a subject that did not exist before them",
+      "warmth": 6
+    },
+    {
+      "id": "program-lost",
+      "when": "programLost",
+      "text": "taught in a department that closed under them",
+      "warmth": -8
+    },
+    {
+      "id": "freeze",
+      "when": "freeze",
+      "text": "graduated out of a freeze",
+      "warmth": -4
+    },
+    {
+      "id": "austerity",
+      "when": "austerity",
+      "text": "an austerity class",
+      "warmth": -8
+    },
+    {
+      "id": "receivership",
+      "when": "receivership",
+      "text": "here when the receivers were",
+      "warmth": -12
+    },
+    {
+      "id": "cuts",
+      "when": "cuts",
+      "text": "cut to the bone",
+      "warmth": -6
+    },
+    {
+      "id": "deficits",
+      "when": "deficits",
+      "text": "four years of bad news from the bursary",
+      "warmth": -3
+    },
+    {
+      "id": "distinguished",
+      "when": "distinguished",
+      "text": "a class that went on to things",
+      "warmth": 10
+    },
+    {
+      "id": "adrift",
+      "when": "adrift",
+      "text": "half of them adrift after",
+      "warmth": -9
+    },
+    {
+      "id": "handsome",
+      "when": "beautiful",
+      "text": "on the handsomest campus in the county",
+      "warmth": 6
+    },
+    {
+      "id": "quiet",
+      "when": "always",
+      "text": "unremarkable, and fond of it",
+      "warmth": 2
+    }
+  ],
+  "memoryLine": "The {label}: {clauses}.",
+  "readings": {
+    "warmth": "How this class remembers the place, 0–100: set at graduation by the four years they had, and nudged after, never rewritten.",
+    "memory": "One line for their four years, stamped at graduation from what actually happened in them.",
+    "giving": "What this class gives the annual fund this year: their warmth and their means, rising as they get established.",
+    "annualFund": "Every class's giving, added up: the alumni ledger paying out, decades after the years that set it.",
+    "given": "What this class has given since they left.",
+    "reunion": "A reunion warms a class a little, and costs a little; a class can only be warmed so far, because the four years they had are not up for revision."
+  },
+  "lines": {
+    "reunion": "Hold a reunion · {cost}",
+    "reunionDone": "Reunited this year",
+    "reunionCapped": "As warm as they will get",
+    "noAlumni": "Nobody has graduated yet. The ledger starts with the first class out.",
+    "warmthNote": "Warmth is set by the years they had. Reunions nudge it; nothing rewrites it."
+  }
+}

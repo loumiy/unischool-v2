@@ -35,9 +35,20 @@ export type BusEvent =
       size: number;
       capped: boolean;
     }
-  | { kind: 'classArrived'; classYear: number; size: number; quality: number; triples: number }
+  | {
+      kind: 'classArrived';
+      classYear: number;
+      size: number;
+      quality: number;
+      triples: number;
+      // Everyone on the books once they arrived, so the journal records
+      // how crowded the place was and not just by how many.
+      enrolled: number;
+    }
   | { kind: 'studentsLeft'; count: number }
   | { kind: 'studentsNamed'; classYear: number; names: string[] }
+  | { kind: 'classRemembered'; classYear: number }
+  | { kind: 'reunionHeld'; classYear: number; warmth: number }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -86,6 +97,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'classArrived',
   'studentsLeft',
   'studentsNamed',
+  'classRemembered',
+  'reunionHeld',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

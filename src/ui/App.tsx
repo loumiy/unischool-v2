@@ -346,7 +346,12 @@ export default function App() {
             {effectiveOverlay === 'treasury' ? (
               <TreasuryScreen state={state} />
             ) : effectiveOverlay === 'students' ? (
-              <StudentsScreen state={state} />
+              <StudentsScreen
+                state={state}
+                onReunion={(classYear) => {
+                  store.dispatch({ type: 'holdReunion', classYear });
+                }}
+              />
             ) : effectiveOverlay === 'faculty' ? (
               <FacultyScreen
                 state={state}

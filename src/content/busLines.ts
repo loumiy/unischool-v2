@@ -9,6 +9,7 @@ import { findBeat } from './calendarBeats.ts';
 import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
+import { memoryLine } from '../sim/alumni.ts';
 import { beatLine, studentById } from '../sim/students.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
@@ -140,6 +141,16 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       return { text: fill(line.text, vars), tone: entry.triples > 0 ? 'bad' : 'good' };
     case 'studentsLeft':
       vars.count = String(entry.count);
+      break;
+    case 'classRemembered': {
+      const alumni = state.people.alumni.find((a) => a.classYear === entry.classYear);
+      vars.line = alumni
+        ? memoryLine(alumni)
+        : `${classLabel(entry.classYear)} goes down unremembered.`;
+      break;
+    }
+    case 'reunionHeld':
+      vars.label = classLabel(entry.classYear);
       break;
     case 'studentsNamed': {
       const names = entry.names;
