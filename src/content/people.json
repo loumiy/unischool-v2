@@ -26,12 +26,16 @@
     "condition": "The state of the buildings: full condition costs nothing, ruin costs the most.",
     "teachingTerm": "Program quality against the neutral line: nothing to study is the worst of it.",
     "morale": "What the faculty's quirks add or take, capped.",
-    "beauty": "Campus beauty against the middle; a stub until the campus is scored.",
+    "beauty": "Campus beauty against the middle: greenery, landmarks and upkeep, scored on the Students screen.",
     "conditions": "Living through the ladder: a freeze, austerity and receivership cost more each.",
     "distinguished": "Graduates who left with distinction: the class's score above the middle earns them.",
     "placed": "Graduates who went on, unremarkably, as most do.",
     "adrift": "Graduates who drifted: a base, rising as the class's score falls below the middle.",
-    "outcomeScore": "The class's score: quality weighted seven to three against how it left."
+    "outcomeScore": "The class's score: quality weighted seven to three against how it left.",
+    "campusBeauty": "Campus beauty, 0–100: greenery, landmarks and upkeep, weighted; it moves the applicant pool a little and the cohorts' mood.",
+    "greenery": "Trees standing against the founding woodland: fell them for buildings and it falls, plant and it climbs.",
+    "landmarks": "The buildings that are something to look at, by their marks in the catalogue, against a full set.",
+    "upkeep": "The open buildings' mean condition: backlog is ugly."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",

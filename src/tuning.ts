@@ -90,11 +90,10 @@ export const SELECTIVITY_STEP = 0.05;
 export const ADMIT_RATE_MIN = 0.1;
 export const ADMIT_RATE_MAX = 0.95;
 
-// The applicant pool: a base, scaled by prestige and beauty (stubs until
-// Phases 24 and 13), and by price position against the market.
+// The applicant pool: a base, scaled by prestige (a stub until Phase 24),
+// by campus beauty (beauty.ts), and by price position against the market.
 export const BASE_APPLICANTS = 1_600;
 export const PRESTIGE_STUB = 50; // 0–100
-export const BEAUTY_STUB = 50; // 0–100
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.
@@ -225,8 +224,7 @@ export const SIGNATURE_DECAY_CONFIDENCE = 5;
 
 // ---------- Quality, satisfaction and outcomes (DD §7.4, §8.3, Phase 12) ----------
 
-// Campus beauty in satisfaction: the swing across the scale, neutral at 50
-// (BEAUTY_STUB until Phase 13 scores the campus).
+// Campus beauty in satisfaction: the swing across the scale, neutral at 50.
 export const BEAUTY_WEIGHT = 8;
 // Current conditions: what living through each rung of the ladder costs
 // every cohort, in satisfaction points, Sound to Receivership.
@@ -244,3 +242,24 @@ export const OUTCOME_QUALITY_WEIGHT = 0.7;
 export const OUTCOME_DISTINGUISHED_MAX = 0.3;
 export const OUTCOME_ADRIFT_MAX = 0.4;
 export const OUTCOME_ADRIFT_BASE = 0.05;
+
+// ---------- Campus beauty and ambient life (DD §6.2–§6.3, Phase 13) ----------
+
+// Beauty, 0–100, is a weighted mean of its terms (beauty.ts): greenery is
+// the trees standing against this share of the founding woodland; landmarks
+// are the buildings' beauty marks (content/buildings.json) against this
+// many; upkeep is the open buildings' mean condition. Enclosed spaces and
+// coherent motifs take their share when quads (Ph.14) and per-building
+// motifs arrive.
+export const GREENERY_TARGET_SHARE = 0.6;
+export const LANDMARK_TARGET = 6;
+export const BEAUTY_WEIGHTS = { greenery: 0.4, landmarks: 0.3, upkeep: 0.3 } as const;
+// Beauty's swing on the applicant pool, either way, under the ~12% cap on
+// placement-derived effects (DD §6.2).
+export const BEAUTY_POOL_SWING = 0.12;
+
+// Ambient life is presentational (DD §6.3): how many students walk the map
+// at most, one walker per this many enrolled, and the crowd by term.
+export const MAX_WALKERS = 60;
+export const STUDENTS_PER_WALKER = 6;
+export const AMBIENT_DENSITY = { fall: 1, spring: 1, summer: 0.15 } as const;

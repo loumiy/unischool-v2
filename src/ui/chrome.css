@@ -2222,3 +2222,32 @@ button.toolbar-stat.active svg {
 .debug .pair {
   display: contents;
 }
+
+/* ---------- Phase 13: beauty on the build menu ---------- */
+.build-beauty {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding: 6px 12px;
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-pill);
+  background: var(--cream-hi);
+}
+.build-beauty-label {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.build-beauty-value {
+  font-family: var(--mono);
+  font-weight: 800;
+  font-size: var(--text-md);
+}
+.build-beauty-terms {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}

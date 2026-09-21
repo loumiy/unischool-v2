@@ -1,6 +1,7 @@
 import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import {
   attritionRate,
+  beautyTerms,
   campusCapacity,
   classLabel,
   enrolled,
@@ -77,6 +78,7 @@ export default function StudentsScreen({ state }: { state: GameState }) {
   const teaching = teachingQuality(state);
   const next = sorted[0] ?? null;
   const projected = next ? outcomesFor(next.quality, next.satisfaction, next.size) : null;
+  const beauty = beautyTerms(state);
   return (
     <div className="students">
       <div className="figure-row">
@@ -210,6 +212,13 @@ export default function StudentsScreen({ state }: { state: GameState }) {
             label="Selectivity"
             value={formatPercent(terms.selectivity, 0)}
             hint={PEOPLE_READINGS.selectivity}
+          />
+          <Figure
+            label="Campus beauty"
+            value={beauty.score.toFixed(0)}
+            note={`greenery ${formatPercent(beauty.greenery, 0)} · landmarks ${formatPercent(beauty.landmarks, 0)} · upkeep ${formatPercent(beauty.upkeep, 0)}`}
+            hint={PEOPLE_READINGS.campusBeauty}
+            tone={beauty.score < 40 ? 'bad' : beauty.score >= 60 ? 'good' : undefined}
           />
           {lastAdmissions && (
             <>

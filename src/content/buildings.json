@@ -2,6 +2,7 @@
   "buildings": [
     {
       "id": "founders-hall",
+      "beauty": 3,
       "name": "Founders Hall",
       "category": "academic",
       "footprint": {
@@ -26,6 +27,7 @@
     },
     {
       "id": "academic-hall",
+      "beauty": 1,
       "name": "Academic Hall",
       "category": "academic",
       "footprint": {
@@ -47,6 +49,7 @@
     },
     {
       "id": "library",
+      "beauty": 2,
       "name": "Library",
       "category": "academic",
       "footprint": {
@@ -125,6 +128,7 @@
     },
     {
       "id": "student-center",
+      "beauty": 1,
       "name": "Student Center",
       "category": "life",
       "footprint": {
@@ -179,6 +183,7 @@
     },
     {
       "id": "playing-field",
+      "beauty": 1,
       "name": "Playing Field",
       "category": "athletics",
       "footprint": {

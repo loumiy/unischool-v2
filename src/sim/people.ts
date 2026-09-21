@@ -19,7 +19,6 @@ import {
   QUALITY_DRIFT,
   RUNG_SATISFACTION_PENALTY,
   BASE_APPLICANTS,
-  BEAUTY_STUB,
   CONDITION_WEIGHT,
   DINING_PENALTY,
   MARKET_TUITION,
@@ -43,6 +42,7 @@ import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
+import { beautyPoolFactor, campusBeauty } from './beauty.ts';
 import { quirkMorale, teachingQuality, teachingSatisfaction } from './faculty.ts';
 import type { GameState } from './state.ts';
 
@@ -50,7 +50,7 @@ import type { GameState } from './state.ts';
 // quality and satisfaction; the applicant pool and the Admissions Day
 // decision that turns it into a class; the class arriving at Convocation,
 // thinning each year, and graduating into the alumni ledger. Prestige,
-// beauty and identity are stubs until their phases; the pool answers only
+// and identity are stubs until their phases; the pool answers only beauty,
 // price and selectivity for now.
 
 // The standing terms, set at Admissions Day and kept for the next.
@@ -198,9 +198,15 @@ export function marketNetTuition(): number {
   return netTuition(MARKET_TUITION, AID_DISCOUNT_RATE);
 }
 
-export function applicantPool(terms: AdmissionTerms, aidRate: number = AID_DISCOUNT_RATE): number {
+// The pool: a base, scaled by prestige (a stub), by campus beauty about
+// the middle (beauty.ts), and by price position against the market.
+export function applicantPool(
+  terms: AdmissionTerms,
+  aidRate: number = AID_DISCOUNT_RATE,
+  beautyScore = 50,
+): number {
   const prestige = 0.5 + PRESTIGE_STUB / 100;
-  const beauty = 0.75 + BEAUTY_STUB / 200;
+  const beauty = beautyPoolFactor(beautyScore);
   const price = Math.pow(marketNetTuition() / netTuition(terms.tuition, aidRate), PRICE_ELASTICITY);
   return Math.round(BASE_APPLICANTS * prestige * beauty * price);
 }
@@ -272,7 +278,7 @@ export function inverseNormal(p: number): number {
 // The whole funnel for a set of terms, against the campus as it stands:
 // what the Admissions Day screen previews and what resolving it commits.
 export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissions {
-  const applicants = applicantPool(terms, state.people.aidRate);
+  const applicants = applicantPool(terms, state.people.aidRate, campusBeauty(state));
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
   const yr = yieldRate(terms, state.people.aidRate);
@@ -352,8 +358,7 @@ export function campusCondition(state: GameState): number {
 
 // Satisfaction, term by term (DD §8.3): what the campus gives them —
 // housing, dining, seats, the state of the buildings — the teaching
-// (faculty.ts) and the faculty's quirks, the campus's beauty (a stub until
-// Phase 13) and the conditions of the day (the ladder). Every term is a
+// (faculty.ts) and the faculty's quirks, the campus's beauty (beauty.ts) and the conditions of the day (the ladder). Every term is a
 // signed number of points, so the debug panel can trace cause to effect.
 // Student life arrives with its phase.
 export interface SatisfactionBreakdown {
@@ -380,7 +385,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     condition: (campusCondition(state) - 1) * CONDITION_WEIGHT,
     teaching: teachingSatisfaction(state),
     morale: quirkMorale(state),
-    beauty: ((BEAUTY_STUB - 50) / 50) * BEAUTY_WEIGHT,
+    beauty: ((campusBeauty(state) - 50) / 50) * BEAUTY_WEIGHT,
     conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
   };
   const sum =

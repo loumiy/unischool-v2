@@ -6,16 +6,19 @@ import {
   type BuildingDef,
   type BuildingIcon,
 } from '../content/buildings.ts';
+import { PEOPLE_READINGS } from '../content/people.ts';
 import { ESTATE_WORDS } from '../content/treasury.ts';
 import {
+  beautyTerms,
   borrowingRoom,
   canPay,
+  type Financing,
   FINANCINGS,
   formatMoney,
+  formatPercent,
   FOUNDERS_HALL_ID,
-  hasFoundersHall,
-  type Financing,
   type GameState,
+  hasFoundersHall,
 } from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
 import {
@@ -267,6 +270,18 @@ export default function BuildPopup({
             <span className="build-cat-label">Campus Tools</span>
           </button>
         </nav>
+        <div className="build-beauty figure" tabIndex={0}>
+          <span className="build-beauty-label">Campus beauty</span>
+          <span className="build-beauty-value">{beautyTerms(state).score.toFixed(0)}</span>
+          <span className="build-beauty-terms">
+            greenery {formatPercent(beautyTerms(state).greenery, 0)} · landmarks{' '}
+            {formatPercent(beautyTerms(state).landmarks, 0)} · upkeep{' '}
+            {formatPercent(beautyTerms(state).upkeep, 0)}
+          </span>
+          <span className="figure-hint" role="tooltip">
+            {PEOPLE_READINGS.campusBeauty}
+          </span>
+        </div>
         <div className="build-mode-tray">
           <div className="build-tile-row">
             {activeId === TOOLS_ID

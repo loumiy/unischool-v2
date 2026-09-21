@@ -518,3 +518,80 @@
 .austerity .campus-map-svg {
   filter: saturate(0.8) brightness(0.95);
 }
+
+/* ---------- Phase 13: the season and the crowd ---------- */
+/* The lawn and the canopies take the term: fresh in spring, sun-bleached
+   in summer, turning through the fall. Conifers keep their colour. */
+.campus-map,
+.campus-map-svg,
+.campus-ground,
+.campus-tree-crown,
+.campus-tree-crown-top {
+  transition:
+    background-color 1.6s ease,
+    fill 1.6s ease;
+}
+.campus-map.season-spring {
+  --grass: #86ac62;
+  --grass-deep: #76994f;
+}
+.campus-map.season-summer {
+  --grass: #9cae66;
+  --grass-deep: #8a9c57;
+}
+.campus-map.season-early-fall {
+  --grass: #8aa45c;
+  --grass-deep: #79924d;
+}
+.campus-map.season-late-fall {
+  --grass: #a09a58;
+  --grass-deep: #8c8a4c;
+}
+.season-spring .campus-tree.canopy .campus-tree-crown {
+  fill: #5c8a3f;
+}
+.season-spring .campus-tree.canopy .campus-tree-crown-top {
+  fill: #7fb054;
+}
+.season-summer .campus-tree.canopy .campus-tree-crown {
+  fill: #587a3a;
+}
+.season-summer .campus-tree.canopy .campus-tree-crown-top {
+  fill: #79994b;
+}
+.season-early-fall .campus-tree.canopy .campus-tree-crown {
+  fill: #7d7f34;
+}
+.season-early-fall .campus-tree.canopy .campus-tree-crown-top {
+  fill: #a29a3f;
+}
+.season-late-fall .campus-tree.canopy .campus-tree-crown {
+  fill: #9a6a2c;
+}
+.season-late-fall .campus-tree.canopy .campus-tree-crown-top {
+  fill: #c08a3a;
+}
+.season-late-fall .campus-tree.ornamental .campus-tree-crown {
+  fill: #b0552f;
+}
+.season-late-fall .campus-tree.ornamental .campus-tree-crown-top {
+  fill: #d07a3e;
+}
+
+/* Walkers: a shadow, a body in a shirt, a head. Moved by attribute from
+   ui/map/ambient.tsx; nothing here animates. */
+.campus-ambient {
+  pointer-events: none;
+}
+.walker-shadow {
+  fill: rgba(42, 56, 28, 0.22);
+}
+.walker-body {
+  stroke: rgba(42, 56, 28, 0.55);
+  stroke-width: 0.6;
+}
+.walker-head {
+  fill: #e8c39a;
+  stroke: rgba(42, 56, 28, 0.55);
+  stroke-width: 0.6;
+}
