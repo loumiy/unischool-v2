@@ -10,6 +10,7 @@ import {
   type GameState,
   type Speed,
 } from '../sim/index.ts';
+import { rungWords } from '../content/board.ts';
 import DayTicker from './DayTicker.tsx';
 import {
   BuildIcon,
@@ -117,6 +118,11 @@ export default function Toolbar({
           <span className={`toolbar-funds-net ${weekNet < 0 ? 'money-negative' : ''}`}>
             {formatMoney(weekNet, { sign: true })} /wk
           </span>
+          {state.distress.rung > 0 && (
+            <span className={`toolbar-rung rung-${state.distress.rung}`}>
+              {rungWords(state.distress.rung).name}
+            </span>
+          )}
         </button>
         <div className="toolbar-stats">
           <button

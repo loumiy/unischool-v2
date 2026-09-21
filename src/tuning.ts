@@ -128,3 +128,30 @@ export const ATTRITION_BASE = 0.04;
 export const ATTRITION_LINE = 60;
 export const ATTRITION_PER_POINT = 0.004;
 export const ATTRITION_MAX = 0.35;
+
+// ---------- The distress ladder (DD §5.5, Phase 8) ----------
+
+// Board confidence, 0–100, and what moves it each term.
+export const BOARD_CONFIDENCE_START = 70;
+export const CONFIDENCE_SURPLUS_GAIN = 2;
+export const CONFIDENCE_DEFICIT_LOSS = 4;
+export const CONFIDENCE_FREEZE_LOSS = 3;
+export const CONFIDENCE_AUSTERITY_LOSS = 5;
+export const CONFIDENCE_OVERDRAW_LOSS = 1;
+export const CONFIDENCE_TRIPLES_LOSS = 1;
+
+// The rungs' clocks, in terms (three a year).
+export const DEFICIT_TERMS = 3; // consecutive deficit terms that make Deficit
+export const SURPLUS_TERMS_TO_EXIT = 2; // consecutive surplus terms that climb back
+export const AUSTERITY_AFTER_TERMS = 3; // terms frozen before the board imposes austerity
+export const RECEIVERSHIP_AFTER_TERMS = 3; // terms of austerity before the interim CFO
+export const RECEIVERSHIP_TERMS = 9; // three years
+export const TERM_HISTORY = 12; // terms of the ledger the screen shows
+
+// The interim CFO's policy: what the budget sliders lock to.
+export const BOARD_POLICY_DRAW = 0.05;
+export const BOARD_POLICY_MAINTENANCE = 0.5;
+
+// Cutting aid takes this much off the discount at a time, to this floor.
+export const AID_CUT_STEP = 0.15;
+export const AID_MIN = 0;

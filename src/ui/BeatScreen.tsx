@@ -3,7 +3,17 @@ import type { CalendarBeat } from '../content/calendarBeats.ts';
 import { EXPENSE_WORDS, READING_WORDS, REVENUE_WORDS } from '../content/treasury.ts';
 import {
   admitRate,
+  availableCuts,
+  boardPolicy,
   campusCapacity,
+  cutAvailable,
+  inAusterity,
+  inReceivership,
+  netTuition,
+  reservesTight,
+  RUNG_SOUND,
+  termExpenses,
+  type AusterityCut,
   classLabel,
   enrolled,
   EXPENSE_CATEGORIES,
@@ -19,7 +29,6 @@ import {
   type GameState,
 } from '../sim/index.ts';
 import {
-  AID_DISCOUNT_RATE,
   ENDOWMENT_DRAW_MAX,
   ENDOWMENT_DRAW_MIN,
   ENDOWMENT_DRAW_PRUDENT,
@@ -31,6 +40,7 @@ import {
   TUITION_STEP,
 } from '../tuning.ts';
 import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
+import { BOARD_WORDS, CUT_WORDS, rungWords } from '../content/board.ts';
 import Figure from './Figure.tsx';
 import TabOverlay from './TabOverlay.tsx';
 
@@ -46,6 +56,7 @@ export interface BeatDecision {
   maintenanceFunding?: number;
   tuition?: number;
   selectivity?: number;
+  cuts?: AusterityCut[];
 }
 
 export default function BeatScreen({
@@ -72,13 +83,18 @@ export default function BeatScreen({
           <AdmissionsBody state={state} decision={decision} onChange={setDecision} />
         )}
         {beat.id === 'convocation' && <ConvocationBody state={state} />}
+        {beat.id === 'board-meeting' && (
+          <BoardBody state={state} decision={decision} onChange={setDecision} />
+        )}
         <div className="beat-stub">
           <div className="eyebrow">Arrives in Phase {beat.phase}</div>
           <p>{beat.stub}</p>
         </div>
         <div className="beat-actions">
           <button type="button" className="beat-resolve" onClick={() => onResolve(decision)}>
-            {beat.resolveLabel}
+            {beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
+              ? 'Accept the cuts'
+              : beat.resolveLabel}
           </button>
         </div>
       </div>
@@ -221,7 +237,7 @@ function AdmissionsBody({
         <span className="draw-slider-label">
           Tuition <strong>{formatMoney(terms.tuition)}</strong>
           <span className="draw-slider-note">
-            {formatMoney(terms.tuition * (1 - AID_DISCOUNT_RATE))} net of aid
+            {formatMoney(netTuition(terms.tuition, state.people.aidRate))} net of aid
           </span>
         </span>
         <input
@@ -327,6 +343,113 @@ function ConvocationBody({ state }: { state: GameState }) {
         </div>
       ) : (
         <p className="treasury-note">{PEOPLE_WORDS.noClass}</p>
+      )}
+    </div>
+  );
+}
+
+// The Board Meeting (DD §3.3, §5.5): the board's confidence, where the
+// college stands on the ladder and what the board says about it; under
+// austerity, the cuts it requires; under the interim CFO, her policy.
+function BoardBody({
+  state,
+  decision,
+  onChange,
+}: {
+  state: GameState;
+  decision: BeatDecision;
+  onChange: (d: BeatDecision) => void;
+}) {
+  const d = state.distress;
+  const words = rungWords(d.rung);
+  const austerity = inAusterity(state);
+  const cuts = availableCuts(state);
+  const chosen = decision.cuts ?? [];
+  const last = d.terms.at(-1);
+  const toggle = (cut: AusterityCut) =>
+    onChange({
+      ...decision,
+      cuts: chosen.includes(cut) ? chosen.filter((c) => c !== cut) : [...chosen, cut],
+    });
+  return (
+    <div className="budget-body board-body">
+      <h3>The board's view</h3>
+      <div className="figure-row">
+        <Figure
+          label="Confidence"
+          value={String(d.confidence)}
+          hint={BOARD_WORDS.confidence}
+          size="lg"
+          tone={d.confidence < 40 ? 'bad' : undefined}
+        />
+        <Figure
+          label="Standing"
+          value={words.name}
+          hint={BOARD_WORDS.rung}
+          tone={d.rung === RUNG_SOUND ? 'good' : 'bad'}
+        />
+        <Figure
+          label="Reserves"
+          value={`${formatMoney(state.treasury.cash)} / ${formatMoney(termExpenses(state))}`}
+          note="against one term of expenses"
+          hint={BOARD_WORDS.reserves}
+          tone={reservesTight(state) ? 'bad' : undefined}
+        />
+        {last && (
+          <Figure
+            label="Last term"
+            value={formatMoney(last.net, { sign: true })}
+            hint={BOARD_WORDS.surplusRun}
+            tone={last.net < 0 ? 'bad' : 'good'}
+          />
+        )}
+      </div>
+      <p className="board-demand">{words.demand}</p>
+      <p className="treasury-note">{words.rule}</p>
+      {austerity && (
+        <div className="board-cuts">
+          <div className="eyebrow">The board's list</div>
+          <p className="treasury-note">
+            {cuts.length > 0 ? BOARD_WORDS.cutsRequired : BOARD_WORDS.cutsNone}
+          </p>
+          <ul className="cut-list">
+            {CUT_WORDS.map((c) => {
+              const id = c.id as AusterityCut;
+              const available = cutAvailable(state, id);
+              return (
+                <li key={c.id} className={available ? '' : 'unavailable'}>
+                  <label>
+                    <input
+                      type="checkbox"
+                      disabled={!available}
+                      checked={chosen.includes(id)}
+                      onChange={() => toggle(id)}
+                    />
+                    <span className="cut-label">{c.label}</span>
+                    <span className="cut-blurb">
+                      {c.blurb}
+                      {c.phase !== undefined && ` Arrives in Phase ${c.phase}.`}
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      )}
+      {inReceivership(state) && (
+        <div className="figure-row">
+          <Figure
+            label="CFO's policy"
+            value={`${formatPercent(boardPolicy().drawRate, 2)} draw · ${formatPercent(boardPolicy().maintenanceFunding, 0)} maintenance`}
+            hint={BOARD_WORDS.policy}
+          />
+          <Figure
+            label="Terms left"
+            value={String(d.receivershipTermsLeft)}
+            hint={BOARD_WORDS.receivership}
+          />
+        </div>
       )}
     </div>
   );

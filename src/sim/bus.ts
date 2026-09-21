@@ -38,6 +38,10 @@ export type BusEvent =
   | { kind: 'classArrived'; classYear: number; size: number; quality: number; triples: number }
   | { kind: 'studentsLeft'; count: number }
   | { kind: 'classGraduated'; classYear: number; size: number }
+  | { kind: 'termClosed'; year: number; term: Term; net: number }
+  | { kind: 'rungChanged'; from: number; to: number }
+  | { kind: 'boardLetter'; letter: string }
+  | { kind: 'cutsImposed'; cuts: string[] }
   | { kind: 'yearClosed'; year: number; net: number }
   | { kind: 'mark'; label: string }; // the debug panel's marker
 
@@ -61,6 +65,10 @@ export const BUS_KINDS: readonly BusKind[] = [
   'classArrived',
   'studentsLeft',
   'classGraduated',
+  'termClosed',
+  'rungChanged',
+  'boardLetter',
+  'cutsImposed',
   'yearClosed',
   'mark',
 ];

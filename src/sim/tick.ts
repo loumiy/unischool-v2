@@ -3,6 +3,7 @@ import { beatDue, clockHeld } from './beats.ts';
 import { advanceClock } from './calendar.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
+import { distressWeek } from './distress.ts';
 import { estateWeek } from './estate.ts';
 import { peopleWeek } from './people.ts';
 import { treasuryWeek } from './treasury.ts';
@@ -16,7 +17,7 @@ import { treasuryWeek } from './treasury.ts';
 // week passed from a week refused by identity alone.
 //
 // Systems land here phase by phase in a fixed order (calendar, treasury,
-// estate, people, academics, events, reputation). Each takes the state and
+// distress, estate, people, academics, events, reputation). Each takes the state and
 // the RNG and returns the state; the RNG's state is written back at the end
 // so a tick is a pure function of (state) including its own randomness.
 export function tick(state: GameState): GameState {
@@ -26,6 +27,7 @@ export function tick(state: GameState): GameState {
   next = calendarTurn(next);
   if (next.phase === 'running') {
     next = treasuryWeek(next);
+    next = distressWeek(next);
     next = estateWeek(next);
     next = peopleWeek(next);
     next = fireBeat(next);

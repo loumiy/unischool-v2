@@ -50,13 +50,17 @@ export function tickRunWeeks(
   let r = run;
   for (let i = 0; i < weeks; i++) {
     let next = tickRun(r);
-    if (next.state === r.state) {
+    // A week can be held by more than one thing at once (a letter from
+    // the board and a beat, at a term turn): release them in turn.
+    for (let guard = 0; next.state === r.state && guard < 4; guard++) {
       const release = onHold?.(r.state) ?? null;
       if (!release) return r;
-      r = dispatch(r, release);
+      const released = dispatch(r, release);
+      if (released === r) return r;
+      r = released;
       next = tickRun(r);
-      if (next.state === r.state) return r;
     }
+    if (next.state === r.state) return r;
     r = next;
   }
   return r;

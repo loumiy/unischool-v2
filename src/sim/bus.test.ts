@@ -157,6 +157,8 @@ describe('calendar beats (DD §3.3)', () => {
     const history = run.state.bus.map((e) => describeEntry(e, run.state).text);
     const line = (kind: 'admissionsClosed' | 'classArrived') =>
       describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
+    const termLine = (i: number) =>
+      describeEntry(entriesOfKind(run.state, 'termClosed')[i]!, run.state).text;
     expect(history).toEqual([
       'Blackmoor College is chartered.',
       'Ground is broken for Founders Hall.',
@@ -164,17 +166,20 @@ describe('calendar beats (DD §3.3)', () => {
       'The board is in session.',
       'The board adjourns.',
       'Spring Term begins.',
+      termLine(0),
       'Admissions Day. The applications are in.',
       line('admissionsClosed'),
       'The admissions file closes.',
       'Founders Hall opens.',
       'Summer Term begins.',
+      termLine(1),
       'Budget & Hiring. The ledger is open, and so is the market.',
       'The Year 2 budget is approved at a 4.5% draw.',
       'The budget is approved and the market closes for the year.',
       'Fall Term begins.',
       'Year 2.',
       `Year 1 closes ${formatMoney(run.state.treasury.history[0]!.net)} in the black.`,
+      termLine(2),
       line('classArrived'),
       'Convocation. The new class is on the lawn.',
     ]);

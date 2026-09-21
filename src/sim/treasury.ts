@@ -1,5 +1,4 @@
 import {
-  AID_DISCOUNT_RATE,
   DEBT_AMORTISATION_YEARS,
   DEBT_INTEREST_RATE,
   ENDOWMENT_DRAW_DEFAULT,
@@ -15,6 +14,7 @@ import {
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
+import { boardPolicy, inReceivership } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
 import { Rng } from './rng.ts';
@@ -181,7 +181,7 @@ export function proposeBudget(
       adminPayroll: FOUNDING_ADMIN_PAYROLL,
       maintenance: projectedMaintenance(state, funding),
       financialAid: Math.round(
-        projectedEnrollment(state) * state.people.terms.tuition * AID_DISCOUNT_RATE,
+        projectedEnrollment(state) * state.people.terms.tuition * state.people.aidRate,
       ),
       debtService: annualDebtService(t),
     },
@@ -339,8 +339,12 @@ export function approveBudget(
   maintenanceFunding: number | undefined,
 ): GameState {
   const t = state.treasury;
-  const rate = clampDrawRate(drawRate ?? t.drawRate);
-  const funding = clampFunding(maintenanceFunding ?? t.maintenanceFunding);
+  // Under the interim CFO the sliders lock to board policy (DD §5.5).
+  const policy = inReceivership(state) ? boardPolicy() : null;
+  const rate = clampDrawRate(policy?.drawRate ?? drawRate ?? t.drawRate);
+  const funding = clampFunding(
+    policy?.maintenanceFunding ?? maintenanceFunding ?? t.maintenanceFunding,
+  );
   const budget = proposeBudget(state, state.clock.year + 1, rate, funding);
   return emit(
     {

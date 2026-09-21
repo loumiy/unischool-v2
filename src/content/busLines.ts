@@ -4,6 +4,7 @@ import { institutionName } from '../sim/identity.ts';
 import { formatMoney, formatPercent } from '../sim/treasury.ts';
 import type { GameState } from '../sim/state.ts';
 import { findBuilding } from './buildings.ts';
+import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
@@ -36,6 +37,9 @@ const PLACEHOLDERS = [
   'label',
   'triples',
   'count',
+  'rungLine',
+  'title',
+  'cuts',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -114,6 +118,30 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'classGraduated':
       vars.label = classLabel(entry.classYear);
       vars.size = String(entry.size);
+      break;
+    case 'termClosed': {
+      vars.term = termLabel(entry.term);
+      vars.net = formatMoney(Math.abs(entry.net));
+      vars.ledger = entry.net < 0 ? 'in the red' : 'in the black';
+      return { text: fill(line.text, vars), tone: entry.net < 0 ? 'bad' : 'good' };
+    }
+    case 'rungChanged': {
+      const down = entry.to > entry.from;
+      const to = rungWords(entry.to).name;
+      vars.rungLine = down
+        ? `The college is ${to === 'Receivership' ? 'in receivership' : to.toLowerCase()}.`
+        : entry.to === 0
+          ? 'The college is on a sound footing again.'
+          : `The college climbs back to ${to.toLowerCase()}.`;
+      return { text: fill(line.text, vars), tone: down ? 'bad' : 'good' };
+    }
+    case 'boardLetter':
+      vars.title = letterById(entry.letter).title;
+      break;
+    case 'cutsImposed':
+      vars.cuts = entry.cuts
+        .map((c) => CUT_WORDS.find((w) => w.id === c)?.label.toLowerCase() ?? c)
+        .join(', ');
       break;
     case 'yearClosed': {
       // The one line whose tone is the number's: in the black or in the red.

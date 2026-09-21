@@ -20,12 +20,12 @@
       "term": "fall",
       "week": 12,
       "dd": "§5.5",
-      "phase": 8,
+      "phase": 19,
       "prompt": "The board is in session",
       "firedLine": "The board is in session.",
       "resolvedLine": "The board adjourns.",
       "blurb": "The trustees have read the year's numbers, or have had them read to them over lunch. They have views.",
-      "stub": "Confidence, demands, and, in a hard year, impositions.",
+      "stub": "The board's view of the ambitions on the table, and of the rival.",
       "resolveLabel": "Adjourn"
     },
     {

@@ -6,6 +6,7 @@ import {
   clockRuns,
   formatClockShort,
   FOUNDERS_HALL_ID,
+  inAusterity,
   lastEntry,
   pendingBeat,
   type Financing,
@@ -13,6 +14,8 @@ import {
   type Speed,
 } from '../sim/index.ts';
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
+import BoardLetter from './BoardLetter.tsx';
+import { BOARD_WORDS } from '../content/board.ts';
 import { autosave, boot, eraseAndRestart } from './boot.ts';
 import BuildPopup from './BuildPopup.tsx';
 import CampusMap from './CampusMap.tsx';
@@ -50,7 +53,7 @@ const TAB_HOTKEYS: Record<string, TabId> = {
 };
 
 // What fills the screen slot: a tab, or the pending beat's screen.
-type Overlay = TabId | 'beat';
+type Overlay = TabId | 'beat' | 'letter';
 
 export default function App() {
   const { run, speed, weekProgress } = useGame();
@@ -75,6 +78,7 @@ export default function App() {
   const started = state !== null && state.phase !== 'founding';
   const siting = state?.phase === 'siting';
   const beat = state ? pendingBeat(state) : null;
+  const letter = state?.distress.pendingLetter ?? null;
 
   useEffect(() => {
     if (identity) applySchoolColors(identity.colors);
@@ -92,7 +96,8 @@ export default function App() {
   const effectiveBuildOpen = siting ? false : buildOpen;
   // The beat screen exists only while its beat is pending: resolving it
   // closes the screen without the shell having to notice.
-  const effectiveOverlay: Overlay | null = overlay === 'beat' && !beat ? null : overlay;
+  const effectiveOverlay: Overlay | null =
+    (overlay === 'beat' && !beat) || (overlay === 'letter' && !letter) ? null : overlay;
 
   // Picking up a building and using a tool are two jobs for the same click,
   // so exactly one is ever live.
@@ -132,6 +137,12 @@ export default function App() {
     }
     closeBuild();
     setJournalOpen(true);
+  }
+  function readLetter() {
+    if (!letter) return;
+    const applied = store.dispatch({ type: 'readLetter' });
+    if (applied) void autosave(store.getSnapshot().run!);
+    setOverlay(null);
   }
   function resolveBeat(decision: BeatDecision) {
     if (!beat) return;
@@ -205,9 +216,11 @@ export default function App() {
   // clock; otherwise nothing, honestly.
   const next: NextPrompt | null = siting
     ? { text: 'Place Founders Hall on the land', go: effectiveOverlay ? 'campus' : undefined }
-    : beat
-      ? { text: beat.prompt, go: 'beat', urgent: effectiveOverlay !== 'beat' }
-      : null;
+    : letter
+      ? { text: BOARD_WORDS.letterPrompt, go: 'letter', urgent: effectiveOverlay !== 'letter' }
+      : beat
+        ? { text: beat.prompt, go: 'beat', urgent: effectiveOverlay !== 'beat' }
+        : null;
   const latest = lastEntry(state);
   const notice: Notice | null = latest
     ? {
@@ -220,8 +233,11 @@ export default function App() {
   const mapControls = effectiveOverlay === null;
   const mapBackOut = effectiveOverlay === null && !effectiveBuildOpen && !journalOpen;
 
+  // Austerity dulls the campus slightly (DD §5.5): a class the map's
+  // stylesheet reads.
+  const dulled = inAusterity(state);
   return (
-    <>
+    <div className={dulled ? 'austerity' : undefined}>
       <CampusMap
         state={state}
         placingId={effectivePlacingId}
@@ -270,7 +286,7 @@ export default function App() {
         <LogTicker
           notice={notice}
           next={next}
-          onGo={(go) => openTab(go === 'beat' ? 'beat' : null)}
+          onGo={(go) => openTab(go === 'beat' || go === 'letter' ? go : null)}
           journalOpen={journalOpen}
           onToggleJournal={toggleJournal}
         />
@@ -279,7 +295,9 @@ export default function App() {
           state={state}
           speed={speed}
           weekProgress={weekProgress}
-          active={effectiveOverlay === 'beat' ? null : effectiveOverlay}
+          active={
+            effectiveOverlay === 'beat' || effectiveOverlay === 'letter' ? null : effectiveOverlay
+          }
           onChangeTab={openTab}
           onSetSpeed={(s) => store.setSpeed(s)}
           buildOpen={effectiveBuildOpen}
@@ -288,7 +306,7 @@ export default function App() {
             setBuildOpen(!effectiveBuildOpen);
           }}
           ringBuild={false}
-          heldFor={beat?.name ?? null}
+          heldFor={letter ? 'a letter from the board' : (beat?.name ?? null)}
         />
         {effectiveBuildOpen && (
           <BuildPopup
@@ -303,6 +321,9 @@ export default function App() {
           />
         )}
         {journalOpen && <JournalPopup state={state} onClose={() => setJournalOpen(false)} />}
+        {effectiveOverlay === 'letter' && letter && (
+          <BoardLetter state={state} letterId={letter} onRead={readLetter} />
+        )}
         {effectiveOverlay === 'beat' && beat && (
           <BeatScreen
             beat={beat}
@@ -311,7 +332,7 @@ export default function App() {
             onClose={() => openTab(null)}
           />
         )}
-        {effectiveOverlay && effectiveOverlay !== 'beat' && (
+        {effectiveOverlay && effectiveOverlay !== 'beat' && effectiveOverlay !== 'letter' && (
           <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
             {effectiveOverlay === 'treasury' ? (
               <TreasuryScreen state={state} />
@@ -325,6 +346,6 @@ export default function App() {
           </TabOverlay>
         )}
       </div>
-    </>
+    </div>
   );
 }

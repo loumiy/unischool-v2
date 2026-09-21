@@ -151,6 +151,8 @@ There is no bankruptcy. Financial failure is a ladder, each rung survivable and 
 
 Climbing down the ladder is always mechanically clear ("two surplus terms," visible on the Treasury screen).
 
+**The ladder's clock.** The board reads the books once a term, when a term closes. Reserves are operating funds against one term of budgeted expenses. The ladder moves at most one rung a term except that exhausted reserves go straight to Freeze; two consecutive surplus terms with cash in hand climb back from Freeze or Austerity to wherever the conditions then put the college. A year frozen brings Austerity; a year of Austerity brings the interim CFO, whose term is fixed at three years whatever the books do. Board confidence (0–100) rises with sound surpluses and falls with deficits, freezes, austerity, an overdrawn endowment and students in triples. The board writes a letter, presented full-screen and holding the clock like a beat, at every rung entered on the way down, at the CFO's departure, and on the return to a sound footing. Under austerity the Board Meeting will not adjourn without a cut from the board's list; if the administration chooses none, the board chooses. The interim CFO does not borrow, and the freeze bans new construction as well as hires and programs; renovation is never banned.
+
 ---
 
 ## §6. Campus (System 2)

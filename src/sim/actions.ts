@@ -22,6 +22,13 @@ import {
   renovationCost,
   type Financing,
 } from './estate.ts';
+import {
+  borrowingAllowed,
+  constructionAllowed,
+  imposeCuts,
+  readLetter,
+  type AusterityCut,
+} from './distress.ts';
 import { closeAdmissions } from './people.ts';
 import { approveBudget } from './treasury.ts';
 
@@ -60,7 +67,12 @@ export type Action =
       maintenanceFunding?: number;
       tuition?: number;
       selectivity?: number;
+      // Board Meeting under austerity: the cuts chosen from the board's
+      // list (DD §5.5); absent, the board chooses.
+      cuts?: AusterityCut[];
     }
+  // Acknowledges the board's letter (distress.ts) and lets the clock go.
+  | { type: 'readLetter' }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -96,6 +108,11 @@ export function canApply(state: GameState, action: Action): Verdict {
       }
       const financing = action.financing ?? 'cash';
       if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      // The freeze (DD §5.5): nothing new is built; the interim CFO does
+      // not borrow.
+      const allowed = constructionAllowed(state);
+      if (!allowed.ok) return no(allowed.reason);
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
       if (!canPay(state, def.cost, financing)) {
         return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
       }
@@ -117,6 +134,7 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (p.backlog <= 0) return no('nothing to renovate');
       const financing = action.financing ?? 'cash';
       if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
       if (!canPay(state, renovationCost(p), financing)) {
         return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
       }
@@ -146,10 +164,13 @@ export function canApply(state: GameState, action: Action): Verdict {
       return no('unknown tool');
     }
     case 'resolveBeat':
+      if (state.distress.pendingLetter !== null) return no('a letter from the board is waiting');
       if (state.pendingBeat === null) return no('no beat is waiting');
       if (state.pendingBeat !== action.beatId)
         return no(`${action.beatId} is not the pending beat`);
       return YES;
+    case 'readLetter':
+      return state.distress.pendingLetter === null ? no('no letter is waiting') : YES;
     case 'debug/mark':
       return YES;
   }
@@ -281,8 +302,11 @@ export function applyAction(state: GameState, action: Action): GameState {
         next = approveBudget(next, action.drawRate, action.maintenanceFunding);
       if (action.beatId === 'admissions-day')
         next = closeAdmissions(next, action.tuition, action.selectivity);
+      if (action.beatId === 'board-meeting') next = imposeCuts(next, action.cuts);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
     }
+    case 'readLetter':
+      return readLetter(state);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
   }

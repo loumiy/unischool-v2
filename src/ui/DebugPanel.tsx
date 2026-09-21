@@ -131,6 +131,23 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
               '—'
             )}
           </dd>
+          <dt>Letter</dt>
+          <dd>
+            {state.distress.pendingLetter ? (
+              <>
+                {state.distress.pendingLetter}{' '}
+                <button type="button" onClick={() => store.dispatch({ type: 'readLetter' })}>
+                  read
+                </button>
+              </>
+            ) : (
+              '—'
+            )}
+          </dd>
+          <dt>Rung / confidence</dt>
+          <dd>
+            {state.distress.rung} / {state.distress.confidence}
+          </dd>
           <dt>Cash / endowment</dt>
           <dd>
             {formatMoney(state.treasury.cash)} / {formatMoney(state.treasury.endowment)}

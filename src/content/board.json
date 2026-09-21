@@ -1,0 +1,142 @@
+{
+  "rungs": [
+    {
+      "id": 0,
+      "name": "Sound",
+      "rule": "Reserves cover a term of expenses and the last terms have balanced.",
+      "demand": "The board notes the numbers and moves to any other business, of which there is a great deal."
+    },
+    {
+      "id": 1,
+      "name": "Tight",
+      "rule": "Reserves are under one term of expenses. Clears when they cover one again.",
+      "demand": "The board would like to see a term of expenses in the bank. Donors have begun to murmur, which is the sound donors make before they do nothing."
+    },
+    {
+      "id": 2,
+      "name": "Deficit",
+      "rule": "Spending has exceeded revenue for three terms running. Clears with a surplus term.",
+      "demand": "Three terms in the red. The board's confidence is draining, and the treasurer has started bringing a second calculator."
+    },
+    {
+      "id": 3,
+      "name": "Freeze",
+      "rule": "Reserves are exhausted. No new construction, hires or programs until two consecutive surplus terms.",
+      "demand": "The board has frozen the college: nothing new is built, hired or founded until two terms close in surplus. It says this without raising its voice, which is worse."
+    },
+    {
+      "id": 4,
+      "name": "Austerity",
+      "rule": "The freeze has held for a year. The board imposes cuts from its own list until two consecutive surplus terms.",
+      "demand": "The board imposes austerity. It has a list of cuts and would like you to choose from it; declining to choose is also a choice, and the board has made it for you."
+    },
+    {
+      "id": 5,
+      "name": "Receivership",
+      "rule": "Austerity has held for a year. An interim CFO holds the checkbook for three years; the budget sliders lock to board policy.",
+      "demand": "The board has installed an interim CFO. You keep the buildings and the curriculum. The checkbook is in a drawer, and the drawer is in her office."
+    }
+  ],
+  "letters": {
+    "enter-1": {
+      "title": "On the state of the reserves",
+      "body": [
+        "The Finance Committee met on Tuesday and reviewed the college's position. Reserves now stand below one term of operating expenses.",
+        "We do not regard this as a crisis. We regard it as the kind of thing that becomes one if nobody says the word aloud, so we are saying it: tight.",
+        "The Committee would be grateful for a plan that restores a term of expenses to the bank, and will be glad to hear it at the next meeting."
+      ],
+      "signed": "The Finance Committee"
+    },
+    "enter-2": {
+      "title": "Three terms in deficit",
+      "body": [
+        "The college has now spent more than it has taken in for three consecutive terms.",
+        "The Board's confidence in the administration is not unlimited, and this letter is the Board's way of saying that the limit is closer than it was.",
+        "We ask for a term in surplus. We ask for it in writing so that it is on the record that we asked."
+      ],
+      "signed": "The Board of Trustees"
+    },
+    "enter-3": {
+      "title": "Notice of freeze",
+      "body": [
+        "The college's reserves are exhausted. Effective at once, the Board freezes all new construction, hiring and programs.",
+        "The freeze lifts when two consecutive terms close in surplus. Until then the college maintains what it has and starts nothing.",
+        "The Board understands that this will be felt across the campus. That is the intention."
+      ],
+      "signed": "The Board of Trustees"
+    },
+    "enter-4": {
+      "title": "Austerity",
+      "body": [
+        "The freeze has held for a year and the college is not in surplus. The Board therefore imposes austerity.",
+        "At each Board Meeting until two terms close in surplus, the administration will choose cuts from the Board's list. Ambitions are set aside. The Board will not pretend the campus looks the same.",
+        "Nobody on this Board came to the college to write this letter. We have written it."
+      ],
+      "signed": "The Board of Trustees"
+    },
+    "enter-5": {
+      "title": "Appointment of an interim Chief Financial Officer",
+      "body": [
+        "Austerity has held for a year without recovery. The Board has appointed an interim Chief Financial Officer for a term of three years.",
+        "The budget will be set to Board policy for the duration. The administration retains its direction of buildings and of the curriculum, and nothing else that costs money.",
+        "This will be recorded in the college's history. The Board would rather it were not, and so, we expect, would you."
+      ],
+      "signed": "The Board of Trustees"
+    },
+    "exit-5": {
+      "title": "Restoration of full authority",
+      "body": [
+        "The interim Chief Financial Officer's term has ended. The Board restores the administration's full authority over the college's finances.",
+        "The Board thanks the interim CFO for her service, and the administration for its patience, in that order.",
+        "The years under receivership remain in the record. The Board trusts they will remain there alone."
+      ],
+      "signed": "The Board of Trustees"
+    },
+    "recovered": {
+      "title": "On the return to a sound footing",
+      "body": [
+        "The college has closed two consecutive terms in surplus and its reserves cover a term of expenses. The Board records its satisfaction.",
+        "It records, too, that satisfaction is not the same as confidence, and that the second is rebuilt more slowly than the first.",
+        "The Board looks forward to a meeting at which the numbers are not the first item."
+      ],
+      "signed": "The Board of Trustees"
+    }
+  },
+  "cuts": [
+    {
+      "id": "cutAid",
+      "label": "Cut financial aid",
+      "blurb": "Take fifteen points off the discount. Net tuition rises; fewer come, and fewer of those who most need to."
+    },
+    {
+      "id": "deferMaintenance",
+      "label": "Defer all maintenance",
+      "blurb": "Fund nothing this year. Every building's backlog grows, and the campus will show it."
+    },
+    {
+      "id": "closeProgram",
+      "label": "Close a program",
+      "blurb": "Shut a program and its costs, and its students' plans with it.",
+      "phase": 9
+    },
+    {
+      "id": "restructureAdmin",
+      "label": "Restructure the administration",
+      "blurb": "Cut the ratchet back a notch, with a term of chaos to pay for it.",
+      "phase": 20
+    }
+  ],
+  "words": {
+    "confidence": "The board's confidence in the administration, 0–100: it rises with sound surpluses and drains with deficits, freezes and austerity.",
+    "rung": "Where the college stands on the distress ladder (DD §5.5). There is no bankruptcy; each rung is survivable.",
+    "reserves": "Operating funds against one term of budgeted expenses: under it is Tight.",
+    "surplusRun": "Consecutive terms closed in surplus; two climb the college back a rung.",
+    "deficitRun": "Consecutive terms closed in deficit; three make Deficit.",
+    "termsAtRung": "Terms spent on the current rung; a year frozen brings austerity, a year of austerity brings the CFO.",
+    "receivership": "Terms the interim CFO has left before full authority returns.",
+    "policy": "Board policy while the checkbook is in the CFO's drawer: the draw and the maintenance funding the sliders lock to.",
+    "cutsRequired": "The board requires at least one cut from its list before it adjourns.",
+    "cutsNone": "Nothing on the board's list can be cut further; the board adjourns with its point made.",
+    "letterPrompt": "A letter from the board"
+  }
+}

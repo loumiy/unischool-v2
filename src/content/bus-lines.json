@@ -18,6 +18,10 @@
     "classArrived": { "text": "The {label} arrives: {size} students{triples}." },
     "studentsLeft": { "text": "{count} students leave.", "tone": "bad" },
     "classGraduated": { "text": "The {label} graduates, {size} strong.", "tone": "good" },
+    "termClosed": { "text": "{term} closes {net} {ledger}." },
+    "rungChanged": { "text": "{rungLine}" },
+    "boardLetter": { "text": "A letter from the board: “{title}”." },
+    "cutsImposed": { "text": "The board's cuts: {cuts}.", "tone": "bad" },
     "yearClosed": { "text": "Year {year} closes {net} {ledger}." },
     "mark": { "text": "{label}" }
   }
