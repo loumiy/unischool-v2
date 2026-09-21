@@ -1,7 +1,6 @@
 import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import {
   attritionRate,
-  beautyTerms,
   campusCapacity,
   classLabel,
   enrolled,
@@ -16,6 +15,7 @@ import {
 } from '../sim/index.ts';
 import { AID_DISCOUNT_RATE } from '../tuning.ts';
 import Figure from './Figure.tsx';
+import PlacementPanel from './PlacementPanel.tsx';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
 // capacity against them, the standing admissions terms and the last
@@ -32,7 +32,7 @@ const TERMS: { key: keyof SatisfactionBreakdown; label: string; hint: string }[]
   { key: 'condition', label: 'Buildings', hint: PEOPLE_READINGS.condition },
   { key: 'teaching', label: 'Teaching', hint: PEOPLE_READINGS.teachingTerm },
   { key: 'morale', label: 'Faculty quirks', hint: PEOPLE_READINGS.morale },
-  { key: 'beauty', label: 'Beauty', hint: PEOPLE_READINGS.beauty },
+  { key: 'placement', label: 'Placement', hint: PEOPLE_READINGS.placement },
   { key: 'conditions', label: 'The ladder', hint: PEOPLE_READINGS.conditions },
 ];
 
@@ -78,7 +78,6 @@ export default function StudentsScreen({ state }: { state: GameState }) {
   const teaching = teachingQuality(state);
   const next = sorted[0] ?? null;
   const projected = next ? outcomesFor(next.quality, next.satisfaction, next.size) : null;
-  const beauty = beautyTerms(state);
   return (
     <div className="students">
       <div className="figure-row">
@@ -195,6 +194,8 @@ export default function StudentsScreen({ state }: { state: GameState }) {
         )}
       </section>
 
+      <PlacementPanel state={state} />
+
       <section className="treasury-panel">
         <h3>Admissions</h3>
         <div className="figure-row inner">
@@ -212,13 +213,6 @@ export default function StudentsScreen({ state }: { state: GameState }) {
             label="Selectivity"
             value={formatPercent(terms.selectivity, 0)}
             hint={PEOPLE_READINGS.selectivity}
-          />
-          <Figure
-            label="Campus beauty"
-            value={beauty.score.toFixed(0)}
-            note={`greenery ${formatPercent(beauty.greenery, 0)} · landmarks ${formatPercent(beauty.landmarks, 0)} · upkeep ${formatPercent(beauty.upkeep, 0)}`}
-            hint={PEOPLE_READINGS.campusBeauty}
-            tone={beauty.score < 40 ? 'bad' : beauty.score >= 60 ? 'good' : undefined}
           />
           {lastAdmissions && (
             <>

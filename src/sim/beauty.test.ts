@@ -8,6 +8,7 @@ import {
   LANDMARK_TARGET,
 } from '../tuning.ts';
 import { beautyPoolFactor, beautyTerms, campusBeauty } from './beauty.ts';
+import { placementSatisfaction } from './placement.ts';
 import { defaultResolution } from './beats.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { applicantPool, satisfactionBreakdown } from './people.ts';
@@ -43,6 +44,7 @@ describe('campus beauty (DD §6.2)', () => {
     );
     expect(t.landmarks).toBe(0); // nothing open yet
     expect(t.upkeep).toBe(1);
+    expect(t.enclosure).toBe(0); // one building encloses nothing
     expect(t.score).toBe(
       Number((100 * (t.greenery * BEAUTY_WEIGHTS.greenery + BEAUTY_WEIGHTS.upkeep)).toFixed(1)),
     );
@@ -84,11 +86,11 @@ describe('campus beauty (DD §6.2)', () => {
     expect(BEAUTY_POOL_SWING).toBeLessThanOrEqual(0.12);
     const par = { tuition: 40_000, selectivity: 0.5 };
     expect(applicantPool(par)).toBe(BASE_APPLICANTS);
-    expect(applicantPool(par, undefined, 100)).toBe(
+    expect(applicantPool(par, undefined, 1 + BEAUTY_POOL_SWING)).toBe(
       Math.round(BASE_APPLICANTS * (1 + BEAUTY_POOL_SWING)),
     );
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR * 2, defaultResolution);
     const b = satisfactionBreakdown(run.state, 100);
-    expect(b.beauty).toBeCloseTo(((campusBeauty(run.state) - 50) / 50) * 8, 5);
+    expect(b.placement).toBe(placementSatisfaction(run.state).applied);
   });
 });

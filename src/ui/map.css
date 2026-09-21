@@ -595,3 +595,34 @@
   stroke: rgba(42, 56, 28, 0.55);
   stroke-width: 0.6;
 }
+
+/* ---------- Phase 14: the quads, named on the ground ---------- */
+/* A quad is ground, so it reads as ground: a wash over its tiles and the
+   name lying across them, in the map's own hand. */
+.campus-quads {
+  cursor: pointer;
+}
+.campus-quad-tile {
+  fill: rgba(255, 252, 235, 0.09);
+  stroke: none;
+}
+.campus-quad:hover .campus-quad-tile,
+.campus-quad.selected .campus-quad-tile {
+  fill: rgba(255, 252, 235, 0.2);
+}
+.campus-quad-name {
+  font-family: var(--display);
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  fill: rgba(42, 56, 28, 0.62);
+  paint-order: stroke;
+  stroke: rgba(255, 252, 235, 0.55);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  cursor: pointer;
+}
+.campus-quad-name:hover,
+.campus-quad-name.selected {
+  fill: var(--ink);
+}

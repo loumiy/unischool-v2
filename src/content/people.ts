@@ -33,7 +33,7 @@ const fileSchema = obj({
     condition: str,
     teachingTerm: str,
     morale: str,
-    beauty: str,
+    placement: str,
     conditions: str,
     distinguished: str,
     placed: str,

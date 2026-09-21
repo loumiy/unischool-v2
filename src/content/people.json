@@ -26,7 +26,7 @@
     "condition": "The state of the buildings: full condition costs nothing, ruin costs the most.",
     "teachingTerm": "Program quality against the neutral line: nothing to study is the worst of it.",
     "morale": "What the faculty's quirks add or take, capped.",
-    "beauty": "Campus beauty against the middle: greenery, landmarks and upkeep, scored on the Students screen.",
+    "placement": "Everything the layout is worth to their mood — campus beauty and the buildings that stand near their partners — added up and capped.",
     "conditions": "Living through the ladder: a freeze, austerity and receivership cost more each.",
     "distinguished": "Graduates who left with distinction: the class's score above the middle earns them.",
     "placed": "Graduates who went on, unremarkably, as most do.",

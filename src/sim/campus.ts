@@ -39,6 +39,9 @@ export interface Campus {
   // Standing trees: tile key → seed. The founding woodland at new-game,
   // then whatever the player planted and felled.
   trees: Record<string, number>;
+  // What the player has called the quads the buildings enclose (quads.ts),
+  // by anchor tile; the ones they have not named the game names itself.
+  quadNames: Record<string, string>;
   nextPlacementId: number;
 }
 

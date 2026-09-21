@@ -20,3 +20,5 @@ export * from './distress.ts';
 export * from './academics.ts';
 export * from './faculty.ts';
 export * from './beauty.ts';
+export * from './quads.ts';
+export * from './placement.ts';

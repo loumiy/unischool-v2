@@ -1,0 +1,83 @@
+{
+  "pairings": [
+    {
+      "id": "dorm-dining",
+      "label": "Dorms near dining",
+      "line": "A short walk to breakfast is the difference between breakfast and not.",
+      "from": "residential",
+      "to": "dining",
+      "points": 2.5
+    },
+    {
+      "id": "lab-hall",
+      "label": "Labs near their hall",
+      "line": "Nobody carries a tray of specimens across a campus twice.",
+      "from": "lab",
+      "to": "academic",
+      "points": 1.5
+    },
+    {
+      "id": "rec-field",
+      "label": "Recreation near the fields",
+      "line": "Changing rooms on one side of the grounds and the grounds on the other is a design nobody defends.",
+      "from": "recreation-center",
+      "to": "playing-field",
+      "points": 1.5
+    },
+    {
+      "id": "health-dorm",
+      "label": "Health near the dorms",
+      "line": "The infirmary is only reassuring if you can reach it in a dressing gown.",
+      "from": "health-center",
+      "to": "residential",
+      "points": 1.5
+    },
+    {
+      "id": "library-academic",
+      "label": "The library among the halls",
+      "line": "A library at the edge of campus is a very quiet library.",
+      "from": "library",
+      "to": "academic",
+      "points": 2
+    },
+    {
+      "id": "life-dorm",
+      "label": "Student life near the dorms",
+      "line": "The student centre wants to be somewhere people pass, not somewhere they set out for.",
+      "from": "student-center",
+      "to": "residential",
+      "points": 2
+    }
+  ],
+  "quadNames": [
+    "The Old Quad",
+    "Founders Quad",
+    "The Green",
+    "North Quad",
+    "South Quad",
+    "The Cloister",
+    "Chapel Green",
+    "The Yard",
+    "Library Court",
+    "The Lower Green",
+    "Alumni Quad",
+    "The Long Court"
+  ],
+  "readings": {
+    "placement": "Everything the layout is worth, added up and then capped: no arrangement of buildings may move an outcome more than the cap allows.",
+    "cap": "The hard cap on placement (DD §6.2): the player who ignores layout entirely must stay fully viable, so the total is clamped.",
+    "quads": "Open spaces the buildings enclose: greener and better enclosed is worth more, and three good ones is a full mark.",
+    "enclosure": "How much of this quad's edge is building wall rather than open ground or water.",
+    "green": "How much of the quad is lawn and trees rather than paving.",
+    "pairings": "Buildings that belong near each other: the share of each kind that has its partner within a short walk.",
+    "beautySwing": "What campus beauty is worth to the students' mood, before the cap."
+  },
+  "lines": {
+    "noQuads": "No quads yet: three or four buildings around an open space make one.",
+    "quadCount": "{count} enclosed",
+    "renameHint": "Click a quad's name to rename it.",
+    "capped": "Capped: {raw} would be {applied}.",
+    "uncapped": "Under the cap.",
+    "pairingShare": "{paired} of {total}"
+  }
+}

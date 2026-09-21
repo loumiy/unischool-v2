@@ -113,7 +113,13 @@ describe('founding (DD §2.4)', () => {
     }
     // The road along the south edge is never buildable.
     expect(
-      footprintIsClear({ placements: [], paths: [], trees: {}, nextPlacementId: 1 }, 0, 59, 7, 5),
+      footprintIsClear(
+        { placements: [], paths: [], trees: {}, quadNames: {}, nextPlacementId: 1 },
+        0,
+        59,
+        7,
+        5,
+      ),
     ).toBe(false);
   });
 
@@ -136,6 +142,7 @@ describe('founding (DD §2.4)', () => {
       ],
       paths: [],
       trees: {},
+      quadNames: {},
       nextPlacementId: 2,
     };
     expect(footprintIsClear(campus, 16, 14, 7, 5)).toBe(false);

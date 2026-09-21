@@ -7,6 +7,7 @@ import {
   type BuildingIcon,
 } from '../content/buildings.ts';
 import { PEOPLE_READINGS } from '../content/people.ts';
+import { PLACEMENT_READINGS } from '../content/placement.ts';
 import { ESTATE_WORDS } from '../content/treasury.ts';
 import {
   beautyTerms,
@@ -19,6 +20,8 @@ import {
   FOUNDERS_HALL_ID,
   type GameState,
   hasFoundersHall,
+  detectQuads,
+  placementSatisfaction,
 } from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
 import {
@@ -270,16 +273,40 @@ export default function BuildPopup({
             <span className="build-cat-label">Campus Tools</span>
           </button>
         </nav>
-        <div className="build-beauty figure" tabIndex={0}>
-          <span className="build-beauty-label">Campus beauty</span>
-          <span className="build-beauty-value">{beautyTerms(state).score.toFixed(0)}</span>
-          <span className="build-beauty-terms">
-            greenery {formatPercent(beautyTerms(state).greenery, 0)} · landmarks{' '}
-            {formatPercent(beautyTerms(state).landmarks, 0)} · upkeep{' '}
-            {formatPercent(beautyTerms(state).upkeep, 0)}
+        <div className="build-placement">
+          <span className="build-beauty figure" tabIndex={0}>
+            <span className="build-beauty-label">Beauty</span>
+            <span className="build-beauty-value">{beautyTerms(state).score.toFixed(0)}</span>
+            <span className="build-beauty-terms">
+              greenery {formatPercent(beautyTerms(state).greenery, 0)} · landmarks{' '}
+              {formatPercent(beautyTerms(state).landmarks, 0)} · upkeep{' '}
+              {formatPercent(beautyTerms(state).upkeep, 0)} · quads{' '}
+              {formatPercent(beautyTerms(state).enclosure, 0)}
+            </span>
+            <span className="figure-hint" role="tooltip">
+              {PEOPLE_READINGS.campusBeauty}
+            </span>
           </span>
-          <span className="figure-hint" role="tooltip">
-            {PEOPLE_READINGS.campusBeauty}
+          <span className="build-beauty figure" tabIndex={0}>
+            <span className="build-beauty-label">Quads</span>
+            <span className="build-beauty-value">{detectQuads(state.campus).length}</span>
+            <span className="figure-hint" role="tooltip">
+              {PLACEMENT_READINGS.quads}
+            </span>
+          </span>
+          <span className="build-beauty figure" tabIndex={0}>
+            <span className="build-beauty-label">Layout</span>
+            <span className="build-beauty-value">
+              {placementSatisfaction(state).applied > 0 ? '+' : ''}
+              {placementSatisfaction(state).applied.toFixed(1)}
+            </span>
+            <span className="build-beauty-terms">
+              of {placementSatisfaction(state).limit} allowed · the Students screen shows the
+              arithmetic
+            </span>
+            <span className="figure-hint" role="tooltip">
+              {PLACEMENT_READINGS.placement}
+            </span>
           </span>
         </div>
         <div className="build-mode-tray">
