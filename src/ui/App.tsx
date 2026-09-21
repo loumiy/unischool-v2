@@ -28,6 +28,7 @@ import TabOverlay, { StubScreen } from './TabOverlay.tsx';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
+import StudentsScreen from './StudentsScreen.tsx';
 import TreasuryScreen from './TreasuryScreen.tsx';
 import type { CampusTool } from './tools.ts';
 import { useCssHeightVar } from './useCssHeightVar.ts';
@@ -41,7 +42,12 @@ import { useGame } from './useGame.ts';
 // One Escape ladder, here, backs out of whatever is open: a popup, then a
 // screen, then the map's own.
 
-const TAB_HOTKEYS: Record<string, TabId> = { c: 'curriculum', f: 'faculty', t: 'treasury' };
+const TAB_HOTKEYS: Record<string, TabId> = {
+  c: 'curriculum',
+  f: 'faculty',
+  t: 'treasury',
+  s: 'students',
+};
 
 // What fills the screen slot: a tab, or the pending beat's screen.
 type Overlay = TabId | 'beat';
@@ -309,6 +315,8 @@ export default function App() {
           <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
             {effectiveOverlay === 'treasury' ? (
               <TreasuryScreen state={state} />
+            ) : effectiveOverlay === 'students' ? (
+              <StudentsScreen state={state} />
             ) : (
               <StubScreen phase={tabById(effectiveOverlay).phase}>
                 {tabById(effectiveOverlay).stub}

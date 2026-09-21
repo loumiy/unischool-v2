@@ -4,6 +4,7 @@ import type { Campus } from './campus.ts';
 import type { Identity } from './identity.ts';
 import { Rng, type RngState } from './rng.ts';
 import { foundingWoodland } from './terrain.ts';
+import { foundingPeople, type People } from './people.ts';
 import { foundingTreasury, type Treasury } from './treasury.ts';
 
 // The one serialisable state tree (DD §15). Everything the sim knows lives
@@ -11,7 +12,7 @@ import { foundingTreasury, type Treasury } from './treasury.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -36,6 +37,8 @@ export interface GameState {
   // Money (treasury.ts). The founding gift is in hand from the start; it
   // moves only once the doors are open.
   treasury: Treasury;
+  // Students, the admissions terms and the alumni ledger (people.ts).
+  people: People;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -53,6 +56,7 @@ export function createNewGame(seed: number): GameState {
     bus: [],
     pendingBeat: null,
     treasury: foundingTreasury(seed),
+    people: foundingPeople(),
   };
 }
 

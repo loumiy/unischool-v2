@@ -6,6 +6,7 @@ import { MOTIFS } from './identity.ts';
 import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
+import { foundingPeople } from './people.ts';
 import { foundingTreasury } from './treasury.ts';
 
 // The save file: state + version + action log (DD §15). Storage (IndexedDB,
@@ -247,6 +248,31 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 6, state: migrated };
   },
+  // v6 → v7 (Phase 7): students. Replay first; else the school has taken
+  // no class yet and the standing terms are the defaults.
+  6: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 7,
+      people: foundingPeople(),
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 7, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -338,6 +364,18 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   const capital = treasury.capitalThisYear as Record<string, unknown> | undefined;
   if (typeof capital?.spent !== 'number' || typeof capital?.borrowed !== 'number')
     return 'state.treasury.capitalThisYear is invalid';
+  const people = s.people as Record<string, unknown> | undefined;
+  if (typeof people !== 'object' || people === null) return 'state.people is invalid';
+  const terms = people.terms as Record<string, unknown> | undefined;
+  if (typeof terms?.tuition !== 'number' || typeof terms?.selectivity !== 'number')
+    return 'state.people.terms is invalid';
+  for (const k of ['cohorts', 'alumni']) {
+    if (!Array.isArray(people[k])) return `state.people.${k} is invalid`;
+  }
+  for (const c of people.cohorts as Record<string, unknown>[]) {
+    for (const k of ['classYear', 'size', 'quality', 'satisfaction'])
+      if (typeof c[k] !== 'number') return 'a cohort is malformed';
+  }
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }

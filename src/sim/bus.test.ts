@@ -155,6 +155,8 @@ describe('calendar beats (DD §3.3)', () => {
   it('reads as a coherent history', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR, defaultResolution);
     const history = run.state.bus.map((e) => describeEntry(e, run.state).text);
+    const line = (kind: 'admissionsClosed' | 'classArrived') =>
+      describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
     expect(history).toEqual([
       'Blackmoor College is chartered.',
       'Ground is broken for Founders Hall.',
@@ -163,6 +165,7 @@ describe('calendar beats (DD §3.3)', () => {
       'The board adjourns.',
       'Spring Term begins.',
       'Admissions Day. The applications are in.',
+      line('admissionsClosed'),
       'The admissions file closes.',
       'Founders Hall opens.',
       'Summer Term begins.',
@@ -172,6 +175,7 @@ describe('calendar beats (DD §3.3)', () => {
       'Fall Term begins.',
       'Year 2.',
       `Year 1 closes ${formatMoney(run.state.treasury.history[0]!.net)} in the black.`,
+      line('classArrived'),
       'Convocation. The new class is on the lawn.',
     ]);
   });

@@ -225,9 +225,13 @@ Students are simulated as **cohorts** (per program, per class year) carrying agg
 
 At Admissions Day (§3.3) the player sets **tuition** and **selectivity**; the applicant pool's size and shape were already determined by prestige, beauty, price position, and — crucially — **perceived identity** (§11.2): a party school draws party applicants; a research powerhouse draws grinds. You reap what you're known for, not what you say you are. The resulting class's size, quality, and revenue then simply _happen to you_, and housing/dining capacity constrain it physically (overflow forces triples, an instant satisfaction hit and a class-memory stamp).
 
+**The funnel, for now.** Until prestige (§11.1), beauty (§6.2) and identity (§11.2) are live, the pool is a base scaled by stub constants and by price position against a market sticker: applications and yield both fall as the sticker rises. Selectivity is the share of the pool turned away; the admitted are the top of a normal quality distribution, so a selective office buys quality with numbers. Financial aid is a standing discount on the sticker until it becomes the access lever. The office counts the beds that will exist at the coming Convocation, sites included, and closes the file early at the beds plus a triples allowance.
+
 ### §8.3 Four years and out
 
 Cohorts progress annually: satisfaction (from housing, teaching, campus beauty, student life, current events) and quality (from program quality) evolve; attrition removes students from unhappy or low-quality cohorts; graduation converts cohorts to alumni.
+
+**The year's two moments.** Cohorts are one per class year, labelled by the year they graduate. Commencement is the first week of summer: the class whose year it is graduates into the ledger. Convocation is the first week of fall: every cohort's satisfaction is re-scored from the campus as it stands (beds, dining seats, teaching seats, the buildings' condition; teaching and student life when they arrive), attrition thins each cohort at a rate rising with unhappiness, and the class committed at Admissions Day arrives. Tuition, aid and auxiliaries follow the students enrolled week by week.
 
 ### §8.4 The alumni ledger and class memory
 

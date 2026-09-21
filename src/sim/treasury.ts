@@ -1,4 +1,5 @@
 import {
+  AID_DISCOUNT_RATE,
   DEBT_AMORTISATION_YEARS,
   DEBT_INTEREST_RATE,
   ENDOWMENT_DRAW_DEFAULT,
@@ -15,6 +16,7 @@ import {
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
+import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 
@@ -166,14 +168,28 @@ export function proposeBudget(
     drawRate: rate,
     maintenanceFunding: funding,
     endowmentBasis: t.endowment,
-    revenue: { ...zeroRevenue(), endowmentDraw: Math.round(t.endowment * rate) },
+    revenue: {
+      ...zeroRevenue(),
+      tuition: projectedEnrollment(state) * state.people.terms.tuition,
+      endowmentDraw: Math.round(t.endowment * rate),
+      auxiliaries: Math.round(
+        (annualAuxiliaries(state) * projectedEnrollment(state)) / Math.max(1, enrolledNow(state)),
+      ),
+    },
     expenses: {
       ...zeroExpenses(),
       adminPayroll: FOUNDING_ADMIN_PAYROLL,
       maintenance: projectedMaintenance(state, funding),
+      financialAid: Math.round(
+        projectedEnrollment(state) * state.people.terms.tuition * AID_DISCOUNT_RATE,
+      ),
       debtService: annualDebtService(t),
     },
   };
+}
+
+function enrolledNow(state: GameState): number {
+  return state.people.cohorts.reduce((n, c) => n + c.size, 0);
 }
 
 // Interest on the balance plus the scheduled principal, over a year.
@@ -236,10 +252,10 @@ function addFlows(a: Flows, b: Flows): Flows {
 }
 
 // One week's movement: the budgeted lines in 36 equal slices, except the
-// lines that follow live state — maintenance follows the estate as it
-// stands (estate.ts), debt service the balance outstanding. Later phases
-// move more lines (tuition on enrollment, payroll on the faculty) to the
-// live side.
+// lines that follow live state — tuition, aid and auxiliaries follow the
+// students enrolled (people.ts), maintenance the estate as it stands
+// (estate.ts), debt service the balance outstanding. Later phases move
+// more lines (payroll on the faculty, programs) to the live side.
 export function weeklyFlows(state: GameState): Flows {
   const t = state.treasury;
   const revenue = zeroRevenue();
@@ -247,6 +263,9 @@ export function weeklyFlows(state: GameState): Flows {
   for (const k of REVENUE_CATEGORIES) revenue[k] = Math.round(t.budget.revenue[k] / WEEKS_PER_YEAR);
   for (const k of EXPENSE_CATEGORIES)
     expenses[k] = Math.round(t.budget.expenses[k] / WEEKS_PER_YEAR);
+  revenue.tuition = Math.round(annualTuition(state) / WEEKS_PER_YEAR);
+  revenue.auxiliaries = Math.round(annualAuxiliaries(state) / WEEKS_PER_YEAR);
+  expenses.financialAid = Math.round(annualAid(state) / WEEKS_PER_YEAR);
   expenses.maintenance = weeklyMaintenance(state);
   const service = weeklyDebtService(t);
   expenses.debtService = service.interest + service.principal;

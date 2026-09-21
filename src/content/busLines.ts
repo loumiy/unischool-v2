@@ -1,5 +1,5 @@
 import { BUS_KINDS, type BusEntry, type BusKind } from '../sim/bus.ts';
-import { termLabel } from '../sim/calendar.ts';
+import { classLabel, termLabel } from '../sim/calendar.ts';
 import { institutionName } from '../sim/identity.ts';
 import { formatMoney, formatPercent } from '../sim/treasury.ts';
 import type { GameState } from '../sim/state.ts';
@@ -29,6 +29,13 @@ const PLACEHOLDERS = [
   'rate',
   'net',
   'ledger',
+  'applicants',
+  'admitted',
+  'size',
+  'capnote',
+  'label',
+  'triples',
+  'count',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -89,6 +96,24 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'budgetApproved':
       vars.year = String(entry.year);
       vars.rate = formatPercent(entry.drawRate, 2);
+      break;
+    case 'admissionsClosed':
+      vars.applicants = String(entry.applicants);
+      vars.admitted = String(entry.admitted);
+      vars.size = String(entry.size);
+      vars.capnote = entry.capped ? ', the beds being what they are' : '';
+      break;
+    case 'classArrived':
+      vars.label = classLabel(entry.classYear);
+      vars.size = String(entry.size);
+      vars.triples = entry.triples > 0 ? `, ${entry.triples} of them in triples` : '';
+      return { text: fill(line.text, vars), tone: entry.triples > 0 ? 'bad' : 'good' };
+    case 'studentsLeft':
+      vars.count = String(entry.count);
+      break;
+    case 'classGraduated':
+      vars.label = classLabel(entry.classYear);
+      vars.size = String(entry.size);
       break;
     case 'yearClosed': {
       // The one line whose tone is the number's: in the black or in the red.

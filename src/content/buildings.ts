@@ -65,6 +65,12 @@ export const BUILDING_ICONS = [
 ] as const;
 export type BuildingIcon = (typeof BUILDING_ICONS)[number];
 
+export interface Capacity {
+  beds?: number;
+  meals?: number;
+  seats?: number;
+}
+
 export interface BuildingDef {
   id: string;
   name: string;
@@ -73,6 +79,8 @@ export interface BuildingDef {
   cost: number; // to build, dollars
   upkeep: number; // annual maintenance when new, dollars (DD §6.4)
   buildWeeks: number; // ground broken to doors open
+  // What the building holds (DD §8.2): beds, dining seats, teaching seats.
+  capacity?: Capacity;
   form: Form;
   material: MaterialKey;
   storeys: number; // 0 for a clear-span volume or open ground
@@ -97,6 +105,7 @@ const schema = obj({
       cost: int,
       upkeep: int,
       buildWeeks: int,
+      capacity: optional(obj({ beds: optional(int), meals: optional(int), seats: optional(int) })),
       form: oneOf(FORMS),
       material: oneOf(MATERIAL_KEYS),
       storeys: int,
@@ -122,6 +131,10 @@ function load(): BuildingDef[] {
     if (b.cost <= 0) throw new ContentError(`${at}.cost`, 'must be > 0');
     if (b.upkeep < 0) throw new ContentError(`${at}.upkeep`, 'must be ≥ 0');
     if (b.buildWeeks < 1) throw new ContentError(`${at}.buildWeeks`, 'must be ≥ 1');
+    for (const k of ['beds', 'meals', 'seats'] as const) {
+      const n = b.capacity?.[k];
+      if (n !== undefined && n < 0) throw new ContentError(`${at}.capacity.${k}`, 'must be ≥ 0');
+    }
     const massless = b.form === 'grounds' || b.form === 'hangar';
     if (massless !== (b.storeys === 0)) {
       throw new ContentError(

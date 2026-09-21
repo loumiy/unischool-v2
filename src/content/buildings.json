@@ -11,6 +11,11 @@
       "cost": 8000000,
       "upkeep": 160000,
       "buildWeeks": 24,
+      "capacity": {
+        "beds": 120,
+        "meals": 150,
+        "seats": 400
+      },
       "form": "hall",
       "material": "brickRed",
       "storeys": 4,
@@ -30,6 +35,9 @@
       "cost": 7000000,
       "upkeep": 140000,
       "buildWeeks": 24,
+      "capacity": {
+        "seats": 500
+      },
       "form": "hall",
       "material": "brickRed",
       "storeys": 4,
@@ -84,6 +92,9 @@
       "cost": 8000000,
       "upkeep": 180000,
       "buildWeeks": 24,
+      "capacity": {
+        "beds": 320
+      },
       "form": "residential",
       "material": "brickDark",
       "storeys": 4,
@@ -102,6 +113,9 @@
       "cost": 4000000,
       "upkeep": 110000,
       "buildWeeks": 14,
+      "capacity": {
+        "meals": 600
+      },
       "form": "pavilion",
       "material": "brickBuff",
       "storeys": 2,

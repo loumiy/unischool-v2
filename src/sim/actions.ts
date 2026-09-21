@@ -22,6 +22,7 @@ import {
   renovationCost,
   type Financing,
 } from './estate.ts';
+import { closeAdmissions } from './people.ts';
 import { approveBudget } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
@@ -51,7 +52,15 @@ export type Action =
   // beat's decision. Every field is optional: absent, the beat resolves to
   // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
   // for next year's budget (DD §5.1).
-  | { type: 'resolveBeat'; beatId: string; drawRate?: number; maintenanceFunding?: number }
+  // Admissions Day: the sticker and the selectivity (DD §8.2).
+  | {
+      type: 'resolveBeat';
+      beatId: string;
+      drawRate?: number;
+      maintenanceFunding?: number;
+      tuition?: number;
+      selectivity?: number;
+    }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -270,6 +279,8 @@ export function applyAction(state: GameState, action: Action): GameState {
       let next = state;
       if (action.beatId === 'budget-and-hiring')
         next = approveBudget(next, action.drawRate, action.maintenanceFunding);
+      if (action.beatId === 'admissions-day')
+        next = closeAdmissions(next, action.tuition, action.selectivity);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
     }
     case 'debug/mark':

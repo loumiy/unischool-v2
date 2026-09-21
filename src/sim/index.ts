@@ -15,3 +15,4 @@ export * from './bus.ts';
 export * from './beats.ts';
 export * from './treasury.ts';
 export * from './estate.ts';
+export * from './people.ts';

@@ -73,3 +73,58 @@ export const DEMOLITION_COST_SHARE = 0.05;
 export const DEBT_CAP_SHARE_OF_ENDOWMENT = 0.4;
 export const DEBT_INTEREST_RATE = 0.05;
 export const DEBT_AMORTISATION_YEARS = 20;
+
+// ---------- Enrollment (DD §8.2–§8.3, Phase 7) ----------
+
+// The sticker (DD §5.1): what Admissions Day sets. The market's own sticker
+// is the price the pool compares against.
+export const TUITION_DEFAULT = 40_000;
+export const TUITION_MIN = 15_000;
+export const TUITION_MAX = 90_000;
+export const TUITION_STEP = 1_000;
+export const MARKET_TUITION = 40_000;
+// Selectivity 0–1: the share of the pool turned away. Admit rate is
+// clamped so no school admits nobody or everybody.
+export const SELECTIVITY_DEFAULT = 0.5;
+export const SELECTIVITY_STEP = 0.05;
+export const ADMIT_RATE_MIN = 0.1;
+export const ADMIT_RATE_MAX = 0.95;
+
+// The applicant pool: a base, scaled by prestige and beauty (stubs until
+// Phases 24 and 13), and by price position against the market.
+export const BASE_APPLICANTS = 1_600;
+export const PRESTIGE_STUB = 50; // 0–100
+export const BEAUTY_STUB = 50; // 0–100
+export const PRICE_ELASTICITY = 1.2;
+// Applicant quality (0–100) is normal about a mean set by prestige; a
+// selective school skims the top of it.
+export const APPLICANT_QUALITY_MEAN = 55;
+export const APPLICANT_QUALITY_SD = 14;
+// Yield: the share of the admitted who come, falling with price.
+export const YIELD_BASE = 0.35;
+export const YIELD_PRICE_ELASTICITY = 0.8;
+
+// Financial aid (DD §5.2): the gap between sticker and net, as a share of
+// the sticker. A constant until it becomes the access lever (Ph.8+).
+export const AID_DISCOUNT_RATE = 0.3;
+// Auxiliaries (DD §5.1): the margin on housing and dining per housed student.
+export const ROOM_AND_BOARD_MARGIN = 1_800;
+
+// Capacity (DD §8.2): enrollment may exceed the beds by this share, in
+// triples, before the file closes early; beyond the beds is a satisfaction
+// hit and a class-memory stamp.
+export const TRIPLES_OVERFLOW_SHARE = 0.25;
+
+// Satisfaction (0–100, DD §8.3): a base, less the crowding penalties, plus
+// or minus the state of the campus.
+export const SATISFACTION_BASE = 62;
+export const TRIPLES_PENALTY = 18;
+export const DINING_PENALTY = 10;
+export const SEATS_PENALTY = 12;
+export const CONDITION_WEIGHT = 20;
+// Attrition per year: a base, plus a share for every point of
+// satisfaction under the line.
+export const ATTRITION_BASE = 0.04;
+export const ATTRITION_LINE = 60;
+export const ATTRITION_PER_POINT = 0.004;
+export const ATTRITION_MAX = 0.35;

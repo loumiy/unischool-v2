@@ -29,6 +29,7 @@ export const TABS: readonly TabDef[] = [
     id: 'students',
     label: 'Students',
     phase: 7,
+    // Live since Phase 7 (StudentsScreen.tsx); the stub line is never shown.
     stub: 'Cohorts by program and class year, and the handful of named students the game follows. The first class arrives at Convocation.',
   },
   {

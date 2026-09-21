@@ -12,6 +12,12 @@
     "beatFired": { "text": "{line}" },
     "beatResolved": { "text": "{line}" },
     "budgetApproved": { "text": "The Year {year} budget is approved at a {rate} draw." },
+    "admissionsClosed": {
+      "text": "The file closes: {applicants} applied, {admitted} admitted, {size} coming{capnote}."
+    },
+    "classArrived": { "text": "The {label} arrives: {size} students{triples}." },
+    "studentsLeft": { "text": "{count} students leave.", "tone": "bad" },
+    "classGraduated": { "text": "The {label} graduates, {size} strong.", "tone": "good" },
     "yearClosed": { "text": "Year {year} closes {net} {ledger}." },
     "mark": { "text": "{label}" }
   }
