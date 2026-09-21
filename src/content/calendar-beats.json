@@ -1,0 +1,20 @@
+{
+  "beats": [
+    { "id": "convocation", "name": "Convocation", "term": "fall", "week": 1, "dd": "§3.3" },
+    { "id": "board-meeting", "name": "Board Meeting", "term": "fall", "week": 12, "dd": "§5.5" },
+    {
+      "id": "admissions-day",
+      "name": "Admissions Day",
+      "term": "spring",
+      "week": 10,
+      "dd": "§8.2"
+    },
+    {
+      "id": "budget-and-hiring",
+      "name": "Budget & Hiring",
+      "term": "summer",
+      "week": 4,
+      "dd": "§7.3"
+    }
+  ]
+}

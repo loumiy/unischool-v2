@@ -23,7 +23,11 @@ A one-sitting university builder: fifty years in one evening. React + TypeScript
 - Port and adapt visuals and assets from `reference/v1/` into `src/` as phases require them (DD §13.1: evolve, don't replace).
 - Never import from `reference/v1/` at runtime, in tests, or in tooling. It is inert source, not a package.
 - Never port architecture from it. Each exported file's header lists the v1 logic it leaned on that was deliberately left behind.
-- `reference/` must stay excluded from `tsconfig` `include`, ESLint, Prettier, and Vitest globs. Phase 1 adds those configs and must add the exclusions with them; `.prettierignore` already carries it.
+- `reference/` is excluded from `tsconfig` (`exclude`), ESLint (`ignores`), Prettier (`.prettierignore`), and Vitest (`exclude`). Keep it that way when touching any of those configs.
+
+## Checks
+
+`npm run check` runs typecheck, lint, format check, and the Vitest suite; CI runs the same plus a build. `src/sim/architecture.test.ts` enforces the sim-core isolation rule.
 
 ## Definition of done, every phase
 
