@@ -11,7 +11,7 @@ import {
   SALARY_ROUNDING,
   TEACHING_WEIGHT,
 } from '../tuning.ts';
-import { openProgram } from './academics.ts';
+import { crowdingFactor, openProgram } from './academics.ts';
 import { applyAction, canApply } from './actions.ts';
 import { defaultResolution } from './beats.ts';
 import { entriesOfKind, lastEntry } from './bus.ts';
@@ -35,6 +35,7 @@ import {
 import { satisfactionFor } from './people.ts';
 import { dispatch, newRun, replay, tickRun, tickRunWeeks, type Run } from './run.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
+import { SCHEMA_VERSION } from './state.ts';
 import { adminShareOfPayroll, proposeBudget } from './treasury.ts';
 
 const FOUND = {
@@ -248,11 +249,14 @@ describe('program quality (DD §7.4) and the students who feel it', () => {
     );
     const [a, b] = run.state.faculty.market.filter((f) => f.schoolId === 'science');
     run = dispatch(run, { type: 'hire', candidateId: a!.id, programId: 'biology' });
-    const half = (effectiveTeaching(a!) * (1 / staffingNeed(biology))).toFixed(1);
+    // The first class outnumbers Biology's seats, so every program is damped.
+    const crowding = crowdingFactor(run.state);
+    expect(crowding).toBeLessThan(1);
+    const half = (effectiveTeaching(a!) * (1 / staffingNeed(biology)) * crowding).toFixed(1);
     expect(programQuality(run.state, biology)).toBe(Number(half));
     if (b) {
       run = dispatch(run, { type: 'hire', candidateId: b.id, programId: 'biology' });
-      const mean = (effectiveTeaching(a!) + effectiveTeaching(b)) / 2;
+      const mean = ((effectiveTeaching(a!) + effectiveTeaching(b)) / 2) * crowding;
       expect(programQuality(run.state, biology)).toBe(Number(mean.toFixed(1)));
       expect(teachingQuality(run.state)).toBe(programQuality(run.state, biology));
     }
@@ -341,7 +345,7 @@ describe('the log and the save', () => {
     const replayed = loadSaveFile(v9);
     expect(replayed.ok).toBe(true);
     if (replayed.ok) {
-      expect(replayed.save.version).toBe(10);
+      expect(replayed.save.version).toBe(SCHEMA_VERSION);
       expect(replayed.save.state.faculty.marketYear).toBe(2);
       expect(replayed.save.state).toEqual(run.state);
     }

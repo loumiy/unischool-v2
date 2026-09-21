@@ -130,6 +130,11 @@ export const HERITAGES: readonly string[] = loaded.heritages;
 export const FACULTY_READINGS = loaded.readings;
 export const FACULTY_WORDS = loaded.lines;
 
+// "an Associate Professor", "a Professor": the article a rank's name takes.
+export function withArticle(name: string): string {
+  return `${/^[aeiou]/i.test(name) ? 'an' : 'a'} ${name}`;
+}
+
 export function rankById(id: RankId): RankDef {
   return RANKS.find((r) => r.id === id)!;
 }

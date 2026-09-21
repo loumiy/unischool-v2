@@ -8,9 +8,12 @@ import {
   type ProgramDef,
   type SchoolDef,
 } from '../content/schools.ts';
-import { FACULTY_READINGS, FACULTY_WORDS } from '../content/faculty.ts';
+import { FACULTY_READINGS, FACULTY_WORDS, rankById, withArticle } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
 import {
+  advancementCost,
+  advancementYears,
+  advanceVerdict,
   affordableFinancing,
   annualProgramCost,
   annualProgramCosts,
@@ -21,16 +24,24 @@ import {
   frozen,
   hallName,
   hallsAvailable,
+  neglected,
+  nextTier,
   openProgram,
+  programCrowding,
+  programSeats,
+  enrolled,
   programOpeningCost,
   programQuality,
   schoolFoundingCost,
+  signatureRoom,
+  signatures,
   staffingNeed,
   type Financing,
   type GameState,
   type OpenProgram,
 } from '../sim/index.ts';
 import Figure from './Figure.tsx';
+import { DECAY_AFTER_YEARS, SIGNATURE_LIMIT } from '../tuning.ts';
 
 // THE CURRICULUM SCREEN (DD §7.1–§7.2), in v1's visual language: a group
 // per school under its hue and mark, a row per program with its courses
@@ -42,12 +53,18 @@ function ProgramRow({
   def,
   program,
   state,
+  financing,
   onClose,
+  onAdvance,
+  onSignature,
 }: {
   def: ProgramDef;
   program: OpenProgram;
   state: GameState;
+  financing: Financing;
   onClose: () => void;
+  onAdvance: (payWith: Financing) => void;
+  onSignature: (signature: boolean) => void;
 }) {
   const [armed, setArmed] = useState(false);
   const tier = tierById(program.tier);
@@ -55,6 +72,29 @@ function ProgramRow({
   const staff = facultyOf(state, program.programId);
   const need = staffingNeed(program);
   const quality = programQuality(state, program);
+  const to = nextTier(program.tier);
+  const toTier = to ? tierById(to) : null;
+  const verdict = advanceVerdict(state, program.programId);
+  const iced = frozen(state);
+  const cost = advancementCost(program);
+  const payWith = canPay(state, cost, financing) ? financing : affordableFinancing(state, cost);
+  const week = state.clock.absoluteWeek;
+  const a = program.advancing;
+  const leadName = (t: string) => {
+    const rank = tierById(t as 'founded').leadRank;
+    return rank ? withArticle(rankById(rank).name) : 'a senior hire';
+  };
+  const advanceLine = a
+    ? a.stalled || a.completesWeek <= week
+      ? fillWords(ACADEMIC_WORDS.lines.stalled, {
+          tier: tierById(a.to).name,
+          rank: leadName(a.to),
+        })
+      : fillWords(ACADEMIC_WORDS.lines.advancing, {
+          tier: tierById(a.to).name,
+          weeks: a.completesWeek - week,
+        })
+    : null;
   return (
     <div className="program-row">
       <div className="program-row-head">
@@ -66,6 +106,22 @@ function ProgramRow({
             {ACADEMIC_WORDS.readings.tier}
           </span>
         </span>
+        <button
+          type="button"
+          className={`signature-toggle figure ${program.signature ? 'on' : ''}`}
+          disabled={!program.signature && !signatureRoom(state)}
+          aria-pressed={program.signature}
+          onClick={() => onSignature(!program.signature)}
+        >
+          {program.signature
+            ? `★ ${ACADEMIC_WORDS.lines.signature}`
+            : signatureRoom(state)
+              ? `☆ ${ACADEMIC_WORDS.lines.makeSignature}`
+              : `☆ ${ACADEMIC_WORDS.lines.signaturesFull}`}
+          <span className="figure-hint" role="tooltip">
+            {ACADEMIC_WORDS.readings.signatures}
+          </span>
+        </button>
         <span className="lane-count">
           {listings.filter((c) => c.level <= tier.levels).length} / {listings.length}
         </span>
@@ -93,6 +149,21 @@ function ProgramRow({
           ? FACULTY_WORDS.nobodyTeaches
           : fillWords(FACULTY_WORDS.taughtBy, { names: staff.map((f) => f.name).join(', ') })}
       </p>
+      {advanceLine && (
+        <p className={`program-row-advancing ${a?.stalled ? 'bad' : ''}`}>{advanceLine}</p>
+      )}
+      {!a && program.tier !== 'founded' && neglected(state, program) && (
+        <p className="program-row-advancing bad figure" tabIndex={0}>
+          {fillWords(ACADEMIC_WORDS.lines.neglected, {
+            years: program.neglectYears,
+            rank: leadName(program.tier),
+            limit: DECAY_AFTER_YEARS,
+          })}
+          <span className="figure-hint" role="tooltip">
+            {ACADEMIC_WORDS.readings.neglect}
+          </span>
+        </p>
+      )}
       <div className="program-row-foot">
         <span className={`figure ${staff.length < need ? 'bad' : ''}`} tabIndex={0}>
           {staff.length} / {need} staffed
@@ -119,6 +190,30 @@ function ProgramRow({
           </span>
         </span>
         <span className="program-row-actions">
+          {!a && toTier && (
+            <button
+              type="button"
+              className="newgame-btn advance-btn figure"
+              disabled={iced || !verdict.ok || payWith === null}
+              onClick={() => {
+                if (payWith) onAdvance(payWith);
+              }}
+            >
+              {iced
+                ? ACADEMIC_WORDS.lines.frozen
+                : verdict.ok
+                  ? fillWords(ACADEMIC_WORDS.lines.advance, {
+                      tier: toTier.name,
+                      cost: formatMoney(cost),
+                      years: advancementYears(toTier.id),
+                    })
+                  : fillWords(ACADEMIC_WORDS.lines.needsLead, { rank: leadName(toTier.id) })}
+              <span className="figure-hint" role="tooltip">
+                {ACADEMIC_WORDS.readings.advance}
+              </span>
+            </button>
+          )}
+          {!a && !toTier && <span className="program-row-top">{ACADEMIC_WORDS.lines.topTier}</span>}
           {armed ? (
             <>
               <span className="newgame-confirm-label">
@@ -149,6 +244,8 @@ function SchoolGroup({
   onFound,
   onOpen,
   onClose,
+  onAdvance,
+  onSignature,
 }: {
   school: SchoolDef;
   state: GameState;
@@ -156,6 +253,8 @@ function SchoolGroup({
   onFound: (schoolId: string, placementId: string, payWith: Financing) => void;
   onOpen: (programId: string, payWith: Financing) => void;
   onClose: (programId: string) => void;
+  onAdvance: (programId: string, payWith: Financing) => void;
+  onSignature: (programId: string, signature: boolean) => void;
 }) {
   const founded = foundedSchool(state, school.id);
   const halls = hallsAvailable(state);
@@ -244,7 +343,10 @@ function SchoolGroup({
                 def={def}
                 program={openProgram(state, def.id)!}
                 state={state}
+                financing={financing}
                 onClose={() => onClose(def.id)}
+                onAdvance={(payWith) => onAdvance(def.id, payWith)}
+                onSignature={(signature) => onSignature(def.id, signature)}
               />
             ))}
           </div>
@@ -282,15 +384,22 @@ export default function CurriculumScreen({
   onFound,
   onOpen,
   onClose,
+  onAdvance,
+  onSignature,
 }: {
   state: GameState;
   financing: Financing;
   onFound: (schoolId: string, placementId: string, payWith: Financing) => void;
   onOpen: (programId: string, payWith: Financing) => void;
   onClose: (programId: string) => void;
+  onAdvance: (programId: string, payWith: Financing) => void;
+  onSignature: (programId: string, signature: boolean) => void;
 }) {
   const founded = state.academics.schools.length;
   const open = state.academics.programs.length;
+  const seats = programSeats(state);
+  const students = enrolled(state);
+  const crowded = programCrowding(state) > 1;
   return (
     <div className="curriculum">
       <div className="figure-row">
@@ -316,7 +425,23 @@ export default function CurriculumScreen({
           hint={ACADEMIC_WORDS.readings.halls}
           tone={hallsAvailable(state).length === 0 && founded < SCHOOLS.length ? 'bad' : undefined}
         />
+        <Figure
+          label="Signatures"
+          value={`${signatures(state).length} / ${SIGNATURE_LIMIT}`}
+          hint={ACADEMIC_WORDS.readings.signatures}
+        />
+        <Figure
+          label="Program seats"
+          value={`${students} / ${seats}`}
+          hint={ACADEMIC_WORDS.readings.crowding}
+          tone={crowded ? 'bad' : undefined}
+        />
       </div>
+      {crowded && (
+        <p className="treasury-note bad">
+          {fillWords(ACADEMIC_WORDS.lines.crowded, { enrolled: students, seats })}
+        </p>
+      )}
       {SCHOOLS.map((school) => (
         <SchoolGroup
           key={school.id}
@@ -326,6 +451,8 @@ export default function CurriculumScreen({
           onFound={onFound}
           onOpen={onOpen}
           onClose={onClose}
+          onAdvance={onAdvance}
+          onSignature={onSignature}
         />
       ))}
     </div>

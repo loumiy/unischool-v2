@@ -373,6 +373,15 @@ export default function App() {
                 onClose={(programId) => {
                   store.dispatch({ type: 'closeProgram', programId });
                 }}
+                onAdvance={(programId, payWith) => {
+                  store.dispatch({ type: 'advanceProgram', programId, financing: payWith });
+                }}
+                onSignature={(programId, signature) => {
+                  store.dispatch({
+                    type: signature ? 'designateSignature' : 'revokeSignature',
+                    programId,
+                  });
+                }}
               />
             ) : (
               <StubScreen phase={tabById(effectiveOverlay).phase}>

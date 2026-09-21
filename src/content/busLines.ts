@@ -6,7 +6,8 @@ import type { GameState } from '../sim/state.ts';
 import { findBuilding } from './buildings.ts';
 import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
-import { findProgram, findSchool } from './schools.ts';
+import { rankById, withArticle } from './faculty.ts';
+import { findProgram, findSchool, tierById } from './schools.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
 
@@ -44,6 +45,9 @@ const PLACEHOLDERS = [
   'program',
   'name',
   'assignment',
+  'tier',
+  'rank',
+  'embarrassment',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -129,8 +133,24 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       break;
     case 'programOpened':
     case 'programClosed':
+    case 'signatureNamed':
+    case 'signatureDropped':
       vars.program = findProgram(entry.programId)?.name ?? entry.programId;
       break;
+    case 'advancementBegun':
+    case 'programAdvanced':
+    case 'advancementStalled':
+    case 'programDecayed': {
+      vars.program = findProgram(entry.programId)?.name ?? entry.programId;
+      const tier = tierById(entry.tier as 'founded');
+      vars.tier = tier.name;
+      vars.rank = tier.leadRank ? withArticle(rankById(tier.leadRank).name) : 'a senior hire';
+      if (entry.kind === 'programDecayed')
+        vars.embarrassment = entry.signature
+          ? ', a signature program, to public embarrassment'
+          : '';
+      break;
+    }
     case 'marketOpened':
     case 'marketClosed':
       vars.count = String(entry.count);

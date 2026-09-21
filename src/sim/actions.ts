@@ -24,8 +24,14 @@ import {
 } from './estate.ts';
 import { findProgram, findSchool } from '../content/schools.ts';
 import {
+  advancementCost,
+  advanceVerdict,
+  beginAdvancement,
   closeProgramIn,
+  dropSignature,
   foundedSchool,
+  nameSignature,
+  signatureRoom,
   foundSchool,
   isHall,
   openProgram,
@@ -101,6 +107,11 @@ export type Action =
   | { type: 'foundSchool'; schoolId: string; placementId: string; financing?: Financing }
   | { type: 'openProgram'; programId: string; financing?: Financing }
   | { type: 'closeProgram'; programId: string }
+  // A tier advancement begun (DD §7.2): the money now, a lead assigned, the
+  // years to come; a signature named or dropped.
+  | { type: 'advanceProgram'; programId: string; financing?: Financing }
+  | { type: 'designateSignature'; programId: string }
+  | { type: 'revokeSignature'; programId: string }
   // Faculty (DD §7.3): a candidate hired off the summer market, to a
   // program in their field or to none yet; a hire moved between programs;
   // a hire dismissed with severance.
@@ -236,6 +247,32 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (state.phase !== 'running') return no('the college is not open yet');
       if (!openProgram(state, action.programId)) return no('the program is not open');
       return YES;
+    case 'advanceProgram': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (frozen(state)) return no('the board has frozen new programs');
+      const verdict = advanceVerdict(state, action.programId);
+      if (!verdict.ok) return no(verdict.reason);
+      const financing = action.financing ?? 'cash';
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
+      if (!canPay(state, advancementCost(openProgram(state, action.programId)!), financing))
+        return no('not enough cash');
+      return YES;
+    }
+    case 'designateSignature': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const p = openProgram(state, action.programId);
+      if (!p) return no('the program is not open');
+      if (p.signature) return no('already a signature');
+      if (!signatureRoom(state)) return no('three signatures already named');
+      return YES;
+    }
+    case 'revokeSignature': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const p = openProgram(state, action.programId);
+      if (!p) return no('the program is not open');
+      if (!p.signature) return no('not a signature');
+      return YES;
+    }
     case 'hire': {
       if (state.phase !== 'running') return no('the college is not open yet');
       // The freeze (DD §5.5) is a hiring freeze first of all.
@@ -406,6 +443,12 @@ export function applyAction(state: GameState, action: Action): GameState {
       return openProgramIn(state, action.programId, action.financing ?? 'cash');
     case 'closeProgram':
       return closeProgramIn(state, action.programId);
+    case 'advanceProgram':
+      return beginAdvancement(state, action.programId, action.financing ?? 'cash');
+    case 'designateSignature':
+      return nameSignature(state, action.programId);
+    case 'revokeSignature':
+      return dropSignature(state, action.programId);
     case 'hire':
       return hireCandidate(state, action.candidateId, action.programId ?? null);
     case 'assignFaculty':

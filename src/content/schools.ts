@@ -1,5 +1,6 @@
 import raw from './schools.json' with { type: 'json' };
-import { arr, int, num, obj, str, uniqueBy, validate } from './schema.ts';
+import { arr, int, num, obj, oneOf, str, uniqueBy, validate } from './schema.ts';
+import type { RankId } from './faculty.ts';
 
 // THE ACADEMIC CATALOGUE (DD §7.2, §14): six schools, thirty programs,
 // three tiers. A program's courses are generated flavour (DD §7.1): six
@@ -15,6 +16,9 @@ export interface TierDef {
   costFactor: number;
   // The tier's multiplier on program quality (DD §7.4).
   qualityFactor: number;
+  // The rank of the senior hire that must be assigned to reach the tier and
+  // to hold it (DD §7.2); none at Founded.
+  leadRank: RankId | null;
   levels: number; // course levels on the catalogue at this tier (1–3)
 }
 
@@ -38,7 +42,15 @@ export interface SchoolDef {
 
 const fileSchema = obj({
   tiers: arr(
-    obj({ id: str, name: str, seats: int, costFactor: num, qualityFactor: num, levels: int }),
+    obj({
+      id: str,
+      name: str,
+      seats: int,
+      costFactor: num,
+      qualityFactor: num,
+      leadRank: (v, p) => (v === null ? null : oneOf(['assistant', 'associate', 'full'])(v, p)),
+      levels: int,
+    }),
   ),
   schools: arr(
     obj({
@@ -59,6 +71,11 @@ const fileSchema = obj({
       tier: str,
       seats: str,
       annualCost: str,
+      signatures: str,
+      crowding: str,
+      advance: str,
+      lead: str,
+      neglect: str,
     }),
     lines: obj({
       found: str,
@@ -73,6 +90,17 @@ const fileSchema = obj({
       notAHall: str,
       hallOption: str,
       unfoundedNote: str,
+      advance: str,
+      advancing: str,
+      stalled: str,
+      needsLead: str,
+      topTier: str,
+      signature: str,
+      makeSignature: str,
+      dropSignature: str,
+      signaturesFull: str,
+      neglected: str,
+      crowded: str,
     }),
   }),
 });

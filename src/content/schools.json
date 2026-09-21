@@ -6,6 +6,7 @@
       "seats": 120,
       "costFactor": 1,
       "qualityFactor": 1,
+      "leadRank": null,
       "levels": 1
     },
     {
@@ -14,6 +15,7 @@
       "seats": 240,
       "costFactor": 1.6,
       "qualityFactor": 1.1,
+      "leadRank": "associate",
       "levels": 2
     },
     {
@@ -22,6 +24,7 @@
       "seats": 400,
       "costFactor": 2.4,
       "qualityFactor": 1.2,
+      "leadRank": "full",
       "levels": 3
     }
   ],
@@ -507,9 +510,14 @@
       "programs": "Programs open of the thirty; each costs money every year at its tier.",
       "programCosts": "What the open programs cost to run this year: the programs line in the Treasury.",
       "halls": "Open halls with no school in them yet: Founders Hall counts, and every Academic Hall.",
-      "tier": "Founded, Established or Renowned: the tier sets the seats, the courses on the catalogue and the cost. Advancing is Phase 11's.",
+      "tier": "Founded, Established or Renowned: the tier sets the seats, the courses on the catalogue, the cost and the quality ceiling.",
       "seats": "How many students the program can teach at this tier before the classes crowd.",
-      "annualCost": "What this program costs to run each year at its tier."
+      "annualCost": "What this program costs to run each year at its tier.",
+      "signatures": "Signature programs named of the three allowed: cheaper to advance, and expected to stay advanced.",
+      "crowding": "Students enrolled against the seats every open program offers; over the seats, every program's quality is damped.",
+      "advance": "Advancing takes the money now, a senior hire of the next tier's rank assigned here, and the years; the works finish only with that hire still in place.",
+      "lead": "The senior hire the tier needs assigned: an Associate Professor to reach Established, a Professor to reach Renowned, and to stay there.",
+      "neglect": "Years running without its lead or under half its staff; two in a row and the tier drops."
     },
     "lines": {
       "found": "Found the School of {school}",
@@ -523,7 +531,18 @@
       "noSchool": "No school yet — found one from the Curriculum screen.",
       "notAHall": "",
       "hallOption": "{building} ({id})",
-      "unfoundedNote": "Unfounded. Its programs wait for a hall and the founding cost."
+      "unfoundedNote": "Unfounded. Its programs wait for a hall and the founding cost.",
+      "advance": "Advance to {tier} · {cost} · {years} yrs",
+      "advancing": "Advancing to {tier} · {weeks} weeks left",
+      "stalled": "Advancing to {tier} · waiting on {rank} assigned here",
+      "needsLead": "Needs {rank} assigned to advance",
+      "topTier": "At the top tier",
+      "signature": "Signature",
+      "makeSignature": "Make signature",
+      "dropSignature": "Drop signature",
+      "signaturesFull": "Three signatures already named",
+      "neglected": "Neglected {years} yr: without {rank} or under half its staff; the tier drops after {limit}",
+      "crowded": "{enrolled} enrolled against {seats} program seats: every program is teaching over capacity"
     }
   }
 }
