@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { buildingById } from '../content/buildings.ts';
 import { describeEntry } from '../content/busLines.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import {
@@ -47,6 +48,7 @@ function opened(seed = 4): Run {
 }
 
 const WEEKLY_DRAW = Math.round((STARTING_ENDOWMENT * ENDOWMENT_DRAW_DEFAULT) / WEEKS_PER_YEAR);
+const FOUNDERS_COST = buildingById('founders-hall').cost;
 const WEEKLY_ADMIN = Math.round(FOUNDING_ADMIN_PAYROLL / WEEKS_PER_YEAR);
 
 describe('treasury (DD §5)', () => {
@@ -73,7 +75,7 @@ describe('treasury (DD §5)', () => {
     expect(t.lastWeek.revenue.endowmentDraw).toBe(WEEKLY_DRAW);
     expect(t.lastWeek.expenses.adminPayroll).toBe(WEEKLY_ADMIN);
     expect(netOf(t.lastWeek)).toBe(WEEKLY_DRAW - WEEKLY_ADMIN);
-    expect(t.cash).toBe(STARTING_CASH + WEEKLY_DRAW - WEEKLY_ADMIN);
+    expect(t.cash).toBe(STARTING_CASH - FOUNDERS_COST + WEEKLY_DRAW - WEEKLY_ADMIN);
     expect(t.actual.revenue.endowmentDraw).toBe(WEEKLY_DRAW);
     const growth = Math.round((STARTING_ENDOWMENT * t.marketReturn) / WEEKS_PER_YEAR);
     expect(t.endowment).toBe(STARTING_ENDOWMENT + growth - WEEKLY_DRAW);
@@ -87,8 +89,11 @@ describe('treasury (DD §5)', () => {
     expect(y1.year).toBe(1);
     // The doors open in Week 1; the money moves for the 35 weeks after it.
     expect(sumRevenue(y1.revenue)).toBe(WEEKLY_DRAW * 35);
-    expect(sumExpenses(y1.expenses)).toBe(WEEKLY_ADMIN * 35);
-    expect(y1.net).toBe((WEEKLY_DRAW - WEEKLY_ADMIN) * 35);
+    // Founders Hall opens in week 24 and wants upkeep from the week after.
+    expect(y1.expenses.maintenance).toBeGreaterThan(0);
+    expect(sumExpenses(y1.expenses)).toBe(WEEKLY_ADMIN * 35 + y1.expenses.maintenance);
+    expect(y1.net).toBe((WEEKLY_DRAW - WEEKLY_ADMIN) * 35 - y1.expenses.maintenance);
+    expect(y1.capital).toEqual({ spent: FOUNDERS_COST, borrowed: 0 });
     expect(y1.marketReturn).toBe(marketReturnFor(4, 1));
     expect(t.budget.year).toBe(2);
     expect(t.actual.revenue.endowmentDraw).toBe(t.lastWeek.revenue.endowmentDraw);

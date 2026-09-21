@@ -1,4 +1,5 @@
 import { buildingById, findBuilding } from '../content/buildings.ts';
+import { RENOVATION_WEEKS } from '../tuning.ts';
 import { emit } from './bus.ts';
 import {
   FOUNDERS_HALL_ID,
@@ -13,6 +14,14 @@ import { isValidName, MOTIFS, type Motif, type SchoolColors } from './identity.t
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { tileKey, TREE_SEED_RANGE } from './terrain.ts';
+import {
+  canPay,
+  demolitionCost,
+  FINANCINGS,
+  pay,
+  renovationCost,
+  type Financing,
+} from './estate.ts';
 import { approveBudget } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
@@ -25,14 +34,24 @@ export type PaintTool = (typeof PAINT_TOOLS)[number];
 
 export type Action =
   | { type: 'found'; name: string; motif: Motif; paletteId: string; colors: SchoolColors }
-  | { type: 'placeBuilding'; buildingId: string; col: number; row: number; rotated: boolean }
+  // Ground is broken, paid in cash or borrowed (DD §5.2); absent, cash.
+  | {
+      type: 'placeBuilding';
+      buildingId: string;
+      col: number;
+      row: number;
+      rotated: boolean;
+      financing?: Financing;
+    }
   | { type: 'demolish'; placementId: string }
+  // Pays the backlog off and closes the building for the works (DD §6.4).
+  | { type: 'renovate'; placementId: string; financing?: Financing }
   | { type: 'paint'; tool: PaintTool; col: number; row: number }
   // Resolves the calendar beat holding the clock (beats.ts), carrying the
   // beat's decision. Every field is optional: absent, the beat resolves to
   // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
   // for next year's budget (DD §5.1).
-  | { type: 'resolveBeat'; beatId: string; drawRate?: number }
+  | { type: 'resolveBeat'; beatId: string; drawRate?: number; maintenanceFunding?: number }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -66,12 +85,32 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!footprintIsClear(state.campus, action.col, action.row, w, h)) {
         return no('footprint is off the parcel, on water or road, or occupied');
       }
+      const financing = action.financing ?? 'cash';
+      if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      if (!canPay(state, def.cost, financing)) {
+        return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
+      }
       return YES;
     }
     case 'demolish': {
       if (state.phase !== 'running') return no('nothing to demolish yet');
-      if (!state.campus.placements.some((p) => p.id === action.placementId))
-        return no('no such building');
+      const p = state.campus.placements.find((q) => q.id === action.placementId);
+      if (!p) return no('no such building');
+      if (!canPay(state, demolitionCost(buildingById(p.buildingId)), 'cash'))
+        return no('not enough cash to demolish');
+      return YES;
+    }
+    case 'renovate': {
+      if (state.phase !== 'running') return no('nothing to renovate yet');
+      const p = state.campus.placements.find((q) => q.id === action.placementId);
+      if (!p) return no('no such building');
+      if (p.status !== 'open') return no('the building is not open');
+      if (p.backlog <= 0) return no('nothing to renovate');
+      const financing = action.financing ?? 'cash';
+      if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      if (!canPay(state, renovationCost(p), financing)) {
+        return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
+      }
       return YES;
     }
     case 'paint': {
@@ -139,11 +178,17 @@ export function applyAction(state: GameState, action: Action): GameState {
         row: action.row,
         w,
         h,
+        status: 'building',
+        completesWeek: state.clock.absoluteWeek + def.buildWeeks,
+        openedWeek: null,
+        backlog: 0,
+        condition: 1,
       };
       const opening = state.phase === 'siting';
+      const paid = pay(state, def.cost, action.financing ?? 'cash');
       let next = emit(
         {
-          ...state,
+          ...paid,
           phase: opening ? 'running' : state.phase,
           campus: {
             placements: [...state.campus.placements, placement],
@@ -161,15 +206,37 @@ export function applyAction(state: GameState, action: Action): GameState {
     }
     case 'demolish': {
       const gone = state.campus.placements.find((p) => p.id === action.placementId)!;
+      const paid = pay(state, demolitionCost(buildingById(gone.buildingId)), 'cash');
       return emit(
         {
-          ...state,
+          ...paid,
           campus: {
-            ...state.campus,
-            placements: state.campus.placements.filter((p) => p.id !== action.placementId),
+            ...paid.campus,
+            placements: paid.campus.placements.filter((p) => p.id !== action.placementId),
           },
         },
         { kind: 'buildingDemolished', placementId: gone.id, buildingId: gone.buildingId },
+      );
+    }
+    case 'renovate': {
+      const target = state.campus.placements.find((p) => p.id === action.placementId)!;
+      const paid = pay(state, renovationCost(target), action.financing ?? 'cash');
+      const renovating: Placement = {
+        ...target,
+        status: 'renovating',
+        completesWeek: state.clock.absoluteWeek + RENOVATION_WEEKS,
+        backlog: 0,
+        condition: 1,
+      };
+      return emit(
+        {
+          ...paid,
+          campus: {
+            ...paid.campus,
+            placements: paid.campus.placements.map((p) => (p.id === target.id ? renovating : p)),
+          },
+        },
+        { kind: 'renovationBegun', placementId: target.id, buildingId: target.buildingId },
       );
     }
     case 'paint': {
@@ -201,7 +268,8 @@ export function applyAction(state: GameState, action: Action): GameState {
     }
     case 'resolveBeat': {
       let next = state;
-      if (action.beatId === 'budget-and-hiring') next = approveBudget(next, action.drawRate);
+      if (action.beatId === 'budget-and-hiring')
+        next = approveBudget(next, action.drawRate, action.maintenanceFunding);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
     }
     case 'debug/mark':

@@ -445,3 +445,71 @@
   flex-direction: column;
   gap: 6px;
 }
+
+/* ---------- Phase 6: works and weathering ---------- */
+
+/* A site under construction: the plot hatched, a frame, poles, a crane. */
+.scaffold-hatch {
+  stroke: rgba(42, 56, 28, 0.34);
+  stroke-width: 2.5;
+  fill: none;
+}
+.site-plate {
+  fill: url(#campus-scaffold);
+}
+.site-peg {
+  fill: none;
+  stroke: rgba(58, 47, 14, 0.55);
+  stroke-width: 1.4;
+  stroke-dasharray: 6 5;
+  vector-effect: non-scaling-stroke;
+}
+.site-deck {
+  fill: rgba(120, 104, 76, 0.55);
+}
+.scaffold-pole {
+  stroke: rgba(58, 47, 14, 0.55);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+}
+.scaffold-rail {
+  stroke: rgba(58, 47, 14, 0.4);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.site-crane line {
+  stroke: #c9a227;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.site-crane line.site-crane-tie {
+  stroke: rgba(80, 66, 20, 0.7);
+  stroke-width: 1;
+}
+.site-crane-weight {
+  fill: #6d6357;
+}
+.campus-progress-track {
+  fill: rgba(42, 56, 28, 0.3);
+  pointer-events: none;
+}
+.campus-progress-fill {
+  fill: var(--school-secondary);
+  pointer-events: none;
+}
+
+/* Weathering (DD §6.4): a building the backlog is eating loses its colour,
+   then its light. The filter sits on the whole mass so every material
+   dulls together. */
+.campus-building.worn {
+  filter: saturate(0.82) brightness(0.96);
+}
+.campus-building.weathered {
+  filter: saturate(0.62) brightness(0.9);
+}
+.campus-building.derelict {
+  filter: saturate(0.3) brightness(0.72) contrast(0.95);
+}
+.campus-building.renovating .building-mass {
+  opacity: 0.92;
+}

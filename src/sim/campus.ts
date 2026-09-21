@@ -12,6 +12,11 @@ export interface Footprint {
   h: number;
 }
 
+// Where a building is in its life (DD §6.4): a site being built, open,
+// or closed for renovation. Sites and renovations carry the week they
+// finish; open buildings carry their backlog and the condition it implies.
+export type PlacementStatus = 'building' | 'open' | 'renovating';
+
 export interface Placement {
   id: string; // unique per placed building ("p7")
   buildingId: string; // content/buildings.json id
@@ -19,6 +24,11 @@ export interface Placement {
   row: number;
   w: number; // the footprint as placed — rotation is baked in
   h: number;
+  status: PlacementStatus;
+  completesWeek: number | null; // absolute week a site or renovation finishes
+  openedWeek: number | null; // absolute week the doors first opened; age counts from it
+  backlog: number; // deferred maintenance, dollars
+  condition: number; // 0–1, derived from the backlog (estate.ts)
 }
 
 export interface Campus {

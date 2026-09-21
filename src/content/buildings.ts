@@ -70,6 +70,9 @@ export interface BuildingDef {
   name: string;
   category: BuildingCategory;
   footprint: { w: number; h: number };
+  cost: number; // to build, dollars
+  upkeep: number; // annual maintenance when new, dollars (DD §6.4)
+  buildWeeks: number; // ground broken to doors open
   form: Form;
   material: MaterialKey;
   storeys: number; // 0 for a clear-span volume or open ground
@@ -91,6 +94,9 @@ const schema = obj({
       name: str,
       category: oneOf(BUILDING_CATEGORIES),
       footprint: obj({ w: int, h: int }),
+      cost: int,
+      upkeep: int,
+      buildWeeks: int,
       form: oneOf(FORMS),
       material: oneOf(MATERIAL_KEYS),
       storeys: int,
@@ -113,6 +119,9 @@ function load(): BuildingDef[] {
     if (b.footprint.w < 1 || b.footprint.h < 1)
       throw new ContentError(`${at}.footprint`, 'must be ≥ 1×1');
     if (b.storeys < 0) throw new ContentError(`${at}.storeys`, 'must be ≥ 0');
+    if (b.cost <= 0) throw new ContentError(`${at}.cost`, 'must be > 0');
+    if (b.upkeep < 0) throw new ContentError(`${at}.upkeep`, 'must be ≥ 0');
+    if (b.buildWeeks < 1) throw new ContentError(`${at}.buildWeeks`, 'must be ≥ 1');
     const massless = b.form === 'grounds' || b.form === 'hangar';
     if (massless !== (b.storeys === 0)) {
       throw new ContentError(

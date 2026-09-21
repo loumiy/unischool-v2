@@ -1,4 +1,6 @@
 import {
+  DEBT_AMORTISATION_YEARS,
+  DEBT_INTEREST_RATE,
   ENDOWMENT_DRAW_DEFAULT,
   ENDOWMENT_DRAW_MAX,
   ENDOWMENT_DRAW_MIN,
@@ -6,11 +8,13 @@ import {
   ENDOWMENT_MEAN_RETURN,
   ENDOWMENT_RETURN_SPREAD,
   FOUNDING_ADMIN_PAYROLL,
+  MAINTENANCE_FUNDING_DEFAULT,
   STARTING_CASH,
   STARTING_ENDOWMENT,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
+import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 
@@ -57,8 +61,17 @@ export interface Flows {
 export interface YearBudget extends Flows {
   year: number;
   drawRate: number;
+  // The share of required maintenance the year funds (DD §6.4).
+  maintenanceFunding: number;
   // The endowment the draw was computed on.
   endowmentBasis: number;
+}
+
+// Construction money: outside the income statement (it buys an asset),
+// tracked on its own for the year.
+export interface Capital {
+  spent: number;
+  borrowed: number;
 }
 
 // A closed year, as the history and the chronicle will read it.
@@ -67,12 +80,14 @@ export interface YearSummary extends Flows {
   net: number;
   endowmentEnd: number;
   marketReturn: number;
+  capital: Capital;
 }
 
 export interface Treasury {
   cash: number; // operating funds
   endowment: number;
   drawRate: number; // the standing rate; the next budget is proposed at it
+  maintenanceFunding: number; // the standing level, likewise
   budget: YearBudget; // this fiscal year's
   pendingBudget: YearBudget | null; // next year's, once approved at Budget & Hiring
   actual: Flows; // this year to date
@@ -81,7 +96,11 @@ export interface Treasury {
   // the return is earned on (it accrues in equal weekly slices).
   marketReturn: number;
   endowmentBasis: number;
-  debt: number; // borrowing arrives with construction (Ph.6)
+  debt: number; // construction borrowing outstanding (DD §5.2)
+  // The principal due each week: every loan's amount over the term, summed,
+  // so the balance retires on schedule rather than decaying forever.
+  debtRepayment: number;
+  capitalThisYear: Capital;
   history: YearSummary[];
 }
 
@@ -133,22 +152,56 @@ export function marketReturnFor(seed: number, year: number): number {
 
 // Next year's plan from where the school stands now. Every line the sim
 // can foresee is here; the ones later phases fill stay at zero.
-export function proposeBudget(state: GameState, year: number, drawRate: number): YearBudget {
+export function proposeBudget(
+  state: GameState,
+  year: number,
+  drawRate: number,
+  maintenanceFunding: number = state.treasury.maintenanceFunding,
+): YearBudget {
   const t = state.treasury;
   const rate = clampDrawRate(drawRate);
+  const funding = clampFunding(maintenanceFunding);
   return {
     year,
     drawRate: rate,
+    maintenanceFunding: funding,
     endowmentBasis: t.endowment,
     revenue: { ...zeroRevenue(), endowmentDraw: Math.round(t.endowment * rate) },
-    expenses: { ...zeroExpenses(), adminPayroll: FOUNDING_ADMIN_PAYROLL },
+    expenses: {
+      ...zeroExpenses(),
+      adminPayroll: FOUNDING_ADMIN_PAYROLL,
+      maintenance: projectedMaintenance(state, funding),
+      debtService: annualDebtService(t),
+    },
   };
+}
+
+// Interest on the balance plus the scheduled principal, over a year.
+export function annualDebtService(t: Pick<Treasury, 'debt' | 'debtRepayment'>): number {
+  return Math.round(
+    t.debt * DEBT_INTEREST_RATE + Math.min(t.debt, t.debtRepayment * WEEKS_PER_YEAR),
+  );
+}
+
+export function weeklyDebtService(t: Pick<Treasury, 'debt' | 'debtRepayment'>): {
+  interest: number;
+  principal: number;
+} {
+  const interest = Math.round((t.debt * DEBT_INTEREST_RATE) / WEEKS_PER_YEAR);
+  const principal = Math.min(t.debt, Math.round(t.debtRepayment));
+  return { interest, principal };
+}
+
+// The weekly principal a new loan adds to the schedule.
+export function repaymentFor(amount: number): number {
+  return amount / (DEBT_AMORTISATION_YEARS * WEEKS_PER_YEAR);
 }
 
 export function foundingTreasury(seed: number): Treasury {
   const budget: YearBudget = {
     year: 1,
     drawRate: ENDOWMENT_DRAW_DEFAULT,
+    maintenanceFunding: MAINTENANCE_FUNDING_DEFAULT,
     endowmentBasis: STARTING_ENDOWMENT,
     revenue: {
       ...zeroRevenue(),
@@ -160,6 +213,7 @@ export function foundingTreasury(seed: number): Treasury {
     cash: STARTING_CASH,
     endowment: STARTING_ENDOWMENT,
     drawRate: ENDOWMENT_DRAW_DEFAULT,
+    maintenanceFunding: MAINTENANCE_FUNDING_DEFAULT,
     budget,
     pendingBudget: null,
     actual: zeroFlows(),
@@ -167,6 +221,8 @@ export function foundingTreasury(seed: number): Treasury {
     marketReturn: marketReturnFor(seed, 1),
     endowmentBasis: STARTING_ENDOWMENT,
     debt: 0,
+    debtRepayment: 0,
+    capitalThisYear: { spent: 0, borrowed: 0 },
     history: [],
   };
 }
@@ -179,15 +235,21 @@ function addFlows(a: Flows, b: Flows): Flows {
   return { revenue, expenses };
 }
 
-// One week's movement: each budgeted line in 36 equal slices. Later phases
-// replace the slices that depend on live state (tuition on enrollment,
-// maintenance on the campus) with the real weekly figure.
-export function weeklyFlows(t: Treasury): Flows {
+// One week's movement: the budgeted lines in 36 equal slices, except the
+// lines that follow live state — maintenance follows the estate as it
+// stands (estate.ts), debt service the balance outstanding. Later phases
+// move more lines (tuition on enrollment, payroll on the faculty) to the
+// live side.
+export function weeklyFlows(state: GameState): Flows {
+  const t = state.treasury;
   const revenue = zeroRevenue();
   const expenses = zeroExpenses();
   for (const k of REVENUE_CATEGORIES) revenue[k] = Math.round(t.budget.revenue[k] / WEEKS_PER_YEAR);
   for (const k of EXPENSE_CATEGORIES)
     expenses[k] = Math.round(t.budget.expenses[k] / WEEKS_PER_YEAR);
+  expenses.maintenance = weeklyMaintenance(state);
+  const service = weeklyDebtService(t);
+  expenses.debtService = service.interest + service.principal;
   return { revenue, expenses };
 }
 
@@ -199,16 +261,20 @@ export function treasuryWeek(state: GameState): GameState {
   const { clock } = s;
   if (clock.term === 'fall' && clock.week === 1) s = turnFiscalYear(s);
   const t = s.treasury;
-  const week = weeklyFlows(t);
+  const week = weeklyFlows(s);
   const net = netOf(week);
   const growth = Math.round((t.endowmentBasis * t.marketReturn) / WEEKS_PER_YEAR);
   const draw = week.revenue.endowmentDraw;
+  const { principal } = weeklyDebtService(t);
+  const debt = t.debt - principal;
   return {
     ...s,
     treasury: {
       ...t,
       cash: t.cash + net,
       endowment: t.endowment + growth - draw,
+      debt,
+      debtRepayment: debt <= 0 ? 0 : t.debtRepayment,
       actual: addFlows(t.actual, week),
       lastWeek: week,
     },
@@ -225,8 +291,9 @@ function turnFiscalYear(state: GameState): GameState {
     net: netOf(t.actual),
     endowmentEnd: t.endowment,
     marketReturn: t.marketReturn,
+    capital: t.capitalThisYear,
   };
-  const budget = t.pendingBudget ?? proposeBudget(state, year, t.drawRate);
+  const budget = t.pendingBudget ?? proposeBudget(state, year, t.drawRate, t.maintenanceFunding);
   const next: GameState = {
     ...state,
     treasury: {
@@ -234,6 +301,8 @@ function turnFiscalYear(state: GameState): GameState {
       budget,
       pendingBudget: null,
       drawRate: budget.drawRate,
+      maintenanceFunding: budget.maintenanceFunding,
+      capitalThisYear: { spent: 0, borrowed: 0 },
       actual: zeroFlows(),
       marketReturn: marketReturnFor(state.seed, year),
       endowmentBasis: t.endowment,
@@ -245,12 +314,20 @@ function turnFiscalYear(state: GameState): GameState {
 
 // The Budget & Hiring decision (DD §3.3, §5.1): approve next year's budget
 // at a draw rate. The stated default is the standing rate.
-export function approveBudget(state: GameState, drawRate: number | undefined): GameState {
+export function approveBudget(
+  state: GameState,
+  drawRate: number | undefined,
+  maintenanceFunding: number | undefined,
+): GameState {
   const t = state.treasury;
   const rate = clampDrawRate(drawRate ?? t.drawRate);
-  const budget = proposeBudget(state, state.clock.year + 1, rate);
+  const funding = clampFunding(maintenanceFunding ?? t.maintenanceFunding);
+  const budget = proposeBudget(state, state.clock.year + 1, rate, funding);
   return emit(
-    { ...state, treasury: { ...t, drawRate: rate, pendingBudget: budget } },
+    {
+      ...state,
+      treasury: { ...t, drawRate: rate, maintenanceFunding: funding, pendingBudget: budget },
+    },
     { kind: 'budgetApproved', year: budget.year, drawRate: rate },
   );
 }

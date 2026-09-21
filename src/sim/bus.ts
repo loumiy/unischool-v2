@@ -19,6 +19,9 @@ export type BusEvent =
   | { kind: 'doorsOpened'; placementId: string } // Founders Hall stands; the clock starts
   | { kind: 'buildingPlaced'; placementId: string; buildingId: string }
   | { kind: 'buildingDemolished'; placementId: string; buildingId: string }
+  | { kind: 'buildingCompleted'; placementId: string; buildingId: string }
+  | { kind: 'renovationBegun'; placementId: string; buildingId: string }
+  | { kind: 'renovated'; placementId: string; buildingId: string }
   | { kind: 'termBegan'; year: number; term: Term }
   | { kind: 'yearTurned'; year: number }
   | { kind: 'beatFired'; beatId: string }
@@ -35,6 +38,9 @@ export const BUS_KINDS: readonly BusKind[] = [
   'doorsOpened',
   'buildingPlaced',
   'buildingDemolished',
+  'buildingCompleted',
+  'renovationBegun',
+  'renovated',
   'termBegan',
   'yearTurned',
   'beatFired',

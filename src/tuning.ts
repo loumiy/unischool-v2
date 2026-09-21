@@ -41,3 +41,35 @@ export const FOUNDING_ADMIN_PAYROLL = 1_800_000;
 // Tuition dependence above this share of revenue is flagged as fragility
 // (DD §5.1).
 export const TUITION_DEPENDENCE_FLAG = 0.75;
+
+// ---------- Buildings as economic objects (DD §6.4, Phase 6) ----------
+
+// Upkeep grows with age: a fifty-year-old hall costs twice what it did new.
+export const UPKEEP_AGE_RATE = 0.02;
+// Deferred maintenance compounds: work left undone costs more each year.
+export const BACKLOG_GROWTH_RATE = 0.06;
+// A backlog worth this share of the building's cost is condition zero.
+export const BACKLOG_RUIN_SHARE = 0.5;
+// The share of required maintenance the budget funds, set at Budget &
+// Hiring. Below 1 the difference becomes Backlog.
+export const MAINTENANCE_FUNDING_DEFAULT = 1;
+export const MAINTENANCE_FUNDING_STEP = 0.05;
+// Where a building starts to look it: the weathering thresholds on
+// condition (0–1), also what failure events (Ph.17) will read.
+export const WORN_CONDITION = 0.9;
+export const WEATHERED_CONDITION = 0.6;
+export const DERELICT_CONDITION = 0.3;
+
+// Renovation pays the backlog plus a contractor's fee on the build cost,
+// and takes the building out of use for a stretch.
+export const RENOVATION_FEE_SHARE = 0.05;
+export const RENOVATION_WEEKS = 8;
+// Taking a building down costs a share of what it cost to put up.
+export const DEMOLITION_COST_SHARE = 0.05;
+
+// Debt (DD §5.2): construction can be borrowed for; the board caps leverage
+// at a share of the endowment. Interest accrues weekly; principal amortises
+// over the term.
+export const DEBT_CAP_SHARE_OF_ENDOWMENT = 0.4;
+export const DEBT_INTEREST_RATE = 0.05;
+export const DEBT_AMORTISATION_YEARS = 20;
