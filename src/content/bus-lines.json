@@ -21,6 +21,15 @@
     "schoolFounded": { "text": "The School of {school} is founded in {building}.", "tone": "good" },
     "programOpened": { "text": "{program} opens for enrollment.", "tone": "good" },
     "programClosed": { "text": "{program} closes.", "tone": "bad" },
+    "advancementBegun": { "text": "{program} begins its climb to {tier}." },
+    "programAdvanced": { "text": "{program} is now {tier}.", "tone": "good" },
+    "advancementStalled": {
+      "text": "{program}'s works to {tier} are done, but wait on {rank} assigned.",
+      "tone": "bad"
+    },
+    "programDecayed": { "text": "{program} slips back to {tier}{embarrassment}.", "tone": "bad" },
+    "signatureNamed": { "text": "{program} is named a signature program.", "tone": "good" },
+    "signatureDropped": { "text": "{program} is no longer a signature program." },
     "marketOpened": { "text": "The hiring market opens: {count} candidates listed." },
     "marketClosed": { "text": "The market closes; {count} candidates take other offers." },
     "facultyHired": { "text": "{name} joins the faculty{assignment}.", "tone": "good" },

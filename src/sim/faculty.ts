@@ -25,7 +25,7 @@ import {
   TEACHING_NEUTRAL,
   TEACHING_WEIGHT,
 } from '../tuning.ts';
-import { openProgram, type OpenProgram } from './academics.ts';
+import { crowdingFactor, openProgram, type OpenProgram } from './academics.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { pay } from './estate.ts';
@@ -295,7 +295,8 @@ export function staffingNeed(program: OpenProgram): number {
 
 // Program quality, 0–100: the assigned faculty's teaching, damped by
 // understaffing, lifted by the tier, worn by the condition of the hall the
-// school lives in. Overcrowding (seats against enrollment) is Phase 11's.
+// school lives in, damped again by overcrowding (seats against enrollment,
+// academics.ts).
 export function programQuality(state: GameState, program: OpenProgram): number {
   const staff = facultyOf(state, program.programId);
   if (staff.length === 0) return 0;
@@ -305,7 +306,8 @@ export function programQuality(state: GameState, program: OpenProgram): number {
   const school = state.academics.schools.find((s) => s.schoolId === def?.schoolId);
   const hall = state.campus.placements.find((p) => p.id === school?.placementId);
   const condition = hall?.status === 'open' ? hall.condition : 1;
-  const q = teaching * staffing * tierById(program.tier).qualityFactor * condition;
+  const q =
+    teaching * staffing * tierById(program.tier).qualityFactor * condition * crowdingFactor(state);
   return Number(Math.min(100, Math.max(0, q)).toFixed(1));
 }
 

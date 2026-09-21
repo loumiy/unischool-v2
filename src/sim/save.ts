@@ -352,6 +352,44 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 10, state: migrated };
   },
+  // v10 → v11 (Phase 11): advancement, signatures and neglect on each open
+  // program. Replay first; else every program stands still, unsigned.
+  10: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    const academics = (state.academics ?? {}) as Record<string, unknown>;
+    const programs = (Array.isArray(academics.programs) ? academics.programs : []) as Record<
+      string,
+      unknown
+    >[];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 11,
+      academics: {
+        ...academics,
+        programs: programs.map((p) => ({
+          ...p,
+          advancing: null,
+          signature: false,
+          neglectYears: 0,
+        })),
+      },
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 11, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -487,6 +525,13 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   for (const pr of academics.programs as Record<string, unknown>[]) {
     if (typeof pr.programId !== 'string' || typeof pr.tier !== 'string')
       return 'an open program is malformed';
+    if (typeof pr.signature !== 'boolean' || typeof pr.neglectYears !== 'number')
+      return 'an open program is malformed';
+    if (pr.advancing !== null) {
+      const a = pr.advancing as Record<string, unknown> | undefined;
+      if (typeof a?.to !== 'string' || typeof a?.completesWeek !== 'number')
+        return 'an advancement is malformed';
+    }
   }
   const faculty = s.faculty as Record<string, unknown> | undefined;
   if (typeof faculty !== 'object' || faculty === null) return 'state.faculty is invalid';

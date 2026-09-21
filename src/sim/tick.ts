@@ -4,6 +4,7 @@ import { advanceClock } from './calendar.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
+import { academicsWeek } from './academics.ts';
 import { estateWeek } from './estate.ts';
 import { openMarket } from './faculty.ts';
 import { peopleWeek } from './people.ts';
@@ -30,6 +31,7 @@ export function tick(state: GameState): GameState {
     next = treasuryWeek(next);
     next = distressWeek(next);
     next = estateWeek(next);
+    next = academicsWeek(next);
     next = peopleWeek(next);
     next = fireBeat(next);
   }

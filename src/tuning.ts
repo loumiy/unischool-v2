@@ -202,3 +202,23 @@ export const TEACHING_WEIGHT = 20;
 export const TEACHING_NEUTRAL = 50;
 // Quirks that touch morale add up to this much either way, no more.
 export const QUIRK_MORALE_CAP = 6;
+
+// ---------- Advancement and signatures (DD §7.2, §7.4, Phase 11) ----------
+
+// Advancing a tier: money, a qualified senior hire (the tier's lead rank,
+// content/schools.json) assigned to the program, and time. The works
+// complete only with the lead still in place.
+export const ADVANCEMENT = {
+  established: { cost: 1_500_000, years: 2 },
+  renowned: { cost: 4_000_000, years: 3 },
+} as const;
+// Up to this many signature programs; theirs advance at this share of the cost.
+export const SIGNATURE_LIMIT = 3;
+export const SIGNATURE_ADVANCE_DISCOUNT = 0.5;
+// A program above Founded is neglected in a year it has no lead of its
+// tier's rank or under this share of its staff; after this many years
+// running it drops a tier. A signature decaying costs the board this much
+// confidence (the public embarrassment, until events fire).
+export const NEGLECT_STAFFING_SHARE = 0.5;
+export const DECAY_AFTER_YEARS = 2;
+export const SIGNATURE_DECAY_CONFIDENCE = 5;
