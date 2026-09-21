@@ -1,0 +1,342 @@
+{
+  "given": {
+    "male": [
+      "Abel",
+      "Ambrose",
+      "Anton",
+      "Arjun",
+      "Bertie",
+      "Caleb",
+      "Cassius",
+      "Cyrus",
+      "Dario",
+      "Dmitri",
+      "Edwin",
+      "Ephraim",
+      "Ezra",
+      "Finn",
+      "Gideon",
+      "Hugo",
+      "Ignatius",
+      "Jasper",
+      "Kofi",
+      "Lachlan",
+      "Linus",
+      "Malachi",
+      "Milo",
+      "Nestor",
+      "Oscar",
+      "Percy",
+      "Quentin",
+      "Rafferty",
+      "Rowan",
+      "Silas",
+      "Tobias",
+      "Ulysses",
+      "Vasily",
+      "Wendell",
+      "Xavier",
+      "Yusaf",
+      "Zeke",
+      "Ansel",
+      "Barnaby",
+      "Corwin"
+    ],
+    "female": [
+      "Agatha",
+      "Alba",
+      "Annika",
+      "Beatrix",
+      "Bessie",
+      "Clio",
+      "Coralie",
+      "Delphine",
+      "Edith",
+      "Elspeth",
+      "Esme",
+      "Frida",
+      "Greta",
+      "Hester",
+      "Imogen",
+      "Isolde",
+      "Juno",
+      "Kizzy",
+      "Leonie",
+      "Lottie",
+      "Mabel",
+      "Marguerite",
+      "Nell",
+      "Odile",
+      "Ottoline",
+      "Perpetua",
+      "Rosalind",
+      "Saoirse",
+      "Sylvie",
+      "Tabitha",
+      "Theodora",
+      "Ursula",
+      "Verity",
+      "Wilhelmina",
+      "Xanthe",
+      "Yvaine",
+      "Zora",
+      "Cordelia",
+      "Harriet",
+      "Nadia"
+    ]
+  },
+  "arcs": [
+    {
+      "id": "arrived-triple",
+      "when": "triples",
+      "stage": "year",
+      "line": "{name} ({tag}) is in a room built for two and slept in by three, and has opinions.",
+      "weight": 3
+    },
+    {
+      "id": "arrived-grand",
+      "when": "beautiful",
+      "stage": "year",
+      "line": "{name} ({tag}) wrote home that the place looks like a postcard.",
+      "weight": 2
+    },
+    {
+      "id": "arrived-plain",
+      "when": "always",
+      "stage": "year",
+      "line": "{name} ({tag}) has found the library, the refectory, and a radiator that works.",
+      "weight": 1
+    },
+    {
+      "id": "dining-queue",
+      "when": "crowdedDining",
+      "stage": "year",
+      "line": "{name} ({tag}) has taken to eating at four o'clock, when the queue is shortest.",
+      "weight": 2
+    },
+    {
+      "id": "lecture-floor",
+      "when": "crowdedSeats",
+      "stage": "year",
+      "line": "{name} ({tag}) sat on the floor of a lecture again, and says the acoustics are better down there.",
+      "weight": 2
+    },
+    {
+      "id": "leaking-roof",
+      "when": "derelict",
+      "stage": "year",
+      "line": "{name} ({tag}) has put a bucket under the leak and named it.",
+      "weight": 2
+    },
+    {
+      "id": "great-teacher",
+      "when": "goodTeaching",
+      "stage": "year",
+      "line": "{name} ({tag}) has changed their mind about their future twice this term, both times after a lecture.",
+      "weight": 2
+    },
+    {
+      "id": "nobody-teaching",
+      "when": "noTeaching",
+      "stage": "year",
+      "line": "{name} ({tag}) asked when the teaching starts and was given a pamphlet.",
+      "weight": 3
+    },
+    {
+      "id": "understaffed",
+      "when": "thinFaculty",
+      "stage": "year",
+      "line": "{name} ({tag}) has the same professor for three of four courses, and they are all Tuesday.",
+      "weight": 2
+    },
+    {
+      "id": "austerity-term",
+      "when": "austerity",
+      "stage": "year",
+      "line": "{name} ({tag}) is writing to the student paper about what the cuts have done to {school}.",
+      "weight": 3
+    },
+    {
+      "id": "frozen-term",
+      "when": "frozen",
+      "stage": "year",
+      "line": "{name} ({tag}) notes that the half-built thing outside their window has not moved since October.",
+      "weight": 2
+    },
+    {
+      "id": "receivership-term",
+      "when": "receivership",
+      "stage": "year",
+      "line": "{name} ({tag}) has met the interim CFO twice, which is twice more than they have met a dean.",
+      "weight": 3
+    },
+    {
+      "id": "prize-essay",
+      "when": "strongClass",
+      "stage": "year",
+      "line": "{name} ({tag}) has won the essay prize, and is unbearable about it.",
+      "weight": 2
+    },
+    {
+      "id": "scraping",
+      "when": "weakClass",
+      "stage": "year",
+      "line": "{name} ({tag}) is on academic probation and has promised to do better, in writing.",
+      "weight": 2
+    },
+    {
+      "id": "unhappy-year",
+      "when": "unhappy",
+      "stage": "year",
+      "line": "{name} ({tag}) has been seen reading another college's prospectus in the refectory.",
+      "weight": 3
+    },
+    {
+      "id": "happy-year",
+      "when": "happy",
+      "stage": "year",
+      "line": "{name} ({tag}) has joined three societies and founded a fourth.",
+      "weight": 2
+    },
+    {
+      "id": "new-building",
+      "when": "newBuilding",
+      "stage": "year",
+      "line": "{name} ({tag}) was first through the doors of the new building, and says it smells of paint.",
+      "weight": 3
+    },
+    {
+      "id": "quad-afternoon",
+      "when": "hasQuad",
+      "stage": "year",
+      "line": "{name} ({tag}) has done no work at all this week, but has done it on {quad}.",
+      "weight": 2
+    },
+    {
+      "id": "programme-closed",
+      "when": "programClosed",
+      "stage": "year",
+      "line": "{name} ({tag}) came here to read {program}, which no longer exists, and has been reassigned.",
+      "weight": 4
+    },
+    {
+      "id": "programme-risen",
+      "when": "programAdvanced",
+      "stage": "year",
+      "line": "{name} ({tag}) is in the first cohort to take the new courses in {program}.",
+      "weight": 3
+    },
+    {
+      "id": "night-lab",
+      "when": "always",
+      "stage": "year",
+      "line": "{name} ({tag}) has been found asleep in the {school} building three nights running.",
+      "weight": 1
+    },
+    {
+      "id": "quiet-year",
+      "when": "always",
+      "stage": "year",
+      "line": "{name} ({tag}) is doing quite well, and has stopped writing home so often.",
+      "weight": 1
+    },
+    {
+      "id": "left-unhappy",
+      "when": "unhappy",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has gone home. They did not say where they were going next.",
+      "weight": 3
+    },
+    {
+      "id": "left-money",
+      "when": "austerity",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has withdrawn. The fees went up; the heating did not.",
+      "weight": 3
+    },
+    {
+      "id": "left-transfer",
+      "when": "always",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has transferred to a college with a bigger library and a smaller reputation.",
+      "weight": 1
+    },
+    {
+      "id": "grad-distinguished-prize",
+      "when": "always",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates with the highest marks in {school} and a scholarship abroad.",
+      "weight": 2
+    },
+    {
+      "id": "grad-distinguished-thesis",
+      "when": "always",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates; their thesis is being published, which nobody expected, least of all them.",
+      "weight": 2
+    },
+    {
+      "id": "grad-distinguished-speech",
+      "when": "happy",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) gives the commencement address and thanks a professor by name.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-post",
+      "when": "always",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates and has a post to go to in the autumn.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-quiet",
+      "when": "always",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates without fuss, which is how they did everything else.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-return",
+      "when": "happy",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates, and has already asked when the reunions are.",
+      "weight": 2
+    },
+    {
+      "id": "grad-adrift-nothing",
+      "when": "always",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates with no plans and a forwarding address that will not last.",
+      "weight": 2
+    },
+    {
+      "id": "grad-adrift-bitter",
+      "when": "unhappy",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates, and tells the photographer they would not do it again.",
+      "weight": 3
+    },
+    {
+      "id": "grad-adrift-late",
+      "when": "always",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates a term late, quietly, with nobody in the seats.",
+      "weight": 1
+    }
+  ],
+  "readings": {
+    "named": "The handful of students the game follows through their four years: a lens on the cohorts, never a separate simulation.",
+    "arc": "What has happened to them, drawn from what was true of their class at the time.",
+    "outcome": "How they left: the class's own outcome distribution, one student's share of it."
+  },
+  "lines": {
+    "none": "No named students yet. The game picks a handful out of each arriving class.",
+    "enrolled": "{program}, {year}",
+    "unplaced": "Not yet in a program",
+    "years": ["First year", "Second year", "Third year", "Fourth year"],
+    "graduated": "Class of {class}",
+    "left": "Left in {year}",
+    "introduced": "The game will be following {names} of the {label}."
+  }
+}

@@ -436,14 +436,37 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
   },
   // v12 → v13 (Phase 14): the names the player has given the quads their
   // buildings enclose. An old run has named none, and the game names every
-  // quad it detects, so nothing else changes.
+  // quad it detects, so nothing else changes. Like every step that only
+  // ADDS a field, it fills the gap and leaves anything already there —
+  // an earlier step's replay rebuilds the state at the current shape, and
+  // clobbering it here would undo what that replay got right.
   12: (raw) => {
     const state = (raw.state ?? {}) as Record<string, unknown>;
     const campus = (state.campus ?? {}) as Record<string, unknown>;
     return {
       ...raw,
       version: 13,
-      state: { ...state, schemaVersion: 13, campus: { ...campus, quadNames: {} } },
+      state: {
+        ...state,
+        schemaVersion: 13,
+        campus: { quadNames: {}, ...campus },
+      },
+    };
+  },
+  // v13 → v14 (Phase 15): the named students. An old run followed nobody;
+  // the classes already on the books stay anonymous, and the next class to
+  // arrive is the first the game names.
+  13: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const people = (state.people ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 14,
+      state: {
+        ...state,
+        schemaVersion: 14,
+        people: { named: [], nextStudentId: 1, ...people },
+      },
     };
   },
 };
@@ -559,6 +582,17 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return 'an alumni class is malformed';
   }
   if (typeof people.aidRate !== 'number') return 'state.people.aidRate is invalid';
+  if (!Array.isArray(people.named)) return 'state.people.named is invalid';
+  if (typeof people.nextStudentId !== 'number') return 'state.people.nextStudentId is invalid';
+  for (const n of people.named as Record<string, unknown>[]) {
+    if (typeof n !== 'object' || n === null) return 'a named student is malformed';
+    for (const k of ['id', 'name', 'gender', 'heritage', 'status'])
+      if (typeof n[k] !== 'string') return 'a named student is malformed';
+    if (typeof n.classYear !== 'number') return 'a named student is malformed';
+    if (n.programId !== null && typeof n.programId !== 'string')
+      return 'a named student is malformed';
+    if (!Array.isArray(n.beats)) return 'a named student is malformed';
+  }
   const distress = s.distress as Record<string, unknown> | undefined;
   if (typeof distress !== 'object' || distress === null) return 'state.distress is invalid';
   for (const k of [

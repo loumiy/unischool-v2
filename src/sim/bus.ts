@@ -37,6 +37,8 @@ export type BusEvent =
     }
   | { kind: 'classArrived'; classYear: number; size: number; quality: number; triples: number }
   | { kind: 'studentsLeft'; count: number }
+  | { kind: 'studentsNamed'; classYear: number; names: string[] }
+  | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
       classYear: number;
@@ -83,6 +85,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'admissionsClosed',
   'classArrived',
   'studentsLeft',
+  'studentsNamed',
+  'studentBeat',
   'classGraduated',
   'schoolFounded',
   'programOpened',

@@ -42,6 +42,13 @@ import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
+import {
+  nameNewcomers,
+  tellGraduationBeats,
+  tellTermBeats,
+  tellYearBeats,
+  type NamedStudent,
+} from './students.ts';
 import { quirkMorale, teachingQuality, teachingSatisfaction } from './faculty.ts';
 import type { GameState } from './state.ts';
 
@@ -103,6 +110,10 @@ export interface People {
   incoming: Admissions | null;
   lastAdmissions: Admissions | null;
   alumni: AlumniClass[];
+  // The handful the game follows (students.ts): a lens on the cohorts,
+  // carrying no number the sim reads back.
+  named: NamedStudent[];
+  nextStudentId: number;
 }
 
 export function foundingPeople(): People {
@@ -113,6 +124,8 @@ export function foundingPeople(): People {
     incoming: null,
     lastAdmissions: null,
     alumni: [],
+    named: [],
+    nextStudentId: 1,
   };
 }
 
@@ -445,10 +458,22 @@ export function graduate(state: GameState): GameState {
   const { year } = state.clock;
   const leaving = state.people.cohorts.filter((c) => c.classYear <= year);
   if (leaving.length === 0) return state;
+  const farewells: { student: NamedStudent; arcId: string }[] = [];
+  let named = state.people.named;
+  for (const c of leaving) {
+    const result = tellGraduationBeats(
+      { ...state, people: { ...state.people, named } },
+      c,
+      outcomesFor(c.quality, c.satisfaction, c.size),
+    );
+    named = result.named;
+    for (const t of result.told) farewells.push({ student: t.student, arcId: t.arc.id });
+  }
   let next: GameState = {
     ...state,
     people: {
       ...state.people,
+      named,
       cohorts: state.people.cohorts.filter((c) => c.classYear > year),
       alumni: [
         ...state.people.alumni,
@@ -472,6 +497,9 @@ export function graduate(state: GameState): GameState {
       adrift: outcomes.adrift,
     });
   }
+  for (const f of farewells) {
+    next = emit(next, { kind: 'studentBeat', studentId: f.student.id, arcId: f.arcId });
+  }
   return next;
 }
 
@@ -482,7 +510,8 @@ export function arrive(state: GameState): GameState {
   const { year } = state.clock;
   const p = state.people;
   const incoming = p.incoming && p.incoming.year === year ? p.incoming : null;
-  const total = enrolled(state) + (incoming?.size ?? 0);
+  const enrolledBefore = enrolled(state);
+  const total = enrolledBefore + (incoming?.size ?? 0);
   const satisfaction = satisfactionFor(state, total);
   const teaching = teachingQuality(state);
   let left = 0;
@@ -504,6 +533,22 @@ export function arrive(state: GameState): GameState {
     ...state,
     people: { ...p, cohorts, incoming: incoming ? null : p.incoming },
   };
+  // The named are drawn AFTER the cohorts are re-scored, so every beat
+  // reads the year the students are actually living through.
+  const newcomers =
+    incoming && incoming.size > 0
+      ? nameNewcomers(next, year + 3)
+      : { named: [], nextId: p.nextStudentId };
+  next = {
+    ...next,
+    people: {
+      ...next.people,
+      named: [...next.people.named, ...newcomers.named],
+      nextStudentId: newcomers.nextId,
+    },
+  };
+  const beats = tellYearBeats(next, enrolledBefore > 0 ? left / enrolledBefore : 0);
+  next = { ...next, people: { ...next.people, named: beats.named } };
   if (left > 0) next = emit(next, { kind: 'studentsLeft', count: left });
   if (incoming && incoming.size > 0) {
     const triples = Math.max(0, total - campusCapacity(state).beds);
@@ -514,6 +559,16 @@ export function arrive(state: GameState): GameState {
       quality: incoming.quality,
       triples,
     });
+    if (newcomers.named.length > 0) {
+      next = emit(next, {
+        kind: 'studentsNamed',
+        classYear: year + 3,
+        names: newcomers.named.map((s) => s.name),
+      });
+    }
+  }
+  for (const t of beats.told) {
+    next = emit(next, { kind: 'studentBeat', studentId: t.student.id, arcId: t.arc.id });
   }
   return next;
 }
@@ -522,9 +577,26 @@ export function arrive(state: GameState): GameState {
 export function peopleWeek(state: GameState): GameState {
   const { clock } = state;
   if (clock.week !== 1) return state;
-  if (clock.term === 'summer') return graduate(state);
   if (clock.term === 'fall') return arrive(state);
-  return state;
+  // The other two terms turn with a few of the named students' news, so a
+  // year's beats are not all told in one week (students.ts) — except at
+  // Commencement, whose farewells are that week's news on their own.
+  if (clock.term === 'summer') {
+    const graduating = state.people.cohorts.some((c) => c.classYear <= clock.year);
+    const done = graduate(state);
+    return graduating ? done : termBeats(done);
+  }
+  return termBeats(state);
+}
+
+function termBeats(state: GameState): GameState {
+  const beats = tellTermBeats(state);
+  if (beats.told.length === 0) return state;
+  let next: GameState = { ...state, people: { ...state.people, named: beats.named } };
+  for (const t of beats.told) {
+    next = emit(next, { kind: 'studentBeat', studentId: t.student.id, arcId: t.arc.id });
+  }
+  return next;
 }
 
 export function cohortLabel(c: Pick<Cohort, 'classYear'>): string {
