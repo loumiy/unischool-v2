@@ -2193,3 +2193,32 @@ button.toolbar-stat.active svg {
   font-style: italic;
   color: var(--ink-muted);
 }
+
+/* ---------- Phase 12: why they feel that way ---------- */
+.satisfaction-table {
+  max-width: 420px;
+}
+.satisfaction-table th {
+  font-weight: 700;
+  text-align: left;
+}
+.satisfaction-table td {
+  text-align: right;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+.satisfaction-table tr.bad td {
+  color: var(--danger-ink);
+}
+.satisfaction-table tr.good td {
+  color: var(--ok-on-light);
+}
+.satisfaction-table .satisfaction-total th,
+.satisfaction-table .satisfaction-total td {
+  border-top: 2px solid var(--outline);
+  font-weight: 800;
+  color: var(--ink);
+}
+.debug .pair {
+  display: contents;
+}

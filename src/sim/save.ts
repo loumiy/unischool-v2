@@ -9,7 +9,7 @@ import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingFaculty } from './faculty.ts';
-import { foundingPeople } from './people.ts';
+import { foundingPeople, outcomesFor } from './people.ts';
 import { foundingTreasury } from './treasury.ts';
 
 // The save file: state + version + action log (DD §15). Storage (IndexedDB,
@@ -390,6 +390,39 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 11, state: migrated };
   },
+  // v11 → v12 (Phase 12): outcomes on every alumni class. Replay first;
+  // else each class is scored from the quality and satisfaction it left with.
+  11: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    const people = (state.people ?? {}) as Record<string, unknown>;
+    const alumni = (Array.isArray(people.alumni) ? people.alumni : []) as Record<string, unknown>[];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 12,
+      people: {
+        ...people,
+        alumni: alumni.map((a) => ({
+          ...a,
+          outcomes: outcomesFor(Number(a.quality), Number(a.satisfaction), Number(a.size)),
+        })),
+      },
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 12, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -492,6 +525,15 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   for (const c of people.cohorts as Record<string, unknown>[]) {
     for (const k of ['classYear', 'size', 'quality', 'satisfaction'])
       if (typeof c[k] !== 'number') return 'a cohort is malformed';
+  }
+  for (const a of people.alumni as Record<string, unknown>[]) {
+    const o = a.outcomes as Record<string, unknown> | undefined;
+    if (
+      typeof o?.distinguished !== 'number' ||
+      typeof o?.placed !== 'number' ||
+      typeof o?.adrift !== 'number'
+    )
+      return 'an alumni class is malformed';
   }
   if (typeof people.aidRate !== 'number') return 'state.people.aidRate is invalid';
   const distress = s.distress as Record<string, unknown> | undefined;

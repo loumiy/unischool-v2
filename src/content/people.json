@@ -17,13 +17,30 @@
     "satisfaction": "How the class rates the place, 0–100: housing, dining, seats and the state of the buildings, for now.",
     "attrition": "The share of every cohort that leaves each year at this satisfaction.",
     "cohortSize": "Students in the class this year.",
-    "cohortQuality": "The class's quality as admitted, 0–100."
+    "cohortQuality": "The class's quality, 0–100: as admitted, then drifting each year toward the teaching it gets.",
+    "teachingQuality": "Program quality averaged over the open programs: what the cohorts learn from.",
+    "base": "Where every class starts before the campus and the year have their say.",
+    "housing": "Lost to triples: the share of students beyond the beds.",
+    "dining": "Lost to the crowded refectory: the share beyond the dining seats.",
+    "seatsTerm": "Lost to crowded classes: the share beyond the teaching seats.",
+    "condition": "The state of the buildings: full condition costs nothing, ruin costs the most.",
+    "teachingTerm": "Program quality against the neutral line: nothing to study is the worst of it.",
+    "morale": "What the faculty's quirks add or take, capped.",
+    "beauty": "Campus beauty against the middle; a stub until the campus is scored.",
+    "conditions": "Living through the ladder: a freeze, austerity and receivership cost more each.",
+    "distinguished": "Graduates who left with distinction: the class's score above the middle earns them.",
+    "placed": "Graduates who went on, unremarkably, as most do.",
+    "adrift": "Graduates who drifted: a base, rising as the class's score falls below the middle.",
+    "outcomeScore": "The class's score: quality weighted seven to three against how it left."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",
     "capped": "The beds being what they are, the file closes early: {size} of {wanted} who would come.",
     "triplesWarning": "{triples} of them will live in triples.",
     "roomToSpare": "Room for everyone who comes.",
-    "noAlumni": "Nobody has graduated yet."
+    "noAlumni": "Nobody has graduated yet.",
+    "breakdownTitle": "Why they feel that way",
+    "outcomesTitle": "How the classes turned out",
+    "nextClass": "The {label} would graduate today with {distinguished} distinguished, {placed} placed and {adrift} adrift."
   }
 }

@@ -48,6 +48,7 @@ const PLACEHOLDERS = [
   'tier',
   'rank',
   'embarrassment',
+  'outcomes',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -123,10 +124,15 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'studentsLeft':
       vars.count = String(entry.count);
       break;
-    case 'classGraduated':
+    case 'classGraduated': {
       vars.label = classLabel(entry.classYear);
       vars.size = String(entry.size);
+      const notes: string[] = [];
+      if (entry.distinguished > 0) notes.push(`${entry.distinguished} with distinction`);
+      if (entry.adrift > 0) notes.push(`${entry.adrift} adrift`);
+      vars.outcomes = notes.length ? `, ${notes.join(', ')}` : '';
       break;
+    }
     case 'schoolFounded':
       vars.school = findSchool(entry.schoolId)?.name ?? entry.schoolId;
       vars.building = findBuilding(entry.buildingId)?.name ?? entry.buildingId;
