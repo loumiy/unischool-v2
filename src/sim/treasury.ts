@@ -15,6 +15,7 @@ import {
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { annualProgramCosts } from './academics.ts';
+import { annualGiving } from './alumni.ts';
 import { boardPolicy, inReceivership } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualFacultyPayroll } from './faculty.ts';
@@ -173,6 +174,7 @@ export function proposeBudget(
       ...zeroRevenue(),
       tuition: projectedEnrollment(state) * state.people.terms.tuition,
       endowmentDraw: Math.round(t.endowment * rate),
+      donations: annualGiving(state),
       auxiliaries: Math.round(
         (annualAuxiliaries(state) * projectedEnrollment(state)) / Math.max(1, enrolledNow(state)),
       ),
@@ -267,6 +269,7 @@ export function weeklyFlows(state: GameState): Flows {
   for (const k of EXPENSE_CATEGORIES)
     expenses[k] = Math.round(t.budget.expenses[k] / WEEKS_PER_YEAR);
   revenue.tuition = Math.round(annualTuition(state) / WEEKS_PER_YEAR);
+  revenue.donations = Math.round(annualGiving(state) / WEEKS_PER_YEAR);
   revenue.auxiliaries = Math.round(annualAuxiliaries(state) / WEEKS_PER_YEAR);
   expenses.financialAid = Math.round(annualAid(state) / WEEKS_PER_YEAR);
   expenses.facultyPayroll = Math.round(annualFacultyPayroll(state) / WEEKS_PER_YEAR);

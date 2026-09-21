@@ -307,3 +307,40 @@ export const ARC_BEATS_PER_STUDENT = 4;
 // ones the game follows are no likelier to go than anyone else, but a
 // class bleeding students should visibly lose one of them.
 export const STUDENT_LEAVES_ODDS = 2.5;
+
+// ---------- Class memory and the alumni ledger (DD §8.4, Phase 16) ----------
+
+// Warmth (0–100) is set at graduation: mostly how they felt, partly how
+// they turned out, plus what their four years earned them in clauses.
+export const WARMTH_FROM_SATISFACTION = 0.6;
+export const WARMTH_FROM_OUTCOMES = 0.4;
+// How many clauses a memory carries, most telling first.
+export const MEMORY_CLAUSE_LIMIT = 3;
+// The admissions office fills the beds and the triples allowance with
+// them every year, so a little crowding is the normal state of the place
+// and worth no clause. A CRUNCH is beds going out from under students
+// already here — a hall demolished or shut for the works — and this many
+// lost is enough for a class to remember it.
+export const MEMORY_BEDS_LOST = 1;
+// A class counts as thinned when it loses this share of itself, and as
+// having watched the campus rise at this many buildings finished.
+export const MEMORY_THINNED_SHARE = 0.18;
+export const MEMORY_BUILDINGS = 2;
+export const MEMORY_DEFICIT_YEARS = 2;
+export const MEMORY_DISTINGUISHED_SHARE = 0.15;
+export const MEMORY_ADRIFT_SHARE = 0.25;
+
+// The annual fund (DD §5.1): what one alum gives in a year at neutral
+// warmth, average means and full maturity. Warmth doubles it or kills it;
+// means follow the class's quality; giving ramps over the years it takes
+// a class to get established.
+export const GIVING_PER_ALUM = 220;
+export const GIVING_MATURITY_YEARS = 20;
+export const GIVING_YOUNG_SHARE = 0.15;
+
+// A reunion: what it costs a head, what it adds to warmth, and how far a
+// class can be warmed in total — the four years they had are not up for
+// revision (DD §8.4).
+export const REUNION_COST_PER_HEAD = 90;
+export const REUNION_WARMTH = 4;
+export const REUNION_WARMTH_CAP = 12;

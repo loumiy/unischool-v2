@@ -23,3 +23,4 @@ export * from './beauty.ts';
 export * from './quads.ts';
 export * from './placement.ts';
 export * from './students.ts';
+export * from './alumni.ts';

@@ -2407,3 +2407,50 @@ button.toolbar-stat.active svg {
 .student-gone-head {
   margin-top: 12px;
 }
+
+/* ---------- Phase 16: the alumni ledger ---------- */
+.alumni-table th {
+  text-align: left;
+  vertical-align: top;
+}
+.alumni-table td {
+  vertical-align: top;
+}
+/* The memory sits under the class's name, in the register of a caption:
+   it is the reason for every other number on the row. */
+.alumni-memory {
+  display: block;
+  position: relative;
+  margin-top: 2px;
+  max-width: 44ch;
+  font-family: var(--sans);
+  font-size: var(--text-xs);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+.alumni-outcomes {
+  display: block;
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+.alumni-nudged {
+  margin-left: 4px;
+  font-size: var(--text-2xs);
+  color: var(--ok-on-light);
+}
+.alumni-reunion {
+  text-align: right;
+  white-space: nowrap;
+}
+.alumni-reunion .newgame-btn {
+  width: auto;
+  padding: 3px 10px;
+  font-size: var(--text-2xs);
+}
+.alumni-capped {
+  font-size: var(--text-2xs);
+  font-style: italic;
+  color: var(--ink-muted);
+}

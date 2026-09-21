@@ -16,6 +16,7 @@ import {
 import { AID_DISCOUNT_RATE } from '../tuning.ts';
 import Figure from './Figure.tsx';
 import NamedStudents from './NamedStudents.tsx';
+import AlumniLedger from './AlumniLedger.tsx';
 import PlacementPanel from './PlacementPanel.tsx';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
@@ -66,8 +67,14 @@ export function SatisfactionTable({ breakdown }: { breakdown: SatisfactionBreakd
   );
 }
 
-export default function StudentsScreen({ state }: { state: GameState }) {
-  const { cohorts, alumni, terms, lastAdmissions, incoming } = state.people;
+export default function StudentsScreen({
+  state,
+  onReunion,
+}: {
+  state: GameState;
+  onReunion: (classYear: number) => void;
+}) {
+  const { cohorts, terms, lastAdmissions, incoming } = state.people;
   const total = enrolled(state);
   const cap = campusCapacity(state);
   const triples = inTriples(state);
@@ -246,54 +253,7 @@ export default function StudentsScreen({ state }: { state: GameState }) {
         </div>
       </section>
 
-      <section className="treasury-panel">
-        <h3>Alumni</h3>
-        {alumni.length === 0 ? (
-          <p className="treasury-note">{PEOPLE_WORDS.noAlumni}</p>
-        ) : (
-          <table className="budget-table">
-            <thead>
-              <tr>
-                <th>Class</th>
-                <th>Graduates</th>
-                <th>Quality</th>
-                <th>Left satisfied</th>
-                <th>Distinguished</th>
-                <th>Placed</th>
-                <th>Adrift</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...alumni].reverse().map((a) => (
-                <tr key={a.classYear}>
-                  <th>{classLabel(a.classYear)}</th>
-                  <td>{a.size}</td>
-                  <td>{a.quality.toFixed(0)}</td>
-                  <td>{a.satisfaction.toFixed(0)}</td>
-                  <td className="figure" tabIndex={0}>
-                    {a.outcomes.distinguished}
-                    <span className="figure-hint" role="tooltip">
-                      {PEOPLE_READINGS.distinguished}
-                    </span>
-                  </td>
-                  <td className="figure" tabIndex={0}>
-                    {a.outcomes.placed}
-                    <span className="figure-hint" role="tooltip">
-                      {PEOPLE_READINGS.placed}
-                    </span>
-                  </td>
-                  <td className="figure" tabIndex={0}>
-                    {a.outcomes.adrift}
-                    <span className="figure-hint" role="tooltip">
-                      {PEOPLE_READINGS.adrift}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
+      <AlumniLedger state={state} onReunion={onReunion} />
     </div>
   );
 }

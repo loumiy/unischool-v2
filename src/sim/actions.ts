@@ -60,6 +60,7 @@ import {
 } from './faculty.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
+import { holdReunion, reunionCost, reunionRoom } from './alumni.ts';
 import { approveBudget } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
@@ -88,6 +89,9 @@ export type Action =
   // A quad the buildings enclose, renamed (DD §6.2); an empty name gives it
   // back the name the game chose.
   | { type: 'nameQuad'; key: string; name: string }
+  // A class brought back for a reunion (DD §8.4): it costs, and it warms
+  // them a little, and only so far.
+  | { type: 'holdReunion'; classYear: number }
   // Resolves the calendar beat holding the clock (beats.ts), carrying the
   // beat's decision. Every field is optional: absent, the beat resolves to
   // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
@@ -216,6 +220,15 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (state.phase !== 'running') return no('the campus is not open yet');
       if (action.name.length > 48) return no('that name is too long');
       if (!quadAt(state.campus, action.key)) return no('no quad there');
+      return YES;
+    }
+    case 'holdReunion': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const alumni = state.people.alumni.find((a) => a.classYear === action.classYear);
+      if (!alumni) return no('no such class has graduated');
+      if (alumni.lastReunion === state.clock.year) return no('they came back this year already');
+      if (reunionRoom(alumni) <= 0) return no('they are as warm as they will get');
+      if (!canPay(state, reunionCost(alumni), 'cash')) return no('not enough cash');
       return YES;
     }
     case 'resolveBeat':
@@ -452,6 +465,16 @@ export function applyAction(state: GameState, action: Action): GameState {
       if (name === '') delete quadNames[action.key];
       else quadNames[action.key] = name;
       return { ...state, campus: { ...state.campus, quadNames } };
+    }
+    case 'holdReunion': {
+      const alumni = state.people.alumni.find((a) => a.classYear === action.classYear)!;
+      const paid = pay(state, reunionCost(alumni), 'cash');
+      const after = holdReunion(paid, action.classYear);
+      const warmed = after.find((a) => a.classYear === action.classYear)!;
+      return emit(
+        { ...paid, people: { ...paid.people, alumni: after } },
+        { kind: 'reunionHeld', classYear: action.classYear, warmth: warmed.warmth },
+      );
     }
     case 'readLetter':
       return readLetter(state);

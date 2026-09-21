@@ -41,6 +41,7 @@ import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
+import { memoryFor, warmthFor } from './alumni.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import {
   nameNewcomers,
@@ -99,6 +100,13 @@ export interface AlumniClass {
   quality: number;
   satisfaction: number; // as they left
   outcomes: Outcomes;
+  // The ledger (DD §8.4, alumni.ts): the clauses their four years earned,
+  // the warmth that memory set, what a reunion has nudged it by since,
+  // and the year of the last one.
+  memory: string[];
+  warmth: number;
+  nudged: number;
+  lastReunion: number | null;
 }
 
 export interface People {
@@ -454,6 +462,24 @@ export function outcomesFor(quality: number, satisfaction: number, size: number)
 
 // Commencement, the first week of summer: the class whose year it is
 // graduates into the ledger.
+// A class leaves the books and joins the ledger, stamped with one line
+// about the four years it had (DD §8.4).
+function stampClass(state: GameState, c: Cohort): AlumniClass {
+  const outcomes = outcomesFor(c.quality, c.satisfaction, c.size);
+  const memory = memoryFor(state, c, outcomes);
+  return {
+    classYear: c.classYear,
+    size: c.size,
+    quality: c.quality,
+    satisfaction: c.satisfaction,
+    outcomes,
+    memory,
+    warmth: warmthFor(c, outcomes, memory),
+    nudged: 0,
+    lastReunion: null,
+  };
+}
+
 export function graduate(state: GameState): GameState {
   const { year } = state.clock;
   const leaving = state.people.cohorts.filter((c) => c.classYear <= year);
@@ -475,16 +501,7 @@ export function graduate(state: GameState): GameState {
       ...state.people,
       named,
       cohorts: state.people.cohorts.filter((c) => c.classYear > year),
-      alumni: [
-        ...state.people.alumni,
-        ...leaving.map((c) => ({
-          classYear: c.classYear,
-          size: c.size,
-          quality: c.quality,
-          satisfaction: c.satisfaction,
-          outcomes: outcomesFor(c.quality, c.satisfaction, c.size),
-        })),
-      ],
+      alumni: [...state.people.alumni, ...leaving.map((c) => stampClass(state, c))],
     },
   };
   for (const c of leaving) {
@@ -496,6 +513,7 @@ export function graduate(state: GameState): GameState {
       distinguished: outcomes.distinguished,
       adrift: outcomes.adrift,
     });
+    next = emit(next, { kind: 'classRemembered', classYear: c.classYear });
   }
   for (const f of farewells) {
     next = emit(next, { kind: 'studentBeat', studentId: f.student.id, arcId: f.arcId });
@@ -558,6 +576,7 @@ export function arrive(state: GameState): GameState {
       size: incoming.size,
       quality: incoming.quality,
       triples,
+      enrolled: total,
     });
     if (newcomers.named.length > 0) {
       next = emit(next, {
