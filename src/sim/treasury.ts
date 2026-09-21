@@ -17,6 +17,7 @@ import { WEEKS_PER_YEAR } from './calendar.ts';
 import { annualProgramCosts } from './academics.ts';
 import { boardPolicy, inReceivership } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
+import { annualFacultyPayroll } from './faculty.ts';
 import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
@@ -26,11 +27,10 @@ import type { GameState } from './state.ts';
 // against a budget approved the summer before, and the endowment earns
 // whatever the markets gave that year and pays out its draw.
 //
-// Phase 5 wires the categories, the weekly flow, the fiscal year, the
-// endowment and the budget decision. The lines that later phases fill
-// (tuition and aid from enrollment, faculty payroll, maintenance, debt,
-// programs) exist here at zero, typed and displayed, so nothing later has
-// to be un-taught — only filled in.
+// Phase 5 wired the categories, the weekly flow, the fiscal year, the
+// endowment and the budget decision; the lines later phases fill (tuition
+// and aid, faculty payroll, maintenance, debt, programs) existed at zero
+// from the start and were filled in without un-teaching anything.
 
 export const REVENUE_CATEGORIES = [
   'tuition',
@@ -179,6 +179,7 @@ export function proposeBudget(
     },
     expenses: {
       ...zeroExpenses(),
+      facultyPayroll: annualFacultyPayroll(state),
       adminPayroll: FOUNDING_ADMIN_PAYROLL,
       maintenance: projectedMaintenance(state, funding),
       financialAid: Math.round(
@@ -256,8 +257,8 @@ function addFlows(a: Flows, b: Flows): Flows {
 // One week's movement: the budgeted lines in 36 equal slices, except the
 // lines that follow live state — tuition, aid and auxiliaries follow the
 // students enrolled (people.ts), maintenance the estate as it stands
-// (estate.ts), debt service the balance outstanding. Later phases move
-// more lines (payroll on the faculty, programs) to the live side.
+// (estate.ts), debt service the balance outstanding, faculty payroll the
+// roster (faculty.ts), programs the catalogue.
 export function weeklyFlows(state: GameState): Flows {
   const t = state.treasury;
   const revenue = zeroRevenue();
@@ -268,6 +269,7 @@ export function weeklyFlows(state: GameState): Flows {
   revenue.tuition = Math.round(annualTuition(state) / WEEKS_PER_YEAR);
   revenue.auxiliaries = Math.round(annualAuxiliaries(state) / WEEKS_PER_YEAR);
   expenses.financialAid = Math.round(annualAid(state) / WEEKS_PER_YEAR);
+  expenses.facultyPayroll = Math.round(annualFacultyPayroll(state) / WEEKS_PER_YEAR);
   expenses.maintenance = weeklyMaintenance(state);
   expenses.programs = Math.round(annualProgramCosts(state) / WEEKS_PER_YEAR);
   const service = weeklyDebtService(t);

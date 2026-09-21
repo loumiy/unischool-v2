@@ -26,8 +26,7 @@
   "expenses": {
     "facultyPayroll": {
       "label": "Faculty payroll",
-      "hint": "Every hire's salary; the hiring market opens at Budget & Hiring.",
-      "phase": 10
+      "hint": "Every hire's salary; the hiring market opens at Budget & Hiring."
     },
     "adminPayroll": {
       "label": "Administration",

@@ -4,13 +4,14 @@ import { PROGRAM_ANNUAL_COST, PROGRAM_OPENING_COST, SCHOOL_FOUNDING_COST } from 
 import { emit } from './bus.ts';
 import type { Placement } from './campus.ts';
 import { pay, type Financing } from './estate.ts';
+import { unassignFrom } from './faculty.ts';
 import type { GameState } from './state.ts';
 
 // ACADEMICS (DD §7.2): schools founded explicitly — a hall of their own, a
 // founding cost, and a dean seat that Phase 20 fills — and programs
 // opened inside them, each at a tier that sets its seats, its catalogue
 // and its cost. Advancement and signatures are Phase 11's; faculty and
-// teaching quality Phase 10's.
+// teaching quality live in faculty.ts.
 
 export interface FoundedSchool {
   schoolId: string;
@@ -124,12 +125,13 @@ export function openProgramIn(
 }
 
 export function closeProgramIn(state: GameState, programId: string): GameState {
+  const freed = unassignFrom(state, programId);
   return emit(
     {
-      ...state,
+      ...freed,
       academics: {
-        ...state.academics,
-        programs: state.academics.programs.filter((p) => p.programId !== programId),
+        ...freed.academics,
+        programs: freed.academics.programs.filter((p) => p.programId !== programId),
       },
     },
     { kind: 'programClosed', programId },

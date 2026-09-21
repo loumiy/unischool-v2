@@ -13,17 +13,18 @@ export interface CalendarBeat {
   term: Term;
   week: number;
   dd?: string;
-  // The plan phase whose screen replaces the placeholder.
-  phase: number;
+  // The plan phase whose screen replaces the placeholder; absent once the
+  // screen is live.
+  phase?: number;
   // The NEXT slot's reading while the beat waits.
   prompt: string;
   // Journal lines when the beat fires and when it is resolved.
   firedLine: string;
   resolvedLine: string;
-  // The placeholder screen: what happens today, and what the screen will
-  // hold once its phase lands.
+  // The screen's lede, and — while a phase is still owed — what the
+  // screen will hold once it lands.
   blurb: string;
-  stub: string;
+  stub?: string;
   // The resolving button's honest verb (DD §13.3).
   resolveLabel: string;
 }
@@ -34,12 +35,12 @@ const beatSchema = obj({
   term: oneOf(TERMS as readonly Term[] as ['fall', 'spring', 'summer']),
   week: int,
   dd: optional(str),
-  phase: int,
+  phase: optional(int),
   prompt: str,
   firedLine: str,
   resolvedLine: str,
   blurb: str,
-  stub: str,
+  stub: optional(str),
   resolveLabel: str,
 });
 

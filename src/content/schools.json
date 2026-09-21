@@ -5,6 +5,7 @@
       "name": "Founded",
       "seats": 120,
       "costFactor": 1,
+      "qualityFactor": 1,
       "levels": 1
     },
     {
@@ -12,6 +13,7 @@
       "name": "Established",
       "seats": 240,
       "costFactor": 1.6,
+      "qualityFactor": 1.1,
       "levels": 2
     },
     {
@@ -19,6 +21,7 @@
       "name": "Renowned",
       "seats": 400,
       "costFactor": 2.4,
+      "qualityFactor": 1.2,
       "levels": 3
     }
   ],

@@ -209,9 +209,13 @@ v1 managed 427 individual courses; at five minutes per year, that is the wrong u
 
 Faculty are competence and cost, deliberately not ego-sims. Each hire has: teaching skill, research skill, salary, seniority, and one **quirk** — a single flavorful modifier ("beloved lecturer: +morale, −publications"; "grant magnet"; "never on campus Fridays"). Quirks are the personality budget: one line, mechanically real, wry in voice. The hiring market refreshes at the Summer beat (§3.3); rivals (§11.3) can poach your stars with outside offers you may counter (at ratcheting salary cost) or absorb.
 
+**Hiring, for now.** The market is listed the moment Budget & Hiring fires and closes when the budget is approved: whoever is not hired by then takes another offer. The candidates who exist a given summer are the world's, like the market return — drawn from the seed and the year, not the run's dice — though most of them work in fields the college has founded, because that is where the searches are. A hire has a rank (assistant, associate, full) that sets a base salary, two skills that move it, one quirk that may discount or inflate it, and a field; they teach one program in that field at a time, or none, and they join the payroll the week they sign. Dismissal pays a term's salary in severance; closing a program leaves its faculty on the roster, between programs and still paid. The freeze (§5.5) is a hiring freeze first of all. Poaching, counters and delegation follow with their phases.
+
 ### §7.4 Teaching quality and program quality
 
 Program quality = faculty quality assigned to it × tier × facility condition, damped by overcrowding (seats vs. enrollment). Program quality drives student satisfaction, outcomes (§8.3), and the Academics prestige axis.
+
+**Quality, for now.** Faculty quality is the mean effective teaching of the hires assigned, quirks counted, damped by understaffing: a tier's seats over one hire's teaching load is the staff it needs, and short of that the quality falls in proportion. The tier's factor lifts it and the condition of the school's hall wears it. A program with nobody assigned has no quality. The campus's teaching, as the cohorts feel it at Convocation (§8.3), is program quality averaged over the open programs — nothing to study is nothing — and enters satisfaction as a swing about a neutral line, with the quirks' morale on top, capped. Overcrowding waits for enrollment by program.
 
 ### §7.5 Research (shallow feature, not seventh system)
 

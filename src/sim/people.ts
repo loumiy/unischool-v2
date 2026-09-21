@@ -34,6 +34,7 @@ import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
+import { quirkMorale, teachingSatisfaction } from './faculty.ts';
 import type { GameState } from './state.ts';
 
 // PEOPLE (DD §8): students as cohorts, one per class year, carrying size,
@@ -332,8 +333,8 @@ export function campusCondition(state: GameState): number {
 }
 
 // Satisfaction from what the campus gives them: housing, dining, seats,
-// the state of the buildings. Teaching and student life arrive with their
-// phases.
+// the state of the buildings, the teaching (faculty.ts) and the faculty's
+// quirks. Student life arrives with its phase.
 export function satisfactionFor(state: GameState, total: number): number {
   const cap = campusCapacity(state);
   let s = SATISFACTION_BASE;
@@ -341,6 +342,7 @@ export function satisfactionFor(state: GameState, total: number): number {
   if (total > 0 && total > cap.meals) s -= DINING_PENALTY * ((total - cap.meals) / total);
   if (total > 0 && total > cap.seats) s -= SEATS_PENALTY * ((total - cap.seats) / total);
   s += (campusCondition(state) - 1) * CONDITION_WEIGHT;
+  s += teachingSatisfaction(state) + quirkMorale(state);
   return Number(Math.min(100, Math.max(0, s)).toFixed(1));
 }
 

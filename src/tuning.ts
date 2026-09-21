@@ -164,3 +164,41 @@ export const SCHOOL_FOUNDING_COST = 2_000_000;
 // year at the Founded tier; the tiers' cost factors scale it.
 export const PROGRAM_OPENING_COST = 500_000;
 export const PROGRAM_ANNUAL_COST = 250_000;
+
+// ---------- Faculty (DD §7.3–§7.4, Phase 10) ----------
+// Competence and cost. Skills are 0–100; salaries are dollars a year.
+
+// The summer market: how many candidates are listed at Budget & Hiring,
+// and the share of them working in fields the college has founded.
+export const MARKET_SIZE = 8;
+export const MARKET_FOUNDED_SHARE = 0.75;
+
+// The asking salary by rank, moved by skill: a hire at skill 100 asks
+// SALARY_SKILL_PREMIUM/2 more than the rank's base, at skill 0 that much
+// less; rounded to the thousand.
+export const SALARY_BY_RANK = { assistant: 80_000, associate: 110_000, full: 150_000 } as const;
+export const SALARY_SKILL_PREMIUM = 0.6;
+export const SALARY_ROUNDING = 1_000;
+
+// Where the market's skills come from: a normal around the mean, clamped,
+// lifted by rank; and how ranks are dealt.
+export const SKILL_MEAN = 55;
+export const SKILL_SD = 14;
+export const SKILL_MIN = 20;
+export const SKILL_MAX = 95;
+export const RANK_SKILL_BONUS = { assistant: 0, associate: 8, full: 15 } as const;
+export const RANK_ODDS = { assistant: 0.5, associate: 0.3, full: 0.2 } as const;
+
+// Teaching seats one hire can carry at full quality: a program's staffing
+// need is its tier's seats over this, and quality is damped below it.
+export const FACULTY_TEACHING_LOAD = 60;
+
+// Dismissal pays this many weeks of salary as severance.
+export const SEVERANCE_WEEKS = 12;
+
+// Teaching quality (DD §7.4, §8.3) in satisfaction: the swing, in points,
+// between no teaching at all and perfect teaching, neutral at the line.
+export const TEACHING_WEIGHT = 20;
+export const TEACHING_NEUTRAL = 50;
+// Quirks that touch morale add up to this much either way, no more.
+export const QUIRK_MORALE_CAP = 6;

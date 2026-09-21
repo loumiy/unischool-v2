@@ -18,3 +18,4 @@ export * from './estate.ts';
 export * from './people.ts';
 export * from './distress.ts';
 export * from './academics.ts';
+export * from './faculty.ts';

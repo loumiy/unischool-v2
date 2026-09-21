@@ -32,6 +32,7 @@ import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
 import CurriculumScreen from './CurriculumScreen.tsx';
+import FacultyScreen from './FacultyScreen.tsx';
 import StudentsScreen from './StudentsScreen.tsx';
 import TreasuryScreen from './TreasuryScreen.tsx';
 import type { CampusTool } from './tools.ts';
@@ -144,6 +145,9 @@ export default function App() {
     const applied = store.dispatch({ type: 'readLetter' });
     if (applied) void autosave(store.getSnapshot().run!);
     setOverlay(null);
+  }
+  function hire(candidateId: string, programId: string | null) {
+    store.dispatch({ type: 'hire', candidateId, programId });
   }
   function resolveBeat(decision: BeatDecision) {
     if (!beat) return;
@@ -331,6 +335,7 @@ export default function App() {
             state={state}
             onResolve={resolveBeat}
             onClose={() => openTab(null)}
+            onHire={hire}
           />
         )}
         {effectiveOverlay && effectiveOverlay !== 'beat' && effectiveOverlay !== 'letter' && (
@@ -339,6 +344,17 @@ export default function App() {
               <TreasuryScreen state={state} />
             ) : effectiveOverlay === 'students' ? (
               <StudentsScreen state={state} />
+            ) : effectiveOverlay === 'faculty' ? (
+              <FacultyScreen
+                state={state}
+                onHire={hire}
+                onAssign={(facultyId, programId) => {
+                  store.dispatch({ type: 'assignFaculty', facultyId, programId });
+                }}
+                onDismiss={(facultyId) => {
+                  store.dispatch({ type: 'dismiss', facultyId });
+                }}
+              />
             ) : effectiveOverlay === 'curriculum' ? (
               <CurriculumScreen
                 state={state}
