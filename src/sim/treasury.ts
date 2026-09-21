@@ -14,6 +14,7 @@ import {
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
+import { annualProgramCosts } from './academics.ts';
 import { boardPolicy, inReceivership } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
@@ -184,6 +185,7 @@ export function proposeBudget(
         projectedEnrollment(state) * state.people.terms.tuition * state.people.aidRate,
       ),
       debtService: annualDebtService(t),
+      programs: annualProgramCosts(state),
     },
   };
 }
@@ -267,6 +269,7 @@ export function weeklyFlows(state: GameState): Flows {
   revenue.auxiliaries = Math.round(annualAuxiliaries(state) / WEEKS_PER_YEAR);
   expenses.financialAid = Math.round(annualAid(state) / WEEKS_PER_YEAR);
   expenses.maintenance = weeklyMaintenance(state);
+  expenses.programs = Math.round(annualProgramCosts(state) / WEEKS_PER_YEAR);
   const service = weeklyDebtService(t);
   expenses.debtService = service.interest + service.principal;
   return { revenue, expenses };

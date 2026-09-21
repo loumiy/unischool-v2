@@ -49,8 +49,7 @@
     },
     "programs": {
       "label": "Programs & student life",
-      "hint": "Per active program, club and varsity team.",
-      "phase": 9
+      "hint": "Per active program, club and varsity team."
     }
   },
   "readings": {

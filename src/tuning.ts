@@ -155,3 +155,12 @@ export const BOARD_POLICY_MAINTENANCE = 0.5;
 // Cutting aid takes this much off the discount at a time, to this floor.
 export const AID_CUT_STEP = 0.15;
 export const AID_MIN = 0;
+
+// ---------- Academics (DD §7.2, Phase 9) ----------
+
+// Founding a school: a hall, this much, and a dean seat (Ph.20).
+export const SCHOOL_FOUNDING_COST = 2_000_000;
+// Opening a program in a founded school, and what it costs to run each
+// year at the Founded tier; the tiers' cost factors scale it.
+export const PROGRAM_OPENING_COST = 500_000;
+export const PROGRAM_ANNUAL_COST = 250_000;

@@ -31,6 +31,7 @@ import TabOverlay, { StubScreen } from './TabOverlay.tsx';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
+import CurriculumScreen from './CurriculumScreen.tsx';
 import StudentsScreen from './StudentsScreen.tsx';
 import TreasuryScreen from './TreasuryScreen.tsx';
 import type { CampusTool } from './tools.ts';
@@ -338,6 +339,25 @@ export default function App() {
               <TreasuryScreen state={state} />
             ) : effectiveOverlay === 'students' ? (
               <StudentsScreen state={state} />
+            ) : effectiveOverlay === 'curriculum' ? (
+              <CurriculumScreen
+                state={state}
+                financing={financing}
+                onFound={(schoolId, placementId, payWith) => {
+                  store.dispatch({
+                    type: 'foundSchool',
+                    schoolId,
+                    placementId,
+                    financing: payWith,
+                  });
+                }}
+                onOpen={(programId, payWith) => {
+                  store.dispatch({ type: 'openProgram', programId, financing: payWith });
+                }}
+                onClose={(programId) => {
+                  store.dispatch({ type: 'closeProgram', programId });
+                }}
+              />
             ) : (
               <StubScreen phase={tabById(effectiveOverlay).phase}>
                 {tabById(effectiveOverlay).stub}

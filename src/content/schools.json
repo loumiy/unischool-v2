@@ -1,0 +1,526 @@
+{
+  "tiers": [
+    {
+      "id": "founded",
+      "name": "Founded",
+      "seats": 120,
+      "costFactor": 1,
+      "levels": 1
+    },
+    {
+      "id": "established",
+      "name": "Established",
+      "seats": 240,
+      "costFactor": 1.6,
+      "levels": 2
+    },
+    {
+      "id": "renowned",
+      "name": "Renowned",
+      "seats": 400,
+      "costFactor": 2.4,
+      "levels": 3
+    }
+  ],
+  "schools": [
+    {
+      "id": "arts-letters",
+      "name": "Arts & Letters",
+      "hue": "#7b4b7a",
+      "mark": "✦",
+      "blurb": "Where the college learns to read, write and argue. Every other school will claim to teach these too.",
+      "programs": [
+        {
+          "id": "english",
+          "name": "English",
+          "code": "ENGL",
+          "blurb": "The long conversation, with footnotes.",
+          "courses": [
+            "Introduction to Literature",
+            "Academic Writing",
+            "The Novel",
+            "Poetry and Poetics",
+            "Literary Theory",
+            "Senior Seminar in English"
+          ]
+        },
+        {
+          "id": "history",
+          "name": "History",
+          "code": "HIST",
+          "blurb": "What happened, and who said so.",
+          "courses": [
+            "World History to 1500",
+            "World History since 1500",
+            "Historical Methods",
+            "The Modern City",
+            "Historiography",
+            "Senior Thesis in History"
+          ]
+        },
+        {
+          "id": "philosophy",
+          "name": "Philosophy",
+          "code": "PHIL",
+          "blurb": "The questions, and a syllabus of people who failed to answer them.",
+          "courses": [
+            "Introduction to Philosophy",
+            "Logic",
+            "Ethics",
+            "Metaphysics and Epistemology",
+            "Philosophy of Mind",
+            "Senior Seminar in Philosophy"
+          ]
+        },
+        {
+          "id": "fine-arts",
+          "name": "Fine Arts",
+          "code": "FART",
+          "blurb": "Studio work, critique, and a great deal of natural light.",
+          "courses": [
+            "Drawing I",
+            "Art History Survey",
+            "Painting",
+            "Sculpture",
+            "Contemporary Practice",
+            "Senior Exhibition"
+          ]
+        },
+        {
+          "id": "music",
+          "name": "Music",
+          "code": "MUSC",
+          "blurb": "Theory, performance, and the acoustics of whatever hall is free.",
+          "courses": [
+            "Music Theory I",
+            "Ensemble",
+            "Music History",
+            "Composition",
+            "Conducting",
+            "Senior Recital"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "science",
+      "name": "Science",
+      "hue": "#2f7a7a",
+      "mark": "⚗",
+      "blurb": "Laboratories, lectures, and the slow accumulation of things that are actually true.",
+      "programs": [
+        {
+          "id": "biology",
+          "name": "Biology",
+          "code": "BIOL",
+          "blurb": "Life, catalogued, dissected and occasionally escaped.",
+          "courses": [
+            "Introduction to Biology",
+            "Cell Biology",
+            "Genetics",
+            "Ecology",
+            "Molecular Biology",
+            "Senior Research in Biology"
+          ]
+        },
+        {
+          "id": "chemistry",
+          "name": "Chemistry",
+          "code": "CHEM",
+          "blurb": "Matter, and what it does when provoked.",
+          "courses": [
+            "General Chemistry",
+            "Chemical Principles",
+            "Organic Chemistry",
+            "Physical Chemistry",
+            "Inorganic Chemistry",
+            "Senior Research in Chemistry"
+          ]
+        },
+        {
+          "id": "physics",
+          "name": "Physics",
+          "code": "PHYS",
+          "blurb": "The universe, reduced to problems with answers in the back.",
+          "courses": [
+            "Mechanics",
+            "Electricity and Magnetism",
+            "Waves and Optics",
+            "Quantum Mechanics",
+            "Statistical Physics",
+            "Senior Research in Physics"
+          ]
+        },
+        {
+          "id": "mathematics",
+          "name": "Mathematics",
+          "code": "MATH",
+          "blurb": "Proofs, and the chalk to write them with.",
+          "courses": [
+            "Calculus I",
+            "Calculus II",
+            "Linear Algebra",
+            "Real Analysis",
+            "Abstract Algebra",
+            "Senior Seminar in Mathematics"
+          ]
+        },
+        {
+          "id": "computer-science",
+          "name": "Computer Science",
+          "code": "COMP",
+          "blurb": "Machines that do what they are told, which is the problem.",
+          "courses": [
+            "Introduction to Programming",
+            "Data Structures",
+            "Algorithms",
+            "Systems",
+            "Theory of Computation",
+            "Senior Project in Computing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engineering",
+      "name": "Engineering",
+      "hue": "#a0522d",
+      "mark": "⚙",
+      "blurb": "Things that must stand up, run, or fly, designed by people who will be blamed if they do not.",
+      "programs": [
+        {
+          "id": "civil-engineering",
+          "name": "Civil Engineering",
+          "code": "CIVE",
+          "blurb": "Bridges, roads and the buildings the college keeps losing to backlog.",
+          "courses": [
+            "Statics",
+            "Materials",
+            "Structural Analysis",
+            "Geotechnical Engineering",
+            "Transportation Systems",
+            "Senior Design in Civil Engineering"
+          ]
+        },
+        {
+          "id": "mechanical-engineering",
+          "name": "Mechanical Engineering",
+          "code": "MECH",
+          "blurb": "Forces, machines, and the noise they make.",
+          "courses": [
+            "Engineering Mechanics",
+            "Thermodynamics",
+            "Fluid Mechanics",
+            "Machine Design",
+            "Control Systems",
+            "Senior Design in Mechanical Engineering"
+          ]
+        },
+        {
+          "id": "electrical-engineering",
+          "name": "Electrical Engineering",
+          "code": "ELEC",
+          "blurb": "Circuits, signals, and a building that smells faintly of solder.",
+          "courses": [
+            "Circuits",
+            "Digital Logic",
+            "Signals and Systems",
+            "Electronics",
+            "Power Systems",
+            "Senior Design in Electrical Engineering"
+          ]
+        },
+        {
+          "id": "chemical-engineering",
+          "name": "Chemical Engineering",
+          "code": "CHEG",
+          "blurb": "Chemistry, at a scale the fire marshal wants to hear about.",
+          "courses": [
+            "Mass and Energy Balances",
+            "Transport Phenomena",
+            "Reaction Engineering",
+            "Separations",
+            "Process Design",
+            "Senior Design in Chemical Engineering"
+          ]
+        },
+        {
+          "id": "environmental-engineering",
+          "name": "Environmental Engineering",
+          "code": "ENVE",
+          "blurb": "Water, air, waste, and the stream at the edge of campus.",
+          "courses": [
+            "Environmental Systems",
+            "Water Resources",
+            "Air Quality",
+            "Waste Management",
+            "Sustainable Design",
+            "Senior Design in Environmental Engineering"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "business",
+      "name": "Business",
+      "hue": "#8b3a3a",
+      "mark": "◆",
+      "blurb": "Money, studied by people who intend to have some.",
+      "programs": [
+        {
+          "id": "accounting",
+          "name": "Accounting",
+          "code": "ACCT",
+          "blurb": "The books, kept.",
+          "courses": [
+            "Introduction to Accounting",
+            "Financial Accounting",
+            "Managerial Accounting",
+            "Auditing",
+            "Tax",
+            "Advanced Financial Reporting"
+          ]
+        },
+        {
+          "id": "finance",
+          "name": "Finance",
+          "code": "FINA",
+          "blurb": "Money, over time, with risk.",
+          "courses": [
+            "Principles of Finance",
+            "Corporate Finance",
+            "Investments",
+            "Financial Modeling",
+            "Risk Management",
+            "Senior Seminar in Finance"
+          ]
+        },
+        {
+          "id": "marketing",
+          "name": "Marketing",
+          "code": "MRKT",
+          "blurb": "Why people buy things, and how to be there when they do.",
+          "courses": [
+            "Fundamentals of Marketing",
+            "Consumer Behavior",
+            "Market Research",
+            "Brand Management",
+            "Digital Strategy",
+            "Senior Seminar in Marketing"
+          ]
+        },
+        {
+          "id": "management",
+          "name": "Management",
+          "code": "MGMT",
+          "blurb": "Getting other people to do the work, as a discipline.",
+          "courses": [
+            "Principles of Management",
+            "Organizational Behavior",
+            "Operations",
+            "Strategy",
+            "Leadership",
+            "Senior Seminar in Management"
+          ]
+        },
+        {
+          "id": "economics",
+          "name": "Economics",
+          "code": "ECON",
+          "blurb": "Scarcity, choice, and graphs with two lines crossing.",
+          "courses": [
+            "Microeconomics",
+            "Macroeconomics",
+            "Econometrics",
+            "Game Theory",
+            "Public Finance",
+            "Senior Thesis in Economics"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "hue": "#b5583f",
+      "mark": "✚",
+      "blurb": "Clinics, wards and the people who will one day run them.",
+      "programs": [
+        {
+          "id": "nursing",
+          "name": "Nursing",
+          "code": "NURS",
+          "blurb": "The profession that is actually in the room.",
+          "courses": [
+            "Foundations of Nursing",
+            "Anatomy and Physiology",
+            "Pharmacology for Nurses",
+            "Clinical Practice",
+            "Community Health Nursing",
+            "Senior Practicum in Nursing"
+          ]
+        },
+        {
+          "id": "public-health",
+          "name": "Public Health",
+          "code": "PUBH",
+          "blurb": "Health, at the scale of everyone.",
+          "courses": [
+            "Introduction to Public Health",
+            "Epidemiology",
+            "Biostatistics",
+            "Health Policy",
+            "Global Health",
+            "Senior Capstone in Public Health"
+          ]
+        },
+        {
+          "id": "pharmacy",
+          "name": "Pharmacy",
+          "code": "PHAR",
+          "blurb": "Medicines, and the small print.",
+          "courses": [
+            "Pharmaceutical Sciences",
+            "Pharmacology",
+            "Medicinal Chemistry",
+            "Pharmacotherapy",
+            "Clinical Pharmacy",
+            "Senior Practicum in Pharmacy"
+          ]
+        },
+        {
+          "id": "physical-therapy",
+          "name": "Physical Therapy",
+          "code": "PHTH",
+          "blurb": "Movement, restored.",
+          "courses": [
+            "Kinesiology",
+            "Human Anatomy",
+            "Therapeutic Exercise",
+            "Rehabilitation",
+            "Clinical Reasoning",
+            "Senior Practicum in Physical Therapy"
+          ]
+        },
+        {
+          "id": "nutrition",
+          "name": "Nutrition",
+          "code": "NUTR",
+          "blurb": "Food, studied more carefully than the dining hall serves it.",
+          "courses": [
+            "Introduction to Nutrition",
+            "Food Science",
+            "Metabolism",
+            "Clinical Nutrition",
+            "Community Nutrition",
+            "Senior Capstone in Nutrition"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "law",
+      "name": "Law",
+      "hue": "#4a6a9a",
+      "mark": "⚖",
+      "blurb": "Rules, precedents, and the art of finding the exception.",
+      "programs": [
+        {
+          "id": "legal-studies",
+          "name": "Legal Studies",
+          "code": "LEGL",
+          "blurb": "The law, before anyone is sued.",
+          "courses": [
+            "Introduction to Law",
+            "Legal Writing",
+            "Torts",
+            "Contracts",
+            "Evidence",
+            "Senior Moot Court"
+          ]
+        },
+        {
+          "id": "constitutional-law",
+          "name": "Constitutional Law",
+          "code": "CNST",
+          "blurb": "The founding documents, read very closely.",
+          "courses": [
+            "Constitutional Foundations",
+            "Civil Liberties",
+            "Federalism",
+            "Judicial Review",
+            "Comparative Constitutions",
+            "Senior Seminar in Constitutional Law"
+          ]
+        },
+        {
+          "id": "corporate-law",
+          "name": "Corporate Law",
+          "code": "CORP",
+          "blurb": "Companies, and what they may and may not do.",
+          "courses": [
+            "Business Organizations",
+            "Securities",
+            "Mergers and Acquisitions",
+            "Corporate Governance",
+            "Bankruptcy",
+            "Senior Seminar in Corporate Law"
+          ]
+        },
+        {
+          "id": "criminal-law",
+          "name": "Criminal Law",
+          "code": "CRIM",
+          "blurb": "Crime, punishment, and the procedure in between.",
+          "courses": [
+            "Criminal Law",
+            "Criminal Procedure",
+            "Evidence in Criminal Trials",
+            "Sentencing",
+            "Advocacy",
+            "Senior Clinic in Criminal Law"
+          ]
+        },
+        {
+          "id": "international-law",
+          "name": "International Law",
+          "code": "INTL",
+          "blurb": "Treaties, tribunals and a great many flags.",
+          "courses": [
+            "Public International Law",
+            "Human Rights Law",
+            "Law of the Sea",
+            "Trade Law",
+            "International Arbitration",
+            "Senior Seminar in International Law"
+          ]
+        }
+      ]
+    }
+  ],
+  "words": {
+    "readings": {
+      "schools": "Schools founded of the six; each needs its own hall, a founding cost and, one day, a dean.",
+      "programs": "Programs open of the thirty; each costs money every year at its tier.",
+      "programCosts": "What the open programs cost to run this year: the programs line in the Treasury.",
+      "halls": "Open halls with no school in them yet: Founders Hall counts, and every Academic Hall.",
+      "tier": "Founded, Established or Renowned: the tier sets the seats, the courses on the catalogue and the cost. Advancing is Phase 11's.",
+      "seats": "How many students the program can teach at this tier before the classes crowd.",
+      "annualCost": "What this program costs to run each year at its tier."
+    },
+    "lines": {
+      "found": "Found the School of {school}",
+      "needHall": "Build an Academic Hall first: every school needs a hall of its own.",
+      "frozen": "The board has frozen new programs.",
+      "noPrograms": "No programs yet. Open one below.",
+      "open": "Open · {cost}",
+      "close": "Close…",
+      "closeConfirm": "Close {program}?",
+      "houses": "Houses the School of {school}",
+      "noSchool": "No school yet — found one from the Curriculum screen.",
+      "notAHall": "",
+      "hallOption": "{building} ({id})",
+      "unfoundedNote": "Unfounded. Its programs wait for a hall and the founding cost."
+    }
+  }
+}

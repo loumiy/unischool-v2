@@ -17,3 +17,4 @@ export * from './treasury.ts';
 export * from './estate.ts';
 export * from './people.ts';
 export * from './distress.ts';
+export * from './academics.ts';

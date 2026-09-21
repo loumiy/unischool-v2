@@ -1606,3 +1606,283 @@ button.toolbar-stat.active svg {
   background: var(--bad-on-light);
   color: var(--cream);
 }
+
+/* ---------- Phase 9: the curriculum (ported from v1's idiom) ---------- */
+.curriculum {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.school-group {
+  margin-bottom: 20px;
+}
+.school-group-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--school-hue, var(--school-primary));
+  color: var(--cream);
+}
+.school-group-head h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+.school-group-mark {
+  font-size: 22px;
+  line-height: 1;
+}
+.school-group-hall {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  opacity: 0.85;
+}
+.school-group-unnamed {
+  font-style: italic;
+  font-weight: 600;
+  opacity: 0.85;
+}
+.lane-count {
+  margin-left: auto;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+.school-group.unfounded .school-group-head {
+  background: color-mix(in srgb, var(--school-hue) 45%, var(--cream-lo));
+  color: var(--ink);
+}
+
+.founding-card {
+  border: 2px dashed var(--school-hue, var(--parchment-line));
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  background: var(--cream-hi);
+}
+.founding-blurb {
+  margin: 0 0 10px;
+  line-height: 1.5;
+}
+.founding-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.founding-hall {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.founding-hall select {
+  height: 34px;
+  padding: 0 10px;
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-pill);
+  background: var(--cream);
+  font: inherit;
+  font-weight: 700;
+}
+.found-btn {
+  font-size: var(--text-base);
+  padding: 8px 18px;
+}
+.found-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.program-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.program-row {
+  border: 2px solid var(--outline);
+  border-left: 6px solid var(--school-hue, var(--outline));
+  border-radius: var(--radius-lg);
+  background: var(--cream-hi);
+  padding: 8px 10px 10px;
+}
+.program-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+.program-row-head h4 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-md);
+}
+.program-row-code {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.tier-chip {
+  display: inline-block;
+  position: relative;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--school-hue, var(--school-primary));
+  color: var(--cream);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.program-row-blurb {
+  margin: 0 0 8px;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--ink-muted);
+}
+/* Six cells, the two level rules as tracks of their own (2 | 2 | 2). */
+.program-row-cells {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto repeat(2, minmax(0, 1fr)) auto repeat(
+      2,
+      minmax(0, 1fr)
+    );
+}
+.program-row-cells > span {
+  display: contents;
+}
+.tier-rule {
+  align-self: stretch;
+  margin: 4px 2px;
+  border-left: 2px dotted var(--outline);
+}
+.course-cell {
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 5px 8px;
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--parchment-line);
+  color: var(--ink-muted);
+  overflow: hidden;
+}
+.course-cell.done {
+  border-style: solid;
+  border-color: var(--school-hue, var(--school-primary));
+  background: var(--school-hue, var(--school-primary));
+  color: var(--cream);
+}
+.course-cell.placeholder {
+  border-color: color-mix(
+    in srgb,
+    var(--school-hue, var(--parchment-line)) 35%,
+    var(--parchment-line)
+  );
+}
+.cell-code {
+  font-family: var(--display);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+.cell-title {
+  font-size: var(--text-xs);
+  line-height: 1.25;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.course-cell.placeholder .cell-title {
+  font-style: italic;
+  font-weight: 600;
+}
+.program-row-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+.program-row-foot .figure {
+  display: inline-block;
+}
+.program-row-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.program-row-actions .newgame-btn {
+  width: auto;
+  padding: 4px 12px;
+  font-size: var(--text-xs);
+}
+
+/* The programs a founded school could open: compact tiles. */
+.program-offers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.program-offer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 150px;
+  padding: 8px 12px;
+  background: var(--cream-hi);
+  border: 2px dashed var(--school-hue, var(--outline));
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  text-align: left;
+}
+.program-offer:hover:not(:disabled) {
+  border-style: solid;
+  box-shadow: var(--shadow-1);
+}
+.program-offer:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.program-offer-name {
+  font-family: var(--display);
+  font-weight: 800;
+}
+.program-offer-code {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.program-offer-cost {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: var(--text-xs);
+  color: var(--school-primary);
+}
+.building-panel-school {
+  margin: 0 0 8px;
+  font-weight: 700;
+  color: var(--school-primary);
+}

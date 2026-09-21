@@ -19,6 +19,7 @@ import {
   SURPLUS_TERMS_TO_EXIT,
   TERM_HISTORY,
 } from '../tuning.ts';
+import { closeProgramIn, newestProgram } from './academics.ts';
 import { emit } from './bus.ts';
 import type { Term } from './calendar.ts';
 import { inTriples } from './people.ts';
@@ -134,6 +135,8 @@ export function cutAvailable(state: GameState, cut: AusterityCut): boolean {
       return state.people.aidRate > AID_MIN;
     case 'deferMaintenance':
       return state.treasury.budget.maintenanceFunding > 0;
+    case 'closeProgram':
+      return state.academics.programs.length > 0;
     default:
       return false;
   }
@@ -155,6 +158,10 @@ export function applyCut(state: GameState, cut: AusterityCut): GameState {
     case 'cutAid': {
       const aidRate = Number(Math.max(AID_MIN, state.people.aidRate - AID_CUT_STEP).toFixed(4));
       return { ...state, people: { ...state.people, aidRate } };
+    }
+    case 'closeProgram': {
+      const newest = newestProgram(state);
+      return newest ? closeProgramIn(state, newest.programId) : state;
     }
     case 'deferMaintenance': {
       const t = state.treasury;

@@ -116,8 +116,7 @@
     {
       "id": "closeProgram",
       "label": "Close a program",
-      "blurb": "Shut a program and its costs, and its students' plans with it.",
-      "phase": 9
+      "blurb": "Shut the newest program and its costs, and its students' plans with it."
     },
     {
       "id": "restructureAdmin",
