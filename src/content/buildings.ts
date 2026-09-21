@@ -81,6 +81,8 @@ export interface BuildingDef {
   buildWeeks: number; // ground broken to doors open
   // What the building holds (DD §8.2): beds, dining seats, teaching seats.
   capacity?: Capacity;
+  // What it adds to campus beauty (DD §6.2, beauty.ts): a landmark's mark.
+  beauty?: number;
   form: Form;
   material: MaterialKey;
   storeys: number; // 0 for a clear-span volume or open ground
@@ -106,6 +108,7 @@ const schema = obj({
       upkeep: int,
       buildWeeks: int,
       capacity: optional(obj({ beds: optional(int), meals: optional(int), seats: optional(int) })),
+      beauty: optional(int),
       form: oneOf(FORMS),
       material: oneOf(MATERIAL_KEYS),
       storeys: int,

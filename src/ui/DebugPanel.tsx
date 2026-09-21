@@ -3,6 +3,7 @@ import { describeEntry } from '../content/busLines.ts';
 import { beatsAt, CALENDAR_BEATS } from '../content/calendarBeats.ts';
 import {
   attritionRate,
+  beautyTerms,
   clockFromAbsoluteWeek,
   clockRuns,
   enrolled,
@@ -198,6 +199,13 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           })()}
           <dt>Teaching quality</dt>
           <dd>{teachingQuality(state).toFixed(1)}</dd>
+          <dt>Campus beauty</dt>
+          <dd>
+            {(() => {
+              const b = beautyTerms(state);
+              return `${b.score.toFixed(1)} · greenery ${b.greenery.toFixed(2)} · landmarks ${b.landmarks.toFixed(2)} · upkeep ${b.upkeep.toFixed(2)}`;
+            })()}
+          </dd>
           {state.academics.programs.map((p) => (
             <span key={p.programId} className="pair">
               <dt>· {programById(p.programId).name}</dt>

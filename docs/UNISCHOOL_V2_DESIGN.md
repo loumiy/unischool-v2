@@ -171,9 +171,13 @@ Free grid placement of buildings, paths, trees, gardens, plazas, statues, and la
 
 **Hard cap:** no placement-derived effect may exceed ~12% of any output. The player who ignores all of it and builds for beauty must remain fully viable. (Guardrail, see §17.)
 
+**Beauty, for now.** Campus Beauty is a weighted mean of three shares: greenery, the trees standing against a share of the founding woodland (felling for a footprint lowers it, planting raises it); landmarks, the open buildings' beauty marks from the catalogue against a full set; and upkeep, the open buildings' mean condition, because backlog is ugly. Enclosed spaces take their share when quads arrive, and coherence when motifs become per-building. Beauty moves the applicant pool by at most the cap either way about the middle, and enters satisfaction as its own term (§8.3). Every term shows its share where the score is read.
+
 ### §6.3 Ambient life
 
 The map is the watch-state between decisions: students walk paths between the buildings they actually use, densities follow the weekly class schedule, the stadium fills on game weeks, the quads empty in summer, seasons tint the palette. Ambient life is presentational — derived from sim state, never simulated individually — but it is the single biggest carrier of the "watching it grow" feeling and is budgeted accordingly.
+
+**Ambient life, for now.** Walkers are the enrolment, one for every few students up to a fixed cap, thinned by the term — full in fall and spring, a trickle in summer — and they stop with the clock. Each walks a real route between two buildings the campus uses, chosen with a weight for where students live and where they go, along the cheapest way over the grid: paths first, lawn when there is no path, never through a building or the stream. Routes are found on the map's own grid and cached; walkers hide behind the walls they pass, and they carry no state the sim can see — their randomness is the map's, never the sim's stream. The lawn and the trees tint with the term: fresh in spring, sun-bleached in summer, turning through the fall.
 
 ### §6.4 Condition, backlog, and renovation
 
@@ -235,7 +239,7 @@ Students are simulated as **cohorts** (per program, per class year) carrying agg
 
 At Admissions Day (§3.3) the player sets **tuition** and **selectivity**; the applicant pool's size and shape were already determined by prestige, beauty, price position, and — crucially — **perceived identity** (§11.2): a party school draws party applicants; a research powerhouse draws grinds. You reap what you're known for, not what you say you are. The resulting class's size, quality, and revenue then simply _happen to you_, and housing/dining capacity constrain it physically (overflow forces triples, an instant satisfaction hit and a class-memory stamp).
 
-**The funnel, for now.** Until prestige (§11.1), beauty (§6.2) and identity (§11.2) are live, the pool is a base scaled by stub constants and by price position against a market sticker: applications and yield both fall as the sticker rises. Selectivity is the share of the pool turned away; the admitted are the top of a normal quality distribution, so a selective office buys quality with numbers. Financial aid is a standing discount on the sticker until it becomes the access lever. The office counts the beds that will exist at the coming Convocation, sites included, and closes the file early at the beds plus a triples allowance.
+**The funnel, for now.** Until prestige (§11.1) and identity (§11.2) are live, the pool is a base scaled by a prestige stub, by campus beauty (§6.2) within its cap, and by price position against a market sticker: applications and yield both fall as the sticker rises. Selectivity is the share of the pool turned away; the admitted are the top of a normal quality distribution, so a selective office buys quality with numbers. Financial aid is a standing discount on the sticker until it becomes the access lever. The office counts the beds that will exist at the coming Convocation, sites included, and closes the file early at the beds plus a triples allowance.
 
 ### §8.3 Four years and out
 

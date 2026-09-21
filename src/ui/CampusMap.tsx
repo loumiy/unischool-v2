@@ -22,6 +22,8 @@ import {
   Scaffolding,
   siteHeightOf,
 } from './map/works.tsx';
+import AmbientLayer from './map/ambient.tsx';
+import { seasonOf } from './map/season.ts';
 import {
   DERELICT_CONDITION,
   RENOVATION_WEEKS,
@@ -377,6 +379,7 @@ const CampusScene = memo(function CampusScene({
           </g>
         ),
       )}
+      <AmbientLayer state={state} camera={camera} />
       <g ref={labelLayerRef}>
         {placements.map((p) => (
           <BuildingLabel
@@ -841,7 +844,7 @@ export default function CampusMap({
   };
 
   return (
-    <section className="campus-map">
+    <section className={`campus-map season-${seasonOf(state.clock)}`}>
       <div className="campus-map-canvas">
         <svg
           ref={svgRef}
