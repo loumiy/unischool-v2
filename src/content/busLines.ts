@@ -6,6 +6,7 @@ import type { GameState } from '../sim/state.ts';
 import { findBuilding } from './buildings.ts';
 import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
+import { findProgram, findSchool } from './schools.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
 
@@ -40,6 +41,7 @@ const PLACEHOLDERS = [
   'rungLine',
   'title',
   'cuts',
+  'program',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -118,6 +120,14 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'classGraduated':
       vars.label = classLabel(entry.classYear);
       vars.size = String(entry.size);
+      break;
+    case 'schoolFounded':
+      vars.school = findSchool(entry.schoolId)?.name ?? entry.schoolId;
+      vars.building = findBuilding(entry.buildingId)?.name ?? entry.buildingId;
+      break;
+    case 'programOpened':
+    case 'programClosed':
+      vars.program = findProgram(entry.programId)?.name ?? entry.programId;
       break;
     case 'termClosed': {
       vars.term = termLabel(entry.term);

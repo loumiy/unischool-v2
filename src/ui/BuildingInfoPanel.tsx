@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
+import { fillWords } from '../content/people.ts';
+import { ACADEMIC_WORDS, schoolById } from '../content/schools.ts';
 import { conditionWord, ESTATE_WORDS } from '../content/treasury.ts';
 import {
   affordableFinancing,
@@ -8,7 +10,9 @@ import {
   demolitionCost,
   formatMoney,
   formatPercent,
+  isHall,
   renovationCost,
+  schoolInHall,
   upkeepOf,
   type Financing,
   type GameState,
@@ -69,6 +73,7 @@ export default function BuildingInfoPanel({
     year: openedYear ?? '',
   });
   const open = placement.status === 'open';
+  const housed = schoolInHall(state, placement.id);
   const renoCost = renovationCost(placement);
   const canRenovate = open && placement.backlog > 0;
   // The chosen route if it can pay, else whichever can: the button never
@@ -93,6 +98,13 @@ export default function BuildingInfoPanel({
       </div>
       <p className={`building-panel-status ${placement.status}`}>{status}</p>
       <p className="building-panel-blurb">{def.blurb}</p>
+      {isHall(placement) && open && (
+        <p className="building-panel-school">
+          {housed
+            ? fillWords(ACADEMIC_WORDS.lines.houses, { school: schoolById(housed.schoolId).name })
+            : ACADEMIC_WORDS.lines.noSchool}
+        </p>
+      )}
       <dl className="building-panel-facts">
         <Fact label="Footprint" value={`${placement.w} × ${placement.h} tiles`} />
         {open && (

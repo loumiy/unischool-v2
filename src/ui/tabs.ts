@@ -17,6 +17,7 @@ export const TABS: readonly TabDef[] = [
     id: 'curriculum',
     label: 'Curriculum',
     phase: 9,
+    // Live since Phase 9 (CurriculumScreen.tsx); the stub line is never shown.
     stub: 'Six schools, thirty programs, three tiers each. The catalogue opens when the first school is founded.',
   },
   {

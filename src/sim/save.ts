@@ -6,6 +6,7 @@ import { MOTIFS } from './identity.ts';
 import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
+import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingPeople } from './people.ts';
 import { foundingTreasury } from './treasury.ts';
@@ -301,6 +302,30 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 8, state: migrated };
   },
+  // v8 → v9 (Phase 9): schools and programs. Replay first; else none founded.
+  8: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 9,
+      academics: foundingAcademics(),
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 9, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -425,6 +450,18 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     return 'state.distress lists are invalid';
   if (distress.pendingLetter !== null && typeof distress.pendingLetter !== 'string')
     return 'state.distress.pendingLetter is invalid';
+  const academics = s.academics as Record<string, unknown> | undefined;
+  if (typeof academics !== 'object' || academics === null) return 'state.academics is invalid';
+  if (!Array.isArray(academics.schools) || !Array.isArray(academics.programs))
+    return 'state.academics lists are invalid';
+  for (const sc of academics.schools as Record<string, unknown>[]) {
+    if (typeof sc.schoolId !== 'string' || typeof sc.placementId !== 'string')
+      return 'a founded school is malformed';
+  }
+  for (const pr of academics.programs as Record<string, unknown>[]) {
+    if (typeof pr.programId !== 'string' || typeof pr.tier !== 'string')
+      return 'an open program is malformed';
+  }
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }

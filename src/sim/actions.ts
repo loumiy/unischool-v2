@@ -22,9 +22,22 @@ import {
   renovationCost,
   type Financing,
 } from './estate.ts';
+import { findProgram, findSchool } from '../content/schools.ts';
+import {
+  closeProgramIn,
+  foundedSchool,
+  foundSchool,
+  isHall,
+  openProgram,
+  openProgramIn,
+  programOpeningCost,
+  schoolFoundingCost,
+  schoolInHall,
+} from './academics.ts';
 import {
   borrowingAllowed,
   constructionAllowed,
+  frozen,
   imposeCuts,
   readLetter,
   type AusterityCut,
@@ -73,6 +86,11 @@ export type Action =
     }
   // Acknowledges the board's letter (distress.ts) and lets the clock go.
   | { type: 'readLetter' }
+  // Academics (DD §7.2): a school founded in a hall of its own; a program
+  // opened in a founded school; a program closed.
+  | { type: 'foundSchool'; schoolId: string; placementId: string; financing?: Financing }
+  | { type: 'openProgram'; programId: string; financing?: Financing }
+  | { type: 'closeProgram'; programId: string }
   | { type: 'debug/mark'; label: string };
 
 export type ActionType = Action['type'];
@@ -171,6 +189,37 @@ export function canApply(state: GameState, action: Action): Verdict {
       return YES;
     case 'readLetter':
       return state.distress.pendingLetter === null ? no('no letter is waiting') : YES;
+    case 'foundSchool': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (frozen(state)) return no('the board has frozen new programs');
+      if (!findSchool(action.schoolId)) return no(`unknown school ${action.schoolId}`);
+      if (foundedSchool(state, action.schoolId)) return no('the school is already founded');
+      const hall = state.campus.placements.find((p) => p.id === action.placementId);
+      if (!hall) return no('no such building');
+      if (!isHall(hall)) return no('a school needs a hall');
+      if (hall.status !== 'open') return no('the hall is not open');
+      if (schoolInHall(state, hall.id)) return no('the hall already houses a school');
+      const financing = action.financing ?? 'cash';
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
+      if (!canPay(state, schoolFoundingCost(), financing)) return no('not enough cash');
+      return YES;
+    }
+    case 'openProgram': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (frozen(state)) return no('the board has frozen new programs');
+      const def = findProgram(action.programId);
+      if (!def) return no(`unknown program ${action.programId}`);
+      if (!foundedSchool(state, def.schoolId)) return no('its school is not founded');
+      if (openProgram(state, def.id)) return no('the program is already open');
+      const financing = action.financing ?? 'cash';
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
+      if (!canPay(state, programOpeningCost(), financing)) return no('not enough cash');
+      return YES;
+    }
+    case 'closeProgram':
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (!openProgram(state, action.programId)) return no('the program is not open');
+      return YES;
     case 'debug/mark':
       return YES;
   }
@@ -307,6 +356,12 @@ export function applyAction(state: GameState, action: Action): GameState {
     }
     case 'readLetter':
       return readLetter(state);
+    case 'foundSchool':
+      return foundSchool(state, action.schoolId, action.placementId, action.financing ?? 'cash');
+    case 'openProgram':
+      return openProgramIn(state, action.programId, action.financing ?? 'cash');
+    case 'closeProgram':
+      return closeProgramIn(state, action.programId);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
   }
