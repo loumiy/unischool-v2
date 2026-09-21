@@ -1,0 +1,122 @@
+import {
+  advanceWeekProgress,
+  dispatch as dispatchAction,
+  isYearTurn,
+  MAX_SAMPLE_MS,
+  msPerWeek,
+  newRun,
+  speedAllowed,
+  tickRun,
+  type Action,
+  type Run,
+  type Speed,
+} from '../sim/index.ts';
+
+// The external store the UI subscribes to (useSyncExternalStore in useGame.ts)
+// and the real-time driver that samples the clock. The sim never sees any of
+// this: it receives ticks and actions, and hands back states.
+
+export interface Snapshot {
+  run: Run | null; // null while booting
+  speed: Speed;
+  weekProgress: number; // 0..1 through the current week
+  lastAutosave: string | null; // ISO timestamp, informational
+}
+
+type Listener = () => void;
+
+// How often the accumulator samples the real clock. Only the granularity a
+// week boundary can land on; 50 ms is 5% of a week at 8×.
+const SAMPLE_MS = 50;
+
+export class GameStore {
+  private snap: Snapshot = { run: null, speed: 'paused', weekProgress: 0, lastAutosave: null };
+  private listeners = new Set<Listener>();
+  private timer: ReturnType<typeof setInterval> | null = null;
+  private lastSample = 0;
+
+  // Set by the app: called after any tick that crosses a year boundary, so
+  // the autosave policy (DD §15: every year-turn) lives with the storage.
+  onYearTurn: ((run: Run) => void) | null = null;
+
+  subscribe = (listener: Listener): (() => void) => {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
+  };
+
+  getSnapshot = (): Snapshot => this.snap;
+
+  private set(patch: Partial<Snapshot>): void {
+    this.snap = { ...this.snap, ...patch };
+    for (const l of this.listeners) l();
+  }
+
+  newGame(seed: number): void {
+    this.set({ run: newRun(seed), speed: 'paused', weekProgress: 0 });
+  }
+
+  loadRun(run: Run, savedAt: string | null = null): void {
+    this.set({ run, speed: 'paused', weekProgress: 0, lastAutosave: savedAt });
+  }
+
+  dispatch(action: Action): void {
+    const { run } = this.snap;
+    if (!run) return;
+    this.set({ run: dispatchAction(run, action) });
+  }
+
+  setSpeed(speed: Speed): void {
+    const { run } = this.snap;
+    if (!run || !speedAllowed(run.state, speed)) return;
+    this.set({ speed });
+  }
+
+  // Advance whole weeks immediately, regardless of speed (debug and tests).
+  stepWeeks(weeks: number): void {
+    const { run } = this.snap;
+    if (!run || weeks <= 0) return;
+    this.applyTicks(run, weeks);
+  }
+
+  markAutosaved(at: string): void {
+    this.set({ lastAutosave: at });
+  }
+
+  private applyTicks(run: Run, ticks: number): void {
+    let next = run;
+    let yearTurned = false;
+    for (let i = 0; i < ticks; i++) {
+      const after = tickRun(next);
+      if (isYearTurn(next.state.clock, after.state.clock)) yearTurned = true;
+      next = after;
+    }
+    this.set({ run: next });
+    if (yearTurned) this.onYearTurn?.(next);
+  }
+
+  start(): void {
+    if (this.timer) return;
+    this.lastSample = performance.now();
+    this.timer = setInterval(() => this.sample(), SAMPLE_MS);
+  }
+
+  stop(): void {
+    if (!this.timer) return;
+    clearInterval(this.timer);
+    this.timer = null;
+  }
+
+  private sample(): void {
+    const now = performance.now();
+    const delta = Math.min(now - this.lastSample, MAX_SAMPLE_MS);
+    this.lastSample = now;
+    const { run, speed, weekProgress } = this.snap;
+    if (!run) return;
+    const { progress, ticks } = advanceWeekProgress(weekProgress, delta, msPerWeek(speed));
+    if (ticks === 0 && progress === weekProgress) return;
+    if (ticks > 0) this.applyTicks(run, ticks);
+    this.set({ weekProgress: progress });
+  }
+}
+
+export const store = new GameStore();

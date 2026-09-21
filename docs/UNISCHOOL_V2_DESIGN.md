@@ -46,13 +46,13 @@ The player is architect, president, and historian — in that order, because the
 
 Fifty years in 3–5 hours averages ~5 minutes per year, front-loaded:
 
-| Span | Real-time target | Character |
-|---|---|---|
-| Years 1–10 | 60–80 min | Hands-on founding; slow clock; tutorialization by consequence |
-| Years 11–25 | 70–90 min | Growth, crunches, delegation begins; speed unlocks |
-| Years 26–40 | 50–70 min | Land fills; renovation era; steward altitude |
-| Years 41–50 | 30–45 min | Fast, ceremonial, consequence-harvesting |
-| Report & chronicle | 10–15 min | The payoff artifact |
+| Span               | Real-time target | Character                                                     |
+| ------------------ | ---------------- | ------------------------------------------------------------- |
+| Years 1–10         | 60–80 min        | Hands-on founding; slow clock; tutorialization by consequence |
+| Years 11–25        | 70–90 min        | Growth, crunches, delegation begins; speed unlocks            |
+| Years 26–40        | 50–70 min        | Land fills; renovation era; steward altitude                  |
+| Years 41–50        | 30–45 min        | Fast, ceremonial, consequence-harvesting                      |
+| Report & chronicle | 10–15 min        | The payoff artifact                                           |
 
 This budget is a tuning target (Plan Phase 31), not an enforced clock. Sessions are savable; "one evening" is the designed shape, not a requirement.
 
@@ -72,7 +72,7 @@ The founding hall is the player's first act, not a pre-placed fixture. Completin
 
 Time is continuous with pause, Cities: Skylines style. The base tick is one **week**. The year has three terms — Fall (14 wks), Spring (14 wks), Summer (8 wks) — totaling 36 ticks per year. The campus map is always the home screen; management screens overlay it; the sim keeps running under open screens unless paused.
 
-**Dates are run-relative.** Time is labeled "Year 1" through "Year 50" everywhere — the chrome clock, the ticker, the chronicle, the final report — in v1's format: *Year 12 · Fall Term · Week 3*, where the week counts within the current term (Fall 1–14, Spring 1–14, Summer 1–8). Class labels derive from the run year: the class graduating in Year 34 is "the Class of '34." There are no real-world calendar years anywhere: §16 excludes historical eras, and real years would promise era content the game deliberately does not build.
+**Dates are run-relative.** Time is labeled "Year 1" through "Year 50" everywhere — the chrome clock, the ticker, the chronicle, the final report — in v1's format: _Year 12 · Fall Term · Week 3_, where the week counts within the current term (Fall 1–14, Spring 1–14, Summer 1–8). Class labels derive from the run year: the class graduating in Year 34 is "the Class of '34." There are no real-world calendar years anywhere: §16 excludes historical eras, and real years would promise era content the game deliberately does not build.
 
 ### §3.2 Speed tiers are earned by delegation
 
@@ -95,15 +95,15 @@ Everything else — building, curriculum development, event resolution — is co
 
 Six deep systems, one cross-cutting mechanic. The discipline of pillar 1: **no seventh deep system.** Anything else must be a shallow feature of one of these.
 
-| # | System | One line | Section |
-|---|---|---|---|
-| 1 | Treasury | Money in, money out, and the ladder of distress | §5 |
-| 2 | Campus | The finite canvas: placement, beauty, condition, renovation | §6 |
-| 3 | Academics | Schools, programs, faculty, teaching quality | §7 |
-| 4 | People & Memory | Cohorts, the named cast, the alumni ledger | §8 |
-| 5 | Events & Ambitions | The weather of curveballs and the temptation of goals | §10 |
-| 6 | Reputation & the World | Prestige, identity, the league of rivals | §11 |
-| — | Delegation | Cross-cutting: buys speed, automates detail, ratchets cost | §9 |
+| #   | System                 | One line                                                    | Section |
+| --- | ---------------------- | ----------------------------------------------------------- | ------- |
+| 1   | Treasury               | Money in, money out, and the ladder of distress             | §5      |
+| 2   | Campus                 | The finite canvas: placement, beauty, condition, renovation | §6      |
+| 3   | Academics              | Schools, programs, faculty, teaching quality                | §7      |
+| 4   | People & Memory        | Cohorts, the named cast, the alumni ledger                  | §8      |
+| 5   | Events & Ambitions     | The weather of curveballs and the temptation of goals       | §10     |
+| 6   | Reputation & the World | Prestige, identity, the league of rivals                    | §11     |
+| —   | Delegation             | Cross-cutting: buys speed, automates detail, ratchets cost  | §9      |
 
 ---
 
@@ -157,7 +157,7 @@ One fixed map for every run: a bounded parcel (grid-based, ~64×64 tiles of buil
 
 Free grid placement of buildings, paths, trees, gardens, plazas, statues, and landmarks — the v1 motif system (Georgian, Collegiate Gothic, Classical, Mission, Modern) and color palettes carry forward and remain per-building selectable. Placement bonuses exist but are small and capped so aesthetics dominate:
 
-- **Quad bonus** — buildings enclosing a green space gain a small appeal bonus; the game detects and *names* quads (player-editable names).
+- **Quad bonus** — buildings enclosing a green space gain a small appeal bonus; the game detects and _names_ quads (player-editable names).
 - **Pairings** — dorm near dining, labs near their school's hall, athletics near fields: small satisfaction or output bumps.
 - **Campus Beauty** — a campus-wide score from greenery, landmarks, coherent motifs, and enclosed spaces; feeds application volume (§8.2) and appears in rankings flavor.
 
@@ -215,7 +215,7 @@ Students are simulated as **cohorts** (per program, per class year) carrying agg
 
 ### §8.2 Admission
 
-At Admissions Day (§3.3) the player sets **tuition** and **selectivity**; the applicant pool's size and shape were already determined by prestige, beauty, price position, and — crucially — **perceived identity** (§11.2): a party school draws party applicants; a research powerhouse draws grinds. You reap what you're known for, not what you say you are. The resulting class's size, quality, and revenue then simply *happen to you*, and housing/dining capacity constrain it physically (overflow forces triples, an instant satisfaction hit and a class-memory stamp).
+At Admissions Day (§3.3) the player sets **tuition** and **selectivity**; the applicant pool's size and shape were already determined by prestige, beauty, price position, and — crucially — **perceived identity** (§11.2): a party school draws party applicants; a research powerhouse draws grinds. You reap what you're known for, not what you say you are. The resulting class's size, quality, and revenue then simply _happen to you_, and housing/dining capacity constrain it physically (overflow forces triples, an instant satisfaction hit and a class-memory stamp).
 
 ### §8.3 Four years and out
 
@@ -265,7 +265,7 @@ Event sourcing is weighted toward **consequence**: the engine prefers firing eve
 
 At milestones and Convocations, the game deals **ambition offers** — concrete, public commitments with a deadline, a reward, and a failure cost ("Field a varsity football team in a proper stadium within 8 years"; "Place three programs in the national top ten by year 30"; "Grow the endowment past $500M before the founder's centennial"). The player holds at most **3 active ambitions**; declining is free; accepting is public. Success: prestige, board confidence, donor enthusiasm, a chronicle entry. Failure: board confidence hit, a prestige dent, and a wry chronicle entry. Ambitions are the overreach engine (pressure #2): the game's job is to make the player want one more than they can afford.
 
-A run's dealt pool (~24 ambitions at 1.0) is filtered by school identity and state, so ambitions feel aimed at *this* university.
+A run's dealt pool (~24 ambitions at 1.0) is filtered by school identity and state, so ambitions feel aimed at _this_ university.
 
 ---
 
@@ -277,11 +277,11 @@ Prestige is the long-term composite across six axes (kept from v1's report card)
 
 ### §11.2 Perceived identity
 
-Separately from prestige, the school accrues **identity tags** derived from behavior: *Research Powerhouse, Teaching College, Party School, Jock School, Artsy, Commuter, Country Club, Pressure Cooker, The Bargain, Old Money.* Tags are earned and shed slowly, are visible ("what the guidebooks say"), shape the applicant pool (§8.2), color event selection and writing, and headline the final report's title. Identity is the mechanical answer to "a university that is uniquely theirs."
+Separately from prestige, the school accrues **identity tags** derived from behavior: _Research Powerhouse, Teaching College, Party School, Jock School, Artsy, Commuter, Country Club, Pressure Cooker, The Bargain, Old Money._ Tags are earned and shed slowly, are visible ("what the guidebooks say"), shape the applicant pool (§8.2), color event selection and writing, and headline the final report's title. Identity is the mechanical answer to "a university that is uniquely theirs."
 
 ### §11.3 The league
 
-A background league of **24 AI schools** simulated shallowly: each has prestige axes, an identity, and simple annual drift plus reactions (a rising school poaches; a falling one sheds faculty you can grab). A **rankings screen** shows the annual table — with a deliberately quirky methodology that occasionally *changes*, to the visible outrage of everyone (satire hook and a genuine strategic wrinkle). One league school emerges as **the rival** through organic triggers (geographic proximity on the fictional map, repeated athletic meetings, a poached dean) and thereafter gets extra presence: taunting ticker items, head-to-head framing at board meetings, a dedicated line on the rankings screen. Rivals exist to make year 40 tense when the campus is finished; they are pressure #3 and sized accordingly — no deep AI, just a living table.
+A background league of **24 AI schools** simulated shallowly: each has prestige axes, an identity, and simple annual drift plus reactions (a rising school poaches; a falling one sheds faculty you can grab). A **rankings screen** shows the annual table — with a deliberately quirky methodology that occasionally _changes_, to the visible outrage of everyone (satire hook and a genuine strategic wrinkle). One league school emerges as **the rival** through organic triggers (geographic proximity on the fictional map, repeated athletic meetings, a poached dean) and thereafter gets extra presence: taunting ticker items, head-to-head framing at board meetings, a dedicated line on the rankings screen. Rivals exist to make year 40 tense when the campus is finished; they are pressure #3 and sized accordingly — no deep AI, just a living table.
 
 ---
 
@@ -293,7 +293,7 @@ Generated at year 50 (and viewable in draft anytime as "the History screen"): th
 
 ### §12.2 The final report
 
-Six-axis grading (§11.1) against the fifty-year arc, ambition record, financial verdict, the identity title — a composed line, e.g., *"Blackmoor University: a research powerhouse that never learned to feed its undergraduates"* — and a final mark. The report judges the whole arc, not the final snapshot: a school that rose from austerity outranks one that coasted.
+Six-axis grading (§11.1) against the fifty-year arc, ambition record, financial verdict, the identity title — a composed line, e.g., _"Blackmoor University: a research powerhouse that never learned to feed its undergraduates"_ — and a final mark. The report judges the whole arc, not the final snapshot: a school that rose from austerity outranks one that coasted.
 
 ### §12.3 Hall of fame and cosmetic meta
 
@@ -305,7 +305,7 @@ Each completed run hangs in the **hall of fame**: campus portrait (a rendered ma
 
 ### §13.1 Art direction
 
-Carry forward v1's visual identity wholesale: the isometric campus map, the five architectural motifs, the palette system, the cream/maroon/gold UI chrome, the startup flow (name, motif, colors — "Open the Doors"). Evolve rather than replace: richer ambient life (§6.3), seasonal tinting, weathering states for backlog, and a consistent iconography pass. The startup screen and map are the two things v1 already got right; v2's art budget goes to making the map feel *alive* rather than making it different.
+Carry forward v1's visual identity wholesale: the isometric campus map, the five architectural motifs, the palette system, the cream/maroon/gold UI chrome, the startup flow (name, motif, colors — "Open the Doors"). Evolve rather than replace: richer ambient life (§6.3), seasonal tinting, weathering states for backlog, and a consistent iconography pass. The startup screen and map are the two things v1 already got right; v2's art budget goes to making the map feel _alive_ rather than making it different.
 
 ### §13.2 UI shell
 
@@ -315,10 +315,10 @@ Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty
 
 Wry, affectionate satire of academia; sincerity underneath. House rules: institutions are absurd, individuals are humane; jokes live in specifics ("the Committee on Committee Reform"), never in mockery of students; distress is written straight — austerity is not funny to the people in it; every event's choices are labeled with honest verbs, not gags. Calibration examples to be maintained in a style guide file alongside event content:
 
-> *"The Faculty Senate has voted 31–2 to express 'grave concern' about the parking situation. It is unclear what they would like you to do, and neither of the two dissenters can be located."*
+> _"The Faculty Senate has voted 31–2 to express 'grave concern' about the parking situation. It is unclear what they would like you to do, and neither of the two dissenters can be located."_
 > — [Fund a parking study · $250k] [Express reciprocal concern · Free]
 
-> *"Hurricane damage to Whitfield Hall is worse than feared. The engineers' report uses the word 'char' as a verb."*
+> _"Hurricane damage to Whitfield Hall is worse than feared. The engineers' report uses the word 'char' as a verb."_
 > — [Full renovation · $12M] [Stabilize and defer · $3M, +Backlog] [Demolish · the Class of '41 will write letters]
 
 ### §13.4 Audio (1.0 scope)
@@ -329,20 +329,20 @@ A small, state-aware music system: a founding theme, a growth theme, a distress 
 
 ## §14. Content Budgets ("finished for now")
 
-| Content | 1.0 target |
-|---|---|
-| Schools | 6 |
-| Programs | 30 (each ×3 tiers) |
-| Building types | ~40 (across academic, residential, dining, life, athletics, admin, landmarks) + renovation/vertical variants |
-| Motifs / palettes | 5 motifs (from v1) / 8 palettes + unlockable cosmetic sets |
-| Inline events | ~120 |
-| Seismic events | ~20 |
-| Ambition pool | 24 |
-| Named students | 3–5 per class (portrait pool ~80, arc-beat templates ~60) |
-| Faculty quirks | ~40 |
-| Identity tags | 10 |
-| League schools | 24 (named, crested, persistent within a run) |
-| Era name templates | ~30 |
+| Content            | 1.0 target                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Schools            | 6                                                                                                            |
+| Programs           | 30 (each ×3 tiers)                                                                                           |
+| Building types     | ~40 (across academic, residential, dining, life, athletics, admin, landmarks) + renovation/vertical variants |
+| Motifs / palettes  | 5 motifs (from v1) / 8 palettes + unlockable cosmetic sets                                                   |
+| Inline events      | ~120                                                                                                         |
+| Seismic events     | ~20                                                                                                          |
+| Ambition pool      | 24                                                                                                           |
+| Named students     | 3–5 per class (portrait pool ~80, arc-beat templates ~60)                                                    |
+| Faculty quirks     | ~40                                                                                                          |
+| Identity tags      | 10                                                                                                           |
+| League schools     | 24 (named, crested, persistent within a run)                                                                 |
+| Era name templates | ~30                                                                                                          |
 
 ---
 
