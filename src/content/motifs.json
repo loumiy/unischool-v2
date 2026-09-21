@@ -1,0 +1,29 @@
+{
+  "motifs": [
+    {
+      "id": "georgian",
+      "label": "Georgian",
+      "blurb": "Red brick and white trim, under a gilded cupola."
+    },
+    {
+      "id": "gothic",
+      "label": "Collegiate Gothic",
+      "blurb": "Grey ashlar and steep slate, under a spire."
+    },
+    {
+      "id": "classical",
+      "label": "Classical",
+      "blurb": "Limestone and columns under copper roofs, and a stone dome."
+    },
+    {
+      "id": "mission",
+      "label": "Mission",
+      "blurb": "Cream stucco and red tile, around a shaded arcade."
+    },
+    {
+      "id": "modern",
+      "label": "Modern",
+      "blurb": "White panel, glass and burnt-orange brick, under flat roofs."
+    }
+  ]
+}

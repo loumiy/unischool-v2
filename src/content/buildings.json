@@ -1,0 +1,11 @@
+{
+  "buildings": [
+    {
+      "id": "founders-hall",
+      "name": "Founders Hall",
+      "kind": "academic",
+      "footprint": { "w": 7, "h": 5 },
+      "blurb": "One multi-purpose hall, the first thing on the land and the last thing anyone will agree to demolish."
+    }
+  ]
+}

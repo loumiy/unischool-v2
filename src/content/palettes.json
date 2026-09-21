@@ -1,0 +1,42 @@
+{
+  "palettes": [
+    {
+      "id": "maroon-gold",
+      "name": "Maroon and gold",
+      "primary": "#7b1e2b",
+      "secondary": "#f2c14e"
+    },
+    { "id": "navy-gold", "name": "Navy and gold", "primary": "#1f3a6b", "secondary": "#e6b84a" },
+    {
+      "id": "forest-gold",
+      "name": "Forest and gold",
+      "primary": "#1f5a3a",
+      "secondary": "#f2c14e"
+    },
+    {
+      "id": "crimson-silver",
+      "name": "Crimson and silver",
+      "primary": "#9b1c2e",
+      "secondary": "#d9d4c7"
+    },
+    {
+      "id": "navy-orange",
+      "name": "Navy and orange",
+      "primary": "#1b2a4a",
+      "secondary": "#f28c28"
+    },
+    {
+      "id": "purple-gold",
+      "name": "Purple and gold",
+      "primary": "#4a2a6a",
+      "secondary": "#e6b84a"
+    },
+    { "id": "black-gold", "name": "Black and gold", "primary": "#1f1b17", "secondary": "#e6b84a" },
+    {
+      "id": "royal-gold",
+      "name": "Royal blue and gold",
+      "primary": "#1d3f86",
+      "secondary": "#e6b84a"
+    }
+  ]
+}

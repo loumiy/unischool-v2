@@ -1,4 +1,4 @@
-import { applyAction, type Action } from './actions.ts';
+import { applyAction, canApply, type Action } from './actions.ts';
 import { createNewGame, type GameState } from './state.ts';
 import { tick } from './tick.ts';
 
@@ -23,7 +23,11 @@ export function newRun(seed: number): Run {
   return { state: createNewGame(seed), log: [] };
 }
 
+// Applies and logs an action. An action the reducer would refuse is not
+// logged either — the log holds what happened, never what was attempted —
+// and the run comes back unchanged so callers can check by identity.
 export function dispatch(run: Run, action: Action): Run {
+  if (!canApply(run.state, action).ok) return run;
   return {
     state: applyAction(run.state, action),
     log: [...run.log, { week: run.state.clock.absoluteWeek, action }],

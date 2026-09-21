@@ -1,5 +1,5 @@
 import { serializeRun, type Run } from '../sim/index.ts';
-import { readSave, writeSave } from './persistence.ts';
+import { deleteSave, readSave, writeSave } from './persistence.ts';
 import { store } from './store.ts';
 
 export function randomSeed(): number {
@@ -25,4 +25,11 @@ export async function boot(): Promise<void> {
     store.newGame(randomSeed());
   }
   store.start();
+}
+
+// The main menu's New Game: erase the browser's saved run and open the
+// doors again on a fresh seed. The founding screen is what a new run is.
+export async function eraseAndRestart(): Promise<void> {
+  await deleteSave('autosave');
+  store.newGame(randomSeed());
 }

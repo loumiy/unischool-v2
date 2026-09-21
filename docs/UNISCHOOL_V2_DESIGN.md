@@ -64,6 +64,8 @@ At Year 50, Week 1: the run formally ends. The Chronicle (§12) is generated, th
 
 The founding hall is the player's first act, not a pre-placed fixture. Completing the startup flow (name, motif, palette — §13.1) leads directly into placing **Founders Hall** — one multi-purpose building rendered in the chosen motif and palette — as the literal first action of the run. It anchors §6.5's founding-hall historic candidacy and gives every run a founding moment the chronicle can name. The land is otherwise empty at the start; starting cash is a `tuning.ts` constant; the first class arrives at the first Convocation (§3.3).
 
+The player types only half the name. Every school opens as _"<Name> College"_: the second word is fixed at founding and carved into the facade on the startup screen rather than typed, so the institution reads as permanent without a caption saying so. Whether and how a school later becomes a _University_ is an event's business (§10.1), not the founding screen's.
+
 ---
 
 ## §3. Time and the Calendar

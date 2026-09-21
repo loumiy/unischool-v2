@@ -1,5 +1,7 @@
 import {
   advanceWeekProgress,
+  canApply,
+  clockRuns,
   dispatch as dispatchAction,
   isYearTurn,
   MAX_SAMPLE_MS,
@@ -59,22 +61,27 @@ export class GameStore {
     this.set({ run, speed: 'paused', weekProgress: 0, lastAutosave: savedAt });
   }
 
-  dispatch(action: Action): void {
+  // Applies an action if the sim accepts it. Returns whether it did, so a
+  // caller can follow a founding action with a save.
+  dispatch(action: Action): boolean {
     const { run } = this.snap;
-    if (!run) return;
+    if (!run || !canApply(run.state, action).ok) return false;
     this.set({ run: dispatchAction(run, action) });
+    return true;
   }
 
+  // The clock runs only once Founders Hall stands (DD §2.4). Speed changes
+  // before that are refused, and the sampler below stays idle.
   setSpeed(speed: Speed): void {
     const { run } = this.snap;
-    if (!run || !speedAllowed(run.state, speed)) return;
+    if (!run || !clockRuns(run.state) || !speedAllowed(run.state, speed)) return;
     this.set({ speed });
   }
 
   // Advance whole weeks immediately, regardless of speed (debug and tests).
   stepWeeks(weeks: number): void {
     const { run } = this.snap;
-    if (!run || weeks <= 0) return;
+    if (!run || weeks <= 0 || !clockRuns(run.state)) return;
     this.applyTicks(run, weeks);
   }
 
@@ -111,7 +118,7 @@ export class GameStore {
     const delta = Math.min(now - this.lastSample, MAX_SAMPLE_MS);
     this.lastSample = now;
     const { run, speed, weekProgress } = this.snap;
-    if (!run) return;
+    if (!run || !clockRuns(run.state)) return;
     const { progress, ticks } = advanceWeekProgress(weekProgress, delta, msPerWeek(speed));
     if (ticks === 0 && progress === weekProgress) return;
     if (ticks > 0) this.applyTicks(run, ticks);
