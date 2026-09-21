@@ -1,0 +1,153 @@
+/* THE STARTUP SCREEN ("Open the Doors" — DD §13.1, ported from v1): one
+   card, three questions — name, motif, colours — and a live facade. */
+.startup {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.startup-card {
+  background: var(--cream-hi);
+  border: 3px solid var(--outline);
+  border-radius: var(--radius-xl);
+  padding: 32px 36px;
+  max-width: 480px;
+  width: 100%;
+  color: var(--ink);
+  box-shadow: var(--shadow-3);
+}
+.startup-card .eyebrow {
+  color: var(--school-primary);
+  font-weight: 800;
+}
+.startup-card h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 32px;
+  margin: 6px 0 20px;
+}
+.startup-name {
+  width: 100%;
+  font-size: var(--text-xl);
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--parchment-line);
+  background: #f8f3e6;
+  color: var(--ink);
+  font-family: var(--display);
+}
+.startup-name:focus {
+  border-color: var(--school-primary);
+}
+.startup-facade {
+  margin: 14px 0 28px;
+}
+.startup-facade-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* The facade's own sky: the one surface that is not part of the building.
+   Everything else takes its colour from the motif at runtime. */
+.facade-sky {
+  fill: #dfe2d8;
+}
+.facade-banner-text {
+  fill: #6b4423;
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.startup-motifs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.startup-motif-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 44px;
+  background: var(--cream);
+  border: 2px solid var(--parchment-line);
+  border-radius: var(--radius-md);
+  padding: 6px 4px;
+  color: var(--ink);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-xs);
+  line-height: 1.15;
+}
+.startup-motif-btn:hover {
+  border-color: var(--outline);
+}
+.startup-motif-btn.active {
+  border-color: var(--outline);
+  background: var(--cream-hi);
+  box-shadow: var(--shadow-1);
+  color: var(--school-primary);
+}
+.startup-colors {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 6px;
+}
+.startup-color-btn {
+  aspect-ratio: 1;
+  padding: 3px;
+  background: var(--cream);
+  border: 2px solid var(--parchment-line);
+  border-radius: var(--radius-md);
+  display: flex;
+}
+.startup-color-btn:hover {
+  border-color: var(--outline);
+}
+.startup-color-btn.active {
+  border: 3px solid var(--outline);
+  padding: 2px;
+  box-shadow: var(--shadow-1);
+}
+.startup-color-swatch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}
+.startup-color-swatch > span {
+  flex: 1;
+  display: block;
+}
+.startup-color-swatch > span:last-child {
+  flex: 0 0 38%;
+}
+.startup-color-name {
+  margin: 8px 0 20px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-md);
+  color: var(--school-primary);
+}
+/* The primary button of the register: the secondary, outlined and offset. */
+.startup-begin-btn {
+  width: 100%;
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+  border: 3px solid var(--outline);
+  border-radius: var(--radius-pill);
+  padding: 12px;
+  font-family: var(--display);
+  font-size: var(--text-lg);
+  font-weight: 800;
+  box-shadow: var(--shadow-2);
+}
+.startup-begin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}

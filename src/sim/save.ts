@@ -1,4 +1,5 @@
 import { TERMS, WEEKS_IN_TERM } from './calendar.ts';
+import { MOTIFS } from './identity.ts';
 import type { LoggedAction, Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 
@@ -31,7 +32,25 @@ export function serializeRun(run: Run, savedAt: Date = new Date()): SaveFile {
 // go. Each step receives the raw (already-parsed) file at version N and
 // returns it at version N + 1, bumping `version` itself.
 type Migration = (raw: Record<string, unknown>) => Record<string, unknown>;
-export const MIGRATIONS: Readonly<Record<number, Migration>> = {};
+export const MIGRATIONS: Readonly<Record<number, Migration>> = {
+  // v1 → v2 (Phase 2): the run phase, the identity, and the campus. A v1
+  // save was a blank, nameless campus, so it resumes at the founding screen
+  // with its clock wherever it was.
+  1: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 2,
+      state: {
+        ...state,
+        schemaVersion: 2,
+        phase: 'founding',
+        identity: null,
+        campus: { placements: [] },
+      },
+    };
+  },
+};
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
 
@@ -89,5 +108,23 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     return 'state.clock.absoluteWeek is invalid';
   }
   if (!Array.isArray(s.marks)) return 'state.marks is not an array';
+  if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
+    return 'state.phase is invalid';
+  }
+  if (s.identity !== null) {
+    const id = s.identity as Record<string, unknown> | undefined;
+    if (typeof id !== 'object' || id === null) return 'state.identity is invalid';
+    if (typeof id.name !== 'string') return 'state.identity.name is invalid';
+    if (!MOTIFS.includes(id.motif as never)) return 'state.identity.motif is invalid';
+    const colors = id.colors as Record<string, unknown> | undefined;
+    if (typeof colors?.primary !== 'string' || typeof colors?.secondary !== 'string') {
+      return 'state.identity.colors is invalid';
+    }
+  }
+  if (s.phase !== 'founding' && s.identity === null) return 'state has a phase but no identity';
+  const campus = s.campus as Record<string, unknown> | undefined;
+  if (typeof campus !== 'object' || campus === null || !Array.isArray(campus.placements)) {
+    return 'state.campus is invalid';
+  }
   return null;
 }

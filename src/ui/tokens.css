@@ -1,0 +1,139 @@
+/* THE DESIGN-TOKEN LAYER: the single styling source (DD §13.1, ported from
+   v1's register — reference/v1/src/styles.css). Every colour, face, size,
+   radius and shadow the UI uses is a token here; component stylesheets
+   (chrome.css, startup.css, map.css, debug.css) reference tokens only.
+
+   THE REGISTER. The school's own colours are the theme: --school-primary
+   and --school-secondary are the pair the university wears, written from
+   the founding pick by ui/theme.ts, and every other colour is fixed — a
+   cream ground, a navy outline ink, one red for trouble. The defaults are
+   the first authored pair (content/palettes.json), so a page that has not
+   had the theme applied yet already matches it. */
+:root {
+  --school-primary: #7b1e2b;
+  --school-secondary: #f2c14e;
+  --school-on-primary: #f7f2e8;
+  --school-on-secondary: #7b1e2b;
+  --cream: #f7f2e8;
+  --cream-hi: #fffdf8;
+  --cream-lo: #e4ddd0;
+  --outline: #1b2a4a;
+
+  /* The derived chrome tones: tied to whatever the primary is, so a green
+     school's dock gets a green hairline without anything knowing hairlines
+     exist. */
+  --primary-line: color-mix(in srgb, var(--school-primary) 78%, white);
+  --ink-lo: color-mix(in srgb, var(--school-on-primary) 72%, var(--school-primary));
+  --ink-hi: var(--school-on-primary);
+  --parchment-line: #c9c1b2;
+  --ink: var(--outline);
+  --ink-muted: #5a5f6b;
+
+  /* The campus grounds: one continuous lawn, a step brighter than the
+     chrome so the ground sits with the register rather than under it. The
+     grid is a hairline at two strengths — faint while watching, working
+     strength while placing. */
+  --grass: #82a561;
+  --grass-deep: #729452;
+  --grass-line: rgba(42, 56, 28, 0.18);
+  --grass-line-idle: rgba(42, 56, 28, 0.05);
+  --grass-highlight: #a3c17d;
+  --building-shadow: rgba(42, 56, 28, 0.28);
+
+  /* Type: eight steps. */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 15px;
+  --text-xl: 17px;
+  --text-2xl: 24px;
+
+  /* Corners: chips and tiles, not index cards. */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+
+  /* Elevation: three HARD offsets in the outline ink. Nothing in this
+     register blurs. A thing you can press sits a few pixels off the page. */
+  --shadow-1: 2px 2px 0 var(--outline);
+  --shadow-2: 4px 4px 0 var(--outline);
+  --shadow-3: 6px 6px 0 var(--outline);
+
+  /* Semantic colour, in pairs: one tuned for the dark chrome, one for paper. */
+  --ok-on-dark: var(--school-secondary);
+  --ok-on-light: #1f6b3a;
+  --bad-on-dark: #ffb0a6;
+  --bad-on-light: #a13a3a;
+  --warn-on-dark: #ffd98a;
+  --warn-on-light: #9c6a1e;
+  --danger-ink: #a13a3a;
+  --danger-bg: #fbe3e3;
+  --danger-line: #d9a8a8;
+
+  /* Three faces, self-hosted (see main.tsx): Bricolage Grotesque for
+     display — names, headings, headline figures at 700–800 — Archivo for
+     text at 500–700, and Azeret Mono for the one readout that is a counter:
+     the cash figure and its weekly net. */
+  --display:
+    'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'Archivo', system-ui, sans-serif;
+  --sans: 'Archivo', system-ui, sans-serif;
+  --mono:
+    'Azeret Mono Variable', 'Azeret Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas,
+    monospace;
+
+  /* Chrome heights. --toolbar-height is kept in sync with the toolbar's real
+     rendered height (ui/useCssHeightVar.ts); the default is only the first
+     paint. The other two are fixed. */
+  --toolbar-height: 64px;
+  --corner-menu-height: 40px;
+  --log-ticker-height: 26px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  background: var(--cream);
+  color: var(--ink);
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* A visible keyboard focus ring, everywhere, in the school's secondary:
+   the language every other "this one is active" cue speaks. */
+:focus-visible {
+  outline: 3px solid var(--school-secondary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* Motion is a preference, not a default. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -2,6 +2,7 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { CALENDAR_BEATS, beatsAt } from '../content/calendarBeats.ts';
 import {
   clockFromAbsoluteWeek,
+  clockRuns,
   formatClock,
   serializeRun,
   SPEEDS,
@@ -42,6 +43,7 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
 
   if (!run) return null;
   const { state, log } = run;
+  const running = clockRuns(state);
 
   const stepToNextBeat = () => {
     for (let weeks = 1; weeks <= WEEKS_PER_YEAR; weeks++) {
@@ -98,6 +100,8 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
       <section>
         <h3>Run</h3>
         <dl>
+          <dt>Phase</dt>
+          <dd>{state.phase}</dd>
           <dt>Seed</dt>
           <dd>
             <code>{state.seed}</code>
@@ -131,9 +135,15 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           ))}
         </div>
         <div className="row">
-          <button onClick={() => store.stepWeeks(1)}>+1 week</button>
-          <button onClick={stepToNextBeat}>→ next beat</button>
-          <button onClick={() => store.stepWeeks(WEEKS_PER_YEAR)}>+1 year</button>
+          <button disabled={!running} onClick={() => store.stepWeeks(1)}>
+            +1 week
+          </button>
+          <button disabled={!running} onClick={stepToNextBeat}>
+            → next beat
+          </button>
+          <button disabled={!running} onClick={() => store.stepWeeks(WEEKS_PER_YEAR)}>
+            +1 year
+          </button>
         </div>
       </section>
 

@@ -1,4 +1,6 @@
 import { FOUNDING_CLOCK, type Clock } from './calendar.ts';
+import type { Campus } from './campus.ts';
+import type { Identity } from './identity.ts';
 import { Rng, type RngState } from './rng.ts';
 
 // The one serialisable state tree (DD §15). Everything the sim knows lives
@@ -6,15 +8,23 @@ import { Rng, type RngState } from './rng.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export interface Mark {
   week: number;
   label: string;
 }
 
+// Where the run is in its opening (DD §2.4). The clock runs only in
+// 'running': founding is the startup screen, siting is the player's first
+// act — placing Founders Hall — and nothing ticks until it stands.
+export type RunPhase = 'founding' | 'siting' | 'running';
+
 export interface GameState {
   schemaVersion: typeof SCHEMA_VERSION;
+  phase: RunPhase;
+  identity: Identity | null; // null until the `found` action
+  campus: Campus;
   // Captured at new-game (DD §15). Varies per run for event and market
   // variety; the map and the starting conditions do not.
   seed: number;
@@ -32,9 +42,16 @@ export function createNewGame(seed: number): GameState {
   }
   return {
     schemaVersion: SCHEMA_VERSION,
+    phase: 'founding',
+    identity: null,
+    campus: { placements: [] },
     seed,
     rng: Rng.fromSeed(seed).snapshot(),
     clock: { ...FOUNDING_CLOCK },
     marks: [],
   };
+}
+
+export function clockRuns(state: GameState): boolean {
+  return state.phase === 'running';
 }

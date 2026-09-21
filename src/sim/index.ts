@@ -8,3 +8,5 @@ export * from './tick.ts';
 export * from './run.ts';
 export * from './save.ts';
 export * from './clock.ts';
+export * from './identity.ts';
+export * from './campus.ts';
