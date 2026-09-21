@@ -1,4 +1,4 @@
-import { PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
+import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import {
   attritionRate,
   campusCapacity,
@@ -7,15 +7,62 @@ import {
   formatMoney,
   formatPercent,
   inTriples,
+  outcomesFor,
+  satisfactionBreakdown,
+  teachingQuality,
   type GameState,
+  type SatisfactionBreakdown,
 } from '../sim/index.ts';
 import { AID_DISCOUNT_RATE } from '../tuning.ts';
 import Figure from './Figure.tsx';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
 // capacity against them, the standing admissions terms and the last
-// funnel, and the alumni ledger. Named students (DD §8.1) and class
-// memories (DD §8.4) arrive with their phases.
+// funnel, why the students feel the way they do (every term of
+// satisfaction, signed), and the alumni ledger with how each class turned
+// out. Named students (DD §8.1) and class memories (DD §8.4) arrive with
+// their phases.
+
+const TERMS: { key: keyof SatisfactionBreakdown; label: string; hint: string }[] = [
+  { key: 'base', label: 'Base', hint: PEOPLE_READINGS.base },
+  { key: 'housing', label: 'Housing', hint: PEOPLE_READINGS.housing },
+  { key: 'dining', label: 'Dining', hint: PEOPLE_READINGS.dining },
+  { key: 'seats', label: 'Teaching seats', hint: PEOPLE_READINGS.seatsTerm },
+  { key: 'condition', label: 'Buildings', hint: PEOPLE_READINGS.condition },
+  { key: 'teaching', label: 'Teaching', hint: PEOPLE_READINGS.teachingTerm },
+  { key: 'morale', label: 'Faculty quirks', hint: PEOPLE_READINGS.morale },
+  { key: 'beauty', label: 'Beauty', hint: PEOPLE_READINGS.beauty },
+  { key: 'conditions', label: 'The ladder', hint: PEOPLE_READINGS.conditions },
+];
+
+const signed = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));
+
+export function SatisfactionTable({ breakdown }: { breakdown: SatisfactionBreakdown }) {
+  return (
+    <table className="budget-table satisfaction-table">
+      <tbody>
+        {TERMS.map((t) => {
+          const v = breakdown[t.key];
+          return (
+            <tr key={t.key} className={v < 0 ? 'bad' : v > 0 && t.key !== 'base' ? 'good' : ''}>
+              <th>{t.label}</th>
+              <td className="figure" tabIndex={0}>
+                {t.key === 'base' ? v.toFixed(0) : signed(v)}
+                <span className="figure-hint" role="tooltip">
+                  {t.hint}
+                </span>
+              </td>
+            </tr>
+          );
+        })}
+        <tr className="satisfaction-total">
+          <th>Satisfaction</th>
+          <td>{breakdown.total.toFixed(0)}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
 
 export default function StudentsScreen({ state }: { state: GameState }) {
   const { cohorts, alumni, terms, lastAdmissions, incoming } = state.people;
@@ -26,6 +73,10 @@ export default function StudentsScreen({ state }: { state: GameState }) {
     ? cohorts.reduce((t, c) => t + c.satisfaction * c.size, 0) / Math.max(1, total)
     : null;
   const sorted = [...cohorts].sort((a, b) => a.classYear - b.classYear);
+  const breakdown = satisfactionBreakdown(state, total);
+  const teaching = teachingQuality(state);
+  const next = sorted[0] ?? null;
+  const projected = next ? outcomesFor(next.quality, next.satisfaction, next.size) : null;
   return (
     <div className="students">
       <div className="figure-row">
@@ -38,8 +89,24 @@ export default function StudentsScreen({ state }: { state: GameState }) {
         />
         <Figure
           label="Attrition"
-          value={satisfaction === null ? '—' : formatPercent(attritionRate(satisfaction), 1)}
+          value={
+            satisfaction === null
+              ? '—'
+              : formatPercent(
+                  cohorts.reduce(
+                    (t, c) => t + attritionRate(c.satisfaction, c.quality) * c.size,
+                    0,
+                  ) / Math.max(1, total),
+                  1,
+                )
+          }
           hint={PEOPLE_READINGS.attrition}
+        />
+        <Figure
+          label="Teaching"
+          value={teaching.toFixed(0)}
+          hint={PEOPLE_READINGS.teachingQuality}
+          tone={teaching < 40 ? 'bad' : teaching >= 60 ? 'good' : undefined}
         />
         <Figure
           label="In triples"
@@ -114,6 +181,19 @@ export default function StudentsScreen({ state }: { state: GameState }) {
       </section>
 
       <section className="treasury-panel">
+        <h3>{PEOPLE_WORDS.breakdownTitle}</h3>
+        <SatisfactionTable breakdown={breakdown} />
+        {next && projected && (
+          <p className="treasury-note">
+            {fillWords(PEOPLE_WORDS.nextClass, {
+              label: classLabel(next.classYear),
+              ...projected,
+            })}
+          </p>
+        )}
+      </section>
+
+      <section className="treasury-panel">
         <h3>Admissions</h3>
         <div className="figure-row inner">
           <Figure
@@ -172,6 +252,9 @@ export default function StudentsScreen({ state }: { state: GameState }) {
                 <th>Graduates</th>
                 <th>Quality</th>
                 <th>Left satisfied</th>
+                <th>Distinguished</th>
+                <th>Placed</th>
+                <th>Adrift</th>
               </tr>
             </thead>
             <tbody>
@@ -181,6 +264,24 @@ export default function StudentsScreen({ state }: { state: GameState }) {
                   <td>{a.size}</td>
                   <td>{a.quality.toFixed(0)}</td>
                   <td>{a.satisfaction.toFixed(0)}</td>
+                  <td className="figure" tabIndex={0}>
+                    {a.outcomes.distinguished}
+                    <span className="figure-hint" role="tooltip">
+                      {PEOPLE_READINGS.distinguished}
+                    </span>
+                  </td>
+                  <td className="figure" tabIndex={0}>
+                    {a.outcomes.placed}
+                    <span className="figure-hint" role="tooltip">
+                      {PEOPLE_READINGS.placed}
+                    </span>
+                  </td>
+                  <td className="figure" tabIndex={0}>
+                    {a.outcomes.adrift}
+                    <span className="figure-hint" role="tooltip">
+                      {PEOPLE_READINGS.adrift}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -37,7 +37,13 @@ export type BusEvent =
     }
   | { kind: 'classArrived'; classYear: number; size: number; quality: number; triples: number }
   | { kind: 'studentsLeft'; count: number }
-  | { kind: 'classGraduated'; classYear: number; size: number }
+  | {
+      kind: 'classGraduated';
+      classYear: number;
+      size: number;
+      distinguished: number;
+      adrift: number;
+    }
   | { kind: 'schoolFounded'; schoolId: string; buildingId: string; placementId: string }
   | { kind: 'programOpened'; programId: string }
   | { kind: 'programClosed'; programId: string }

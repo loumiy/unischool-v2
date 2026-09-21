@@ -9,6 +9,15 @@ import {
   ATTRITION_LINE,
   ATTRITION_MAX,
   ATTRITION_PER_POINT,
+  ATTRITION_PER_QUALITY_POINT,
+  ATTRITION_QUALITY_LINE,
+  BEAUTY_WEIGHT,
+  OUTCOME_ADRIFT_BASE,
+  OUTCOME_ADRIFT_MAX,
+  OUTCOME_DISTINGUISHED_MAX,
+  OUTCOME_QUALITY_WEIGHT,
+  QUALITY_DRIFT,
+  RUNG_SATISFACTION_PENALTY,
   BASE_APPLICANTS,
   BEAUTY_STUB,
   CONDITION_WEIGHT,
@@ -34,7 +43,7 @@ import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
-import { quirkMorale, teachingSatisfaction } from './faculty.ts';
+import { quirkMorale, teachingQuality, teachingSatisfaction } from './faculty.ts';
 import type { GameState } from './state.ts';
 
 // PEOPLE (DD §8): students as cohorts, one per class year, carrying size,
@@ -70,11 +79,20 @@ export interface Admissions {
   capped: boolean; // the file closed early for want of beds
 }
 
+// How a class turned out (DD §8.3): the distinguished, the placed, the
+// adrift, as counts summing to the class.
+export interface Outcomes {
+  distinguished: number;
+  placed: number;
+  adrift: number;
+}
+
 export interface AlumniClass {
   classYear: number;
   size: number;
   quality: number;
   satisfaction: number; // as they left
+  outcomes: Outcomes;
 }
 
 export interface People {
@@ -332,23 +350,88 @@ export function campusCondition(state: GameState): number {
   return open.reduce((t, p) => t + p.condition, 0) / open.length;
 }
 
-// Satisfaction from what the campus gives them: housing, dining, seats,
-// the state of the buildings, the teaching (faculty.ts) and the faculty's
-// quirks. Student life arrives with its phase.
-export function satisfactionFor(state: GameState, total: number): number {
-  const cap = campusCapacity(state);
-  let s = SATISFACTION_BASE;
-  if (total > 0 && total > cap.beds) s -= TRIPLES_PENALTY * ((total - cap.beds) / total);
-  if (total > 0 && total > cap.meals) s -= DINING_PENALTY * ((total - cap.meals) / total);
-  if (total > 0 && total > cap.seats) s -= SEATS_PENALTY * ((total - cap.seats) / total);
-  s += (campusCondition(state) - 1) * CONDITION_WEIGHT;
-  s += teachingSatisfaction(state) + quirkMorale(state);
-  return Number(Math.min(100, Math.max(0, s)).toFixed(1));
+// Satisfaction, term by term (DD §8.3): what the campus gives them —
+// housing, dining, seats, the state of the buildings — the teaching
+// (faculty.ts) and the faculty's quirks, the campus's beauty (a stub until
+// Phase 13) and the conditions of the day (the ladder). Every term is a
+// signed number of points, so the debug panel can trace cause to effect.
+// Student life arrives with its phase.
+export interface SatisfactionBreakdown {
+  base: number;
+  housing: number;
+  dining: number;
+  seats: number;
+  condition: number;
+  teaching: number;
+  morale: number;
+  beauty: number;
+  conditions: number;
+  total: number; // clamped 0–100
 }
 
-export function attritionRate(satisfaction: number): number {
-  const below = Math.max(0, ATTRITION_LINE - satisfaction);
-  return Math.min(ATTRITION_MAX, ATTRITION_BASE + below * ATTRITION_PER_POINT);
+export function satisfactionBreakdown(state: GameState, total: number): SatisfactionBreakdown {
+  const cap = campusCapacity(state);
+  const over = (have: number) => (total > 0 && total > have ? (total - have) / total : 0);
+  const b = {
+    base: SATISFACTION_BASE,
+    housing: -TRIPLES_PENALTY * over(cap.beds),
+    dining: -DINING_PENALTY * over(cap.meals),
+    seats: -SEATS_PENALTY * over(cap.seats),
+    condition: (campusCondition(state) - 1) * CONDITION_WEIGHT,
+    teaching: teachingSatisfaction(state),
+    morale: quirkMorale(state),
+    beauty: ((BEAUTY_STUB - 50) / 50) * BEAUTY_WEIGHT,
+    conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
+  };
+  const sum =
+    b.base +
+    b.housing +
+    b.dining +
+    b.seats +
+    b.condition +
+    b.teaching +
+    b.morale +
+    b.beauty +
+    b.conditions;
+  return { ...b, total: Number(Math.min(100, Math.max(0, sum)).toFixed(1)) };
+}
+
+export function satisfactionFor(state: GameState, total: number): number {
+  return satisfactionBreakdown(state, total).total;
+}
+
+// The share of a cohort that leaves in a year: a base, rising below the
+// satisfaction line, and rising again below the quality line.
+export function attritionRate(satisfaction: number, quality = 100): number {
+  const unhappy = Math.max(0, ATTRITION_LINE - satisfaction);
+  const weak = Math.max(0, ATTRITION_QUALITY_LINE - quality);
+  return Math.min(
+    ATTRITION_MAX,
+    ATTRITION_BASE + unhappy * ATTRITION_PER_POINT + weak * ATTRITION_PER_QUALITY_POINT,
+  );
+}
+
+// A cohort's quality after a year of the campus's teaching: part of the
+// way from where it was to the teaching it got.
+export function driftedQuality(quality: number, teaching: number): number {
+  return Number((quality + (teaching - quality) * QUALITY_DRIFT).toFixed(1));
+}
+
+// The class's score and its outcomes (DD §8.3), as counts.
+export function outcomeScore(quality: number, satisfaction: number): number {
+  return quality * OUTCOME_QUALITY_WEIGHT + satisfaction * (1 - OUTCOME_QUALITY_WEIGHT);
+}
+
+export function outcomesFor(quality: number, satisfaction: number, size: number): Outcomes {
+  const score = outcomeScore(quality, satisfaction);
+  const above = Math.min(1, Math.max(0, (score - 50) / 50));
+  const below = Math.min(1, Math.max(0, (50 - score) / 50));
+  const distinguished = Math.round(size * above * OUTCOME_DISTINGUISHED_MAX);
+  const adrift = Math.min(
+    size - distinguished,
+    Math.round(size * (OUTCOME_ADRIFT_BASE + below * OUTCOME_ADRIFT_MAX)),
+  );
+  return { distinguished, placed: size - distinguished - adrift, adrift };
 }
 
 // Commencement, the first week of summer: the class whose year it is
@@ -369,30 +452,40 @@ export function graduate(state: GameState): GameState {
           size: c.size,
           quality: c.quality,
           satisfaction: c.satisfaction,
+          outcomes: outcomesFor(c.quality, c.satisfaction, c.size),
         })),
       ],
     },
   };
   for (const c of leaving) {
-    next = emit(next, { kind: 'classGraduated', classYear: c.classYear, size: c.size });
+    const outcomes = outcomesFor(c.quality, c.satisfaction, c.size);
+    next = emit(next, {
+      kind: 'classGraduated',
+      classYear: c.classYear,
+      size: c.size,
+      distinguished: outcomes.distinguished,
+      adrift: outcomes.adrift,
+    });
   }
   return next;
 }
 
-// Convocation, the first week of fall: every cohort's year is scored and
-// thinned, and the committed class arrives.
+// Convocation, the first week of fall: every cohort's year is scored, its
+// quality drifts toward the teaching it had, it is thinned at its own
+// rate, and the committed class arrives.
 export function arrive(state: GameState): GameState {
   const { year } = state.clock;
   const p = state.people;
   const incoming = p.incoming && p.incoming.year === year ? p.incoming : null;
   const total = enrolled(state) + (incoming?.size ?? 0);
   const satisfaction = satisfactionFor(state, total);
-  const rate = attritionRate(satisfaction);
+  const teaching = teachingQuality(state);
   let left = 0;
   const cohorts = p.cohorts.map((c) => {
-    const gone = Math.round(c.size * rate);
+    const quality = driftedQuality(c.quality, teaching);
+    const gone = Math.round(c.size * attritionRate(satisfaction, quality));
     left += gone;
-    return { ...c, size: c.size - gone, satisfaction };
+    return { ...c, size: c.size - gone, satisfaction, quality };
   });
   if (incoming && incoming.size > 0) {
     cohorts.push({

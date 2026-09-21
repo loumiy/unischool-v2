@@ -222,3 +222,25 @@ export const SIGNATURE_ADVANCE_DISCOUNT = 0.5;
 export const NEGLECT_STAFFING_SHARE = 0.5;
 export const DECAY_AFTER_YEARS = 2;
 export const SIGNATURE_DECAY_CONFIDENCE = 5;
+
+// ---------- Quality, satisfaction and outcomes (DD §7.4, §8.3, Phase 12) ----------
+
+// Campus beauty in satisfaction: the swing across the scale, neutral at 50
+// (BEAUTY_STUB until Phase 13 scores the campus).
+export const BEAUTY_WEIGHT = 8;
+// Current conditions: what living through each rung of the ladder costs
+// every cohort, in satisfaction points, Sound to Receivership.
+export const RUNG_SATISFACTION_PENALTY = [0, 0, 1, 3, 6, 9] as const;
+// Each Convocation a continuing cohort's quality closes this share of the
+// gap to the campus's teaching quality.
+export const QUALITY_DRIFT = 0.25;
+// Attrition also rises with low quality: below the line, this much a point.
+export const ATTRITION_QUALITY_LINE = 40;
+export const ATTRITION_PER_QUALITY_POINT = 0.003;
+// Graduation outcomes: a class's score is quality weighted against how it
+// left; distinguished graduates rise with the score above the middle, the
+// adrift with the score below it, over a base.
+export const OUTCOME_QUALITY_WEIGHT = 0.7;
+export const OUTCOME_DISTINGUISHED_MAX = 0.3;
+export const OUTCOME_ADRIFT_MAX = 0.4;
+export const OUTCOME_ADRIFT_BASE = 0.05;

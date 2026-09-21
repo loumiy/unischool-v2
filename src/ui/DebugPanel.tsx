@@ -2,8 +2,16 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { describeEntry } from '../content/busLines.ts';
 import { beatsAt, CALENDAR_BEATS } from '../content/calendarBeats.ts';
 import {
+  attritionRate,
   clockFromAbsoluteWeek,
   clockRuns,
+  enrolled,
+  outcomeScore,
+  outcomesFor,
+  programQuality,
+  satisfactionBreakdown,
+  teachingQuality,
+  classLabel,
   formatClock,
   formatClockShort,
   formatMoney,
@@ -12,6 +20,7 @@ import {
   SPEEDS,
   WEEKS_PER_YEAR,
 } from '../sim/index.ts';
+import { programById } from '../content/schools.ts';
 import { autosave, randomSeed } from './boot.ts';
 import {
   deleteSave,
@@ -154,6 +163,61 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           </dd>
           <dt>Autosaved</dt>
           <dd>{lastAutosave ? formatSaved(lastAutosave) : 'never'}</dd>
+        </dl>
+      </section>
+
+      <section>
+        <h3>Student experience</h3>
+        <dl>
+          {(() => {
+            const b = satisfactionBreakdown(state, enrolled(state));
+            return (
+              <>
+                {(
+                  [
+                    'base',
+                    'housing',
+                    'dining',
+                    'seats',
+                    'condition',
+                    'teaching',
+                    'morale',
+                    'beauty',
+                    'conditions',
+                  ] as const
+                ).map((k) => (
+                  <span key={k} className="pair">
+                    <dt>{k}</dt>
+                    <dd>{b[k] > 0 && k !== 'base' ? `+${b[k].toFixed(1)}` : b[k].toFixed(1)}</dd>
+                  </span>
+                ))}
+                <dt>= satisfaction</dt>
+                <dd>{b.total.toFixed(1)}</dd>
+              </>
+            );
+          })()}
+          <dt>Teaching quality</dt>
+          <dd>{teachingQuality(state).toFixed(1)}</dd>
+          {state.academics.programs.map((p) => (
+            <span key={p.programId} className="pair">
+              <dt>· {programById(p.programId).name}</dt>
+              <dd>{programQuality(state, p).toFixed(1)}</dd>
+            </span>
+          ))}
+          {state.people.cohorts.map((c) => {
+            const o = outcomesFor(c.quality, c.satisfaction, c.size);
+            return (
+              <span key={c.classYear} className="pair">
+                <dt>{classLabel(c.classYear)}</dt>
+                <dd>
+                  q {c.quality.toFixed(0)} · s {c.satisfaction.toFixed(0)} · attrition{' '}
+                  {(attritionRate(c.satisfaction, c.quality) * 100).toFixed(1)}% · score{' '}
+                  {outcomeScore(c.quality, c.satisfaction).toFixed(0)} → {o.distinguished}/
+                  {o.placed}/{o.adrift}
+                </dd>
+              </span>
+            );
+          })}
         </dl>
       </section>
 
