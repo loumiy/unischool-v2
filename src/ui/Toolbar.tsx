@@ -1,6 +1,7 @@
 import type { Ref } from 'react';
 import {
   clockRuns,
+  enrolled,
   formatClock,
   formatMoney,
   netOf,
@@ -95,6 +96,7 @@ export default function Toolbar({
   const running = clockRuns(state);
   const { treasury } = state;
   const weekNet = netOf(treasury.lastWeek);
+  const students = enrolled(state);
   return (
     <div className="toolbar" ref={ref}>
       <div className="toolbar-left">
@@ -117,11 +119,18 @@ export default function Toolbar({
           </span>
         </button>
         <div className="toolbar-stats">
-          <div className="toolbar-stat pending" title="Enrolled (Phase 7)">
+          <button
+            type="button"
+            className={`toolbar-stat ${active === 'students' ? 'active' : ''}`}
+            title={`${students} enrolled — opens Students`}
+            aria-label="Open Students"
+            aria-expanded={active === 'students'}
+            onClick={() => onChangeTab(active === 'students' ? null : 'students')}
+          >
             <StudentsIcon />
             <span className="stat-label">Enrolled</span>
-            <span className="stat-value">—</span>
-          </div>
+            <span className="stat-value">{students}</span>
+          </button>
           <div className="toolbar-stat pending" title="Prestige (Phase 24)">
             <PrestigeIcon />
             <span className="stat-label">Prestige</span>

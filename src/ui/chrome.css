@@ -1391,3 +1391,40 @@ button.build-tile {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ---------- Phase 7: students ---------- */
+.students {
+  max-width: 920px;
+  margin: 0 auto;
+}
+.figure-row.inner {
+  margin: 0;
+  padding: 8px 12px;
+  border-width: 1px;
+  border-color: var(--parchment-line);
+}
+.cohort-table th:first-child {
+  font-family: var(--display);
+  font-weight: 800;
+}
+.treasury-note.bad {
+  color: var(--bad-on-light);
+  font-style: normal;
+  font-weight: 700;
+}
+/* The enrolled chip is a button now: the entry into Students. */
+button.toolbar-stat {
+  border: 2px solid transparent;
+  cursor: pointer;
+  font: inherit;
+}
+button.toolbar-stat:hover {
+  border-color: var(--school-secondary);
+}
+button.toolbar-stat.active {
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+}
+button.toolbar-stat.active svg {
+  color: var(--school-on-secondary);
+}

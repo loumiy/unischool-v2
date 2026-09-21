@@ -6,12 +6,12 @@
       "term": "fall",
       "week": 1,
       "dd": "§3.3",
-      "phase": 7,
+      "phase": 19,
       "prompt": "Convocation is on the lawn",
       "firedLine": "Convocation. The new class is on the lawn.",
       "resolvedLine": "The new class is welcomed, at some length.",
       "blurb": "The new class files onto the lawn and is told, at some length, that these will be the best years of their lives. Nobody has mentioned the parking.",
-      "stub": "The year's report card, the incoming class by the numbers, and any ambitions the board is minded to deal.",
+      "stub": "The year's report card, and any ambitions the board is minded to deal.",
       "resolveLabel": "Welcome the class"
     },
     {
@@ -34,12 +34,12 @@
       "term": "spring",
       "week": 10,
       "dd": "§8.2",
-      "phase": 7,
+      "phase": 24,
       "prompt": "Admissions Day: the applications are in",
       "firedLine": "Admissions Day. The applications are in.",
       "resolvedLine": "The admissions file closes.",
       "blurb": "The applications are in, stacked by a student worker with opinions about the essays. Tuition and selectivity are yours to set; the class that results will simply happen to you.",
-      "stub": "Tuition and selectivity, the applicant pool, and the class they produce.",
+      "stub": "Prestige, campus beauty and what the guidebooks say, shaping who applies.",
       "resolveLabel": "Close the file"
     },
     {

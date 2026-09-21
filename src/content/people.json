@@ -1,0 +1,29 @@
+{
+  "readings": {
+    "enrolled": "Everyone on the books this year, across the four class years.",
+    "applicants": "Who applied: the market's interest, scaled by prestige, beauty and the sticker against the market's.",
+    "admitted": "How many the office let in: the pool times the admit rate the selectivity sets.",
+    "yield": "The share of the admitted who come; it falls as the sticker rises.",
+    "classSize": "The class that results, capped by the beds and the triples allowance.",
+    "quality": "Mean applicant quality of the admitted, 0–100; a selective office skims the top of the pool.",
+    "tuition": "The sticker: what every enrolled student is billed, before aid.",
+    "netTuition": "What a student actually pays after the standing aid discount.",
+    "selectivity": "The share of the pool turned away; the admit rate is what is left.",
+    "revenue": "The class's gross tuition next year, before aid.",
+    "beds": "Beds in open residence halls and Founders Hall; students beyond them live in triples.",
+    "meals": "Dining seats in open halls; a crowded refectory costs satisfaction.",
+    "seats": "Teaching seats in open halls; crowded classes cost satisfaction.",
+    "triples": "Students living three to a room because the beds ran out.",
+    "satisfaction": "How the class rates the place, 0–100: housing, dining, seats and the state of the buildings, for now.",
+    "attrition": "The share of every cohort that leaves each year at this satisfaction.",
+    "cohortSize": "Students in the class this year.",
+    "cohortQuality": "The class's quality as admitted, 0–100."
+  },
+  "words": {
+    "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",
+    "capped": "The beds being what they are, the file closes early: {size} of {wanted} who would come.",
+    "triplesWarning": "{triples} of them will live in triples.",
+    "roomToSpare": "Room for everyone who comes.",
+    "noAlumni": "Nobody has graduated yet."
+  }
+}
