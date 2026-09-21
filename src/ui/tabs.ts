@@ -35,6 +35,7 @@ export const TABS: readonly TabDef[] = [
     id: 'treasury',
     label: 'Treasury',
     phase: 5,
+    // Live since Phase 5 (TreasuryScreen.tsx); the stub line is never shown.
     stub: 'The weekly cashflow strip, the year budget, tuition dependence, the endowment, the backlog, and the administrative share of payroll.',
   },
   {

@@ -6,6 +6,7 @@ import { MOTIFS } from './identity.ts';
 import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
+import { foundingTreasury } from './treasury.ts';
 
 // The save file: state + version + action log (DD §15). Storage (IndexedDB,
 // file export) is the UI's business; the FORMAT is the sim's, because the
@@ -153,6 +154,34 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     }
     return { ...raw, version: 4, state: migrated, log };
   },
+  // v4 → v5 (Phase 5): the treasury. A v4 log is complete (every beat
+  // resolved), so the run is rebuilt by replay and its money history is
+  // real; the fallback is the founding treasury as it stands, with the
+  // clock wherever it was. The saved campus is kept either way: the trees
+  // planted in the old run keep the seeds the player saw.
+  4: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const clock = (state.clock ?? {}) as Record<string, unknown>;
+    const savedWeek = Number(clock.absoluteWeek ?? 0);
+    const log = Array.isArray(raw.log) ? (raw.log as LoggedAction[]) : [];
+    let migrated: Record<string, unknown> = {
+      ...state,
+      schemaVersion: 5,
+      treasury: foundingTreasury(Number(raw.seed)),
+    };
+    try {
+      const rebuilt = replay(Number(raw.seed), log, savedWeek);
+      const same =
+        rebuilt.phase === state.phase &&
+        rebuilt.pendingBeat === state.pendingBeat &&
+        JSON.stringify(rebuilt.clock) === JSON.stringify(state.clock) &&
+        JSON.stringify(rebuilt.campus) === JSON.stringify(state.campus);
+      if (same) migrated = rebuilt as unknown as Record<string, unknown>;
+    } catch {
+      // Fall through with the in-place migration.
+    }
+    return { ...raw, version: 5, state: migrated };
+  },
 };
 
 export type LoadResult = { ok: true; save: SaveFile } | { ok: false; reason: string };
@@ -220,6 +249,18 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   if (s.pendingBeat !== null && typeof s.pendingBeat !== 'string') {
     return 'state.pendingBeat is invalid';
   }
+  const treasury = s.treasury as Record<string, unknown> | undefined;
+  if (typeof treasury !== 'object' || treasury === null) return 'state.treasury is invalid';
+  for (const k of ['cash', 'endowment', 'drawRate', 'marketReturn', 'endowmentBasis', 'debt']) {
+    if (typeof treasury[k] !== 'number' || !Number.isFinite(treasury[k]))
+      return `state.treasury.${k} is invalid`;
+  }
+  for (const k of ['budget', 'actual', 'lastWeek']) {
+    const f = treasury[k] as Record<string, unknown> | undefined;
+    if (typeof f !== 'object' || f === null || !f.revenue || !f.expenses)
+      return `state.treasury.${k} is invalid`;
+  }
+  if (!Array.isArray(treasury.history)) return 'state.treasury.history is invalid';
   if (s.phase !== 'founding' && s.phase !== 'siting' && s.phase !== 'running') {
     return 'state.phase is invalid';
   }

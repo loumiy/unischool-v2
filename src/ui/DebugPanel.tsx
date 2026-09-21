@@ -6,6 +6,7 @@ import {
   clockRuns,
   formatClock,
   formatClockShort,
+  formatMoney,
   pendingBeat,
   serializeRun,
   SPEEDS,
@@ -129,6 +130,10 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
             ) : (
               '—'
             )}
+          </dd>
+          <dt>Cash / endowment</dt>
+          <dd>
+            {formatMoney(state.treasury.cash)} / {formatMoney(state.treasury.endowment)}
           </dd>
           <dt>Autosaved</dt>
           <dd>{lastAutosave ? formatSaved(lastAutosave) : 'never'}</dd>

@@ -23,6 +23,8 @@ export type BusEvent =
   | { kind: 'yearTurned'; year: number }
   | { kind: 'beatFired'; beatId: string }
   | { kind: 'beatResolved'; beatId: string }
+  | { kind: 'budgetApproved'; year: number; drawRate: number }
+  | { kind: 'yearClosed'; year: number; net: number }
   | { kind: 'mark'; label: string }; // the debug panel's marker
 
 export type BusKind = BusEvent['kind'];
@@ -37,6 +39,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'yearTurned',
   'beatFired',
   'beatResolved',
+  'budgetApproved',
+  'yearClosed',
   'mark',
 ];
 

@@ -9,6 +9,7 @@ import { WEEKS_PER_YEAR } from './calendar.ts';
 import { dispatch, newRun, replay, tickRunWeeks, type Run } from './run.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
 import { createNewGame } from './state.ts';
+import { formatMoney } from './treasury.ts';
 import { tick, tickWeeks } from './tick.ts';
 
 const FOUND = {
@@ -165,9 +166,11 @@ describe('calendar beats (DD §3.3)', () => {
       'The admissions file closes.',
       'Summer Term begins.',
       'Budget & Hiring. The ledger is open, and so is the market.',
+      'The Year 2 budget is approved at a 4.5% draw.',
       'The budget is approved and the market closes for the year.',
       'Fall Term begins.',
       'Year 2.',
+      `Year 1 closes ${formatMoney(run.state.treasury.history[0]!.net)} in the black.`,
       'Convocation. The new class is on the lawn.',
     ]);
   });

@@ -8,6 +8,8 @@
     "yearTurned": { "text": "Year {year}." },
     "beatFired": { "text": "{line}" },
     "beatResolved": { "text": "{line}" },
+    "budgetApproved": { "text": "The Year {year} budget is approved at a {rate} draw." },
+    "yearClosed": { "text": "Year {year} closes {net} {ledger}." },
     "mark": { "text": "{label}" }
   }
 }

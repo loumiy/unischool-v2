@@ -2,6 +2,8 @@ import type { Ref } from 'react';
 import {
   clockRuns,
   formatClock,
+  formatMoney,
+  netOf,
   SPEEDS,
   speedAllowed,
   type GameState,
@@ -91,22 +93,28 @@ export default function Toolbar({
   heldFor: string | null;
 }) {
   const running = clockRuns(state);
+  const { treasury } = state;
+  const weekNet = netOf(treasury.lastWeek);
   return (
     <div className="toolbar" ref={ref}>
       <div className="toolbar-left">
         {/* The funds figure is the register's one counter and the entry into
-            Treasury. Money is Phase 5; until then the figure is honestly a
-            dash rather than a number that means nothing. */}
+            Treasury: operating funds, and this week's net (DD §5.3: the
+            weekly cashflow figure is always visible in the chrome). */}
         <button
           type="button"
           className={`toolbar-funds-btn ${active === 'treasury' ? 'active' : ''}`}
           aria-expanded={active === 'treasury'}
           aria-label="Open Treasury"
-          title="Operating funds — opens Treasury (figures arrive in Phase 5)"
+          title="Operating funds and this week's net — opens Treasury"
           onClick={() => onChangeTab(active === 'treasury' ? null : 'treasury')}
         >
-          <span className="stat-value">$ —</span>
-          <span className="toolbar-funds-net">— /wk</span>
+          <span className={`stat-value ${treasury.cash < 0 ? 'money-negative' : ''}`}>
+            {formatMoney(treasury.cash)}
+          </span>
+          <span className={`toolbar-funds-net ${weekNet < 0 ? 'money-negative' : ''}`}>
+            {formatMoney(weekNet, { sign: true })} /wk
+          </span>
         </button>
         <div className="toolbar-stats">
           <div className="toolbar-stat pending" title="Enrolled (Phase 7)">

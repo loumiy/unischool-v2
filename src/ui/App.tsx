@@ -11,7 +11,7 @@ import {
   type Motif,
   type Speed,
 } from '../sim/index.ts';
-import BeatScreen from './BeatScreen.tsx';
+import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import { autosave, boot, eraseAndRestart } from './boot.ts';
 import BuildPopup from './BuildPopup.tsx';
 import CampusMap from './CampusMap.tsx';
@@ -27,6 +27,7 @@ import TabOverlay, { StubScreen } from './TabOverlay.tsx';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
+import TreasuryScreen from './TreasuryScreen.tsx';
 import type { CampusTool } from './tools.ts';
 import { useCssHeightVar } from './useCssHeightVar.ts';
 import { useGame } from './useGame.ts';
@@ -123,9 +124,9 @@ export default function App() {
     closeBuild();
     setJournalOpen(true);
   }
-  function resolveBeat() {
+  function resolveBeat(decision: BeatDecision) {
     if (!beat) return;
-    const applied = store.dispatch({ type: 'resolveBeat', beatId: beat.id });
+    const applied = store.dispatch({ type: 'resolveBeat', beatId: beat.id, ...decision });
     if (applied) void autosave(store.getSnapshot().run!);
     setOverlay(null);
   }
@@ -290,9 +291,13 @@ export default function App() {
         )}
         {effectiveOverlay && effectiveOverlay !== 'beat' && (
           <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
-            <StubScreen phase={tabById(effectiveOverlay).phase}>
-              {tabById(effectiveOverlay).stub}
-            </StubScreen>
+            {effectiveOverlay === 'treasury' ? (
+              <TreasuryScreen state={state} />
+            ) : (
+              <StubScreen phase={tabById(effectiveOverlay).phase}>
+                {tabById(effectiveOverlay).stub}
+              </StubScreen>
+            )}
           </TabOverlay>
         )}
       </div>

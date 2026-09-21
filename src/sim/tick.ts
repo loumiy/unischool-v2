@@ -3,6 +3,7 @@ import { beatDue, clockHeld } from './beats.ts';
 import { advanceClock } from './calendar.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
+import { treasuryWeek } from './treasury.ts';
 
 // One week of the world (DD §15): `tick(state) → state`, pure, no I/O, no
 // timers. The driver decides WHEN a tick happens; nothing in here knows about
@@ -20,26 +21,34 @@ export function tick(state: GameState): GameState {
   if (clockHeld(state)) return state;
   const rng = Rng.fromState(state.rng);
   let next: GameState = { ...state, clock: advanceClock(state.clock) };
-  next = calendar(next);
+  next = calendarTurn(next);
+  if (next.phase === 'running') {
+    next = treasuryWeek(next);
+    next = fireBeat(next);
+  }
   return { ...next, rng: rng.snapshot() };
 }
 
-// The calendar system: journals the turn of a term and a year, and fires
-// the beat the week lands on (DD §3.3). Beats belong to a school with its
-// doors open; a run that is still founding or siting has no board to sit
-// and no class to convene.
-function calendar(state: GameState): GameState {
+// The calendar system, first: journals the turn of a term and a year.
+function calendarTurn(state: GameState): GameState {
   let s = state;
   const { clock } = s;
   if (clock.week === 1) {
     s = emit(s, { kind: 'termBegan', year: clock.year, term: clock.term });
     if (clock.term === 'fall') s = emit(s, { kind: 'yearTurned', year: clock.year });
   }
-  if (s.phase === 'running') {
-    const beat = beatDue(clock);
-    if (beat) s = emit({ ...s, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
-  }
   return s;
+}
+
+// The calendar system, last: fires the beat the week lands on (DD §3.3),
+// after the week's systems have run, so the screen that opens reads the
+// week as it stands. Beats belong to a school with its doors open; a run
+// that is still founding or siting has no board to sit and no class to
+// convene.
+function fireBeat(state: GameState): GameState {
+  const beat = beatDue(state.clock);
+  if (!beat) return state;
+  return emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
 }
 
 // Advance up to `weeks` weeks, stopping early if the clock is held.

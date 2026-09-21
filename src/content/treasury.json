@@ -1,0 +1,72 @@
+{
+  "revenue": {
+    "tuition": {
+      "label": "Tuition",
+      "hint": "Enrollment times net tuition, the sticker price less financial aid.",
+      "phase": 7
+    },
+    "endowmentDraw": {
+      "label": "Endowment draw",
+      "hint": "The set share of the endowment paid out to operations this year, set at Budget & Hiring."
+    },
+    "donations": {
+      "label": "Donations",
+      "hint": "The annual fund from the alumni ledger, plus gifts that arrive as events, often with strings.",
+      "phase": 16
+    },
+    "researchOverhead": {
+      "label": "Research overhead",
+      "hint": "The percentage the college skims off research grants for keeping the lights on.",
+      "phase": 11
+    },
+    "auxiliaries": {
+      "label": "Auxiliaries",
+      "hint": "Housing and dining margins, and ticket revenue once there is somewhere to sell tickets.",
+      "phase": 7
+    }
+  },
+  "expenses": {
+    "facultyPayroll": {
+      "label": "Faculty payroll",
+      "hint": "Every hire's salary; the hiring market opens at Budget & Hiring.",
+      "phase": 10
+    },
+    "adminPayroll": {
+      "label": "Administration",
+      "hint": "The president's office and the administration, which only ever grows."
+    },
+    "maintenance": {
+      "label": "Maintenance",
+      "hint": "Per building, scaling with size and age; what is not paid becomes Backlog.",
+      "phase": 6
+    },
+    "financialAid": {
+      "label": "Financial aid",
+      "hint": "The gap between sticker and net tuition, the primary access lever.",
+      "phase": 7
+    },
+    "debtService": {
+      "label": "Debt service",
+      "hint": "Interest and principal on construction borrowing; the board caps leverage.",
+      "phase": 6
+    },
+    "programs": {
+      "label": "Programs & student life",
+      "hint": "Per active program, club and varsity team.",
+      "phase": 9
+    }
+  },
+  "readings": {
+    "cash": "Operating funds: what is in the bank to pay this week's bills.",
+    "weekNet": "This week's revenue less this week's expenses.",
+    "endowment": "The invested principal; it earns the year's market return and pays out the draw.",
+    "drawRate": "The share of the endowment paid out this year; above 5% is an overdraw the board will notice.",
+    "marketReturn": "What the markets returned on the endowment this fiscal year, accrued weekly.",
+    "tuitionDependence": "Tuition's share of revenue; above 75% an enrollment miss becomes a crisis.",
+    "adminShare": "Administration's share of payroll; the DD's guardrail is 25–40%.",
+    "backlog": "Deferred maintenance across the campus, the debt the buildings carry.",
+    "budgetLine": "This year's plan for the line, approved the summer before.",
+    "actualLine": "What the line has actually done so far this year.",
+    "yearNet": "Revenue less expenses for the year so far."
+  }
+}
