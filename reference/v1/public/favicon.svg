@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Graduation cap">
+  <title>UniSchool</title>
+  <!-- A graduation cap in the app's navy/gold/parchment palette (the same
+       colours styles.css defines as custom properties at :root). NOTE: this
+       is XML, so no double hyphen may appear inside a comment - naming those
+       CSS custom properties here verbatim would make the file unparseable
+       and silently kill the favicon. -->
+  <rect width="64" height="64" rx="12" fill="#10182a"/>
+  <!-- mortarboard -->
+  <path d="M32 16 8 26l24 10 24-10-24-10z" fill="#c9a227"/>
+  <!-- cap body under the board -->
+  <path d="M18 31v10c0 4.4 6.3 8 14 8s14-3.6 14-8V31l-14 5.8L18 31z" fill="#f2ede0"/>
+  <!-- tassel -->
+  <path d="M53 28v11" stroke="#c9a227" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <circle cx="53" cy="42" r="3.5" fill="#c9a227"/>
+</svg>
