@@ -86,15 +86,65 @@ export function SchoolFacade({
 
   const crown = () => {
     if (apex === 'core') {
+      // The service core, with mass rather than a pale slot: a shaft with a
+      // shadowed return, a glazed stair slot up it, a capping slab that
+      // overhangs, and the roof plant beside it. It was two flat rectangles
+      // the same value as the sky, which read as nothing at all (21D).
+      const coreL = cx - 44;
+      const coreR = cx + 44;
+      const coreTop = 26;
+      const deck = 80;
       return (
         <>
-          <rect fill={roof} x={BAND_LEFT} y="78" width={BAND_WIDTH} height={bandY - 78} />
+          <rect fill={roof} x={BAND_LEFT} y={deck} width={BAND_WIDTH} height={bandY - deck} />
+          <rect fill={shade(roof, 0.88)} x={BAND_LEFT} y={deck} width={BAND_WIDTH} height="3" />
+          {/* the plant: a louvred box on the deck, to one side */}
+          <rect fill={shade(roof, 1.08)} x={coreR + 22} y="62" width="46" height={deck - 62} />
+          <rect fill={shade(roof, 0.82)} x={coreR + 22} y="62" width="46" height="3" />
+          {[0, 1, 2].map((i) => (
+            <rect
+              key={i}
+              fill={shade(roof, 0.7)}
+              x={coreR + 26}
+              y={68 + i * 4}
+              width="38"
+              height="1.6"
+            />
+          ))}
+          {/* the shaft */}
+          <rect fill={wall} x={coreL} y={coreTop} width={coreR - coreL} height={deck - coreTop} />
           <rect
-            fill={shade(wall, 1.04)}
-            x={BAND_LEFT + 46}
-            y="64"
-            width={BAND_WIDTH - 92}
-            height="14"
+            fill={shade(wall, 0.78)}
+            x={cx + 18}
+            y={coreTop}
+            width={coreR - cx - 18}
+            height={deck - coreTop}
+          />
+          <rect fill={glass} x={cx - 12} y={coreTop + 8} width="24" height={deck - coreTop - 8} />
+          {[0, 1, 2, 3].map((i) => (
+            <rect
+              key={i}
+              fill={shade(wall, 0.9)}
+              x={cx - 12}
+              y={coreTop + 18 + i * 12}
+              width="24"
+              height="2"
+            />
+          ))}
+          {/* the cap, overhanging on both sides */}
+          <rect
+            fill={shade(wall, 1.1)}
+            x={coreL - 7}
+            y={coreTop - 7}
+            width={coreR - coreL + 14}
+            height="7"
+          />
+          <rect
+            fill={shade(wall, 0.72)}
+            x={coreL - 7}
+            y={coreTop}
+            width={coreR - coreL + 14}
+            height="2.5"
           />
         </>
       );
@@ -354,13 +404,19 @@ export function SchoolFacade({
       {bayXs.map((x, i) => (
         <rect key={i} fill={glass} x={x - 9} y={wallTop + 8} width="18" height="18" />
       ))}
+      {order()}
+      {/* Cloth hangs in FRONT of the building, which is the whole point of
+          hanging it. Drawn under the order, Modern's curtain wall cut both
+          banners off flat at the transom and tinted what was left its own
+          blue-grey — the one thing on the facade that is the school's
+          colours and not the motif's (21D). Every other motif's order
+          stands inside the column span, so nothing else moves. */}
       <HungBanner x={BAND_LEFT + BANNER_INSET} y={wallTop} colors={colors} />
       <HungBanner
         x={BAND_LEFT + BAND_WIDTH - BANNER_INSET - BANNER_WIDTH}
         y={wallTop}
         colors={colors}
       />
-      {order()}
     </svg>
   );
 }

@@ -3,7 +3,7 @@ import { buildingById } from '../../content/buildings.ts';
 import { enrolled, SPEED_MULTIPLIER, type GameState, type Placement } from '../../sim/index.ts';
 import { MAX_WALKERS, STUDENTS_PER_WALKER } from '../../tuning.ts';
 import { wallHeightOf } from './buildingSpec.ts';
-import { boxFaces, heightScale, project, type Camera, type Pt } from './iso.ts';
+import { boxFaces, cameraAxes, heightScale, project, type Camera, type Pt } from './iso.ts';
 import { doors, findRoute, roadsides, walkGrid, type Waypoint } from './routes.ts';
 import { ambientDensity } from './season.ts';
 import { useGame } from '../useGame.ts';
@@ -37,7 +37,10 @@ function rng(seed: number): () => number {
 }
 
 interface Walker {
-  el: SVGGElement;
+  el: SVGGElement; // the outermost group: what is appended and removed
+  mover: SVGGElement; // the one that carries the walk's transform
+  clips: SVGGElement[]; // the groups a building's outline is hung on
+  clipIds: (string | null)[]; // what each currently carries, to avoid rewrites
   route: Waypoint[];
   lengths: number[]; // cumulative, in tiles
   u: number; // distance along the route
@@ -46,13 +49,47 @@ interface Walker {
   waitUntil: number;
 }
 
-// A building's silhouette on screen: a walker inside it and behind its
-// front edge is out of sight.
+// A BUILDING'S SILHOUETTE ON SCREEN, and what it does to a walker behind it
+// (DD §6.3: "walkers hide behind the walls they pass").
+//
+// A walker used to be switched off whole the moment its feet crossed a
+// building's front edge, so the crowd popped out of existence at a wall and
+// back into it on the far side. What a wall does to a person is CUT them:
+// they slide behind it a shoulder at a time, and they are still there when
+// half of them shows past its corner. So a walker occluded by a building is
+// now clipped by that building's outline rather than hidden — which also
+// means the half of a figure that is past the corner, or standing higher up
+// the screen than the roof, stays drawn, because it is genuinely in sight.
 interface Silhouette {
+  // The footprint, for the depth test: which of the two is nearer.
+  col: number;
+  row: number;
+  w: number;
+  h: number;
   minX: number;
   maxX: number;
   minY: number;
-  front: Pt[]; // D → C → B, left to right
+  maxY: number;
+  hull: Pt[]; // the outline on screen, in order
+}
+
+// The convex hull of a projected box IS its silhouette: eight corners, of
+// which six make the outline. Monotone chain, since the corners arrive in no
+// useful order once the camera has turned.
+export function hullOf(pts: Pt[]): Pt[] {
+  const ps = [...pts].sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o: Pt, a: Pt, b: Pt) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const half = (input: Pt[]) => {
+    const out: Pt[] = [];
+    for (const q of input) {
+      while (out.length >= 2 && cross(out[out.length - 2]!, out[out.length - 1]!, q) <= 0)
+        out.pop();
+      out.push(q);
+    }
+    out.pop();
+    return out;
+  };
+  return [...half(ps), ...half([...ps].reverse())];
 }
 
 function silhouettes(placements: readonly Placement[]): Silhouette[] {
@@ -63,24 +100,80 @@ function silhouettes(placements: readonly Placement[]): Silhouette[] {
     const height = p.status === 'open' ? wallHeightOf(def) : Math.max(4, wallHeightOf(def) * 0.16);
     const f = boxFaces(p.col, p.row, p.w, p.h, 0, height);
     const pts = [f.A, f.B, f.C, f.D, f.At, f.Bt, f.Ct, f.Dt];
-    const front = [f.D, f.C, f.B].sort((a, b) => a.x - b.x);
     out.push({
+      col: p.col,
+      row: p.row,
+      w: p.w,
+      h: p.h,
       minX: Math.min(...pts.map((q) => q.x)),
       maxX: Math.max(...pts.map((q) => q.x)),
       minY: Math.min(...pts.map((q) => q.y)),
-      front,
+      maxY: Math.max(...pts.map((q) => q.y)),
+      hull: hullOf(pts),
     });
   }
   return out;
 }
 
-function hiddenBy(s: Silhouette, p: Pt): boolean {
-  if (p.x < s.minX || p.x > s.maxX || p.y < s.minY) return false;
-  const [a, b, c] = s.front as [Pt, Pt, Pt];
-  const seg = p.x <= b.x ? [a, b] : [b, c];
-  const t = seg[1]!.x === seg[0]!.x ? 0 : (p.x - seg[0]!.x) / (seg[1]!.x - seg[0]!.x);
-  const frontY = seg[0]!.y + (seg[1]!.y - seg[0]!.y) * Math.max(0, Math.min(1, t));
-  return p.y < frontY;
+// Is the building nearer the camera than a walker standing at this tile?
+// The same relation depthSort.ts paints the campus by, for a point rather
+// than a box: whichever side of the footprint the walker is on, the near
+// direction decides.
+export function nearerThanWalker(
+  s: { col: number; row: number; w: number; h: number },
+  wc: number,
+  wr: number,
+  sinA: number,
+  cosA: number,
+): boolean {
+  if (s.col >= wc) return sinA > 0;
+  if (wc >= s.col + s.w) return sinA < 0;
+  if (s.row >= wr) return cosA > 0;
+  if (wr >= s.row + s.h) return cosA < 0;
+  return false; // standing on the footprint: nothing sensible to say
+}
+
+// How many buildings may cut one walker. Two covers a figure passing the
+// corner of one hall in front of another; a third occluder would have to
+// overlap the same few pixels, and pays for a clip group nobody would see.
+const CLIPS_PER_WALKER = 2;
+// The clip is "everything except this building", so it needs a field big
+// enough to be the rest of the world.
+const CLIP_FIELD = 1e5;
+// How far a figure reaches above the tile it stands on, for deciding which
+// outlines could possibly cut it.
+const WALKER_REACH = 20;
+function clipId(i: number): string {
+  return `walker-behind-${i}`;
+}
+
+// One clipPath per building: the whole field with the building's outline
+// punched out of it, so anything clipped by it is drawn everywhere EXCEPT
+// where that building stands.
+function writeClips(layer: SVGGElement, shapes: Silhouette[]): void {
+  let defs = layer.querySelector('defs');
+  if (!defs) {
+    defs = document.createElementNS(SVG_NS, 'defs');
+    layer.prepend(defs);
+  }
+  defs.textContent = '';
+  const field = `M${-CLIP_FIELD},${-CLIP_FIELD} H${CLIP_FIELD} V${CLIP_FIELD} H${-CLIP_FIELD} Z`;
+  for (const [i, s] of shapes.entries()) {
+    const cp = document.createElementNS(SVG_NS, 'clipPath');
+    cp.setAttribute('id', clipId(i));
+    cp.setAttribute('clipPathUnits', 'userSpaceOnUse');
+    const path = document.createElementNS(SVG_NS, 'path');
+    path.setAttribute('clip-rule', 'evenodd');
+    // The same rule as fill, so the shape can be queried (isPointInFill)
+    // as well as clipped with.
+    path.setAttribute('fill-rule', 'evenodd');
+    const outline = s.hull.map(
+      (q, j) => `${j === 0 ? 'M' : 'L'}${q.x.toFixed(1)},${q.y.toFixed(1)}`,
+    );
+    path.setAttribute('d', `${field} ${outline.join(' ')} Z`);
+    cp.append(path);
+    defs.append(cp);
+  }
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -108,7 +201,14 @@ function shapeWalker(g: SVGGElement): void {
   head?.setAttribute('r', n(3 * (1 + (1 - s) * 0.18)));
 }
 
-function makeWalker(shirt: string): SVGGElement {
+// A walker is a stack: the clip groups outermost, because a clip in user
+// space must not be dragged around by the transform that moves the figure,
+// then the mover, then the figure itself.
+function makeWalker(shirt: string): {
+  el: SVGGElement;
+  mover: SVGGElement;
+  clips: SVGGElement[];
+} {
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'walker');
   const shadow = document.createElementNS(SVG_NS, 'ellipse');
@@ -122,7 +222,15 @@ function makeWalker(shirt: string): SVGGElement {
   head.setAttribute('class', 'walker-head');
   g.append(shadow, body, head);
   shapeWalker(g);
-  return g;
+  const clips: SVGGElement[] = [];
+  let outer: SVGGElement = g;
+  for (let i = 0; i < CLIPS_PER_WALKER; i++) {
+    const c = document.createElementNS(SVG_NS, 'g');
+    c.append(outer);
+    clips.push(c);
+    outer = c;
+  }
+  return { el: outer, mover: g, clips };
 }
 
 function measure(route: Waypoint[]): number[] {
@@ -174,6 +282,8 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
     const edges = roadsides(grid);
     if (stops.length === 0 && edges.length === 0) return;
     const shapes = silhouettes(campus.placements);
+    const ax = cameraAxes();
+    writeClips(layer, shapes);
     const routes = new Map<string, Waypoint[] | null>();
     const routeBetween = (a: { col: number; row: number }, b: { col: number; row: number }) => {
       const key = `${a.col},${a.row}-${b.col},${b.row}`;
@@ -230,10 +340,13 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
     const walkers = walkersRef.current;
     while (walkers.length > want) walkers.pop()!.el.remove();
     while (walkers.length < want) {
-      const el = makeWalker(SHIRTS[Math.floor(random() * SHIRTS.length)]!);
-      layer.append(el);
+      const made = makeWalker(SHIRTS[Math.floor(random() * SHIRTS.length)]!);
+      layer.append(made.el);
       const w: Walker = {
-        el,
+        el: made.el,
+        mover: made.mover,
+        clips: made.clips,
+        clipIds: made.clips.map(() => null),
         route: [],
         lengths: [0],
         u: 0,
@@ -242,7 +355,7 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
         waitUntil: 0,
       };
       if (!setOff(w, null, performance.now())) {
-        el.remove();
+        made.el.remove();
         break;
       }
       // Start partway along, so a fresh crowd is not one queue at a door.
@@ -251,7 +364,7 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
     }
     // Figures already on the lawn are kept across a re-run, so a new tilt
     // has to reach them here rather than waiting for them to be replaced.
-    for (const w of walkers) shapeWalker(w.el);
+    for (const w of walkers) shapeWalker(w.mover);
     // Routes may have gone stale (a building placed, a path paved): a
     // walker whose way is blocked sets off afresh; one whose route merely
     // changed takes the new one from where it stands.
@@ -282,9 +395,27 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
         }
         const pos = along(w.route, w.lengths, w.u);
         const p = project(pos.col, pos.row);
-        const hidden = shapes.some((s) => hiddenBy(s, p));
-        w.el.setAttribute('transform', `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
-        w.el.setAttribute('visibility', hidden ? 'hidden' : 'visible');
+        w.mover.setAttribute('transform', `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
+        // Whatever stands between this walker and the camera cuts them.
+        let slot = 0;
+        for (let i = 0; i < shapes.length && slot < CLIPS_PER_WALKER; i++) {
+          const s = shapes[i]!;
+          if (p.x < s.minX - WALKER_REACH || p.x > s.maxX + WALKER_REACH) continue;
+          if (p.y < s.minY - WALKER_REACH || p.y > s.maxY + WALKER_REACH) continue;
+          if (!nearerThanWalker(s, pos.col, pos.row, ax.sinA, ax.cosA)) continue;
+          const id = `url(#${clipId(i)})`;
+          if (w.clipIds[slot] !== id) {
+            w.clips[slot]!.setAttribute('clip-path', id);
+            w.clipIds[slot] = id;
+          }
+          slot++;
+        }
+        for (; slot < CLIPS_PER_WALKER; slot++) {
+          if (w.clipIds[slot] !== null) {
+            w.clips[slot]!.removeAttribute('clip-path');
+            w.clipIds[slot] = null;
+          }
+        }
       }
       frame = requestAnimationFrame(step);
     };

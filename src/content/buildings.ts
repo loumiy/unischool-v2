@@ -27,6 +27,7 @@ export const FORMS = [
   'works', // labs: low, flat, crowded with rooftop plant
   'block', // an institutional mass: flat-roofed, plant on top
   'grounds', // a field: markings, no mass
+  'sign', // the board at the road, with the school's name on it
 ] as const;
 export type Form = (typeof FORMS)[number];
 
@@ -62,6 +63,7 @@ export const BUILDING_ICONS = [
   'fitness',
   'athletics',
   'admin',
+  'sign',
 ] as const;
 export type BuildingIcon = (typeof BUILDING_ICONS)[number];
 
@@ -138,15 +140,20 @@ function load(): BuildingDef[] {
       const n = b.capacity?.[k];
       if (n !== undefined && n < 0) throw new ContentError(`${at}.capacity.${k}`, 'must be ≥ 0');
     }
-    const massless = b.form === 'grounds' || b.form === 'hangar';
+    // A sign is massless like a field: two posts and a board, no floors.
+    const massless = b.form === 'grounds' || b.form === 'hangar' || b.form === 'sign';
     if (massless !== (b.storeys === 0)) {
       throw new ContentError(
         `${at}.storeys`,
         `a ${b.form} has ${massless ? 'no' : 'at least one'} storey`,
       );
     }
-    if ((b.form === 'grounds') !== (b.door === null)) {
-      throw new ContentError(`${at}.door`, 'open ground has no door; every building has one');
+    const doorless = b.form === 'grounds' || b.form === 'sign';
+    if (doorless !== (b.door === null)) {
+      throw new ContentError(
+        `${at}.door`,
+        'open ground and signs have no door; every building has one',
+      );
     }
     // A door on a tile, not on a seam: every footprint with a door is odd in
     // width so a walkway can arrive at it (v1's rule, kept).

@@ -310,6 +310,20 @@ export function StudentLifeIcon() {
   );
 }
 
+// The board at the road, on its two posts (Phase 21D).
+export function SignIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE}>
+      <rect x="3" y="4.5" width="18" height="9" rx="1.2" />
+      <line x1="6.5" y1="8" x2="17.5" y2="8" />
+      <line x1="6.5" y1="10.5" x2="13.5" y2="10.5" />
+      <line x1="7.5" y1="13.5" x2="7.5" y2="20" />
+      <line x1="16.5" y1="13.5" x2="16.5" y2="20" />
+      <line x1="4.5" y1="20" x2="19.5" y2="20" />
+    </svg>
+  );
+}
+
 export function DrawPathIcon() {
   return (
     <svg viewBox="0 0 24 24" {...STROKE2}>

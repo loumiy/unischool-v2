@@ -82,6 +82,14 @@ import {
   rankSills,
   ridgeOf,
   rooflineEndPartOf,
+  SIGN_BOARD_DEPTH,
+  SIGN_BOARD_RISE,
+  SIGN_BOARD_WIDTH,
+  SIGN_PLINTH,
+  SIGN_PLINTH_DEEP,
+  SIGN_PLINTH_LONG,
+  SIGN_POST,
+  SIGN_POST_METRES,
   stoneFor,
   storeysOf,
   wallHeightOf,
@@ -401,7 +409,10 @@ function Door({
   along: Pt;
   wallHeight: number;
   span: number;
-  shape?: 'rect' | 'arched';
+  // The head the opening is cut with. A lancet is the arched door's own
+  // geometry under a pointed head, so the Gothic porch can put a real door
+  // in its arch rather than a hole (Phase 21D).
+  shape?: 'rect' | 'arched' | 'lancet';
 }) {
   const dw = doorFraction(d, span);
   if (dw <= 0 || wallHeight <= 0) return null;
@@ -418,11 +429,11 @@ function Door({
   const mull = dw * 0.035;
   const reveal = dw * 0.08;
   const bar = h * 0.045;
-  if (shape === 'arched') {
+  if (shape !== 'rect') {
     const arch = (a: number, b: number, c: number, e: number) =>
-      polyPoints(windowOutline('arched', a, b, c, e).map(([u, v]) => at(u, v)));
+      polyPoints(windowOutline(shape, a, b, c, e).map(([u, v]) => at(u, v)));
     const fan = polyPoints(
-      windowOutline('arched', u0 + reveal, u1 - reveal, v0, v1 - h * 0.04).map(([u, v]) =>
+      windowOutline(shape, u0 + reveal, u1 - reveal, v0, v1 - h * 0.04).map(([u, v]) =>
         at(u, Math.max(v, transom + bar * 0.5)),
       ),
     );
@@ -755,6 +766,31 @@ function CentrePavilion({
   );
 }
 
+// WHERE THE COLUMNS STAND. Evenly, unless the portico is standing in front
+// of a door: then the middle bay is widened to the door's own width and the
+// shafts divide either side of it (Phase 21D). A four-column portico on a
+// small pavilion put two shafts across its own doorway, so the entrance
+// read as a block of stone with no way in — which is what the playtest saw
+// on the Classical residence halls, the dining hall and the admin building.
+// Widening the centre is also what the order itself does: the middle
+// intercolumniation of a real portico is the wide one.
+function shaftOffsets(width: number, columns: number, centreBay: number): number[] {
+  const plan = PORTICO_COLUMN_PLAN;
+  const half = width / 2;
+  const even = () => {
+    const gap = (width - plan) / (columns - 1);
+    return Array.from({ length: columns }, (_, i) => -half + plan / 2 + i * gap);
+  };
+  if (centreBay <= 0 || columns < 4 || columns % 2 !== 0) return even();
+  const inner = centreBay / 2 + plan / 2;
+  const outer = half - plan / 2;
+  if (inner >= outer) return even();
+  const side = columns / 2;
+  const step = side === 1 ? 0 : (outer - inner) / (side - 1);
+  const right = Array.from({ length: side }, (_, i) => inner + i * step);
+  return [...right.map((v) => -v).reverse(), ...right];
+}
+
 function Portico({
   centreCol,
   centreRow,
@@ -764,6 +800,7 @@ function Portico({
   columns = PORTICO_COLUMNS,
   height = PORTICO_HEIGHT,
   pediment = false,
+  centreBay = 0,
 }: {
   centreCol: number;
   centreRow: number;
@@ -773,16 +810,16 @@ function Portico({
   columns?: number;
   height?: number;
   pediment?: boolean;
+  // How much clear width to leave in the middle, in tiles: the door behind.
+  centreBay?: number;
 }) {
   if (columns < 2 || width <= 0) return null;
-  const gap = (width - PORTICO_COLUMN_PLAN) / (columns - 1);
   const half = width / 2;
-  const shafts = Array.from({ length: columns }, (_, i) => {
-    const along = -half + PORTICO_COLUMN_PLAN / 2 + i * gap;
-    return isRowWall(outward)
+  const shafts = shaftOffsets(width, columns, centreBay).map((along) =>
+    isRowWall(outward)
       ? { col: centreCol + along - PORTICO_COLUMN_PLAN / 2, row: centreRow }
-      : { col: centreCol, row: centreRow + along - PORTICO_COLUMN_PLAN / 2 };
-  });
+      : { col: centreCol, row: centreRow + along - PORTICO_COLUMN_PLAN / 2 },
+  );
   const ent = isRowWall(outward)
     ? boxFaces(
         centreCol - half,
@@ -854,6 +891,7 @@ function Porch({
   outward,
   pal,
   stone,
+  door,
 }: {
   col: number;
   row: number;
@@ -863,6 +901,9 @@ function Porch({
   outward: FaceDir;
   pal: Palette;
   stone: StonePalette;
+  // The hall's own door, put INSIDE the porch's arch. Without it the arch
+  // was a flat black void: no leaf, no reveal, no glass (Phase 21D).
+  door: DoorDimensions | null;
 }) {
   const span = wallSpan(w, h, outward);
   const width = pavilionWidth(span);
@@ -899,6 +940,7 @@ function Porch({
   };
   const archU0 = 0.5 - PORCH_ARCH_WIDTH / 2;
   const archU1 = 0.5 + PORCH_ARCH_WIDTH / 2;
+  const REVEAL = 0.022;
   return (
     <>
       {buttress(false)}
@@ -915,13 +957,34 @@ function Porch({
         to={PLINTH}
         className="iso-plinth"
       />
+      {/* The order: a lancet reveal cut back into the porch, then the door
+          itself standing in it, at the arch's own proportions rather than
+          the wall's — a porch is built around its doorway. */}
       <polygon
-        className="iso-door"
+        className="iso-door-surround"
         points={polyPoints(
-          windowOutline('lancet', archU0, archU1, 0, PORCH_ARCH_HEIGHT).map(([u, v]) =>
-            facePoint(front.o, front.a, top, u, v),
-          ),
+          windowOutline(
+            'lancet',
+            archU0 - REVEAL,
+            archU1 + REVEAL,
+            0,
+            PORCH_ARCH_HEIGHT + REVEAL,
+          ).map(([u, v]) => facePoint(front.o, front.a, top, u, v)),
         )}
+      />
+      <Door
+        d={{
+          family: door?.family ?? 'formal',
+          widthTiles: (archU1 - archU0) * width,
+          height: PORCH_ARCH_HEIGHT * top,
+          threshold: 0,
+          treads: door?.treads ?? 0,
+        }}
+        origin={front.o}
+        along={front.a}
+        wallHeight={top}
+        span={width}
+        shape="lancet"
       />
       <polygon points={polyPoints(f.top)} fill={pal.roofDeck} />
       <polygon points={polyPoints([frontTopL, frontTopR, apex])} fill={shade(pal.roof, 1.04)} />
@@ -1573,25 +1636,60 @@ function StairCore({
   base: number;
   stone: StonePalette;
 }) {
+  // A SERVICE CORE, not a slab (Phase 21D). It was a pale box with a paler
+  // box on it, in two shades a few per cent apart, which at any zoom read as
+  // one white rectangle standing on the roof. A core is a shaft with the
+  // stairs glazed up one side, a parapet at its head and a slab that
+  // overhangs — which is three pieces of geometry and reads as a building
+  // rather than a gap in the picture.
   const plan = Math.min(CORE_PLAN, Math.min(w, h) * 0.34);
   const cc = col + w / 2;
   const cr = row + h / 2;
   const shaft = boxFaces(cc - plan / 2, cr - plan / 2, plan, plan, base, CORE_RISE);
-  const capPlan = plan * 0.55;
+  const capPlan = plan * 1.16;
   const cap = boxFaces(
     cc - capPlan / 2,
     cr - capPlan / 2,
     capPlan,
     capPlan,
     base + CORE_RISE,
-    CORE_CAP_RISE,
+    CORE_CAP_RISE * 0.45,
+  );
+  const slot = (origin: Pt, along: Pt, id: string) => (
+    <CurtainWall
+      key={id}
+      origin={origin}
+      along={along}
+      wallHeight={CORE_RISE}
+      spanTiles={plan}
+      from={CORE_RISE * 0.12}
+      to={CORE_RISE * 0.86}
+      floors={[]}
+      id={id}
+      u0={0.3}
+      u1={0.7}
+    />
   );
   return (
     <>
-      {sideFaces(shaft, shade(stone.towerStone, 0.97), shade(stone.towerStone, 0.79))}
-      <polygon points={polyPoints(shaft.top)} fill={shade(stone.towerStone, 0.9)} />
-      {sideFaces(cap, shade(stone.towerStone, 0.9), shade(stone.towerStone, 0.74))}
-      <polygon points={polyPoints(cap.top)} fill={shade(stone.towerStone, 0.86)} />
+      {sideFaces(shaft, shade(stone.towerStone, 1.0), shade(stone.towerStone, 0.68))}
+      <polygon points={polyPoints(shaft.top)} fill={shade(stone.towerStone, 0.84)} />
+      {slot(shaft.D, shaft.C, 'corel')}
+      {slot(shaft.C, shaft.B, 'corer')}
+      {/* the parapet the slab sits on */}
+      {[[shaft.D, shaft.C] as const, [shaft.C, shaft.B] as const].map(([o, a], i) => (
+        <WallBand
+          key={`cb${i}`}
+          origin={o}
+          along={a}
+          wallHeight={CORE_RISE}
+          from={CORE_RISE * 0.88}
+          to={CORE_RISE}
+          className="iso-parapet"
+        />
+      ))}
+      {sideFaces(cap, shade(stone.towerStone, 0.74), shade(stone.towerStone, 0.58))}
+      <polygon points={polyPoints(cap.top)} fill={shade(stone.towerStone, 0.92)} />
     </>
   );
 }
@@ -2230,12 +2328,14 @@ function BuildingMass({
   material,
   motif,
   shadeSeed,
+  schoolName,
 }: {
   def: BuildingDef;
   p: { row: number; col: number; w: number; h: number };
   material: Material;
   motif: Motif;
   shadeSeed: string;
+  schoolName: string;
 }) {
   const stone = stoneFor(motif);
   const paneShape = paneShapeOf(def, motif);
@@ -2269,6 +2369,9 @@ function BuildingMass({
   const roofTint = material.roof;
 
   if (form === 'grounds') return <GroundField col={col} row={row} w={w} h={h} />;
+  if (form === 'sign') {
+    return <EntranceSign col={col} row={row} w={w} h={h} stone={stone} name={schoolName} />;
+  }
 
   const H = wallHeightOf(def);
   const ridge = ridgeOf(def, motif);
@@ -2552,6 +2655,7 @@ function BuildingMass({
                   columns={grandPortico ? 6 : PORTICO_COLUMNS}
                   height={grandPortico ? H - ENTABLATURE - up(0.3) : PORTICO_HEIGHT}
                   pediment={grandPortico}
+                  centreBay={door ? door.widthTiles * 1.3 : 0}
                 />
               );
             })}
@@ -2604,6 +2708,7 @@ function BuildingMass({
               h={h}
               wallHeight={H}
               outward={dir}
+              door={door}
             />
           ))}
         {entrance === 'arcade' &&
@@ -2965,9 +3070,10 @@ function BuildingMass({
               key={`sp${dir}`}
               centreCol={at.col}
               centreRow={at.row}
-              width={Math.min(door.widthTiles * 3.2, span * 0.6)}
+              width={Math.min(door.widthTiles * 4.2, span * 0.7)}
               outward={dir}
               height={Math.min(PORTICO_HEIGHT, H - EAVES_COURSE * 2)}
+              centreBay={door.widthTiles * 1.3}
             />
           );
         })}
@@ -2985,12 +3091,16 @@ function BuildingMass({
               outward={dir}
               columns={Math.max(
                 2,
-                Math.min(
-                  COLONNADE_MAX,
-                  Math.round((span * 0.9 * METRES_PER_TILE) / COLONNADE_BAY_METRES),
-                ),
+                2 *
+                  Math.round(
+                    Math.min(
+                      COLONNADE_MAX,
+                      Math.round((span * 0.9 * METRES_PER_TILE) / COLONNADE_BAY_METRES),
+                    ) / 2,
+                  ),
               )}
               height={Math.min(COLONNADE_HEIGHT, H - EAVES_COURSE * 2)}
+              centreBay={door ? door.widthTiles * 1.3 : 0}
             />
           );
         })}
@@ -3232,23 +3342,114 @@ function BuildingMass({
   );
 }
 
+// THE ENTRANCE SIGN (Phase 21D). The one piece of the campus that says the
+// school's name out loud. Two posts, a board between them in the school's
+// own colours rather than the motif's, and the name across it — the same
+// pair the founding screen hung on the facade, standing at the road.
+//
+// The name is drawn flat rather than laid on the board's face, which is the
+// register the map already uses for every label it writes (CampusMap's
+// BuildingLabel and the quads' names): type on this map is written across
+// the thing, not painted onto it.
+const SIGN_TEXT_CH = 0.62; // an average glyph, as a share of the font size
+function EntranceSign({
+  col,
+  row,
+  w,
+  h,
+  stone,
+  name,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+  name: string;
+}) {
+  // The sign stands in the middle of its plot, turned the way the plot is.
+  const alongW = w >= h;
+  const postTop = up(SIGN_POST_METRES);
+  const boardBase = postTop - SIGN_BOARD_RISE - up(0.25);
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const half = SIGN_BOARD_WIDTH / 2;
+  const box = (along: number, span: number, deep: number, base: number, rise: number) =>
+    alongW
+      ? boxFaces(cc + along, cr - deep / 2, span, deep, base, rise)
+      : boxFaces(cc - deep / 2, cr + along, deep, span, base, rise);
+  const postAt = (near: boolean) =>
+    box(near ? -half : half - SIGN_POST, SIGN_POST, SIGN_POST, 0, postTop);
+  const board = box(-half, SIGN_BOARD_WIDTH, SIGN_BOARD_DEPTH, boardBase, SIGN_BOARD_RISE);
+  const plinth = box(-SIGN_PLINTH_LONG / 2, SIGN_PLINTH_LONG, SIGN_PLINTH_DEEP, 0, SIGN_PLINTH);
+  const centre = lift(project(cc, cr), boardBase + SIGN_BOARD_RISE * 0.5);
+  const words = name.trim();
+  // The type shrinks to the board rather than running off the ends of it.
+  const ends = alongW
+    ? [project(cc - half, cr), project(cc + half, cr)]
+    : [project(cc, cr - half), project(cc, cr + half)];
+  const boardWidth = Math.hypot(ends[1]!.x - ends[0]!.x, ends[1]!.y - ends[0]!.y) * 0.86;
+  const size = words ? Math.max(3, boardWidth / Math.max(4, words.length * SIGN_TEXT_CH)) : 0;
+  return (
+    <g className="campus-sign">
+      {sideFaces(plinth, shade(stone.towerStone, 0.86), shade(stone.towerStone, 0.72))}
+      <polygon points={polyPoints(plinth.top)} fill={shade(stone.towerStone, 1.0)} />
+      {[false, true].map((near) => {
+        const f = postAt(near);
+        return (
+          <g key={String(near)}>
+            {sideFaces(f, shade(stone.towerStone, 0.9), shade(stone.towerStone, 0.74))}
+            <polygon points={polyPoints(f.top)} fill={shade(stone.towerStone, 1.04)} />
+          </g>
+        );
+      })}
+      {sideFaces(board, 'var(--school-primary)', 'var(--school-primary)')}
+      <polygon points={polyPoints(board.top)} fill="var(--school-secondary)" />
+      {words && (
+        <text
+          className="campus-sign-name"
+          x={centre.x.toFixed(1)}
+          y={centre.y.toFixed(1)}
+          fontSize={size.toFixed(1)}
+          textAnchor="middle"
+          dominantBaseline="central"
+        >
+          {words}
+        </text>
+      )}
+    </g>
+  );
+}
+
 function BuildingMotif({
   def,
   p,
   material,
   motif,
   shadeSeed,
+  schoolName,
 }: {
   def: BuildingDef;
   p: { row: number; col: number; w: number; h: number };
   material: Material;
   motif: Motif;
   shadeSeed: string;
+  // Only the entrance sign reads it: the school's name, to write on it.
+  schoolName: string;
   // Compared by the memo below so an unchanged motif still redraws when the
   // view turns; the geometry reads the camera from the projection itself.
   camera: Camera;
 }) {
-  return <BuildingMass def={def} p={p} material={material} motif={motif} shadeSeed={shadeSeed} />;
+  return (
+    <BuildingMass
+      def={def}
+      p={p}
+      material={material}
+      motif={motif}
+      shadeSeed={shadeSeed}
+      schoolName={schoolName}
+    />
+  );
 }
 
 // Memoised: a motif is a pure function of these props, and the map's render
@@ -3260,6 +3461,7 @@ export default memo(
     a.camera === b.camera &&
     a.material === b.material &&
     a.motif === b.motif &&
+    a.schoolName === b.schoolName &&
     a.shadeSeed === b.shadeSeed &&
     a.p.col === b.p.col &&
     a.p.row === b.p.row &&

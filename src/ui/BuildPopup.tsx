@@ -38,6 +38,7 @@ import {
   HousingIcon,
   LabIcon,
   LibraryIcon,
+  SignIcon,
   StudentLifeIcon,
   ToolsIcon,
   TreeIcon,
@@ -84,6 +85,7 @@ const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
   fitness: FitnessIcon,
   athletics: AthleticsIcon,
   admin: BuildIcon,
+  sign: SignIcon,
 };
 
 const TOOLS_ID = 'campus-tools';
@@ -226,7 +228,13 @@ export default function BuildPopup({
   onSetFinancing: (f: Financing) => void;
   onClose: () => void;
 }) {
-  const categories = BUILDING_CATEGORIES.filter((c) => BUILDINGS.some((b) => b.category === c));
+  // A landmark is a piece of campus furniture rather than a department, so
+  // it sits with the other things you do to the ground rather than earning
+  // a tab of its own (Phase 21D).
+  const categories = BUILDING_CATEGORIES.filter(
+    (c) => c !== 'landmark' && BUILDINGS.some((b) => b.category === c),
+  );
+  const landmarks = BUILDINGS.filter((b) => b.category === 'landmark');
   const [activeId, setActiveId] = useState<string>(categories[0] ?? TOOLS_ID);
   const active =
     activeId === TOOLS_ID
@@ -327,22 +335,34 @@ export default function BuildPopup({
         <div className="build-mode-tray">
           <div className="build-tile-row">
             {activeId === TOOLS_ID
-              ? TOOL_TILES.map(({ tool: t, label, foot, title, Icon }) => (
-                  <button
-                    key={t}
-                    type="button"
-                    className={`build-tile tool ${tool === t ? 'placing' : ''}`}
-                    aria-pressed={tool === t}
-                    onClick={() => onSetTool(t)}
-                    title={title}
-                  >
-                    <span className="build-tile-icon">
-                      <Icon />
-                    </span>
-                    <span className="build-tile-name">{label}</span>
-                    <span className="build-tile-foot">{foot}</span>
-                  </button>
-                ))
+              ? [
+                  ...landmarks.map((def) => (
+                    <BuildTile
+                      key={def.id}
+                      def={def}
+                      state={state}
+                      financing={financing}
+                      armed={placingId === def.id}
+                      onArm={() => onArmPlacement(placingId === def.id ? null : def.id)}
+                    />
+                  )),
+                  ...TOOL_TILES.map(({ tool: t, label, foot, title, Icon }) => (
+                    <button
+                      key={t}
+                      type="button"
+                      className={`build-tile tool ${tool === t ? 'placing' : ''}`}
+                      aria-pressed={tool === t}
+                      onClick={() => onSetTool(t)}
+                      title={title}
+                    >
+                      <span className="build-tile-icon">
+                        <Icon />
+                      </span>
+                      <span className="build-tile-name">{label}</span>
+                      <span className="build-tile-foot">{foot}</span>
+                    </button>
+                  )),
+                ]
               : BUILDINGS.filter((b) => b.category === active).map((def) => (
                   <BuildTile
                     key={def.id}

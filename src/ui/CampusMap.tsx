@@ -152,6 +152,7 @@ function PlacedBuilding({
   onInspect,
   inspected,
   camera,
+  schoolName,
 }: {
   p: Placement;
   motif: Motif;
@@ -159,6 +160,8 @@ function PlacedBuilding({
   onInspect: () => void;
   inspected: boolean;
   camera: Camera;
+  // Only the entrance sign uses it, and only to write it on the board.
+  schoolName: string;
 }) {
   const def = buildingById(p.buildingId);
   const d = drawnFootprint(p);
@@ -188,6 +191,7 @@ function PlacedBuilding({
             motif={motif}
             shadeSeed={p.id}
             camera={camera}
+            schoolName={schoolName}
           />
         </g>
       )}
@@ -227,6 +231,10 @@ function CastShadows({
       const def = buildingById(p.buildingId);
       const height = p.status === 'building' ? siteHeightOf(def) : drawnHeightOf(def, motif);
       if (height <= 0) continue;
+      // A sign's plot is two tiles so it can be turned to face the road, but
+      // the sign in the middle of it is five metres of board: the footprint
+      // would cast the shadow of a wall (Phase 21D).
+      if (def.form === 'sign' && p.status !== 'building') continue;
       const f = drawnFootprint(p);
       buildings.push(sub(castShadow(f.col, f.row, f.w, f.h, height)));
     }
@@ -325,6 +333,7 @@ const CampusScene = memo(function CampusScene({
   camera: Camera;
 }) {
   const motif = state.identity?.motif ?? 'georgian';
+  const schoolName = state.identity?.name ?? '';
   const placements = state.campus.placements;
   const groundPlaced = placements.filter((p) => buildingById(p.buildingId).form === 'grounds');
   const scene = useMemo(() => {
@@ -389,6 +398,7 @@ const CampusScene = memo(function CampusScene({
           onInspect={() => onInspect(p.id)}
           inspected={p.id === inspectedId}
           camera={camera}
+          schoolName={schoolName}
         />
       ))}
       {scene.map((entry) =>
@@ -403,6 +413,7 @@ const CampusScene = memo(function CampusScene({
               onInspect={() => onInspect(entry.placement.id)}
               inspected={entry.placement.id === inspectedId}
               camera={camera}
+              schoolName={schoolName}
             />
           </g>
         ),
@@ -417,15 +428,20 @@ const CampusScene = memo(function CampusScene({
         camera={camera}
       />
       <g ref={labelLayerRef}>
-        {placements.map((p) => (
-          <BuildingLabel
-            key={`label-${p.id}`}
-            p={p}
-            label={buildingById(p.buildingId).name}
-            pinned={p.id === inspectedId}
-            motif={motif}
-          />
-        ))}
+        {/* The entrance sign carries the school's name on its own board, so
+            a plate over it saying "Entrance Sign" is the map talking over
+            itself (Phase 21D). */}
+        {placements
+          .filter((p) => buildingById(p.buildingId).form !== 'sign')
+          .map((p) => (
+            <BuildingLabel
+              key={`label-${p.id}`}
+              p={p}
+              label={buildingById(p.buildingId).name}
+              pinned={p.id === inspectedId}
+              motif={motif}
+            />
+          ))}
       </g>
     </>
   );

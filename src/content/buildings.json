@@ -217,6 +217,25 @@
       "door": "civic",
       "icon": "admin",
       "blurb": "Offices. It will need a bigger one. It will always need a bigger one."
+    },
+    {
+      "id": "entrance-sign",
+      "name": "Entrance Sign",
+      "category": "landmark",
+      "footprint": {
+        "w": 2,
+        "h": 1
+      },
+      "cost": 40000,
+      "upkeep": 2000,
+      "buildWeeks": 1,
+      "beauty": 2,
+      "form": "sign",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "sign",
+      "blurb": "The school's name, on a board at the road, where anyone passing can read it."
     }
   ]
 }
