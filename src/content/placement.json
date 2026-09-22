@@ -67,14 +67,15 @@
     "placement": "Everything the layout is worth, added up and then capped: no arrangement of buildings may move an outcome more than the cap allows.",
     "cap": "The hard cap on placement (DD §6.2): the player who ignores layout entirely must stay fully viable, so the total is clamped.",
     "quads": "Open spaces the buildings enclose: greener and better enclosed is worth more, and three good ones is a full mark.",
-    "enclosure": "How much of this quad's edge is building wall rather than open ground or water.",
+    "enclosure": "How much of this quad's edge is built wall. A doorway, water or a road bounds the space without enclosing it; paving encloses it, for less than a wall does.",
     "green": "How much of the quad is lawn and trees rather than paving.",
+    "quadWorth": "What this quad is worth toward campus beauty: its enclosure, lifted by how green it is. A few good ones make a full mark.",
     "pairings": "Buildings that belong near each other: the share of each kind that has its partner within a short walk.",
     "beautySwing": "What campus beauty is worth to the students' mood, before the cap."
   },
   "lines": {
     "noQuads": "No quads yet: three or four buildings around an open space make one.",
-    "quadCount": "{count} enclosed",
+    "quadWorth": "{count} of a full quad",
     "renameHint": "Click a quad's name to rename it.",
     "capped": "Capped: {raw} would be {applied}.",
     "uncapped": "Under the cap.",

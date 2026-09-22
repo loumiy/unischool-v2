@@ -79,11 +79,17 @@ export default function QuadPanel({
             {PLACEMENT_READINGS.green}
           </span>
         </dd>
+        {/* The card used to print enclosure twice under two different
+            numbers — "Enclosed 100%" and then "82% enclosed" for what is
+            actually the quality. Three figures, three names (Phase 21C). */}
+        <dt>Worth</dt>
+        <dd className="figure" tabIndex={0}>
+          {fillWords(PLACEMENT_WORDS.quadWorth, { count: formatPercent(quad.quality, 0) })}
+          <span className="figure-hint" role="tooltip">
+            {PLACEMENT_READINGS.quadWorth}
+          </span>
+        </dd>
       </dl>
-      <p className="treasury-note">
-        {fillWords(PLACEMENT_WORDS.quadCount, { count: formatPercent(quad.quality, 0) })} — what it
-        is worth toward campus beauty.
-      </p>
     </aside>
   );
 }

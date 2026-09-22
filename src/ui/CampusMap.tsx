@@ -307,6 +307,9 @@ const CampusScene = memo(function CampusScene({
   onInspect,
   inspectedQuad,
   onInspectQuad,
+  hoveredQuad,
+  onHoverQuad,
+  showQuadNames,
   labelLayerRef,
   camera,
 }: {
@@ -315,6 +318,9 @@ const CampusScene = memo(function CampusScene({
   onInspect: (id: string) => void;
   inspectedQuad: string | null;
   onInspectQuad: (key: string) => void;
+  hoveredQuad: string | null;
+  onHoverQuad: (key: string | null) => void;
+  showQuadNames: boolean;
   labelLayerRef: React.RefObject<SVGGElement | null>;
   camera: Camera;
 }) {
@@ -369,6 +375,7 @@ const CampusScene = memo(function CampusScene({
         campus={state.campus}
         selectedKey={inspectedQuad}
         onSelect={onInspectQuad}
+        onHover={onHoverQuad}
         camera={camera}
       />
       <PathwayLayer paths={state.campus.paths} camera={camera} />
@@ -404,6 +411,8 @@ const CampusScene = memo(function CampusScene({
       <QuadNameLayer
         campus={state.campus}
         selectedKey={inspectedQuad}
+        hoveredKey={hoveredQuad}
+        showAll={showQuadNames}
         onSelect={onInspectQuad}
         camera={camera}
       />
@@ -456,6 +465,11 @@ export default function CampusMap({
   const [rotated, setRotated] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(null);
   const [inspectedQuad, setInspectedQuad] = useState<string | null>(null);
+  // Which quad the cursor is on, and whether every name is up at once
+  // (Phase 21C): a name answers a question rather than captioning the
+  // ground at all times.
+  const [hoveredQuad, setHoveredQuad] = useState<string | null>(null);
+  const [showQuadNames, setShowQuadNames] = useState(false);
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
@@ -482,6 +496,9 @@ export default function CampusMap({
     setPrevTool(tool);
     setInspectedId(null);
     setHover(null);
+    // The quads stop taking the pointer while a tool is out, so the last
+    // hover would otherwise stick.
+    setHoveredQuad(null);
   }
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -856,6 +873,7 @@ export default function CampusMap({
     if (key === 'e') turnBy(1);
     if (key === 'z') tiltBy(-1);
     if (key === 'x') tiltBy(1);
+    if (key === 'n') setShowQuadNames((on) => !on);
     if (key === 'home') resetCamera();
   }, controlsEnabled);
 
@@ -954,7 +972,7 @@ export default function CampusMap({
       <div className="campus-map-canvas">
         <svg
           ref={svgRef}
-          className={`campus-map-svg ${selected ? 'placing' : ''} ${paintTool ? `path-${paintTool}` : ''} ${tool === 'demolish' ? 'demolishing' : ''} ${inspectedId ? 'inspecting' : ''}`}
+          className={`campus-map-svg ${selected ? 'placing' : ''} ${paintTool ? `path-${paintTool}` : ''} ${tool === 'demolish' ? 'demolishing' : ''} ${inspectedId ? 'inspecting' : ''} ${selected || tool ? 'working' : ''}`}
           width="100%"
           height="100%"
           role="group"
@@ -979,6 +997,9 @@ export default function CampusMap({
               onInspect={onInspect}
               inspectedQuad={inspectedQuad}
               onInspectQuad={onInspectQuad}
+              hoveredQuad={hoveredQuad}
+              onHoverQuad={setHoveredQuad}
+              showQuadNames={showQuadNames}
               labelLayerRef={labelLayerRef}
               camera={camera}
             />

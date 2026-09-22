@@ -7,6 +7,7 @@ import {
   QUAD_MAX_AREA,
   QUAD_MIN_AREA,
   QUAD_MIN_ENCLOSURE,
+  QUAD_PATH_WEIGHT,
 } from '../tuning.ts';
 import { canApply } from './actions.ts';
 import { beautyTerms } from './beauty.ts';
@@ -114,6 +115,80 @@ describe('quad detection (DD §6.2)', () => {
     expect(QUAD_MIN_AREA).toBeGreaterThan(1);
     expect(QUAD_MAX_AREA).toBeGreaterThan(QUAD_MIN_AREA);
     expect(QUAD_MIN_ENCLOSURE).toBeGreaterThan(0.5);
+  });
+
+  // PHASE 21C. A court with a way into it is still a court, paving encloses
+  // ground as well as walls do, and neither change may cut a green in two.
+  // A ring of wall one tile thick around cols 22–27, rows 22–27, with a gap
+  // of `gap` tiles in the middle of its north side.
+  function ring(gap: number): Placement[] {
+    const north =
+      gap === 0
+        ? [at('library', 21, 21, 8, 1)]
+        : [at('library', 21, 21, 3, 1), at('library', 24 + gap, 21, 5 - gap, 1)];
+    return [
+      ...north,
+      at('library', 21, 28, 8, 1),
+      at('academic-hall', 21, 22, 1, 6),
+      at('academic-hall', 28, 22, 1, 6),
+    ];
+  }
+
+  it('lets a court keep its doorway, and counts the doorway against it', () => {
+    const closed = detectQuads(campusOf(ring(0)))[0]!;
+    expect(closed.area).toBe(36);
+    expect(closed.enclosure).toBe(1);
+    // A gap a player leaves to walk through does not drain the court into
+    // the rest of the campus any more — it is a doorway, and the court is
+    // still a court, one short of a closed one.
+    const oneWide = detectQuads(campusOf(ring(1)))[0]!;
+    expect(oneWide.area).toBe(36);
+    expect(oneWide.enclosure).toBeLessThan(1);
+    expect(oneWide.enclosure).toBeGreaterThan(QUAD_MIN_ENCLOSURE);
+    const twoWide = detectQuads(campusOf(ring(2)))[0]!;
+    expect(twoWide.area).toBe(36);
+    expect(twoWide.enclosure).toBeLessThan(oneWide.enclosure);
+    // Past the doorway width it is a missing wall, not a door, and the
+    // ground runs out into the campus as it always did.
+    expect(detectQuads(campusOf(ring(3)))).toEqual([]);
+  });
+
+  it('seals holes in walls, not narrow ground', () => {
+    // A light well: two tiles wide, eight deep, walled all round. Narrow,
+    // but it is not a hole in anything, so it survives.
+    const well = [
+      at('library', 21, 21, 4, 1),
+      at('library', 21, 30, 4, 1),
+      at('academic-hall', 21, 22, 1, 8),
+      at('academic-hall', 24, 22, 1, 8),
+    ];
+    expect(detectQuads(campusOf(well))[0]!.area).toBe(16);
+    // An alley between two halls, open at both ends, is a way through and
+    // not an enclosed space; sealing it would have invented walls.
+    expect(
+      detectQuads(campusOf([at('library', 20, 20, 8, 2), at('library', 20, 24, 8, 2)])),
+    ).toEqual([]);
+  });
+
+  it('lets paving enclose ground, at less than a wall’s weight', () => {
+    const paths: string[] = [];
+    for (let c = 20; c <= 26; c++) paths.push(`${c},20`, `${c},26`);
+    for (let r = 21; r <= 25; r++) paths.push(`20,${r}`, `26,${r}`);
+    const drawn = detectQuads(campusOf([], paths));
+    expect(drawn).toHaveLength(1);
+    expect(drawn[0]!.area).toBe(25);
+    expect(drawn[0]!.enclosure).toBeCloseTo(QUAD_PATH_WEIGHT, 3);
+    expect(QUAD_PATH_WEIGHT).toBeLessThan(1);
+    expect(QUAD_PATH_WEIGHT).toBeGreaterThanOrEqual(QUAD_MIN_ENCLOSURE);
+    // A walk laid across a court is floor, not edge: the court stays one
+    // court, and is worth less for being paved.
+    const walked = detectQuads(
+      campusOf(ring(0), ['22,25', '23,25', '24,25', '25,25', '26,25', '27,25']),
+    );
+    expect(walked).toHaveLength(1);
+    expect(walked[0]!.area).toBe(36);
+    expect(walked[0]!.green).toBeLessThan(1);
+    expect(walked[0]!.quality).toBeLessThan(1);
   });
 
   it('is worth less when it is paved over, and feeds beauty’s enclosure', () => {
