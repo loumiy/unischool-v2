@@ -415,6 +415,10 @@ export default function App() {
               ) : effectiveOverlay === 'students' ? (
                 <StudentsScreen
                   state={state}
+                  onLaunch={(campaignId) => {
+                    const applied = store.dispatch({ type: 'launchCampaign', campaignId });
+                    if (applied) void autosave(store.getSnapshot().run!);
+                  }}
                   onReunion={(classYear) => {
                     store.dispatch({ type: 'holdReunion', classYear });
                   }}

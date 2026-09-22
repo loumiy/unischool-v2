@@ -9,6 +9,7 @@ import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingAmbitions } from './ambitions.ts';
+import { foundingAdvancement } from './campaigns.ts';
 import { foundingDelegation } from './seats.ts';
 import { foundingEvents } from './events.ts';
 import { foundingFaculty } from './faculty.ts';
@@ -550,6 +551,15 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { delegation: foundingDelegation(), ...state, schemaVersion: 18 },
     };
   },
+  // v18 → v19 (Phase 21): no campaign run, nothing restricted.
+  18: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 19,
+      state: { advancement: foundingAdvancement(), ...state, schemaVersion: 19 },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -691,6 +701,22 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return 'a pending event is malformed';
     if (typeof p.expiresWeek !== 'number' || typeof p.vars !== 'object')
       return 'a pending event is malformed';
+  }
+  const advancement = s.advancement as Record<string, unknown> | undefined;
+  if (typeof advancement !== 'object' || advancement === null)
+    return 'state.advancement is invalid';
+  if (!Array.isArray(advancement.closed)) return 'state.advancement.closed is invalid';
+  const restricted = advancement.restricted as Record<string, unknown> | undefined;
+  if (typeof restricted !== 'object' || restricted === null)
+    return 'state.advancement.restricted is invalid';
+  for (const kind of ['building', 'endowment', 'aid']) {
+    if (typeof restricted[kind] !== 'number') return 'state.advancement.restricted is invalid';
+  }
+  const running = advancement.running as Record<string, unknown> | null | undefined;
+  if (running !== null && running !== undefined) {
+    if (typeof running.campaignId !== 'string') return 'the running campaign is malformed';
+    if (typeof running.raised !== 'number' || typeof running.dueYear !== 'number')
+      return 'the running campaign is malformed';
   }
   const delegation = s.delegation as Record<string, unknown> | undefined;
   if (typeof delegation !== 'object' || delegation === null) return 'state.delegation is invalid';

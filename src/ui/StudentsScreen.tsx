@@ -17,6 +17,7 @@ import { AID_DISCOUNT_RATE } from '../tuning.ts';
 import Figure from './Figure.tsx';
 import NamedStudents from './NamedStudents.tsx';
 import AlumniLedger from './AlumniLedger.tsx';
+import CampaignPanel from './CampaignPanel.tsx';
 import PlacementPanel from './PlacementPanel.tsx';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
@@ -70,9 +71,11 @@ export function SatisfactionTable({ breakdown }: { breakdown: SatisfactionBreakd
 export default function StudentsScreen({
   state,
   onReunion,
+  onLaunch,
 }: {
   state: GameState;
   onReunion: (classYear: number) => void;
+  onLaunch: (campaignId: string) => void;
 }) {
   const { cohorts, terms, lastAdmissions, incoming } = state.people;
   const total = enrolled(state);
@@ -254,6 +257,8 @@ export default function StudentsScreen({
       </section>
 
       <AlumniLedger state={state} onReunion={onReunion} />
+      {/* Campaigns sit with the ledger they are answered by (DD §9.3). */}
+      <CampaignPanel state={state} onLaunch={onLaunch} />
     </div>
   );
 }

@@ -386,3 +386,12 @@ export const DEANS_FOR_FASTEST = 4;
 // Above this, an event reaches the President however well-staffed the
 // college is (DD §9.2). Roughly a building's worth of consequence.
 export const ESCALATION_MONEY = 500_000;
+
+// ---------- Phase 21: advancement (DD §9.3) ----------
+
+// How much harder a campaign asks than the standing annual fund.
+export const CAMPAIGN_PULL = 3.2;
+// Extra pull per memory clause the case for support is actually about.
+export const CAMPAIGN_RESONANCE_PULL = 0.9;
+// What a week of asking costs a class that is being asked personally.
+export const CAMPAIGN_ASK_COOLING = 0.004;

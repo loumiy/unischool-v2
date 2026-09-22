@@ -12,6 +12,7 @@ import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import type { GameState } from './state.ts';
+import { restrictedFor, spendRestricted } from './campaigns.ts';
 import { repaymentFor } from './treasury.ts';
 
 // BUILDINGS AS ECONOMIC OBJECTS (DD §6.4). A building costs money to put
@@ -21,8 +22,10 @@ import { repaymentFor } from './treasury.ts';
 // Renovation pays the backlog off. Construction is paid in cash or borrowed,
 // and the board caps how much can be borrowed.
 
-export type Financing = 'cash' | 'debt';
-export const FINANCINGS: readonly Financing[] = ['cash', 'debt'];
+// A third way to pay, from Phase 21: money a campaign raised for exactly
+// this and which can be spent on nothing else (DD §9.3, §5.1).
+export type Financing = 'cash' | 'debt' | 'gift';
+export const FINANCINGS: readonly Financing[] = ['cash', 'debt', 'gift'];
 
 export function ageYearsOf(p: Placement, absoluteWeek: number): number {
   if (p.openedWeek === null) return 0;
@@ -71,12 +74,16 @@ export function borrowingRoom(state: GameState): number {
 
 export function canPay(state: GameState, amount: number, financing: Financing): boolean {
   if (financing === 'cash') return state.treasury.cash >= amount;
+  if (financing === 'gift') return restrictedFor(state, 'building') >= amount;
   return borrowingRoom(state) >= amount;
 }
 
 // Which way this amount can be paid, cash first: what a tile or a button
 // should offer.
 export function affordableFinancing(state: GameState, amount: number): Financing | null {
+  // Restricted money first: it cannot be spent on anything else, so
+  // spending it on what it was raised for is never the wrong call.
+  if (canPay(state, amount, 'gift')) return 'gift';
   if (canPay(state, amount, 'cash')) return 'cash';
   if (canPay(state, amount, 'debt')) return 'debt';
   return null;
@@ -88,6 +95,13 @@ export function pay(state: GameState, amount: number, financing: Financing): Gam
     spent: t.capitalThisYear.spent + amount,
     borrowed: t.capitalThisYear.borrowed + (financing === 'debt' ? amount : 0),
   };
+  if (financing === 'gift') {
+    return spendRestricted(
+      { ...state, treasury: { ...t, capitalThisYear: capital } },
+      'building',
+      amount,
+    );
+  }
   if (financing === 'cash') {
     return { ...state, treasury: { ...t, cash: t.cash - amount, capitalThisYear: capital } };
   }

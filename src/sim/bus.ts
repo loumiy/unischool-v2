@@ -61,6 +61,9 @@ export type BusEvent =
   // player ever being asked.
   | { kind: 'seatFilled'; seatId: string; schoolId: string | null; outside: boolean }
   | { kind: 'eventDelegated'; eventId: string; choiceId: string; seatId: string }
+  // Advancement (DD §9.3): a campaign launched, and what the ledger gave.
+  | { kind: 'campaignLaunched'; campaignId: string }
+  | { kind: 'campaignClosed'; campaignId: string; raised: number; met: boolean }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -119,6 +122,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'ambitionSettled',
   'seatFilled',
   'eventDelegated',
+  'campaignLaunched',
+  'campaignClosed',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

@@ -1,0 +1,114 @@
+{
+  "campaigns": [
+    {
+      "id": "new-residence",
+      "kind": "building",
+      "title": "The Housing Campaign",
+      "weight": 3,
+      "target": 12000000,
+      "years": 6,
+      "when": {
+        "alumniOver": 300,
+        "triplesOver": 10
+      },
+      "resonates": ["overcrowded", "thinned"],
+      "text": "The case for support writes itself, which the Development Office says is rare. Everyone being asked lived three to a room, and the letter says so in the first line.",
+      "kept": "The Housing Campaign closed at its number. The beds it paid for are beds nobody had to share.",
+      "missed": "The Housing Campaign closed short. What was raised is restricted and waiting; what was asked for was not all given."
+    },
+    {
+      "id": "teaching-chairs",
+      "kind": "endowment",
+      "title": "The Campaign for the Faculty",
+      "weight": 3,
+      "target": 16000000,
+      "years": 8,
+      "when": {
+        "alumniOver": 400,
+        "facultyOver": 3
+      },
+      "resonates": ["well-taught", "under-taught", "distinguished"],
+      "text": "A campaign for endowed chairs: money that pays a salary forever rather than a salary this year. The letters go to the classes who remember being taught, and to the ones who remember not being.",
+      "kept": "The Campaign for the Faculty closed at its number, and the fund is larger by the whole of it.",
+      "missed": "The Campaign for the Faculty closed short of the chairs it was named for."
+    },
+    {
+      "id": "aid-fund",
+      "kind": "aid",
+      "title": "The Aid Campaign",
+      "weight": 3,
+      "target": 11000000,
+      "years": 6,
+      "when": {
+        "alumniOver": 250,
+        "yearAtLeast": 12
+      },
+      "resonates": ["thinned", "adrift", "austerity", "cuts"],
+      "text": "A campaign for aid, addressed to the people who watched somebody leave in the second year for reasons that were only ever money. The Development Office expects this one to be answered.",
+      "kept": "The Aid Campaign closed at its number. It is restricted, permanently, to the students it was raised for.",
+      "missed": "The Aid Campaign closed short, which the Development Office has recorded without comment."
+    },
+    {
+      "id": "library-wing",
+      "kind": "building",
+      "title": "The Library Campaign",
+      "weight": 3,
+      "target": 15000000,
+      "years": 6,
+      "when": {
+        "alumniOver": 350,
+        "buildingsOver": 3
+      },
+      "resonates": ["building-years", "well-taught", "handsome"],
+      "text": "A wing for the library, named for whoever gives most of it. The Development Office has drawn the building already, which it admits is putting the cart before the horse and says works every time.",
+      "kept": "The Library Campaign closed at its number, and the wing has a name on it.",
+      "missed": "The Library Campaign closed short. The drawing is still on the wall in the Development Office."
+    },
+    {
+      "id": "endowment-drive",
+      "kind": "endowment",
+      "title": "The Endowment Campaign",
+      "weight": 3,
+      "target": 9000000,
+      "years": 8,
+      "when": {
+        "alumniOver": 500,
+        "endowmentUnder": 90000000
+      },
+      "resonates": ["deficits", "freeze", "austerity", "receivership"],
+      "text": "The unglamorous campaign: no building, no plaque, nothing to photograph. The case is that the college has had four bad years in living memory and would like to stop having them.",
+      "kept": "The Endowment Campaign closed at its number. Nothing is named for it and the college is steadier for it.",
+      "missed": "The Endowment Campaign closed short of the number that would have steadied the fund."
+    },
+    {
+      "id": "quad-restoration",
+      "kind": "building",
+      "title": "The Restoration Campaign",
+      "weight": 3,
+      "target": 13000000,
+      "years": 5,
+      "when": {
+        "alumniOver": 300,
+        "backlogOver": 1500000
+      },
+      "resonates": ["scaffolding", "handsome", "building-years"],
+      "text": "A campaign to put the old buildings right, addressed to people whose photographs of the place have scaffolding in them. The Development Office has enclosed one of the photographs.",
+      "kept": "The Restoration Campaign closed at its number, and the scaffolding is coming down.",
+      "missed": "The Restoration Campaign closed short. The scaffolding stays where it is."
+    }
+  ],
+  "lines": {
+    "none": "No campaign is running.",
+    "needsVp": "A campaign needs a VP of Advancement to run it.",
+    "running": "{title}: {raised} of {target}, {years} to go.",
+    "lastYear": "{title}: {raised} of {target}, closing this year.",
+    "launched": "The {title} is launched: {target} over {years} years.",
+    "closed": "{line}",
+    "restricted": "Restricted funds",
+    "restrictedNote": "Raised for one purpose and spendable on nothing else (DD §5.1): building money builds, aid money is aid.",
+    "askNote": "Asking works, and it cools the ledger a little. A campaign is the warmth spent, not the warmth earned.",
+    "resonance": "Classes whose own four years are in the case for support give most.",
+    "oneAtATime": "One campaign at a time; the Development Office is not large.",
+    "giftRestricted": "Paid from restricted funds"
+  }
+}
