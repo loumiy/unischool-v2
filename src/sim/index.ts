@@ -24,3 +24,4 @@ export * from './quads.ts';
 export * from './placement.ts';
 export * from './students.ts';
 export * from './alumni.ts';
+export * from './events.ts';

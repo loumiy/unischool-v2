@@ -49,6 +49,8 @@ export type BusEvent =
   | { kind: 'studentsNamed'; classYear: number; names: string[] }
   | { kind: 'classRemembered'; classYear: number }
   | { kind: 'reunionHeld'; classYear: number; warmth: number }
+  | { kind: 'eventFired'; eventId: string; instanceId: string }
+  | { kind: 'eventResolved'; eventId: string; choiceId: string; timedOut: boolean }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -99,6 +101,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'studentsNamed',
   'classRemembered',
   'reunionHeld',
+  'eventFired',
+  'eventResolved',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

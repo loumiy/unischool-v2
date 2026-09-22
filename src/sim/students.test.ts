@@ -19,6 +19,7 @@ import {
   conditionHolds,
   eligibleArcs,
   enrolledNamed,
+  nameNewcomers,
   namedOf,
   pickOutcome,
   studentById,
@@ -139,13 +140,17 @@ describe('a lens, not a simulation (guardrail §17.4)', () => {
   });
 
   it('spends none of the run’s own dice on them', () => {
-    // A whole year of naming and beats leaves the stream where the sim's
-    // other systems left it: nothing in this phase draws from it.
-    const before = years(1);
-    const after = tickRunWeeks(before, WEEKS_PER_YEAR, defaultResolution);
-    expect(after.state.people.named.length).toBeGreaterThan(0);
-    expect(after.state.rng).toEqual(before.state.rng);
-    expect(Rng.fromState(after.state.rng).snapshot()).toEqual(before.state.rng);
+    // Naming reads a stream derived from the seed, not the run's own dice
+    // (DD §8.1): roll the run's stream forward by a hundred draws and the
+    // same class arrives, with the same names, in the same order.
+    const run = years(1);
+    const rolled = Rng.fromState(run.state.rng);
+    for (let i = 0; i < 100; i++) rolled.next();
+    const elsewhere: GameState = { ...run.state, rng: rolled.snapshot() };
+    expect(elsewhere.rng).not.toEqual(run.state.rng);
+    expect(nameNewcomers(elsewhere, run.state.clock.year)).toEqual(
+      nameNewcomers(run.state, run.state.clock.year),
+    );
   });
 });
 

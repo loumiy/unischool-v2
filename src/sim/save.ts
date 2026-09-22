@@ -8,6 +8,7 @@ import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
+import { foundingEvents } from './events.ts';
 import { foundingFaculty } from './faculty.ts';
 import { foundingPeople, outcomesFor, type Cohort, type Outcomes } from './people.ts';
 import { memoryFor, warmthFor } from './alumni.ts';
@@ -511,6 +512,22 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v15 → v16 (Phase 17): the event engine and the students' mood. An
+  // old run has had no events and is in no particular mood.
+  15: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const people = (state.people ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 16,
+      state: {
+        events: foundingEvents(),
+        ...state,
+        schemaVersion: 16,
+        people: { mood: 0, ...people },
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -640,6 +657,19 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return 'an alumni class is malformed';
   }
   if (typeof people.aidRate !== 'number') return 'state.people.aidRate is invalid';
+  if (typeof people.mood !== 'number') return 'state.people.mood is invalid';
+  const events = s.events as Record<string, unknown> | undefined;
+  if (typeof events !== 'object' || events === null) return 'state.events is invalid';
+  if (!Array.isArray(events.pending) || !Array.isArray(events.history))
+    return 'state.events lists are invalid';
+  if (typeof events.nextId !== 'number' || typeof events.lastResolvedWeek !== 'number')
+    return 'state.events counters are invalid';
+  for (const p of events.pending as Record<string, unknown>[]) {
+    if (typeof p?.instanceId !== 'string' || typeof p?.eventId !== 'string')
+      return 'a pending event is malformed';
+    if (typeof p.expiresWeek !== 'number' || typeof p.vars !== 'object')
+      return 'a pending event is malformed';
+  }
   if (!Array.isArray(people.named)) return 'state.people.named is invalid';
   if (typeof people.nextStudentId !== 'number') return 'state.people.nextStudentId is invalid';
   for (const n of people.named as Record<string, unknown>[]) {

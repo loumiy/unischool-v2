@@ -56,7 +56,14 @@ export function obj<S extends Shape>(shape: S): Validator<Infer<S>> {
     }
     const record = v as Record<string, unknown>;
     const out: Record<string, unknown> = {};
-    for (const key of Object.keys(shape)) out[key] = shape[key]!(record[key], `${p}.${key}`);
+    for (const key of Object.keys(shape)) {
+      const value = shape[key]!(record[key], `${p}.${key}`);
+      // An absent optional field stays absent: a key present with an
+      // undefined value would survive Object.keys and Object.entries, and
+      // content code counts and iterates those (events.ts weighs a rule by
+      // how many clauses it carries).
+      if (value !== undefined) out[key] = value;
+    }
     for (const key of Object.keys(record)) {
       if (!(key in shape)) throw new ContentError(`${p}.${key}`, 'unknown field');
     }
