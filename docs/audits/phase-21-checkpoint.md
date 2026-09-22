@@ -130,6 +130,10 @@ instrumentation. Both are recorded because the corrected reading is the finding.
   college (`src/sim/colleges.ts`) does staff its programmes, which
   `audit.phase-21.test.ts > the scripted college does staff its programmes`
   now asserts. The UI flagged the problem loudly and correctly in three places.
+- **"Paths that generate badly."** Two art findings (A-3, A-7) assumed the game
+  lays paths and lays them poorly. It does not lay them at all: every path is
+  painted by the player, and both screenshots were showing what
+  `tools/scenarios.ts` did or did not draw. Both are withdrawn in §5b.
 - **"Motif bleed."** Buildings other than the founding hall looked unchanged
   across motifs. Measuring the same region across all five motif screenshots
   disproves it: the north-east neighbour reads `rgb(149,155,133)` under
@@ -473,8 +477,12 @@ windows on both visible faces and no door, no portico and no steps — just a
 small white utility box at the corner, with two walkers standing on bare grass
 beside it. `zoom-no-entrance-block.png`.
 
-**A-3 · A path segment dead-ends in the grass.** Same screenshot, around
-x 245–300, y 240–280: a paved rectangle with a square-cut edge joining nothing.
+**A-3 · Withdrawn.** An earlier pass of this audit read a paved rectangle
+with a square-cut edge joining nothing (`07-stress-dense-map`, x 245–300,
+y 240–280) as a path-generation fault. Paths are drawn tile by tile by the
+player and by nothing else (`actions.ts:515-518`); that stub was painted by
+`tools/scenarios.ts:123-129` building the stress fixture. My script's
+draughtsmanship, not the game's.
 
 **A-4 · The Gothic entrance is a void.** In the motif comparison
 (`08-motif-gothic-map--1440x900.png`, founding hall) the pointed-arch entries
@@ -490,13 +498,17 @@ drum base or pediment to receive it. It reads as a water tank.
 read as litter on the lawn rather than people. `06-mature-y32-map--1440x900.png`.
 This audit cannot say how they read in motion and does not claim to.
 
-**A-7 · A scattered campus gets no paths at all.** `06-mature-y32-map` has 16
-buildings and 33 years and not one metre of paving; the only hard surface is
-the public road at the plot edge. The dense campus
-(`07-stress-dense-map`) has a full orthogonal path network. Whatever generates
-paths appears to need buildings closer together than a spread-out college puts
-them, and the result is a mature university whose students cross open grass
-between every building.
+**A-7 · Withdrawn.** `06-mature-y32-map` has 16 buildings, 33 years and not
+one metre of paving, against `07-stress-dense-map`'s full orthogonal network,
+and this audit first read that as path generation being too conservative for a
+spread-out campus. **Nothing generates paths.** Every path in the game is
+painted by the player one tile at a time (`actions.ts:515-518`), and the dense
+campus has a network only because `tools/scenarios.ts:123-129` painted one.
+The mature scenario has no paths because my growth strategy never drew any.
+What remains true, and is a design observation rather than a finding: the
+route-finder already prefers paving and falls back to lawn
+(`src/ui/map/routes.ts`), so a campus with no paths still works — it just
+looks like nobody has laid one.
 
 **Austerity dulling works.** Mean RGB over the campus at rung 4/5 is
 `(144.9, 158.0, 108.5)` against `(150.8, 167.7, 102.7)` at rung 3 —
@@ -762,10 +774,8 @@ B2, B4 and B5 are states the sim permits that it should not.
 - **L-2 / L-3** The HUD's headline money is typographically damaged: `$`
   reading as `§` in the weekly rate, and a decimal point with a digit's width
   in "$32 . 4M".
-- **A-1 / A-2 / A-3** A tree in a doorway, buildings with no entrance on any
-  visible face, a path that dead-ends in grass.
-- **A-7** A spread-out campus generates no paths at all; a mature university's
-  students cross open grass between every building.
+- **A-1 / A-2** A tree in a doorway, and buildings with no entrance on any
+  visible face.
 - **C-6** A tooltip that covers the value it explains.
 - **D-3** Overlays that waste 57% of the width while scrolling two screens.
 - The event ticker repeating the full event body verbatim under the event card.

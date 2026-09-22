@@ -1,4 +1,4 @@
-# UniSchool v2 — Sub-plan 21A–21K (the Phase 21 playtest pass)
+# UniSchool v2 — Sub-plan 21A–21L (the Phase 21 playtest pass)
 
 **Companion to:** `docs/UNISCHOOL_V2_DEV_PLAN.md` and `docs/UNISCHOOL_V2_DESIGN.md` (**DD §n**).
 **Origin:** the first full manual playthrough at the Phase 21 checkpoint, plus `docs/audits/phase-21-checkpoint.md`.
@@ -6,7 +6,7 @@
 
 Same conventions as the parent plan: DD is canon; sim core stays React-free; new content in data files; schema bumped with a migration when state shape changes; a runnable game at the end of every phase; **no hand-balancing before Phase 31**.
 
-The five blocker PRs proposed at the end of the audit are **withdrawn as separate PRs** and folded into 21F, 21G and 21K, so there is one queue rather than two.
+The five blocker PRs proposed at the end of the audit are **withdrawn as separate PRs** and folded into 21F, 21G and 21L, so there is one queue rather than two.
 
 **Three DD changes were raised in chat and decided** (per CLAUDE.md's rule); each is written back into the DD by the phase that carries it, flagged in that PR's body:
 
@@ -14,7 +14,7 @@ The five blocker PRs proposed at the end of the audit are **withdrawn as separat
 | ----------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | §6.4        | _"Founders Hall included, so the run's first year is spent building it"_                        | A few weeks, not twenty-four. The ritual stays; the wait does not. **21B.**                                           |
 | §3.1 / §6.3 | Three terms, four tints, no winter                                                              | Winter as weather, not as a term: snow cover, snowfall, and an event surface that only the cold weeks reach. **21E.** |
-| §8.3 / §14  | "Student life" named as a satisfaction source with no phase owning it; 11 of ~40 building types | Student life gets its term now, and the catalogue goes to budget. **21H, 21I.**                                       |
+| §8.3 / §14  | "Student life" named as a satisfaction source with no phase owning it; 11 of ~40 building types | Student life gets its term now, and the catalogue goes to budget. **21I, 21J.**                                       |
 
 ---
 
@@ -22,11 +22,12 @@ The five blocker PRs proposed at the end of the audit are **withdrawn as separat
 
 **Already scheduled — not in this sub-plan.**
 
-| Note                                         | Where it lands                                                                                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Advancing to Established takes a long time   | **Phase 31.** A tuning constant, and the plan forbids hand-balancing before then.                                                                       |
-| Prestige reads "—" in Year 5                 | **Phase 24** fills it. 21F only stops the placeholder naming a development phase at the player.                                                         |
-| Playing field and rec centre have no purpose | **Phase 23** gives athletics its facility requirements, seasons and results. The _satisfaction_ half of student life is 21H's — see the DD table above. |
+| Note                                         | Where it lands                                                                                                                                                                              |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Advancing to Established takes a long time   | **Phase 31.** A tuning constant, and the plan forbids hand-balancing before then.                                                                                                           |
+| Prestige reads "—" in Year 5                 | **Phase 24** fills it. 21F only stops the placeholder naming a development phase at the player.                                                                                             |
+| Named students repeat each other's lines     | **Phase 30.** Two of the four visible cards shared a line with another; DD §14 budgets ~60 arc-beat templates and the pool is well short of it. A thin pool is a content budget, not a bug. |
+| Playing field and rec centre have no purpose | **Phase 23** gives athletics its facility requirements, seasons and results. The _satisfaction_ half of student life is 21I's — see the DD table above.                                     |
 
 **Working as designed — the mechanic stays, the explanation does not.**
 
@@ -37,7 +38,7 @@ The five blocker PRs proposed at the end of the audit are **withdrawn as separat
 | Admissions capped by housing                       | DD §8.2: the office _"closes the file early at the beds plus a triples allowance."_ Pillar-level.                                                                         | 21F — warn at Budget & Hiring, a year before it bites. |
 | Quads need to be "mostly" enclosed                 | DD §6.2 already says _"bounded mostly by walls"_ and the threshold is 55%. The implementation is stricter than the DD, not the DD than the player.                        | 21C — fix the implementation.                          |
 
-Everything else is 21A–21K.
+Everything else is 21A–21L.
 
 ---
 
@@ -76,27 +77,42 @@ The numbers are right and several of them do not say what they are.
 
 _Done when every number a decision depends on can be named by the player, and no screen mentions a development phase._
 
-## 21G. Events that are true about this college
+## 21G. The overlays, measured
+
+21F fixes what the screens say; this fixes whether the player can read it or reach it. Every figure below is from `tools/density.mjs` and `docs/audits/phase-21-checkpoint.md`, and that tool is this phase's regression check.
+
+- **A mandatory beat hides its only button.** Budget & Hiring cannot be dismissed and must be resolved, and its resolve button sits at y=1604 — **1.9 screens down at 1440×900**, 1.6 at 1920×1080 — with no scrollbar or fade to say so. Pin the action bar to the foot of the overlay so the decision is always in view, and give the scrolling body a visible edge. The other three beats fit in one screen and are the shape to copy.
+- **Campaigns are 5.3 screens down.** The Phase 21 system the player has never seen sits at y=4442 on the Students screen, behind the classes table, the named students, the placement panel and the alumni ledger — 21K does the same job for the org chart at 2.9 screens. Both want a route from the top of their screen, not just a longer scroll.
+- **The overlays do not use the width they are given.** The Budget & Hiring card is 620px inside a 1440px viewport — 57% of the width is empty cream — while its content scrolls two screens. At 1920 the margins grow and the scroll does not shrink. The Build menu has the inverse fault: four building cards in a row that could hold seven, with the `place` buttons clipped by the ticker at the fold.
+- **The map's only text fails contrast.** The quad name is `rgb(95,101,95)` on `rgb(143,161,110)` — **2.13:1**, failing WCAG AA for normal text and the large-text threshold too. It is the one piece of type laid directly on the most varied background in the game. 21C decides when the name is drawn; this decides that it can be read.
+- **The HUD's headline number is typographically damaged.** Tabular numerals give the decimal point a full digit's advance, so operating funds read "$32 . 4M"; and the small condensed face draws `$`with hooks that resolve as`§`, so the weekly rate reads "+§136k /wk" while the same string in the Treasury strip's larger face reads correctly. Both are size and spacing, not characters.
+- **A tooltip covers the value it explains.** On the Students screen "Students in the class this year." renders over the Class of '36 row and hides its figure, in a monospace face the table does not use.
+- **The ticker repeats the whole event.** Under an inline event card, the strip prints the same 200-character body verbatim in ~10px type, crowding out everything else it could say. The card is the event; the strip should be the dateline.
+- **The founding button never says why it is dead.** With no name typed, "Open the Doors" is rose on pale gold at 2.19:1 and the card never says a name is required. Disabled controls are exempt from AA; being the only signal a new player has is not a reason to whisper.
+
+_Done when every screen's primary action is reachable without scrolling to find it, every piece of text meets AA, and `tools/density.mjs` reports no control below the fold._
+
+## 21H. Events that are true about this college
 
 Three faults with one root: the `when` vocabulary has forty-four readings and **not one asks whether the college has a particular building**, so any event whose prose names one is unguardable. `winter-outbreak` fires at 120 students and opens _"The Health Centre has seen ninety students in four days"_ at a college with no health centre; three more name a library or a dining hall they do not require. Add a standing clause — a building id the college must have open — and gate all four. Rewrite `two-body`, which asks the player to _"create a second post"_ for a candidate _"the search wants"_: the game has a summer market and a Hire button, no searches and no posts, so either the copy meets the mechanic or the event goes. And build the **standing cost** the satire already assumes: `committee-reform` labels its choice _"$120k a year, forever"_ and then pulls `cash: -120000` exactly once, because none of the ten levers is a recurring charge — DD §5.4's ratchet, written but not wired. Add the lever, and let the administrative share start climbing from the events that deserve it. Write both rules into `STYLE.md`: an event may not assert a fact about the college its `when` does not require, and a price note may not name a cost the levers cannot charge. _Done when no event tells the player something untrue about their own college, and the catalogue has a test that says so._
 
-## 21H. Buildings that do something
+## 21I. Buildings that do something
 
-Four of the eleven building types — student centre, health centre, recreation centre, playing field — carry no capacity, no satisfaction term and no gate: they cost money, raise beauty by nought to one, and change nothing a player can find. DD §8.3 lists **student life** among the sources of cohort satisfaction and `satisfactionBreakdown` (`people.ts:406-431`) has no such term. Give student life its term, so the buildings the menu offers are worth the money it asks, and let the health centre gate the events that name it (21G). Second, the catalogue has no notion of **enough**: nothing stops a college building four admin buildings and three student centres. Add a per-type limit to the catalogue data — one each of the singular civic buildings, many of halls, dorms and dining — and say in the build menu when one already stands, as it does for Founders Hall. _Done when every building in the menu changes a number the player can find, and the menu stops offering a second of something no university has two of._
+Four of the eleven building types — student centre, health centre, recreation centre, playing field — carry no capacity, no satisfaction term and no gate: they cost money, raise beauty by nought to one, and change nothing a player can find. DD §8.3 lists **student life** among the sources of cohort satisfaction and `satisfactionBreakdown` (`people.ts:406-431`) has no such term. Give student life its term, so the buildings the menu offers are worth the money it asks, and let the health centre gate the events that name it (21H). Second, the catalogue has no notion of **enough**: nothing stops a college building four admin buildings and three student centres. Add a per-type limit to the catalogue data — one each of the singular civic buildings, many of halls, dorms and dining — and say in the build menu when one already stands, as it does for Founders Hall. _Done when every building in the menu changes a number the player can find, and the menu stops offering a second of something no university has two of._
 
-## 21I. The catalogue to budget
+## 21J. The catalogue to budget
 
-DD §14 budgets **~40 building types** across academic, residential, dining, life, athletics, admin and landmarks; there are eleven. No phase in the parent plan owns the gap — Phase 25 owns the renovation and vertical _variants_, and Phase 30's content budget lists events, ambitions, quirks, arcs and eras but not buildings. This is that phase: the catalogue filled out against the categories the build menu already has, each type with its footprint, cost, upkeep, build weeks, capacities, beauty mark, limit (21H) and blurb, and each with motif geometry in all five styles (21D's parts, reused rather than re-drawn). Landmarks are the cheapest win per tile and the most expressive — statues, gates, fountains, the bell tower — and DD §12.3 has the hall of fame unlocking more of them later, so the set wants room to grow. **May be split into 21I-a and 21I-b** (the data and the categories; the motif geometry) — on the parent plan's own precedent for Phase 30, and likely to be needed here. _Done when a player who has built one of everything has built a university, and the late game has things left to want._
+DD §14 budgets **~40 building types** across academic, residential, dining, life, athletics, admin and landmarks; there are eleven. No phase in the parent plan owns the gap — Phase 25 owns the renovation and vertical _variants_, and Phase 30's content budget lists events, ambitions, quirks, arcs and eras but not buildings. This is that phase: the catalogue filled out against the categories the build menu already has, each type with its footprint, cost, upkeep, build weeks, capacities, beauty mark, limit (21I) and blurb, and each with motif geometry in all five styles (21D's parts, reused rather than re-drawn). Landmarks are the cheapest win per tile and the most expressive — statues, gates, fountains, the bell tower — and DD §12.3 has the hall of fame unlocking more of them later, so the set wants room to grow. **May be split into 21J-a and 21J-b** (the data and the categories; the motif geometry) — on the parent plan's own precedent for Phase 30, and likely to be needed here. _Done when a player who has built one of everything has built a university, and the late game has things left to want._
 
-## 21J. Delegation you choose
+## 21K. Delegation you choose
 
 An internal appointment does not ask who: `SeatsPanel.tsx:100` hardcodes `senior[0]`, the first eligible name on the roster, and `seats.ts:81` filters candidates by rank alone — so a professor of Health can be made Dean of the School of Science. Offer the eligible seniors by name with what each costs and what their programme loses, and draw a Dean's candidates from that Dean's own school. While in here, surface the seats: the org chart sits 2.9 screens below the fold of the Faculty screen behind thirty-two cards, and it is the machinery that buys the clock speed 21B taught the player to want. _Done when appointing a dean is a choice between named people from the right school, and a player who wants to know why time is slow can find the org chart._
 
-## 21K. The hard edges
+## 21L. The hard edges
 
 Four places where the sim permits what the institution would not. Each is a rule, not a number, so none of them is Phase 31's.
 
-- **Reachability.** The stream severs 312 tiles — 8.2% of the parcel — and no path may cross it (`campus.ts:108-112`), there is no bridge in the catalogue, and the sim allows 1,507 legal placements on the far bank, lecture halls among them. Refuse a placement with no walking route to the road, in the wording the terrain refusals already use. A **bridge** is the better game and 21I is where it would live: the college's own Civil Engineering blurb reads _"Bridges, roads and the buildings the college keeps losing to backlog"_, and its Environmental programme reads _"the stream at the edge of campus"_ — the fiction already has both. Decide which in 21I; the refusal in 21K is the floor either way.
+- **Reachability.** The stream severs 312 tiles — 8.2% of the parcel — and no path may cross it (`campus.ts:108-112`), there is no bridge in the catalogue, and the sim allows 1,507 legal placements on the far bank, lecture halls among them. Refuse a placement with no walking route to the road, in the wording the terrain refusals already use. A **bridge** is the better game and 21J is where it would live: the college's own Civil Engineering blurb reads _"Bridges, roads and the buildings the college keeps losing to backlog"_, and its Environmental programme reads _"the stream at the edge of campus"_ — the fiction already has both. Decide which in 21J; the refusal in 21L is the floor either way.
 - **The maintenance latch.** `applyCut(…, 'deferMaintenance')` zeroes the standing level, this budget and the pending one (`distress.ts:165-176`) and nothing raises it; receivership overwrites the same standing level with board policy and does not hand it back. `approveBudget` then offers the zeroed figure as the stated default forever (`treasury.ts:355`, `BeatScreen.tsx:134`). Remember the college's own level, restore it when the emergency ends, and say so in the board's letter. Schema bump with migration.
 - **Demolition of an occupied hall.** `canApply('demolish')` checks only that the building exists and the cash is there (`actions.ts:203-209`), so the hall housing a school can be sold for the demolition fee; the school runs on pointing at nothing and `hallName()` returns the raw placement id, printing **`p1`** where a building name belongs (`academics.ts:367-369`). Refuse it with a reason, and make `hallName` fail into a word.
 - **Founders Hall.** Its own catalogue blurb calls it _"the last thing anyone will agree to demolish"_ and the sim sells it like any other building. DD §6.5 makes it the historic candidate. Make the fiction and the rule agree.
@@ -108,16 +124,16 @@ _Done when nothing the sim allows would make a registrar laugh, and the `it.fail
 ## Sequencing notes
 
 - **21A and 21B are the cheapest wins in the queue** and fix the three things that coloured the whole playthrough: the controls fighting the player, not noticing the game had stopped, and the empty first year. Do them first.
-- **21C, 21D, 21E, 21H and 21I all touch the map or the catalogue**, and they compound in that order: 21D settles the motif parts that 21I must draw twenty-nine more of, 21H settles the catalogue's shape that 21I fills, and 21E's snow has to sit on whatever 21I adds. Doing 21I before 21D or 21H means drawing everything twice.
+- **21C, 21D, 21E, 21I and 21J all touch the map or the catalogue**, and they compound in that order: 21D settles the motif parts that 21J must draw twenty-nine more of, 21I settles the catalogue's shape that 21J fills, and 21E's snow has to sit on whatever 21J adds. Doing 21J before 21D or 21I means drawing everything twice.
 - **21C moves the guardrail.** Containing the flood fill and counting paths will change how many quads a campus has, which changes enclosure, which changes beauty, which changes the §17.2 aggregation. Re-run `tools/guardrails.ts` after 21C and record the new figure — the 12% cap must still hold, and DD §6.2's "a few good ones make a full enclosure mark" may want its `QUAD_TARGET` revisited by Phase 31 rather than here.
-- **21G needs an engine change before its content change** — the standing clause and the standing-cost lever — so it is one phase, not two PRs.
-- **21I is this sub-plan's schedule risk**, the way Phase 18 and Phase 30 are the parent plan's: twenty-nine building types is authoring, and authoring is the least automatable work here. Split it the moment it runs long.
-- **21K is the audit's queue** and is last because none of it shows in a playthrough — which is exactly why it needs tests rather than an eye.
-- **Left for Phase 31, recorded so they are not rediscovered:** teaching is nearly free to abandon (−1% to −4% enrolment, and more cash on two seeds in three); the estate is profitable to abandon (every building ruined, richer on all three seeds, never distressed); admin share lands at 49.7–51.1% against §17.5's 25–40%; the event cadence is five to ten times slower than §17.3's target. All four are measured in `docs/audits/phase-21-checkpoint.md` and pinned in `src/sim/audit.phase-21.test.ts`. **21G's standing-cost lever and 21H's student-life term both move the first three**, so re-measure before tuning.
-- **Left for Phase 32:** the 635 kB single JS chunk, `buildingMotifs.tsx` its largest contributor. 21D, 21E and 21I all add to it; profile at the end of 21I rather than at the end of the sub-plan.
+- **21H needs an engine change before its content change** — the standing clause and the standing-cost lever — so it is one phase, not two PRs.
+- **21J is this sub-plan's schedule risk**, the way Phase 18 and Phase 30 are the parent plan's: twenty-nine building types is authoring, and authoring is the least automatable work here. Split it the moment it runs long.
+- **21L is the audit's queue** and is last because none of it shows in a playthrough — which is exactly why it needs tests rather than an eye.
+- **Left for Phase 31, recorded so they are not rediscovered:** teaching is nearly free to abandon (−1% to −4% enrolment, and more cash on two seeds in three); the estate is profitable to abandon (every building ruined, richer on all three seeds, never distressed); admin share lands at 49.7–51.1% against §17.5's 25–40%; the event cadence is five to ten times slower than §17.3's target. All four are measured in `docs/audits/phase-21-checkpoint.md` and pinned in `src/sim/audit.phase-21.test.ts`. **21H's standing-cost lever and 21I's student-life term both move the first three**, so re-measure before tuning.
+- **Left for Phase 32:** the 635 kB single JS chunk, `buildingMotifs.tsx` its largest contributor. 21D, 21E and 21J all add to it; profile at the end of 21J rather than at the end of the sub-plan.
 
 ## Still assumed, unless you say otherwise
 
 - The camera turn is animated between the existing four positions rather than given eight in-between ones (21A).
-- Build limits: one each of admin building, student centre, health centre and recreation centre; two of the library; no limit on halls, dorms, dining and playing fields (21H).
-- The far bank of the stream becomes reachable by a **bridge** in 21I rather than staying permanently off-limits; 21K's placement refusal ships either way (21I, 21K).
+- Build limits: one each of admin building, student centre, health centre and recreation centre; two of the library; no limit on halls, dorms, dining and playing fields (21I).
+- The far bank of the stream becomes reachable by a **bridge** in 21J rather than staying permanently off-limits; 21L's placement refusal ships either way (21J, 21L).
