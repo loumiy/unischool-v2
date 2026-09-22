@@ -39,6 +39,7 @@ import { groundGeometry, TerrainLayer } from './map/ground.tsx';
 import { STOREY } from './map/scale.ts';
 import {
   DEFAULT_CAMERA,
+  DEFAULT_PITCH_INDEX,
   PITCHES,
   TILE_H,
   VIEWS,
@@ -458,7 +459,7 @@ export default function CampusMap({
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
-  const stanceRef = useRef({ view: 0, pitch: 0 });
+  const stanceRef = useRef({ view: 0, pitch: DEFAULT_PITCH_INDEX });
   // The quarter turn in flight, if there is one, and the point it is going
   // round.
   const turnRef = useRef<{
@@ -623,7 +624,7 @@ export default function CampusMap({
   function resetCamera() {
     if (turnRef.current) cancelAnimationFrame(turnRef.current.frame);
     turnRef.current = null;
-    stanceRef.current = { view: 0, pitch: 0 };
+    stanceRef.current = { view: 0, pitch: DEFAULT_PITCH_INDEX };
     applyCamera(DEFAULT_CAMERA);
   }
 

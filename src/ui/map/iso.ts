@@ -7,8 +7,9 @@ import { GRID_HEIGHT, GRID_WIDTH } from '../../sim/index.ts';
 //
 // The opening camera is the 2:1 dimetric this genre means by "isometric":
 // azimuth 45°, pitch 30°. The map only ever rests on the four azimuths and
-// three pitches in VIEWS and PITCHES, every one of which keeps tile edges on
-// a clean pixel slope; in-between angles shimmer.
+// the eight pitches in VIEWS and PITCHES, every one of which keeps tile
+// edges on a clean pixel slope; in-between angles shimmer. The ladder runs
+// from nearly level to straight down — see PITCH_SINES.
 //
 // A RENDERING projection only: tile coordinates, footprints and placements
 // know nothing about it, and nothing about the camera is ever saved.
@@ -28,14 +29,36 @@ export interface Camera {
 
 export const DEFAULT_AZIMUTH = Math.PI / 4;
 export const DEFAULT_PITCH = Math.asin(TILE_H / TILE_W);
-export const MIN_PITCH = (20 * Math.PI) / 180;
-export const MAX_PITCH = (55 * Math.PI) / 180;
+export const MIN_PITCH = (10 * Math.PI) / 180;
+export const MAX_PITCH = Math.PI / 2;
 export const DEFAULT_CAMERA: Camera = { azimuth: DEFAULT_AZIMUTH, pitch: DEFAULT_PITCH };
 
 export const VIEWS: readonly number[] = [0, 1, 2, 3].map(
   (k) => DEFAULT_AZIMUTH + (k * Math.PI) / 2,
 );
-export const PITCHES: readonly number[] = [1 / 2, 2 / 3, 3 / 4].map((s) => Math.asin(s));
+// THE TILT LADDER. Stepped in the SINE of the pitch rather than the angle,
+// because the sine is what the view actually shows: it is the factor the
+// grid's depth is squashed by, so even steps in it are even steps to the
+// eye, where even steps in degrees would crowd at the top. Every value is a
+// simple ratio, which is what keeps tile edges on a clean pixel slope; the
+// last is 1, a true bird's eye looking straight down, where heights vanish
+// and the campus reads as its own plan.
+export const PITCH_SINES: readonly number[] = [
+  1 / 5,
+  1 / 4,
+  1 / 3,
+  1 / 2,
+  2 / 3,
+  3 / 4,
+  5 / 6,
+  11 / 12,
+  24 / 25,
+  1,
+];
+export const PITCHES: readonly number[] = PITCH_SINES.map((s) => Math.asin(s));
+
+// Where the opening view sits on that ladder: asin(1/2), the 2:1 dimetric.
+export const DEFAULT_PITCH_INDEX = PITCH_SINES.indexOf(1 / 2);
 
 const SCALE = TILE_W / Math.SQRT2;
 

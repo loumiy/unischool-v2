@@ -1,6 +1,14 @@
 import { memo } from 'react';
 import { roll, speciesOf, type Species } from '../../sim/index.ts';
-import { lift, polyPoints, project, projectedCircle, type Camera, type Pt } from './iso.ts';
+import {
+  heightScale,
+  lift,
+  polyPoints,
+  project,
+  projectedCircle,
+  type Camera,
+  type Pt,
+} from './iso.ts';
 import { shadowOffset, sunScreenDir } from './light.ts';
 
 // Trees on the campus map (ported from v1's trees.tsx). Everything about one
@@ -36,6 +44,11 @@ interface Blob {
   dy: number;
   r: number;
 }
+// How much wider a crown reads when the camera is straight overhead.
+const CROWN_SPREAD = 0.28;
+// How much of a conifer's rise survives the same view.
+const CONIFER_FLOOR = 0.25;
+
 const CANOPY_BLOBS: Blob[] = [
   { dx: -0.42, dy: 0.16, r: 0.72 },
   { dx: 0.44, dy: 0.2, r: 0.68 },
@@ -65,6 +78,14 @@ export function woodlandShadow(col: number, row: number, seed: number): Pt[] {
 
 // A crown is a mass in the air, so it is drawn in SCREEN space: a roughly
 // spherical thing looks roughly circular from every direction.
+//
+// It does, though, answer the tilt. A tree is a vertical object, so as the
+// camera leans toward straight down its height foreshortens away and what
+// is left is its plan: the trunk shortens to nothing (lift already does
+// that), the crown settles onto the trunk instead of standing above it, and
+// it spreads, because a canopy seen from overhead covers more ground than
+// its elevation suggests. At the bird's eye the whole wood reads as the
+// circles of foliage an aerial photograph would show.
 export function TreeAt({
   col,
   row,
@@ -77,7 +98,14 @@ export function TreeAt({
   scale: number;
 }) {
   const foot = project(col, row);
-  const { trunkH, crownR, trunkW } = treeMetrics(species, scale);
+  // 1 at the opening pitch, 0 looking straight down.
+  const standing = Math.max(0, Math.min(1, heightScale()));
+  const { trunkH, crownR: sideR, trunkW } = treeMetrics(species, scale);
+  // What a crown loses in height it gains in spread — but only the broad
+  // ones. A spruce is columnar, so from overhead it is a tight dark dot
+  // beside the broadleaves, which is how a wood reads from the air.
+  const spread = species === 'conifer' ? 0 : CROWN_SPREAD;
+  const crownR = sideR * (1 + (1 - standing) * spread);
   const trunkTop = lift(foot, trunkH);
   const sun = sunScreenDir();
   return (
@@ -93,8 +121,14 @@ export function TreeAt({
       />
       {species === 'conifer' ? (
         [0, 1, 2].map((tier) => {
-          const halfW = crownR * (1 - (tier / 2) * 0.45);
-          const base = trunkTop.y - crownR * 0.75 * tier;
+          // A cone keeps a quarter of its rise at the bird's eye. Let it
+          // foreshorten all the way and the three tiers land on one line
+          // with no area at all, and the conifers drop out of the wood;
+          // this way a spruce stays a spruce from overhead, smaller and
+          // tighter than the broadleaves around it.
+          const rise = CONIFER_FLOOR + (1 - CONIFER_FLOOR) * standing;
+          const halfW = crownR * (1 - (tier / 2) * 0.45 * rise);
+          const base = trunkTop.y - crownR * 0.75 * tier * rise;
           return (
             <polygon
               key={tier}
@@ -102,7 +136,7 @@ export function TreeAt({
               points={polyPoints([
                 { x: foot.x - halfW, y: base },
                 { x: foot.x + halfW, y: base },
-                { x: foot.x, y: base - crownR * 1.5 },
+                { x: foot.x, y: base - crownR * 1.5 * rise },
               ])}
             />
           );
@@ -112,13 +146,13 @@ export function TreeAt({
           <circle
             className="campus-tree-crown"
             cx={trunkTop.x}
-            cy={trunkTop.y - crownR * 0.55}
+            cy={trunkTop.y - crownR * 0.55 * standing}
             r={crownR}
           />
           <circle
             className="campus-tree-crown-top"
             cx={trunkTop.x + sun.x * crownR * 0.42}
-            cy={trunkTop.y - crownR * 0.95}
+            cy={trunkTop.y - crownR * 0.95 * standing}
             r={crownR * 0.52}
           />
         </>
@@ -129,14 +163,14 @@ export function TreeAt({
               key={i}
               className="campus-tree-crown"
               cx={trunkTop.x + b.dx * crownR}
-              cy={trunkTop.y - crownR * 0.62 + b.dy * crownR}
+              cy={trunkTop.y - crownR * 0.62 * standing + b.dy * crownR}
               r={b.r * crownR}
             />
           ))}
           <circle
             className="campus-tree-crown-top"
             cx={trunkTop.x + sun.x * crownR * 0.36}
-            cy={trunkTop.y - crownR * 1.1}
+            cy={trunkTop.y - crownR * 1.1 * standing}
             r={crownR * 0.6}
           />
         </>

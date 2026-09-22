@@ -73,7 +73,7 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
     bindings: [
       { keys: ['W', 'A', 'S', 'D'], does: 'glide the camera; the arrow keys do the same' },
       { keys: ['Q', 'E'], does: 'turn the view a quarter turn round the campus' },
-      { keys: ['Z', 'X'], does: 'tilt the view down and up' },
+      { keys: ['Z', 'X'], does: 'tilt: Z toward level, X toward a straight-down view' },
       { keys: ['Home'], does: 'back to the opening view' },
       { keys: ['drag', 'scroll'], does: 'pan and zoom with the mouse' },
     ],
