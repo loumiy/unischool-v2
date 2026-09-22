@@ -1,5 +1,5 @@
-import { WEEK_DURATION_MS_AT_1X } from '../tuning.ts';
-import { fastestTimeAllowed, fastTimeAllowed } from './seats.ts';
+import { DEANS_FOR_FASTEST, WEEK_DURATION_MS_AT_1X } from '../tuning.ts';
+import { deansAppointed, fastestTimeAllowed, fastTimeAllowed, provostAppointed } from './seats.ts';
 import type { GameState } from './state.ts';
 
 // The real-time side of the weekly tick, kept pure so it is testable by
@@ -38,6 +38,22 @@ export function speedAllowed(state: GameState, speed: Speed): boolean {
   if (speed === 'x4') return fastTimeAllowed(state);
   if (speed === 'x8') return fastestTimeAllowed(state);
   return true;
+}
+
+// WHAT A CLOSED SPEED IS WAITING FOR (DD §3.2). The gate is the bargain at
+// the centre of the pacing budget — fast time is bought with payroll — and a
+// control that is simply dead teaches nobody that. The rule lives here with
+// the gate it explains; the words the seats are called by are the UI's.
+export interface SpeedGate {
+  provost: boolean; // still to appoint
+  deans: number; // still to appoint
+}
+
+export function speedGate(state: GameState, speed: Speed): SpeedGate | null {
+  if (speedAllowed(state, speed)) return null;
+  const provost = !provostAppointed(state);
+  const deans = speed === 'x8' ? Math.max(0, DEANS_FOR_FASTEST - deansAppointed(state)) : 0;
+  return { provost, deans };
 }
 
 export interface WeekAdvance {

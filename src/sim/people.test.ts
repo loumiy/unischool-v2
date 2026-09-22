@@ -114,14 +114,36 @@ describe('the funnel (DD §8.2)', () => {
     expect(clampSelectivity(2)).toBe(1);
   });
 
+  it('counts the beds that will be there at Convocation, sites included', () => {
+    const halfBuilt = buildingById('residence-hall');
+    const coming = halfBuilt.capacity!.beds!;
+    const standing = buildingById('founders-hall').capacity!.beds!;
+    // Broken ground on in the founding autumn, it is a week off finishing
+    // when the file closes — so it houses nobody yet and is counted anyway.
+    let run = dispatch(opened(), {
+      type: 'placeBuilding',
+      buildingId: halfBuilt.id,
+      col: 8,
+      row: 40,
+      rotated: false,
+      financing: 'debt',
+    });
+    run = tickRunWeeks(run, ADMISSIONS_WEEK, defaultResolution);
+    expect(run.state.pendingBeat).toBe('admissions-day');
+    expect(campusCapacity(run.state).beds).toBe(standing);
+    expect(capacityAt(run.state, nextConvocationWeek(run.state)).beds).toBe(standing + coming);
+    expect(intakeCap(run.state)).toBe(
+      Math.floor((standing + coming) * (1 + TRIPLES_OVERFLOW_SHARE)),
+    );
+  });
+
   it('is capped by the beds, with a triples allowance', () => {
     let run = tickRunWeeks(opened(), ADMISSIONS_WEEK, defaultResolution);
     expect(run.state.pendingBeat).toBe('admissions-day');
+    // Founders Hall stands by Admissions Day since Phase 21B shortened its
+    // build, so the only beds the college has are its own.
     const beds = buildingById('founders-hall').capacity!.beds!;
-    // Founders Hall opens the week after Admissions Day: the office counts
-    // the beds that will be there at Convocation.
-    expect(campusCapacity(run.state).beds).toBe(0);
-    expect(capacityAt(run.state, nextConvocationWeek(run.state)).beds).toBe(beds);
+    expect(campusCapacity(run.state).beds).toBe(beds);
     expect(intakeCap(run.state)).toBe(Math.floor(beds * (1 + TRIPLES_OVERFLOW_SHARE)));
     const preview = runAdmissions(run.state, run.state.people.terms);
     expect(preview.capped).toBe(true);

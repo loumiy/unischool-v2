@@ -2446,8 +2446,8 @@
       "weight": 3,
       "cooldownYears": 6,
       "when": {
-        "beautyUnder": 46,
-        "treesUnder": 240
+        "beautyUnder": 63,
+        "treesUnder": 266
       },
       "text": "The photographs for the prospectus have come back and the Admissions Office would like to discuss them. The buildings are all present and correct. The difficulty is what is between them, which in most of the frames is nothing at all.",
       "timeoutWeeks": 3,
