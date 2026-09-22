@@ -89,6 +89,28 @@ export function footprintTiles(col: number, row: number, w: number, h: number): 
   return out;
 }
 
+// THE APRON AT THE DOOR (Phase 21D). A building with a door has ground
+// cleared in front of it — the steps, the landing, the few feet a person
+// stands on to go in — and the founding woodland does not grow there. The
+// playtest found a conifer standing on a portico's steps, which is the
+// scatter having no idea where the doors are. Three tiles wide at the
+// middle of each side, one deep: the width of an entrance, not a cordon
+// round the whole building.
+export const APRON_HALF_WIDTH = 1;
+
+export function apronTiles(col: number, row: number, w: number, h: number): string[] {
+  const out: string[] = [];
+  const midCol = col + Math.floor(w / 2);
+  const midRow = row + Math.floor(h / 2);
+  for (let d = -APRON_HALF_WIDTH; d <= APRON_HALF_WIDTH; d++) {
+    out.push(tileKey(midCol + d, row - 1)); // the north side
+    out.push(tileKey(midCol + d, row + h)); // the south
+    out.push(tileKey(col - 1, midRow + d)); // the west
+    out.push(tileKey(col + w, midRow + d)); // the east
+  }
+  return out;
+}
+
 // Would this footprint sit entirely on buildable, unoccupied, in-bounds
 // tiles? Trees do not block — they are felled by the placement — and paths
 // do not either; the stream and the road do.

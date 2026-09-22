@@ -98,6 +98,56 @@ describe('placement', () => {
     expect(s.campus.paths).not.toContain(tileKey(41, 40));
   });
 
+  it('clears the ground at the doors, and only there (Phase 21D)', () => {
+    let s = running();
+    const lab = buildingById('lab').footprint; // 5 x 3, a service door
+    const col = 40;
+    const row = 40;
+    // Plant a wood over the site, the apron, and the ground beyond it.
+    const plant = (c: number, r: number) => {
+      s = applyAction(s, { type: 'paint', tool: 'plant', col: c, row: r });
+    };
+    const midCol = col + Math.floor(lab.w / 2);
+    const apron = [tileKey(midCol, row - 1), tileKey(midCol - 1, row - 1)];
+    const beyond = [tileKey(midCol, row - 2), tileKey(midCol + 3, row - 1)];
+    plant(midCol, row - 1);
+    plant(midCol - 1, row - 1);
+    plant(midCol, row - 2);
+    plant(midCol + 3, row - 1);
+    for (const key of [...apron, ...beyond]) expect(s.campus.trees[key]).toBeDefined();
+    s = applyAction(s, { type: 'placeBuilding', buildingId: 'lab', col, row, rotated: false });
+    // The steps are clear...
+    for (const key of apron) expect(s.campus.trees[key], key).toBeUndefined();
+    // ...and the wood beyond them is not a cordon round the building.
+    for (const key of beyond) expect(s.campus.trees[key], key).toBeDefined();
+  });
+
+  it('leaves a doorless building no apron', () => {
+    let s = running();
+    const field = buildingById('playing-field');
+    expect(field.door).toBeNull();
+    const { w } = orientedFootprint(field.footprint, false);
+    const col = 6;
+    const row = 12;
+    const key = tileKey(col + Math.floor(w / 2), row - 1);
+    s = applyAction(s, {
+      type: 'paint',
+      tool: 'plant',
+      col: col + Math.floor(w / 2),
+      row: row - 1,
+    });
+    expect(s.campus.trees[key]).toBeDefined();
+    s = applyAction(s, {
+      type: 'placeBuilding',
+      buildingId: 'playing-field',
+      col,
+      row,
+      rotated: false,
+    });
+    expect(s.campus.placements.some((p) => p.buildingId === 'playing-field')).toBe(true);
+    expect(s.campus.trees[key]).toBeDefined();
+  });
+
   it('rotates a non-square footprint and refuses to rotate a square one', () => {
     expect(orientedFootprint({ w: 5, h: 3 }, true)).toEqual({ w: 3, h: 5 });
     expect(orientedFootprint({ w: 3, h: 3 }, true)).toEqual({ w: 3, h: 3 });

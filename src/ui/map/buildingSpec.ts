@@ -15,7 +15,13 @@ export type { DoorFamily, Form, MaterialKey };
 // The forms no motif restyles: engineering, not architecture. A gym is a
 // clear-span shed and a lab is a rendered box whatever century the campus
 // was founded in.
-export const MOTIF_INVARIANT_FORMS: readonly Form[] = ['grounds', 'hangar', 'works', 'block'];
+export const MOTIF_INVARIANT_FORMS: readonly Form[] = [
+  'grounds',
+  'hangar',
+  'works',
+  'block',
+  'sign',
+];
 
 export function variesByMotif(form: Form): boolean {
   return !MOTIF_INVARIANT_FORMS.includes(form);
@@ -25,10 +31,24 @@ export function variesByMotif(form: Form): boolean {
 // STOREYS. The one number a building's height comes from.
 // ---------------------------------------------------------------------
 
-const CLEAR_SPAN_METRES: Partial<Record<Form, number>> = { hangar: 10 };
+// THE ENTRANCE SIGN (Phase 21D): two posts and a board, at the size a board
+// at a road actually is. Its plot is two tiles so it can be turned to face
+// the road; the sign itself stands in the middle of it, and is small — a
+// tile is nine metres, and a sign the width of its plot would be a
+// billboard.
+export const SIGN_POST_METRES = 3.4;
+
+const CLEAR_SPAN_METRES: Partial<Record<Form, number>> = { hangar: 10, sign: SIGN_POST_METRES };
+export const SIGN_BOARD_RISE = up(1.7);
+export const SIGN_BOARD_WIDTH = across(5.4);
+export const SIGN_BOARD_DEPTH = across(0.3);
+export const SIGN_POST = across(0.42);
+export const SIGN_PLINTH_LONG = across(6.6);
+export const SIGN_PLINTH_DEEP = across(1.1);
+export const SIGN_PLINTH = up(0.3);
 
 export function storeysOf(def: BuildingDef): number {
-  return def.form === 'grounds' || def.form === 'hangar' ? 0 : def.storeys;
+  return def.form === 'grounds' || def.form === 'hangar' || def.form === 'sign' ? 0 : def.storeys;
 }
 
 export function wallHeightOf(def: BuildingDef): number {

@@ -4,6 +4,7 @@ import { emit } from './bus.ts';
 import {
   FOUNDERS_HALL_ID,
   footprintIsClear,
+  apronTiles,
   footprintTiles,
   hasFoundersHall,
   orientedFootprint,
@@ -440,6 +441,12 @@ export function applyAction(state: GameState, action: Action): GameState {
       const covered = new Set(footprintTiles(action.col, action.row, w, h));
       const trees = { ...state.campus.trees };
       for (const key of covered) delete trees[key];
+      // The ground at the doors is cleared with the footprint, so nothing
+      // grows on the steps (DD §6.2, Phase 21D). A building with no door —
+      // a playing field — has no apron.
+      if (def.door) {
+        for (const key of apronTiles(action.col, action.row, w, h)) delete trees[key];
+      }
       const placement: Placement = {
         id: `p${state.campus.nextPlacementId}`,
         buildingId: def.id,
