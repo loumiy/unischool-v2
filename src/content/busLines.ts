@@ -1,8 +1,9 @@
 import { BUS_KINDS, type BusEntry, type BusKind } from '../sim/bus.ts';
-import { classLabel, termLabel } from '../sim/calendar.ts';
+import { classLabel, clockFromAbsoluteWeek, termLabel } from '../sim/calendar.ts';
 import { institutionName } from '../sim/identity.ts';
 import { formatMoney, formatPercent } from '../sim/treasury.ts';
 import type { GameState } from '../sim/state.ts';
+import { AMBITION_WORDS, ambitionById } from './ambitions.ts';
 import { findBuilding } from './buildings.ts';
 import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
@@ -164,6 +165,23 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
         choice: choice?.label ?? entry.choiceId,
       });
       return { text: fill(line.text, vars), tone: entry.timedOut ? 'bad' : undefined };
+    }
+    case 'ambitionOffered':
+      vars.line = fillArc(AMBITION_WORDS.offered, { title: ambitionById(entry.ambitionId).title });
+      break;
+    case 'ambitionAccepted':
+      vars.line = fillArc(AMBITION_WORDS.accepted, {
+        title: ambitionById(entry.ambitionId).title,
+        years: String(entry.dueYear - clockFromAbsoluteWeek(entry.week).year),
+      });
+      break;
+    case 'ambitionDeclined':
+      vars.line = fillArc(AMBITION_WORDS.declined, { title: ambitionById(entry.ambitionId).title });
+      break;
+    case 'ambitionSettled': {
+      const def = ambitionById(entry.ambitionId);
+      vars.line = entry.kept ? def.kept : def.missed;
+      return { text: fill(line.text, vars), tone: entry.kept ? 'good' : 'bad' };
     }
     case 'reunionHeld':
       vars.label = classLabel(entry.classYear);

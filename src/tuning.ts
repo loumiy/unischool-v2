@@ -369,3 +369,10 @@ export const SEISMIC_ODDS_SHARE = 0.08; // of events fired, roughly
 // satisfaction points. It fades toward nothing over a couple of years.
 export const MOOD_CAP = 10;
 export const MOOD_DECAY_PER_YEAR = 0.5;
+
+// ---------- Phase 19: ambitions (DD §10.2) ----------
+
+// Three promises at once is as many as the college will make.
+export const AMBITION_CAP = 3;
+// The chance a Convocation puts something on the table, when there is room.
+export const AMBITION_DEAL_ODDS = 0.45;

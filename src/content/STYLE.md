@@ -111,6 +111,32 @@ because the conditions that ordinary play reaches are the ones that fire.
 - **Seismic events name their own scale.** Year gates and a second clause,
   a title, and a cost that a decade of the run can feel.
 
+## Ambitions
+
+An ambition (DD §10.2) is a slow event: same voice, same vocabularies, a
+date instead of a choice. Four extra rules.
+
+**The title is the promise.** It is what the player reads on the record and
+what they will remember being held to, so it must describe what the `goal`
+actually checks. A title that says six faculties over a goal that checks
+three is the worst thing in the file, because it is the game lying about
+what it will measure.
+
+**The terms must not already be the goal.** An ambition dealt to a college
+that has already done it is a report, not a temptation. The loader refuses
+the obvious case; the subtler one is a `deal` so close to the `goal` that
+the promise is a formality.
+
+**A stretch, not a trap.** The point is to make the player want one more
+than they can afford — so the goal should be beyond what the college is
+doing now and inside what a determined one reaches. The coverage test walks
+scripted colleges and will tell you which it is.
+
+**Both endings are written.** `kept` and `missed` are chronicle lines, in
+the college's voice, and the missed one is not a punishment note: it is a
+sentence about a date that came and a thing that had not happened. Write it
+the way the minutes would.
+
 ## Naming and placeholders
 
 `{building}` resolves to the worst-off building the college has, `{faculty}`

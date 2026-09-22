@@ -5,6 +5,7 @@ import type { Identity } from './identity.ts';
 import { Rng, type RngState } from './rng.ts';
 import { foundingWoodland } from './terrain.ts';
 import { foundingAcademics, type Academics } from './academics.ts';
+import { foundingAmbitions, type Ambitions } from './ambitions.ts';
 import { foundingDistress, type Distress } from './distress.ts';
 import { foundingEvents, type Events } from './events.ts';
 import { foundingFaculty, type FacultyState } from './faculty.ts';
@@ -16,7 +17,7 @@ import { foundingTreasury, type Treasury } from './treasury.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 16;
+export const SCHEMA_VERSION = 17;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -51,6 +52,8 @@ export interface GameState {
   faculty: FacultyState;
   // What the world is asking, and what it has asked (events.ts).
   events: Events;
+  // What the college has promised in public, and by when (ambitions.ts).
+  ambitions: Ambitions;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -79,6 +82,7 @@ export function createNewGame(seed: number): GameState {
     academics: foundingAcademics(),
     faculty: foundingFaculty(),
     events: foundingEvents(),
+    ambitions: foundingAmbitions(),
   };
 }
 

@@ -21,6 +21,7 @@ export const EVENT_CONDITIONS = [
   'endowmentOver',
   'endowmentUnder',
   'debtOver',
+  'debtUnder',
   'deficitOver', // this year's expenses over its revenue, so far
   'drawRateOver',
   'tuitionOver',
@@ -28,10 +29,12 @@ export const EVENT_CONDITIONS = [
   'payrollShareOver',
   // The board and the ladder (distress.ts)
   'rungAtLeast',
+  'rungAtMost',
   'confidenceUnder',
   'confidenceOver',
   // The estate (estate.ts)
   'backlogOver',
+  'backlogUnder',
   'conditionUnder',
   'maintenanceUnder', // the funding level itself, not what it has cost yet
   'buildingsOver',

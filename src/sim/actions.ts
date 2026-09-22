@@ -58,6 +58,7 @@ import {
   hireCandidate,
   severanceFor,
 } from './faculty.ts';
+import { answerAmbition } from './ambitions.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
 import { eventById, findEvent } from '../content/events.ts';
@@ -112,6 +113,9 @@ export type Action =
       // Board Meeting under austerity: the cuts chosen from the board's
       // list (DD §5.5); absent, the board chooses.
       cuts?: AusterityCut[];
+      // Convocation with an ambition on the table (DD §10.2); absent, it
+      // is declined, which is what costs nothing.
+      acceptAmbition?: boolean;
     }
   // Acknowledges the board's letter (distress.ts) and lets the clock go.
   | { type: 'readLetter' }
@@ -479,6 +483,8 @@ export function applyAction(state: GameState, action: Action): GameState {
       if (action.beatId === 'admissions-day')
         next = closeAdmissions(next, action.tuition, action.selectivity);
       if (action.beatId === 'board-meeting') next = imposeCuts(next, action.cuts);
+      if (action.beatId === 'convocation' && next.ambitions.offered !== null)
+        next = answerAmbition(next, action.acceptAmbition === true);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });
     }
     case 'nameQuad': {

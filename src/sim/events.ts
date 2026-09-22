@@ -87,6 +87,7 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
   endowmentOver: (s) => s.treasury.endowment,
   endowmentUnder: (s) => -s.treasury.endowment,
   debtOver: (s) => s.treasury.debt,
+  debtUnder: (s) => -s.treasury.debt,
   deficitOver: (s) =>
     sumExpenses(s.treasury.actual.expenses) - sumRevenue(s.treasury.actual.revenue),
   drawRateOver: (s) => s.treasury.drawRate,
@@ -101,11 +102,13 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
 
   // The board and the ladder
   rungAtLeast: (s) => s.distress.rung,
+  rungAtMost: (s) => -s.distress.rung,
   confidenceUnder: (s) => -s.distress.confidence,
   confidenceOver: (s) => s.distress.confidence,
 
   // The estate
   backlogOver: (s) => totalBacklog(s),
+  backlogUnder: (s) => -totalBacklog(s),
   conditionUnder: (s) => {
     const open = openPlacements(s);
     return open.length === 0 ? -1 : -Math.min(...open.map((p) => p.condition));
@@ -188,11 +191,21 @@ function thresholdOf(name: EventCondition, value: number): number {
   return pointsDown(name) ? -value : value;
 }
 
-export function conditionsHold(state: GameState, def: EventDef): boolean {
-  for (const [name, value] of Object.entries(def.when) as [EventCondition, number][]) {
+// A set of clauses, against the state. Events ask it of their `when`;
+// ambitions (ambitions.ts) ask it of their terms and of their goal, which
+// is the whole reason the two share one vocabulary.
+export function conditionsOf(
+  state: GameState,
+  clauses: Partial<Record<EventCondition, number>>,
+): boolean {
+  for (const [name, value] of Object.entries(clauses) as [EventCondition, number][]) {
     if (READINGS[name](state) < thresholdOf(name, value)) return false;
   }
   return true;
+}
+
+export function conditionsHold(state: GameState, def: EventDef): boolean {
+  return conditionsOf(state, def.when);
 }
 
 // ---------- choosing one ----------
@@ -383,13 +396,22 @@ const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> =
   },
 };
 
-export function applyChoice(state: GameState, def: EventDef, choiceId: string): GameState {
-  const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
+// A set of levers, pulled once each. A choice's effects, an ambition's
+// reward, an ambition's penalty: all the same application.
+export function applyChoiceEffects(
+  state: GameState,
+  effects: Partial<Record<EventEffect, number>>,
+): GameState {
   let s = state;
-  for (const [lever, amount] of Object.entries(choice.effects) as [EventEffect, number][]) {
+  for (const [lever, amount] of Object.entries(effects) as [EventEffect, number][]) {
     s = LEVERS[lever](s, amount);
   }
   return s;
+}
+
+export function applyChoice(state: GameState, def: EventDef, choiceId: string): GameState {
+  const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
+  return applyChoiceEffects(state, choice.effects);
 }
 
 // ---------- the week ----------
