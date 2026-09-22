@@ -8,6 +8,7 @@ import { SCHEMA_VERSION, type GameState } from './state.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
+import { foundingAmbitions } from './ambitions.ts';
 import { foundingEvents } from './events.ts';
 import { foundingFaculty } from './faculty.ts';
 import { foundingPeople, outcomesFor, type Cohort, type Outcomes } from './people.ts';
@@ -528,6 +529,16 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v16 → v17 (Phase 19): an empty docket of promises. An older save has
+  // made none, which is a state the game can be in at any point anyway.
+  16: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 17,
+      state: { ambitions: foundingAmbitions(), ...state, schemaVersion: 17 },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -669,6 +680,19 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return 'a pending event is malformed';
     if (typeof p.expiresWeek !== 'number' || typeof p.vars !== 'object')
       return 'a pending event is malformed';
+  }
+  const ambitions = s.ambitions as Record<string, unknown> | undefined;
+  if (typeof ambitions !== 'object' || ambitions === null) return 'state.ambitions is invalid';
+  if (!Array.isArray(ambitions.active) || !Array.isArray(ambitions.settled))
+    return 'state.ambitions lists are invalid';
+  if (ambitions.offered !== null && typeof ambitions.offered !== 'string')
+    return 'state.ambitions.offered is invalid';
+  if (typeof ambitions.lastDealtYear !== 'number')
+    return 'state.ambitions.lastDealtYear is invalid';
+  for (const a of ambitions.active as Record<string, unknown>[]) {
+    if (typeof a?.ambitionId !== 'string') return 'an active ambition is malformed';
+    if (typeof a.acceptedYear !== 'number' || typeof a.dueYear !== 'number')
+      return 'an active ambition is malformed';
   }
   if (!Array.isArray(people.named)) return 'state.people.named is invalid';
   if (typeof people.nextStudentId !== 'number') return 'state.people.nextStudentId is invalid';

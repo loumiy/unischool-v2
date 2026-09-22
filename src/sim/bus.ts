@@ -51,6 +51,12 @@ export type BusEvent =
   | { kind: 'reunionHeld'; classYear: number; warmth: number }
   | { kind: 'eventFired'; eventId: string; instanceId: string }
   | { kind: 'eventResolved'; eventId: string; choiceId: string; timedOut: boolean }
+  // Ambitions (DD §10.2): offered at a Convocation, answered there, and
+  // read out at the Convocation its date falls on.
+  | { kind: 'ambitionOffered'; ambitionId: string }
+  | { kind: 'ambitionAccepted'; ambitionId: string; dueYear: number }
+  | { kind: 'ambitionDeclined'; ambitionId: string }
+  | { kind: 'ambitionSettled'; ambitionId: string; kept: boolean }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -103,6 +109,10 @@ export const BUS_KINDS: readonly BusKind[] = [
   'reunionHeld',
   'eventFired',
   'eventResolved',
+  'ambitionOffered',
+  'ambitionAccepted',
+  'ambitionDeclined',
+  'ambitionSettled',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

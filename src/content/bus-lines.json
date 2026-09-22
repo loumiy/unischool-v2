@@ -1,24 +1,62 @@
 {
   "lines": {
-    "founded": { "text": "{school} is chartered.", "tone": "good" },
-    "doorsOpened": { "text": "{school} breaks ground.", "tone": "good" },
-    "buildingPlaced": { "text": "Ground is broken for {building}." },
-    "buildingDemolished": { "text": "{building} comes down.", "tone": "bad" },
-    "buildingCompleted": { "text": "{building} opens.", "tone": "good" },
-    "renovationBegun": { "text": "Scaffolding goes up on {building}." },
-    "renovated": { "text": "{building} reopens, renovated.", "tone": "good" },
-    "termBegan": { "text": "{term} begins." },
-    "yearTurned": { "text": "Year {year}." },
-    "beatFired": { "text": "{line}" },
-    "beatResolved": { "text": "{line}" },
-    "budgetApproved": { "text": "The Year {year} budget is approved at a {rate} draw." },
+    "founded": {
+      "text": "{school} is chartered.",
+      "tone": "good"
+    },
+    "doorsOpened": {
+      "text": "{school} breaks ground.",
+      "tone": "good"
+    },
+    "buildingPlaced": {
+      "text": "Ground is broken for {building}."
+    },
+    "buildingDemolished": {
+      "text": "{building} comes down.",
+      "tone": "bad"
+    },
+    "buildingCompleted": {
+      "text": "{building} opens.",
+      "tone": "good"
+    },
+    "renovationBegun": {
+      "text": "Scaffolding goes up on {building}."
+    },
+    "renovated": {
+      "text": "{building} reopens, renovated.",
+      "tone": "good"
+    },
+    "termBegan": {
+      "text": "{term} begins."
+    },
+    "yearTurned": {
+      "text": "Year {year}."
+    },
+    "beatFired": {
+      "text": "{line}"
+    },
+    "beatResolved": {
+      "text": "{line}"
+    },
+    "budgetApproved": {
+      "text": "The Year {year} budget is approved at a {rate} draw."
+    },
     "admissionsClosed": {
       "text": "The file closes: {applicants} applied, {admitted} admitted, {size} coming{capnote}."
     },
-    "classArrived": { "text": "The {label} arrives: {size} students{triples}." },
-    "studentsLeft": { "text": "{count} students leave.", "tone": "bad" },
-    "studentsNamed": { "text": "{line}" },
-    "classRemembered": { "text": "{line}" },
+    "classArrived": {
+      "text": "The {label} arrives: {size} students{triples}."
+    },
+    "studentsLeft": {
+      "text": "{count} students leave.",
+      "tone": "bad"
+    },
+    "studentsNamed": {
+      "text": "{line}"
+    },
+    "classRemembered": {
+      "text": "{line}"
+    },
     "eventFired": {
       "text": "{line}"
     },
@@ -29,29 +67,91 @@
       "text": "The {label} comes back for a reunion, and leaves a little warmer.",
       "tone": "good"
     },
-    "studentBeat": { "text": "{line}" },
-    "classGraduated": { "text": "The {label} graduates, {size} strong{outcomes}.", "tone": "good" },
-    "schoolFounded": { "text": "The School of {school} is founded in {building}.", "tone": "good" },
-    "programOpened": { "text": "{program} opens for enrollment.", "tone": "good" },
-    "programClosed": { "text": "{program} closes.", "tone": "bad" },
-    "advancementBegun": { "text": "{program} begins its climb to {tier}." },
-    "programAdvanced": { "text": "{program} is now {tier}.", "tone": "good" },
+    "studentBeat": {
+      "text": "{line}"
+    },
+    "classGraduated": {
+      "text": "The {label} graduates, {size} strong{outcomes}.",
+      "tone": "good"
+    },
+    "schoolFounded": {
+      "text": "The School of {school} is founded in {building}.",
+      "tone": "good"
+    },
+    "programOpened": {
+      "text": "{program} opens for enrollment.",
+      "tone": "good"
+    },
+    "programClosed": {
+      "text": "{program} closes.",
+      "tone": "bad"
+    },
+    "advancementBegun": {
+      "text": "{program} begins its climb to {tier}."
+    },
+    "programAdvanced": {
+      "text": "{program} is now {tier}.",
+      "tone": "good"
+    },
     "advancementStalled": {
       "text": "{program}'s works to {tier} are done, but wait on {rank} assigned.",
       "tone": "bad"
     },
-    "programDecayed": { "text": "{program} slips back to {tier}{embarrassment}.", "tone": "bad" },
-    "signatureNamed": { "text": "{program} is named a signature program.", "tone": "good" },
-    "signatureDropped": { "text": "{program} is no longer a signature program." },
-    "marketOpened": { "text": "The hiring market opens: {count} candidates listed." },
-    "marketClosed": { "text": "The market closes; {count} candidates take other offers." },
-    "facultyHired": { "text": "{name} joins the faculty{assignment}.", "tone": "good" },
-    "facultyDismissed": { "text": "{name} is dismissed.", "tone": "bad" },
-    "termClosed": { "text": "{term} closes {net} {ledger}." },
-    "rungChanged": { "text": "{rungLine}" },
-    "boardLetter": { "text": "A letter from the board: “{title}”." },
-    "cutsImposed": { "text": "The board's cuts: {cuts}.", "tone": "bad" },
-    "yearClosed": { "text": "Year {year} closes {net} {ledger}." },
-    "mark": { "text": "{label}" }
+    "programDecayed": {
+      "text": "{program} slips back to {tier}{embarrassment}.",
+      "tone": "bad"
+    },
+    "signatureNamed": {
+      "text": "{program} is named a signature program.",
+      "tone": "good"
+    },
+    "signatureDropped": {
+      "text": "{program} is no longer a signature program."
+    },
+    "marketOpened": {
+      "text": "The hiring market opens: {count} candidates listed."
+    },
+    "marketClosed": {
+      "text": "The market closes; {count} candidates take other offers."
+    },
+    "facultyHired": {
+      "text": "{name} joins the faculty{assignment}.",
+      "tone": "good"
+    },
+    "facultyDismissed": {
+      "text": "{name} is dismissed.",
+      "tone": "bad"
+    },
+    "termClosed": {
+      "text": "{term} closes {net} {ledger}."
+    },
+    "rungChanged": {
+      "text": "{rungLine}"
+    },
+    "boardLetter": {
+      "text": "A letter from the board: “{title}”."
+    },
+    "cutsImposed": {
+      "text": "The board's cuts: {cuts}.",
+      "tone": "bad"
+    },
+    "yearClosed": {
+      "text": "Year {year} closes {net} {ledger}."
+    },
+    "mark": {
+      "text": "{label}"
+    },
+    "ambitionOffered": {
+      "text": "{line}"
+    },
+    "ambitionAccepted": {
+      "text": "{line}"
+    },
+    "ambitionDeclined": {
+      "text": "{line}"
+    },
+    "ambitionSettled": {
+      "text": "{line}"
+    }
   }
 }

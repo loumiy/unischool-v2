@@ -315,6 +315,14 @@ At milestones and Convocations, the game deals **ambition offers** — concrete,
 
 A run's dealt pool (~24 ambitions at 1.0) is filtered by school identity and state, so ambitions feel aimed at _this_ university.
 
+**Ambitions are slow events (Phase 19).** An ambition is a row in `src/content/ambitions.json` and reads and writes through the **same two closed vocabularies the events use**: `deal` and `goal` are clauses over the same forty-odd readings, and `reward` and `penalty` pull the same levers. There is no second engine — an ambition is an event with a date on it instead of a choice, and nothing an ambition can reach is anything an event could not. The loader refuses two things a writer will otherwise do: a goal with no clauses, and a goal the dealing terms already satisfy (a promise that is true the day it is made is a report, not a temptation).
+
+**The year's turn is where promises are made and kept.** Convocation deals at most one offer, answered on the beat screen as part of resolving it — so the offer needs no hold of its own, and the answer rides on the same action as the rest of the year's turn. Declining is free and is what happens if the player says nothing, which is the whole temptation: the cost of a promise is only ever paid by the college that made one. The same Convocation reads out every promise whose date has arrived, pays or charges for it, and takes it off the docket. Three at once is the cap, and the panel says so when it is reached.
+
+**The docket lives on the History screen**, which is the chronicle in draft (§12.1) and which Phase 26 will fill properly. An ambition kept or missed _is_ a chronicle entry — it is written in the content file, in the college's own voice, and the journal carries it warmly or otherwise — so the promises are the chronicle's first tenant rather than a panel that will have to move.
+
+**Reachability is a content invariant, not a code one.** The Phase 18 lesson applies to ambitions with one extra edge: an ambition whose terms never hold is never dealt, and one whose goal is out of reach is not a temptation but a trap. Both are well-formed data, so the same guard covers them — the scripted colleges of `src/sim/colleges.ts` are walked and every ambition must be dealable to one of them and have its goal met by one of them, with the observed range of any failing reading printed. Building it found four: a campus ambition whose terms the college was never bleak enough to meet, a goal set above the enrolment ceiling, a goal that asked for selectivity and size together (which never happen together), and — worst — a title that promised six faculties over a goal that checked three. A promise the player reads and a promise the game checks have to be the same promise.
+
 ---
 
 ## §11. Reputation and the World (System 6)

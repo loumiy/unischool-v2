@@ -1,0 +1,305 @@
+{
+  "ambitions": [
+    {
+      "id": "found-six-schools",
+      "title": "Four of the charter’s faculties",
+      "weight": 3,
+      "deal": {
+        "schoolsOver": 1,
+        "yearAtLeast": 6
+      },
+      "goal": {
+        "schoolsOver": 4
+      },
+      "years": 12,
+      "text": "The founding charter names six faculties. {school} has one of them. The Provost has proposed saying publicly how many will exist by a named year, on the grounds that a college which will not name a number has not really decided to be one.",
+      "reward": {
+        "confidence": 8,
+        "warmth": 4
+      },
+      "penalty": {
+        "confidence": -7
+      },
+      "kept": "Four of the charter's six faculties stand, which is four more than the year it was promised in.",
+      "missed": "The year named for the faculties came and went with the charter still mostly a document."
+    },
+    {
+      "id": "thousand-students",
+      "title": "A thousand students on the lawn",
+      "weight": 3,
+      "deal": {
+        "enrolledOver": 300,
+        "yearAtLeast": 8
+      },
+      "goal": {
+        "enrolledOver": 1000
+      },
+      "years": 15,
+      "text": "Convocation is held on the lawn because the hall will not hold everyone, which is a happier reason than it sounds. The Registrar has worked out what a thousand would look like and would like to know whether that is the plan or merely the trend.",
+      "reward": {
+        "confidence": 7,
+        "mood": 3
+      },
+      "penalty": {
+        "confidence": -5,
+        "mood": -2
+      },
+      "kept": "A thousand of them on the lawn, and the hall never used for it again.",
+      "missed": "The thousand did not come. The lawn was booked anyway."
+    },
+    {
+      "id": "endowment-centennial",
+      "title": "A hundred million in the fund",
+      "weight": 3,
+      "deal": {
+        "endowmentOver": 60000000,
+        "yearAtLeast": 10
+      },
+      "goal": {
+        "endowmentOver": 100000000
+      },
+      "years": 15,
+      "text": "The Investment Committee has done the arithmetic on what the endowment would have to be for {school} to stop worrying about a bad year. The number is not a secret and the committee would like it to stop being a private one.",
+      "reward": {
+        "confidence": 9,
+        "endowment": 2000000
+      },
+      "penalty": {
+        "confidence": -6
+      },
+      "kept": "A hundred million, and a college that can survive a bad decade.",
+      "missed": "The fund fell short of the number the college had said out loud."
+    },
+    {
+      "id": "teaching-college",
+      "title": "The best teaching in the state",
+      "weight": 4,
+      "deal": {
+        "programsOver": 2,
+        "facultyOver": 3
+      },
+      "goal": {
+        "teachingOver": 44
+      },
+      "years": 12,
+      "text": "A trustee has asked what {school} is actually for, in the tone of somebody who has an answer ready. The answer offered, and minuted, was teaching: not the largest college, not the richest, the one whose graduates say they were taught.",
+      "reward": {
+        "confidence": 7,
+        "mood": 4,
+        "quality": 2
+      },
+      "penalty": {
+        "confidence": -5,
+        "mood": -3
+      },
+      "kept": "The teaching is what the college is known for, which is what it said it would be.",
+      "missed": "The teaching did not become what the college promised a trustee it would."
+    },
+    {
+      "id": "sound-estate",
+      "title": "Not one building on the register",
+      "weight": 4,
+      "deal": {
+        "buildingsOver": 2,
+        "backlogOver": 300000
+      },
+      "goal": {
+        "backlogUnder": 1
+      },
+      "years": 8,
+      "text": "The Clerk keeps a register of buildings with work outstanding. It has never been empty. The proposal is to say, publicly and with a year attached, that it will be.",
+      "reward": {
+        "confidence": 6,
+        "mood": 3
+      },
+      "penalty": {
+        "confidence": -5,
+        "backlog": 200000
+      },
+      "kept": "The register is empty for the first time since the founding.",
+      "missed": "The register was not empty on the day the college had named."
+    },
+    {
+      "id": "debt-free",
+      "title": "Owing nothing to anybody",
+      "weight": 4,
+      "deal": {
+        "debtOver": 4000000
+      },
+      "goal": {
+        "debtUnder": 1
+      },
+      "years": 10,
+      "text": "The construction borrowing has been refinanced twice and explained to the board three times. The Bursar's paper this year is one page and ends with a date by which the college could owe nothing at all.",
+      "reward": {
+        "confidence": 8,
+        "cash": 500000
+      },
+      "penalty": {
+        "confidence": -6
+      },
+      "kept": "The college owes nothing to anybody, for the first time since it broke ground.",
+      "missed": "The date passed and the borrowing is still on the books."
+    },
+    {
+      "id": "open-thirty-programs",
+      "title": "A full catalogue",
+      "weight": 3,
+      "deal": {
+        "programsOver": 3,
+        "yearAtLeast": 8
+      },
+      "goal": {
+        "programsOver": 11
+      },
+      "years": 14,
+      "text": "The prospectus is thin. The Registrar has costed a full one — every programme the founded schools could offer, taught properly — and has attached the costing to a proposed date, which is the part that makes it an announcement rather than a memo.",
+      "reward": {
+        "confidence": 6,
+        "quality": 2,
+        "mood": 2
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "The catalogue is full, and every programme in it is taught.",
+      "missed": "The catalogue is still thin, and the date the college named is behind it."
+    },
+    {
+      "id": "beautiful-campus",
+      "title": "A campus worth the photograph",
+      "weight": 3,
+      "deal": {
+        "buildingsOver": 2,
+        "beautyUnder": 58
+      },
+      "goal": {
+        "beautyOver": 72
+      },
+      "years": 12,
+      "text": "A landscape architect has been round and was polite. Her report says that {school} has buildings and does not yet have a campus, and that the difference is about fifteen years of planting and one decision.",
+      "reward": {
+        "confidence": 5,
+        "mood": 4,
+        "warmth": 3
+      },
+      "penalty": {
+        "confidence": -4,
+        "mood": -2
+      },
+      "kept": "The campus is what the architect said it could be, fifteen years on.",
+      "missed": "The planting was not done, and the photographs are still of buildings."
+    },
+    {
+      "id": "loyal-alumni",
+      "title": "Alumni who answer the telephone",
+      "weight": 4,
+      "deal": {
+        "alumniOver": 400,
+        "warmthUnder": 30
+      },
+      "goal": {
+        "warmthOver": 40
+      },
+      "years": 12,
+      "text": "The Development Office has the figures on what proportion of {school}'s graduates have ever given anything, and would rather present them privately. The proposal is a decade of doing the unglamorous thing — asking about them rather than for money.",
+      "reward": {
+        "confidence": 5,
+        "warmth": 6,
+        "endowment": 1500000
+      },
+      "penalty": {
+        "confidence": -4,
+        "warmth": -3
+      },
+      "kept": "The ledger is warm, and the annual fund shows it.",
+      "missed": "The ledger stayed cold. The Development Office has stopped circulating the figures."
+    },
+    {
+      "id": "selective-college",
+      "title": "Turning people away",
+      "weight": 3,
+      "deal": {
+        "enrolledOver": 200,
+        "selectivityUnder": 0.55
+      },
+      "goal": {
+        "selectivityOver": 0.75
+      },
+      "years": 14,
+      "text": "{school} admits most of who applies, which is not a criticism and is not a plan either. The Dean of Admissions has proposed the other thing: fewer places, more applicants, and the years of patience in between.",
+      "reward": {
+        "confidence": 7,
+        "quality": 3
+      },
+      "penalty": {
+        "confidence": -5,
+        "quality": -1
+      },
+      "kept": "The college turns people away now, and the classes show it.",
+      "missed": "The college is still admitting most of who asks."
+    },
+    {
+      "id": "weather-the-storm",
+      "title": "Out of the hole by the decade’s end",
+      "weight": 5,
+      "deal": {
+        "rungAtLeast": 2
+      },
+      "goal": {
+        "rungAtMost": 0,
+        "confidenceOver": 70
+      },
+      "years": 8,
+      "text": "The board has been discussing the college's position for four meetings. This meeting produced something different: a date, written down, by which {school} will be out of it, and an understanding that the date will be remembered.",
+      "reward": {
+        "confidence": 10,
+        "mood": 3,
+        "warmth": 3
+      },
+      "penalty": {
+        "confidence": -8,
+        "mood": -3
+      },
+      "kept": "The college came out of it by the date it had named, which almost nobody expected.",
+      "missed": "The date came. The college was still in the hole."
+    },
+    {
+      "id": "great-faculty",
+      "title": "Thirty scholars worth the name",
+      "weight": 3,
+      "deal": {
+        "facultyOver": 5,
+        "yearAtLeast": 8
+      },
+      "goal": {
+        "facultyOver": 24
+      },
+      "years": 12,
+      "text": "The roster is small enough that the Provost knows everyone's field and most of their arguments. The proposal is to stop being that college: thirty of them, properly paid, in a decade.",
+      "reward": {
+        "confidence": 6,
+        "quality": 3,
+        "mood": 2
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "Thirty scholars, properly paid, and a Provost who no longer knows all the arguments.",
+      "missed": "The roster did not grow into what the college said it would."
+    }
+  ],
+  "lines": {
+    "offered": "The board has put something on the record: {title}.",
+    "accepted": "Accepted, publicly: {title}. {years} years.",
+    "declined": "Declined: {title}.",
+    "kept": "{line}",
+    "missed": "{line}",
+    "dueIn": "{years} years left",
+    "dueNext": "Due next year",
+    "dueNow": "Due this Convocation",
+    "none": "Nothing promised, and nothing owed.",
+    "capReached": "Three is as many promises as the college will make at once.",
+    "note": "A public commitment with a date on it. Declining costs nothing; keeping it is worth more than that."
+  }
+}

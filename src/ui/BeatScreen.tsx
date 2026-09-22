@@ -44,6 +44,7 @@ import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import { BOARD_WORDS, CUT_WORDS, rungWords } from '../content/board.ts';
 import { FACULTY_WORDS } from '../content/faculty.ts';
 import FacultyCard from './FacultyCard.tsx';
+import AmbitionsPanel, { AmbitionOffer } from './AmbitionsPanel.tsx';
 import Figure from './Figure.tsx';
 import TabOverlay from './TabOverlay.tsx';
 
@@ -60,6 +61,7 @@ export interface BeatDecision {
   tuition?: number;
   selectivity?: number;
   cuts?: AusterityCut[];
+  acceptAmbition?: boolean;
 }
 
 export default function BeatScreen({
@@ -88,7 +90,9 @@ export default function BeatScreen({
         {beat.id === 'admissions-day' && (
           <AdmissionsBody state={state} decision={decision} onChange={setDecision} />
         )}
-        {beat.id === 'convocation' && <ConvocationBody state={state} />}
+        {beat.id === 'convocation' && (
+          <ConvocationBody state={state} decision={decision} onChange={setDecision} />
+        )}
         {beat.id === 'board-meeting' && (
           <BoardBody state={state} decision={decision} onChange={setDecision} />
         )}
@@ -339,7 +343,15 @@ function AdmissionsBody({
 
 // Convocation (DD §3.3): the class on the lawn, by the numbers, and the
 // school as it stands to receive them.
-function ConvocationBody({ state }: { state: GameState }) {
+function ConvocationBody({
+  state,
+  decision,
+  onChange,
+}: {
+  state: GameState;
+  decision: BeatDecision;
+  onChange: (d: BeatDecision) => void;
+}) {
   const { cohorts } = state.people;
   const arrived = [...cohorts].sort((a, b) => b.classYear - a.classYear)[0] ?? null;
   const total = enrolled(state);
@@ -376,6 +388,17 @@ function ConvocationBody({ state }: { state: GameState }) {
         </div>
       ) : (
         <p className="treasury-note">{PEOPLE_WORDS.noClass}</p>
+      )}
+      {/* The year's turn is where promises are made and read out
+          (DD §10.2): what is on the table, then what is already on the
+          record with the years it has left. */}
+      <AmbitionOffer
+        state={state}
+        accepted={decision.acceptAmbition === true}
+        onChange={(accept) => onChange({ ...decision, acceptAmbition: accept })}
+      />
+      {(state.ambitions.active.length > 0 || state.ambitions.settled.length > 0) && (
+        <AmbitionsPanel state={state} />
       )}
     </div>
   );

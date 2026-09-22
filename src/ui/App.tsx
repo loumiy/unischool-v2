@@ -38,6 +38,7 @@ import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
 import CurriculumScreen from './CurriculumScreen.tsx';
 import FacultyScreen from './FacultyScreen.tsx';
+import HistoryScreen from './HistoryScreen.tsx';
 import StudentsScreen from './StudentsScreen.tsx';
 import TreasuryScreen from './TreasuryScreen.tsx';
 import type { CampusTool } from './tools.ts';
@@ -57,6 +58,8 @@ const TAB_HOTKEYS: Record<string, TabId> = {
   f: 'faculty',
   t: 'treasury',
   s: 'students',
+  // The chronicle in draft, which has something in it from Phase 19 on.
+  h: 'history',
 };
 
 // What fills the screen slot: a tab, a calendar beat's screen, a letter
@@ -447,6 +450,8 @@ export default function App() {
                     });
                   }}
                 />
+              ) : effectiveOverlay === 'history' ? (
+                <HistoryScreen state={state} />
               ) : (
                 <StubScreen phase={tabById(effectiveOverlay).phase}>
                   {tabById(effectiveOverlay).stub}

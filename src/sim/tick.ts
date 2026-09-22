@@ -4,6 +4,7 @@ import { advanceClock } from './calendar.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
 import { academicsWeek } from './academics.ts';
+import { convocationAmbitions } from './ambitions.ts';
 import { estateWeek } from './estate.ts';
 import { eventsWeek } from './events.ts';
 import { openMarket } from './faculty.ts';
@@ -61,6 +62,9 @@ function fireBeat(state: GameState): GameState {
   let s = emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
   // Budget & Hiring lists the summer market (DD §7.3).
   if (beat.id === 'budget-and-hiring') s = openMarket(s);
+  // Convocation reads out the promises that came due and may put one more
+  // on the table (DD §10.2).
+  if (beat.id === 'convocation') s = convocationAmbitions(s);
   return s;
 }
 
