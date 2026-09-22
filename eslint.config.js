@@ -47,5 +47,13 @@ export default tseslint.config(
     files: ['src/**/*.test.ts'],
     languageOptions: { globals: { ...globals.node } },
   },
+  {
+    // tools/ is the headless instrumentation (the Phase 21 audit's harness,
+    // and the seed of Phase 31's): Node scripts that drive the sim core and,
+    // in the Playwright passes, evaluate code inside a browser page. Linted
+    // like the rest of the repo, with both sets of globals available.
+    files: ['tools/**/*.{ts,mjs}'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
   prettier,
 );
