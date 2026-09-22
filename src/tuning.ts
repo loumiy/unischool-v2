@@ -376,3 +376,13 @@ export const MOOD_DECAY_PER_YEAR = 0.5;
 export const AMBITION_CAP = 3;
 // The chance a Convocation puts something on the table, when there is room.
 export const AMBITION_DEAL_ODDS = 0.45;
+
+// ---------- Phase 20: delegation (DD §9) ----------
+
+// Who can be promoted into a seat: senior faculty only (DD §9.1).
+export const SEAT_SENIOR_RANKS: readonly string[] = ['associate', 'full'];
+// 8× needs the Provost and this many Deans (DD §3.2).
+export const DEANS_FOR_FASTEST = 4;
+// Above this, an event reaches the President however well-staffed the
+// college is (DD §9.2). Roughly a building's worth of consequence.
+export const ESCALATION_MONEY = 500_000;

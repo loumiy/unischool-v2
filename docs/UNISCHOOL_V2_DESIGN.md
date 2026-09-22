@@ -78,7 +78,7 @@ Time is continuous with pause, Cities: Skylines style. The base tick is one **we
 
 ### §3.2 Speed tiers are earned by delegation
 
-Speeds: **pause / 1× / 2× / 4× / 8×.** The top tiers are gated by administrative capacity (§9): 4× requires an appointed Provost; 8× requires the Provost plus at least four school Deans. Rationale: fast time is only safe when the institution can make routine decisions without you — so the player literally purchases fast-forward with payroll. This is the load-bearing mechanic that makes §2.2's budget possible and makes administrative bloat (§5.4) a real bargain rather than a tax.
+Speeds: **pause / 1× / 2× / 4× / 8×.** The top tiers are gated by administrative capacity (§9), and have been since Phase 20: 4× requires an appointed Provost; 8× requires the Provost plus at least four school Deans. Rationale: fast time is only safe when the institution can make routine decisions without you — so the player literally purchases fast-forward with payroll. This is the load-bearing mechanic that makes §2.2's budget possible and makes administrative bloat (§5.4) a real bargain rather than a tax.
 
 ### §3.3 Calendar beats
 
@@ -286,6 +286,16 @@ The VP of Advancement unlocks **campaigns**: multi-year fundraising drives again
 ### §9.4 The cost
 
 Every seat adds permanent payroll and a step of administrative ratchet (§5.4). The full executive suite roughly doubles administrative share of payroll across a run. The player should feel the trade every time: speed and sanity, purchased with structural cost.
+
+**The seats as built (Phase 20).** Ten of them: the Provost, one Dean per _founded_ school (so the Dean's seat does not exist until there is a school to be dean of), the Facilities Director, the Dean of Students and the VP of Advancement — whose campaigns (§9.3) are Phase 21's, while the seat, its payroll and its ratchet are here. Each is filled once, from the roster or from outside, and paid for forever: a year of the salary up front and the salary on the admin line every year after, with the internal appointment cheaper, and costing a programme its lecturer, because an internal appointment stops teaching.
+
+**A policy is a preference over effects, not per-event authoring.** Each seat offers three policies that map to three rules the engine applies to whatever the event already carries: take the cheapest way through, take the thorough way and the bill, or take whichever lands best with the students. The rules are universal; the labels are the seat's own, because a Provost and a Facilities Director do not describe the same instinct the same way. This is what makes delegation content-free — a seat can handle an event written years later without either knowing about the other. The DD's own example named "protect historic" as a Facilities policy; that one is not built, because nothing in the state yet distinguishes a historic building from an old one, and a policy the engine cannot honour is worse than one it does not offer.
+
+**What escalates (§9.2), exactly.** A seismic letter, anything whose largest choice moves more than the escalation threshold in cash or endowment, and anything in a domain with no seat. Every event carries a `domain`, and two of the six — `money` and `board` — have no seat at all. That is deliberate: some things are the President's, and a rule about escalation means nothing if everything can be delegated away.
+
+**What it is worth, measured.** A college with every seat filled reaches 8×, pays over a million a year in salaries it can never stop paying, more than doubles its administrative payroll, and over the same twelve years is asked fewer questions and has more of them handled. The bargain is legible in both directions on one screen: the org chart shows the top speed the college has bought and the salaries it is bleeding, side by side, and a filled seat keeps saying what it costs and since when.
+
+**Not built, and named here so it is not assumed.** §5.4's restructuring — the painful, board-approved way to cut administrative cost — has no action yet, so seats are one-way. A run can buy the suite and cannot sell it, which makes the ratchet a ratchet, but leaves the "painful way back" the DD promises for a later phase.
 
 ---
 

@@ -9,6 +9,7 @@ import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingAmbitions } from './ambitions.ts';
+import { foundingDelegation } from './seats.ts';
 import { foundingEvents } from './events.ts';
 import { foundingFaculty } from './faculty.ts';
 import { foundingPeople, outcomesFor, type Cohort, type Outcomes } from './people.ts';
@@ -539,6 +540,16 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { ambitions: foundingAmbitions(), ...state, schemaVersion: 17 },
     };
   },
+  // v17 → v18 (Phase 20): an empty org chart. An older save delegated
+  // nothing, which is where every run starts anyway.
+  17: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 18,
+      state: { delegation: foundingDelegation(), ...state, schemaVersion: 18 },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -680,6 +691,18 @@ function validateCurrent(file: Record<string, unknown>): string | null {
       return 'a pending event is malformed';
     if (typeof p.expiresWeek !== 'number' || typeof p.vars !== 'object')
       return 'a pending event is malformed';
+  }
+  const delegation = s.delegation as Record<string, unknown> | undefined;
+  if (typeof delegation !== 'object' || delegation === null) return 'state.delegation is invalid';
+  if (!Array.isArray(delegation.seats)) return 'state.delegation.seats is invalid';
+  for (const seat of delegation.seats as Record<string, unknown>[]) {
+    if (typeof seat?.seatId !== 'string' || typeof seat.policy !== 'string')
+      return 'a seat is malformed';
+    if (seat.schoolId !== null && typeof seat.schoolId !== 'string') return 'a seat is malformed';
+    if (typeof seat.salary !== 'number' || typeof seat.appointedYear !== 'number')
+      return 'a seat is malformed';
+    const filledBy = seat.filledBy as Record<string, unknown> | undefined;
+    if (filledBy?.kind !== 'internal' && filledBy?.kind !== 'outside') return 'a seat is malformed';
   }
   const ambitions = s.ambitions as Record<string, unknown> | undefined;
   if (typeof ambitions !== 'object' || ambitions === null) return 'state.ambitions is invalid';

@@ -87,6 +87,19 @@ export type EventEffect = (typeof EVENT_EFFECTS)[number];
 
 export type EventKind = 'inline' | 'seismic';
 
+// Whose desk an event lands on (DD §9.2). A domain with a filled seat can
+// have its minor events handled without the President; `money` and `board`
+// have no seat, which is why those always reach the President.
+export const EVENT_DOMAINS = [
+  'estate',
+  'academic',
+  'students',
+  'advancement',
+  'money',
+  'board',
+] as const;
+export type EventDomain = (typeof EVENT_DOMAINS)[number];
+
 export interface ChoiceDef {
   id: string;
   label: string; // an honest verb (DD §13.3), never a gag
@@ -97,6 +110,7 @@ export interface ChoiceDef {
 export interface EventDef {
   id: string;
   kind: EventKind;
+  domain: EventDomain;
   weight: number;
   cooldownYears: number;
   when: Partial<Record<EventCondition, number>>;
@@ -122,6 +136,7 @@ const fileSchema = obj({
     obj({
       id: str,
       kind: oneOf(['inline', 'seismic']),
+      domain: oneOf(EVENT_DOMAINS),
       weight: num,
       cooldownYears: num,
       when: conditions,

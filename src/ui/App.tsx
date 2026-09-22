@@ -12,6 +12,7 @@ import {
   pendingInline,
   pendingSeismic,
   type Financing,
+  type FilledBy,
   type Motif,
   type Speed,
 } from '../sim/index.ts';
@@ -169,6 +170,13 @@ export default function App() {
       void autosave(store.getSnapshot().run!);
       setOverlay((cur) => (cur === 'event' ? null : cur));
     }
+  }
+  function appointSeat(seatId: string, schoolId: string | null, from: FilledBy) {
+    const applied = store.dispatch({ type: 'appointSeat', seatId, schoolId, from });
+    if (applied) void autosave(store.getSnapshot().run!);
+  }
+  function setSeatPolicy(seatId: string, schoolId: string | null, policy: string) {
+    store.dispatch({ type: 'setSeatPolicy', seatId, schoolId, policy });
   }
   function hire(candidateId: string, programId: string | null) {
     store.dispatch({ type: 'hire', candidateId, programId });
@@ -421,6 +429,8 @@ export default function App() {
                   onDismiss={(facultyId) => {
                     store.dispatch({ type: 'dismiss', facultyId });
                   }}
+                  onAppoint={appointSeat}
+                  onPolicy={setSeatPolicy}
                 />
               ) : effectiveOverlay === 'curriculum' ? (
                 <CurriculumScreen

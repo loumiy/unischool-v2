@@ -152,6 +152,12 @@
     },
     "ambitionSettled": {
       "text": "{line}"
+    },
+    "seatFilled": {
+      "text": "{line}"
+    },
+    "eventDelegated": {
+      "text": "{line}"
     }
   }
 }

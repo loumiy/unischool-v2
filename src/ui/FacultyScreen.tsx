@@ -10,9 +10,11 @@ import {
   teachingQuality,
   unassignedFaculty,
   type GameState,
+  type FilledBy,
 } from '../sim/index.ts';
 import FacultyCard from './FacultyCard.tsx';
 import Figure from './Figure.tsx';
+import SeatsPanel from './SeatsPanel.tsx';
 
 // THE FACULTY SCREEN (DD §7.3), in v1's language: the payroll strip, the
 // summer market while it is open (listings, dashed), and the roster as
@@ -23,11 +25,15 @@ export default function FacultyScreen({
   onHire,
   onAssign,
   onDismiss,
+  onAppoint,
+  onPolicy,
 }: {
   state: GameState;
   onHire: (candidateId: string, programId: string | null) => void;
   onAssign: (facultyId: string, programId: string | null) => void;
   onDismiss: (facultyId: string) => void;
+  onAppoint: (seatId: string, schoolId: string | null, from: FilledBy) => void;
+  onPolicy: (seatId: string, schoolId: string | null, policy: string) => void;
 }) {
   const { roster, market, marketOpen } = state.faculty;
   const payroll = annualFacultyPayroll(state);
@@ -135,6 +141,9 @@ export default function FacultyScreen({
           ))}
         </>
       )}
+      {/* The org chart (DD §9): what the college has delegated, what that
+          buys in speed, and what it costs in payroll forever. */}
+      <SeatsPanel state={state} onAppoint={onAppoint} onPolicy={onPolicy} />
     </div>
   );
 }

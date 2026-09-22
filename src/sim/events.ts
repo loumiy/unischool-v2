@@ -29,6 +29,7 @@ import { enrolled, satisfactionFor } from './people.ts';
 import { teachingQuality } from './faculty.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
+import { policyChoice } from './seats.ts';
 import { adminShareOfPayroll, sumExpenses, sumRevenue } from './treasury.ts';
 
 // THE EVENT ENGINE (DD §10.1). The world keeps punching, and almost all
@@ -504,6 +505,27 @@ export function eventsWeek(state: GameState): GameState {
     pickEvent(rng, eligible(s, 'inline'));
   if (!def) return { ...s, rng: rng.snapshot() };
   const vars = subjectsFor(s, rng, def);
+  // A filled seat handles its domain's routine without the player ever
+  // being asked (DD §9.2): the event resolves on the seat's policy and
+  // becomes a ticker notice instead of a question. Escalations — seismic
+  // letters, anything above the money threshold, anything with no seat —
+  // come through as they always did.
+  const delegated = policyChoice(s, def);
+  if (delegated) {
+    const applied = applyChoice({ ...s, rng: rng.snapshot() }, def, delegated.choiceId);
+    return emit(
+      {
+        ...applied,
+        events: { ...applied.events, lastResolvedWeek: week },
+      },
+      {
+        kind: 'eventDelegated',
+        eventId: def.id,
+        choiceId: delegated.choiceId,
+        seatId: delegated.seat.seatId,
+      },
+    );
+  }
   const pending: PendingEvent = {
     instanceId: `e${s.events.nextId}`,
     eventId: def.id,

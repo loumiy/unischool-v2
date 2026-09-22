@@ -1,0 +1,188 @@
+{
+  "seats": [
+    {
+      "id": "provost",
+      "title": "Provost",
+      "domain": "academic",
+      "perSchool": false,
+      "outsideSalary": 320000,
+      "internalSalary": 210000,
+      "ratchet": 1.0,
+      "policies": [
+        {
+          "id": "economical",
+          "rule": "thrifty",
+          "label": "Hold the line on spending",
+          "note": "Takes the cheaper way through"
+        },
+        {
+          "id": "invest",
+          "rule": "thorough",
+          "label": "Spend on the academic side",
+          "note": "Takes the thorough way, and the bill"
+        },
+        {
+          "id": "collegial",
+          "rule": "popular",
+          "label": "Keep the faculty with you",
+          "note": "Takes whichever way lands best in the common room"
+        }
+      ],
+      "defaultPolicy": "economical",
+      "blurb": "Runs the academic routine: the timetable, the committees, the things that do not need a President.",
+      "outsideLine": "An outside appointment, from a college with a better library and worse weather. Expensive, and good.",
+      "internalLine": "Promoted from the roster. Cheaper, popular, and no longer teaching anything."
+    },
+    {
+      "id": "dean",
+      "title": "Dean",
+      "domain": "academic",
+      "perSchool": true,
+      "outsideSalary": 190000,
+      "internalSalary": 120000,
+      "ratchet": 0.6,
+      "policies": [
+        {
+          "id": "economical",
+          "rule": "thrifty",
+          "label": "Run the school lean",
+          "note": "Takes the cheaper way through"
+        },
+        {
+          "id": "invest",
+          "rule": "thorough",
+          "label": "Back the school’s requests",
+          "note": "Takes the thorough way, and the bill"
+        },
+        {
+          "id": "collegial",
+          "rule": "popular",
+          "label": "Keep the department happy",
+          "note": "Takes whichever way lands best in the common room"
+        }
+      ],
+      "defaultPolicy": "economical",
+      "blurb": "Runs one school's routine, which is mostly other people's timetables and one long-running dispute.",
+      "outsideLine": "An outside dean, who will mention their previous institution.",
+      "internalLine": "One of the school's own, promoted out of the classroom."
+    },
+    {
+      "id": "facilities",
+      "title": "Facilities Director",
+      "domain": "estate",
+      "perSchool": false,
+      "outsideSalary": 240000,
+      "internalSalary": 150000,
+      "ratchet": 0.8,
+      "policies": [
+        {
+          "id": "cheapest",
+          "rule": "thrifty",
+          "label": "Cheapest fix first",
+          "note": "Patches, defers, and keeps the bill down"
+        },
+        {
+          "id": "worst-first",
+          "rule": "thorough",
+          "label": "Worst first, properly",
+          "note": "Fixes what is worst, at what it costs"
+        },
+        {
+          "id": "visible",
+          "rule": "popular",
+          "label": "Whatever the students see",
+          "note": "Fixes what is complained about"
+        }
+      ],
+      "defaultPolicy": "cheapest",
+      "blurb": "Triages the estate: the roof, the boiler, the thing in the basement, without asking first.",
+      "outsideLine": "A professional, from a hospital trust. Knows what a survey is for.",
+      "internalLine": "The longest-serving member of the roster, who has been doing half of this anyway."
+    },
+    {
+      "id": "dean-of-students",
+      "title": "Dean of Students",
+      "domain": "students",
+      "perSchool": false,
+      "outsideSalary": 200000,
+      "internalSalary": 130000,
+      "ratchet": 0.7,
+      "policies": [
+        {
+          "id": "firm",
+          "rule": "thrifty",
+          "label": "Hold the line",
+          "note": "Cheap, and they know where they stand"
+        },
+        {
+          "id": "generous",
+          "rule": "thorough",
+          "label": "Fix what they are asking about",
+          "note": "Costly, and they notice"
+        },
+        {
+          "id": "listen",
+          "rule": "popular",
+          "label": "Meet them halfway",
+          "note": "Whatever keeps the peace"
+        }
+      ],
+      "defaultPolicy": "listen",
+      "blurb": "Handles student life: the letters, the petitions, the occupation of the foyer, before they reach the President.",
+      "outsideLine": "From a larger college, with a folder of policies already written.",
+      "internalLine": "A member of the roster the students already go to."
+    },
+    {
+      "id": "advancement",
+      "title": "VP of Advancement",
+      "domain": "advancement",
+      "perSchool": false,
+      "outsideSalary": 280000,
+      "internalSalary": 175000,
+      "ratchet": 0.9,
+      "policies": [
+        {
+          "id": "careful",
+          "rule": "thrifty",
+          "label": "Ask sparingly",
+          "note": "The ledger stays warm and gives less"
+        },
+        {
+          "id": "ambitious",
+          "rule": "thorough",
+          "label": "Ask properly, and often",
+          "note": "The ledger gives more and cools"
+        },
+        {
+          "id": "personal",
+          "rule": "popular",
+          "label": "Ask about them first",
+          "note": "Slower, warmer"
+        }
+      ],
+      "defaultPolicy": "personal",
+      "blurb": "Runs the donor routine — the letters, the visits, the annual fund. Campaigns arrive with Phase 21.",
+      "outsideLine": "A professional fundraiser, who will want a budget and a title.",
+      "internalLine": "Someone from the roster who is unusually good with people, and will stop teaching."
+    }
+  ],
+  "rules": {
+    "thrifty": "Takes the choice that spends least.",
+    "thorough": "Takes the choice that spends most, which is usually the one that fixes it.",
+    "popular": "Takes the choice the students feel best about."
+  },
+  "lines": {
+    "vacant": "Vacant",
+    "heldBy": "Held by {name}",
+    "heldOutside": "Held by an outside appointment",
+    "appointed": "{title} appointed: {who}.",
+    "delegated": "{title} handled it: {choice}.",
+    "payrollNote": "Every seat is permanent payroll and a step of the administrative ratchet (DD §5.4).",
+    "escalated": "Too large to delegate; this one reaches the President.",
+    "speedNote": "Fast time is bought with administrative capacity: 4× needs a Provost, 8× a Provost and four Deans.",
+    "noSchools": "A Dean needs a school to be dean of.",
+    "noSenior": "Nobody on the roster is senior enough for this.",
+    "internal": "From the roster",
+    "outside": "From outside"
+  }
+}

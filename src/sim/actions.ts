@@ -59,6 +59,9 @@ import {
   severanceFor,
 } from './faculty.ts';
 import { answerAmbition } from './ambitions.ts';
+import { findSeat } from '../content/seats.ts';
+import { SEAT_SENIOR_RANKS } from '../tuning.ts';
+import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
 import { eventById, findEvent } from '../content/events.ts';
@@ -135,6 +138,16 @@ export type Action =
   | { type: 'hire'; candidateId: string; programId?: string | null }
   | { type: 'assignFaculty'; facultyId: string; programId: string | null }
   | { type: 'dismiss'; facultyId: string }
+  // Delegation (DD §9.1): a seat filled from the roster or from outside,
+  // and the one policy it runs on. Seats are permanent; §5.4's
+  // restructuring is not built yet.
+  | {
+      type: 'appointSeat';
+      seatId: string;
+      schoolId?: string | null;
+      from: { kind: 'internal'; facultyId: string } | { kind: 'outside' };
+    }
+  | { type: 'setSeatPolicy'; seatId: string; schoolId?: string | null; policy: string }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
   | { type: 'debug/fireEvent'; eventId: string };
@@ -342,6 +355,38 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!canPay(state, severanceFor(f), 'cash')) return no('not enough cash for severance');
       return YES;
     }
+    case 'appointSeat': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const def = findSeat(action.seatId);
+      if (!def) return no('no such seat');
+      const schoolId = action.schoolId ?? null;
+      if (def.perSchool) {
+        if (schoolId === null) return no('which school?');
+        if (!state.academics.schools.some((s) => s.schoolId === schoolId))
+          return no('that school is not founded');
+      } else if (schoolId !== null) {
+        return no('that seat is not per-school');
+      }
+      if (seatFilled(state, action.seatId, schoolId)) return no('that seat is filled');
+      if (frozen(state)) return no('the board has frozen appointments');
+      const from = action.from;
+      if (from.kind === 'internal') {
+        const who = state.faculty.roster.find((f) => f.id === from.facultyId);
+        if (!who) return no('no such hire');
+        if (!SEAT_SENIOR_RANKS.includes(who.rank)) return no('not senior enough for a seat');
+        if (isSeated(state, who.id)) return no('they already hold a seat');
+      }
+      if (!canPay(state, appointCost(def, action.from), 'cash')) return no('not enough cash');
+      return YES;
+    }
+    case 'setSeatPolicy': {
+      const def = findSeat(action.seatId);
+      if (!def) return no('no such seat');
+      if (!seatFilled(state, action.seatId, action.schoolId ?? null))
+        return no('that seat is vacant');
+      if (!def.policies.some((p) => p.id === action.policy)) return no('not one of its policies');
+      return YES;
+    }
     case 'debug/mark':
       return YES;
     case 'debug/fireEvent':
@@ -526,6 +571,14 @@ export function applyAction(state: GameState, action: Action): GameState {
       return assignFaculty(state, action.facultyId, action.programId);
     case 'dismiss':
       return dismissFaculty(state, action.facultyId);
+    case 'appointSeat': {
+      const def = findSeat(action.seatId)!;
+      // A year of the salary up front, and the salary forever after.
+      const paid = pay(state, appointCost(def, action.from), 'cash');
+      return appointSeat(paid, action.seatId, action.schoolId ?? null, action.from);
+    }
+    case 'setSeatPolicy':
+      return setSeatPolicy(state, action.seatId, action.schoolId ?? null, action.policy);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
     case 'debug/fireEvent':
