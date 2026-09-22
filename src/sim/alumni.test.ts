@@ -227,16 +227,21 @@ describe('reunions nudge and never rewrite (DD §8.4)', () => {
   it('stops at the cap: the four years they had are not up for revision', () => {
     let run = withAlumni();
     const target = run.state.people.alumni[0]!.classYear;
-    const before = run.state.people.alumni[0]!.warmth;
+    const warmthOf = (r: Run) => r.state.people.alumni.find((a) => a.classYear === target)!.warmth;
     for (let i = 0; i < 8; i++) {
       if (canApply(run.state, { type: 'holdReunion', classYear: target }).ok) {
-        run = dispatch(run, { type: 'holdReunion', classYear: target });
+        // Measure the reunion's own contribution across the dispatch, which
+        // turns no weeks: over eight years the world moves warmth too.
+        const before = warmthOf(run);
+        const next = dispatch(run, { type: 'holdReunion', classYear: target });
+        expect(warmthOf(next)).toBeGreaterThan(before);
+        run = next;
       }
       run = tickRunWeeks(run, WEEKS_PER_YEAR, defaultResolution);
     }
     const after = run.state.people.alumni.find((a) => a.classYear === target)!;
+    // What the reunions added, and only that, stops at the cap.
     expect(after.nudged).toBe(REUNION_WARMTH_CAP);
-    expect(after.warmth).toBeCloseTo(before + REUNION_WARMTH_CAP, 1);
     expect(reunionRoom(after)).toBe(0);
     expect(canApply(run.state, { type: 'holdReunion', classYear: target })).toMatchObject({
       ok: false,
@@ -303,8 +308,16 @@ describe('the long memory (plan Phase 16)', () => {
       if (!twin) continue;
       expect(gave(crunched, a)).toBeLessThan(gave(control, twin));
     }
-    // And the fund as a whole is measurably down.
-    expect(annualGiving(crunched)).toBeLessThan(annualGiving(control) * 0.95);
+    // And the fund is down. The margin on the WHOLE ledger is thin now
+    // that the weather moves warmth in both runs (events.ts), so the
+    // measurable claim is about the classes that lived through it.
+    expect(annualGiving(crunched)).toBeLessThan(annualGiving(control));
+    const fromMarked = marked.reduce((t, a) => t + gave(crunched, a), 0);
+    const fromTwins = marked.reduce((t, a) => {
+      const twin = lived(control).find((b) => b.classYear === a.classYear);
+      return t + (twin ? gave(control, twin) : 0);
+    }, 0);
+    expect(fromMarked).toBeLessThan(fromTwins * 0.9);
     expect(entriesOfKind(crunched, 'classRemembered').length).toBeGreaterThan(10);
   });
 });

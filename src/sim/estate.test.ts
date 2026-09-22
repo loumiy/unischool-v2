@@ -219,8 +219,13 @@ describe('maintenance, backlog and renovation (DD §6.4)', () => {
     const kept = tickRunWeeks(opened(11), WEEKS_PER_YEAR * 21, defaultResolution);
     const worn = neglected.state.campus.placements[0]!;
     const sound = kept.state.campus.placements[0]!;
-    expect(sound.condition).toBe(1);
+    // The kept building is not guaranteed pristine after twenty years —
+    // the weather writes to the estate too, and a letter left unanswered
+    // defers real damage (events.ts) — but it is in another class from
+    // the one nobody paid for.
     expect(worn.condition).toBeLessThan(DERELICT_CONDITION);
+    expect(sound.condition).toBeGreaterThan(worn.condition * 2);
+    expect(sound.backlog).toBeLessThan(worn.backlog / 2);
     expect(worn.backlog).toBeGreaterThan(HALL.upkeep * 20);
     expect(renovationCost(worn)).toBeGreaterThan(HALL.upkeep * 20);
     // Neglect saved cash along the way — read off the maintenance line

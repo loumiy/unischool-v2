@@ -1,0 +1,378 @@
+import { describe, expect, it } from 'vitest';
+import { BUILDINGS } from '../content/buildings.ts';
+import { EVENTS, EVENT_CONDITIONS, EVENT_EFFECTS, type EventCondition } from '../content/events.ts';
+import { DEFAULT_PALETTE } from '../content/palettes.ts';
+import { findProgram, PROGRAMS, SCHOOLS } from '../content/schools.ts';
+import { canApply, type Action } from './actions.ts';
+import { defaultResolution } from './beats.ts';
+import { WEEKS_PER_YEAR } from './calendar.ts';
+import { conditionsHold, readingOf } from './events.ts';
+import { dispatch, newRun, tickRunWeeks, type Run } from './run.ts';
+import type { GameState } from './state.ts';
+
+// PHASE 18 — the catalogue, read as writing rather than as data. The
+// engine's own tests (events.test.ts) cover what an event DOES; these
+// cover what the file SAYS, and whether any of it is unreachable.
+
+const FOUND = {
+  type: 'found',
+  name: 'Blackmoor',
+  motif: 'georgian',
+  paletteId: DEFAULT_PALETTE.id,
+  colors: { primary: DEFAULT_PALETTE.primary, secondary: DEFAULT_PALETTE.secondary },
+} as const;
+
+const INLINE = EVENTS.filter((e) => e.kind === 'inline');
+const SEISMIC = EVENTS.filter((e) => e.kind === 'seismic');
+
+function opened(seed: number): Run {
+  return dispatch(dispatch(newRun(seed), FOUND), {
+    type: 'placeBuilding',
+    buildingId: 'founders-hall',
+    col: 28,
+    row: 28,
+    rotated: false,
+  });
+}
+
+// A college somebody is actually running: it builds, founds a school,
+// opens programmes, hires off every summer market, and borrows to do it.
+// Half the catalogue is written for conditions only play reaches, so this
+// is what the coverage test needs to reach them.
+// The beats, answered with a policy rather than with the board's default:
+// the draw, the sticker and the selectivity are the player's dials, and
+// a third of the catalogue is written about where they get set.
+type Policy = {
+  drawRate?: number;
+  tuition?: number;
+  selectivity?: number;
+  maintenanceFunding?: number;
+  // How many hires the college will carry. A college that cannot afford
+  // faculty is a different college, and half a dozen readings say so.
+  hireCap?: number;
+};
+
+function resolveWith(policy: Policy) {
+  return (state: GameState): Action | null => {
+    if (state.pendingBeat === 'budget-and-hiring') {
+      return {
+        type: 'resolveBeat',
+        beatId: 'budget-and-hiring',
+        ...(policy.drawRate === undefined ? {} : { drawRate: policy.drawRate }),
+        ...(policy.maintenanceFunding === undefined
+          ? {}
+          : { maintenanceFunding: policy.maintenanceFunding }),
+      };
+    }
+    if (state.pendingBeat === 'admissions-day') {
+      return {
+        type: 'resolveBeat',
+        beatId: 'admissions-day',
+        ...(policy.tuition === undefined ? {} : { tuition: policy.tuition }),
+        ...(policy.selectivity === undefined ? {} : { selectivity: policy.selectivity }),
+      };
+    }
+    return defaultResolution(state);
+  };
+}
+
+function played(seed: number, years: number, onWeek?: (run: Run) => Run, policy: Policy = {}): Run {
+  let run = opened(seed);
+  // Four of them enclose a court, because a third of the campus's own
+  // readings — quads, beauty — only exist once the buildings make a shape.
+  const sites: [string, number, number, boolean][] = [
+    ['library', 21, 9, false],
+    ['library', 22, 20, false],
+    ['academic-hall', 17, 14, true],
+    ['academic-hall', 28, 13, true],
+    ['residence-hall', 6, 40, false],
+    ['dining-hall', 16, 40, false],
+    ['residence-hall', 40, 40, false],
+    ['student-center', 40, 4, false],
+    ['lab', 50, 20, false],
+    ['admin-building', 6, 28, false],
+  ];
+  let next = 0;
+  // Week by week, because the things a player does have windows: the
+  // faculty market is open for the summer beat and shut by the next one.
+  const resolve = resolveWith(policy);
+  for (let week = 0; week < years * WEEKS_PER_YEAR; week++) {
+    run = tickRunWeeks(run, 1, resolve);
+    if (next < sites.length) {
+      const [buildingId, col, row, rotated] = sites[next]!;
+      for (const financing of ['cash', 'debt'] as const) {
+        const action = {
+          type: 'placeBuilding',
+          buildingId,
+          col,
+          row,
+          rotated,
+          financing,
+        } as const;
+        if (canApply(run.state, action).ok) {
+          run = dispatch(run, action);
+          next++;
+          break;
+        }
+      }
+    }
+    // Hiring into a programme, not into the air: an unassigned hire teaches
+    // nothing, and every reading of teaching stays at zero.
+    if (run.state.faculty.marketOpen && run.state.faculty.roster.length < (policy.hireCap ?? 30)) {
+      for (const candidate of [...run.state.faculty.market]) {
+        const fit = run.state.academics.programs.find(
+          (open) => findProgram(open.programId)?.schoolId === candidate.schoolId,
+        );
+        const action = {
+          type: 'hire',
+          candidateId: candidate.id,
+          programId: fit?.programId ?? null,
+        } as const;
+        if (canApply(run.state, action).ok) run = dispatch(run, action);
+      }
+    }
+    if (week % WEEKS_PER_YEAR === 0) {
+      for (const school of SCHOOLS) {
+        for (const p of run.state.campus.placements) {
+          const action = { type: 'foundSchool', schoolId: school.id, placementId: p.id } as const;
+          if (canApply(run.state, action).ok) {
+            run = dispatch(run, action);
+            break;
+          }
+        }
+      }
+      for (const program of PROGRAMS) {
+        const action = { type: 'openProgram', programId: program.id } as const;
+        if (canApply(run.state, action).ok) run = dispatch(run, action);
+      }
+    }
+    if (onWeek) run = onWeek(run);
+  }
+  return run;
+}
+
+function neglected(seed: number, years: number): Run {
+  let run = tickRunWeeks(opened(seed), 31, defaultResolution);
+  run = dispatch(run, {
+    type: 'resolveBeat',
+    beatId: 'budget-and-hiring',
+    maintenanceFunding: 0,
+  });
+  return tickRunWeeks(run, WEEKS_PER_YEAR * years, defaultResolution);
+}
+
+describe('the catalogue is the size the phase promised (DD §14)', () => {
+  it('ships batch 1: ~50 inline and 6 seismic', () => {
+    expect(INLINE.length).toBeGreaterThanOrEqual(50);
+    expect(SEISMIC.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('spends its whole vocabulary: no reading nothing reads', () => {
+    const named = new Set(EVENTS.flatMap((e) => Object.keys(e.when)));
+    const pulled = new Set(EVENTS.flatMap((e) => e.choices.flatMap((c) => Object.keys(c.effects))));
+    expect([...EVENT_CONDITIONS].filter((c) => !named.has(c))).toEqual([]);
+    expect([...EVENT_EFFECTS].filter((e) => !pulled.has(e))).toEqual([]);
+  });
+
+  it('covers every system the game has built so far', () => {
+    // One event per system is not coverage; the phase's job is a file that
+    // answers whatever the player has been doing.
+    const clauses = (names: EventCondition[]) =>
+      EVENTS.filter((e) => names.some((n) => n in e.when)).length;
+    expect(
+      clauses(['backlogOver', 'conditionUnder', 'derelictOver', 'oldestBuildingOver']),
+    ).toBeGreaterThanOrEqual(6);
+    expect(
+      clauses([
+        'cashUnder',
+        'cashOver',
+        'debtOver',
+        'deficitOver',
+        'drawRateOver',
+        'endowmentOver',
+      ]),
+    ).toBeGreaterThanOrEqual(6);
+    expect(
+      clauses(['facultyOver', 'teachingOver', 'teachingUnder', 'studentsPerFacultyOver']),
+    ).toBeGreaterThanOrEqual(6);
+    expect(
+      clauses(['enrolledOver', 'satisfactionUnder', 'triplesOver', 'moodOver']),
+    ).toBeGreaterThanOrEqual(8);
+    expect(clauses(['alumniOver', 'warmthOver', 'warmthUnder'])).toBeGreaterThanOrEqual(5);
+    expect(clauses(['programsOver', 'programsUnder', 'schoolsOver'])).toBeGreaterThanOrEqual(4);
+    expect(clauses(['rungAtLeast', 'confidenceOver', 'confidenceUnder'])).toBeGreaterThanOrEqual(4);
+    expect(
+      clauses(['beautyOver', 'beautyUnder', 'quadsOver', 'treesUnder']),
+    ).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('the file reads like the style guide says (content/STYLE.md)', () => {
+  it('says it in two or three sentences, and a letter in more', () => {
+    for (const def of INLINE) {
+      const sentences = def.text.split(/(?<=[.!?])\s+/).length;
+      expect({ id: def.id, sentences }).toMatchObject({ id: def.id });
+      expect(sentences).toBeGreaterThanOrEqual(2);
+      expect(sentences).toBeLessThanOrEqual(4);
+      expect(def.text.length).toBeLessThan(400);
+    }
+    for (const def of SEISMIC) {
+      expect(def.text.length).toBeGreaterThan(400);
+      expect(def.title!.length).toBeGreaterThan(2);
+    }
+  });
+
+  it('labels the choices with honest verbs, never a gag', () => {
+    for (const def of EVENTS) {
+      for (const choice of def.choices) {
+        expect(choice.label).not.toMatch(/[!?]/);
+        // A label is an instruction, not a sentence about one.
+        expect(choice.label).not.toMatch(/\.$/);
+        expect(choice.label.length).toBeGreaterThan(3);
+        expect(choice.label.length).toBeLessThan(56);
+        expect(choice.label[0]).toBe(choice.label[0]!.toUpperCase());
+        expect(Object.keys(choice.effects).length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('never exclaims, and keeps the second person rare', () => {
+    for (const def of EVENTS) expect(def.text).not.toContain('!');
+    // The register is a memo, not a narrator, so "you" is the exception —
+    // the DD's own calibration example is one of them ("what they would
+    // like you to do"). A budget, not a ban (content/STYLE.md).
+    const addressed = EVENTS.filter((e) => /\byou'?(re|ve|ll)?\b/i.test(e.text));
+    expect(addressed.length / EVENTS.length).toBeLessThan(0.1);
+  });
+
+  it('prices what costs, and names only subjects the engine can resolve', () => {
+    const placeholders = /\{(\w+)\}/g;
+    for (const def of EVENTS) {
+      for (const match of def.text.matchAll(placeholders)) {
+        expect(['building', 'faculty', 'program', 'class', 'school']).toContain(match[1]);
+      }
+      // Anything that moves real money says so where the player is choosing.
+      for (const choice of def.choices) {
+        const spend = Math.abs(choice.effects.cash ?? 0) + Math.abs(choice.effects.endowment ?? 0);
+        if (spend >= 100_000) expect(choice.note ?? '').not.toBe('');
+      }
+    }
+  });
+
+  it('writes distress straight: no jokes at the bottom of the ladder', () => {
+    // An event gated on the ladder or on unhappy students is written in
+    // the plain register, which shows up as shorter, flatter sentences.
+    const straight = EVENTS.filter(
+      (e) => (e.when.rungAtLeast ?? 0) >= 2 || e.when.satisfactionUnder !== undefined,
+    );
+    expect(straight.length).toBeGreaterThanOrEqual(4);
+    for (const def of straight) {
+      expect(def.text).not.toMatch(/\b(hilarious|absurd|comic|farce|ridiculous)\b/i);
+    }
+  });
+});
+
+describe('nothing in the file is unreachable', () => {
+  it('every event can happen to some college', { timeout: 60_000 }, () => {
+    // The threshold bug this phase found by measuring: a number written
+    // above the ceiling of its own reading is an event that never fires,
+    // and nothing but a run will say which ones those are.
+    const reached = new Set<string>();
+    // What each reading actually did, so a failure can name the ceiling.
+    const range = new Map<EventCondition, { min: number; max: number }>();
+    const named = [...new Set(EVENTS.flatMap((e) => Object.keys(e.when)))] as EventCondition[];
+    const observe = (state: GameState) => {
+      for (const name of named) {
+        const v = Number(readingOf(state, name).toFixed(2));
+        const seen = range.get(name);
+        range.set(
+          name,
+          seen ? { min: Math.min(seen.min, v), max: Math.max(seen.max, v) } : { min: v, max: v },
+        );
+      }
+    };
+    // Only ever ask about what is still missing: five fifty-year colleges
+    // sampled every week is a lot of flood-filling otherwise.
+    const outstanding = new Map(EVENTS.map((e) => [e.id, e]));
+    const sample = (state: GameState) => {
+      observe(state);
+      if (outstanding.size === 0) return;
+      for (const [id, def] of outstanding) {
+        if (conditionsHold(state, def)) {
+          reached.add(id);
+          outstanding.delete(id);
+        }
+      }
+    };
+    const walk = (run: Run, years: number, start: Run = run) => {
+      let r = start;
+      for (let y = 0; y < years; y++) {
+        r = tickRunWeeks(r, WEEKS_PER_YEAR, defaultResolution);
+        sample(r.state);
+      }
+      return r;
+    };
+    // Four colleges, because no single one reaches the whole file: one
+    // minded, one let go, one run well, and one run into the ground.
+    walk(opened(4), 50);
+    sample(neglected(4, 40).state);
+    const watch = (r: Run) => {
+      sample(r.state);
+      return r;
+    };
+    sample(played(4, 50, watch, { drawRate: 0.06, tuition: 62_000, selectivity: 0.7 }).state);
+    // Run into the ground two different ways: one that cannot afford
+    // faculty, and one that cannot afford the faculty it has.
+    sample(
+      played(21, 50, watch, {
+        maintenanceFunding: 0,
+        drawRate: 0.08,
+        selectivity: 0.3,
+        hireCap: 3,
+      }).state,
+    );
+    sample(played(13, 50, watch, { tuition: 8_000, drawRate: 0.02 }).state);
+    // When this fails it should say WHY, because the answer is always a
+    // number written outside the range its own reading can take, and only
+    // a run knows that range (content/STYLE.md).
+    const never = [...outstanding.values()].map(
+      (def) =>
+        `${def.id}: ${Object.entries(def.when)
+          .map(([name, want]) => {
+            const r = range.get(name as EventCondition);
+            return `${name} wants ${want}, saw ${r ? `${r.min} .. ${r.max}` : 'nothing'}`;
+          })
+          .join('; ')}`,
+    );
+    expect(never).toEqual([]);
+  });
+});
+
+describe('a test decade feels inhabited (the phase’s done-when)', () => {
+  it('asks a well-run college a few questions a year, every decade of a run', () => {
+    const run = played(7, 50);
+    const asked = run.state.events.history;
+    expect(asked.length).toBeGreaterThan(40);
+    // Spread, not clustered: every decade of the fifty has weather in it.
+    for (let decade = 0; decade < 5; decade++) {
+      const inDecade = asked.filter(
+        (h) =>
+          h.week >= decade * 10 * WEEKS_PER_YEAR && h.week < (decade + 1) * 10 * WEEKS_PER_YEAR,
+      );
+      expect({ decade, asked: inDecade.length }).toMatchObject({ decade });
+      expect(inDecade.length).toBeGreaterThan(3);
+    }
+    // And it is not the same three events over and over.
+    expect(new Set(asked.map((h) => h.eventId)).size).toBeGreaterThan(20);
+  });
+
+  it('builds a college worth writing events about', () => {
+    // Guards the harness above: if `played` stops building, hiring or
+    // opening programmes, the coverage test would quietly stop covering.
+    const run = played(4, 40);
+    expect(run.state.campus.placements.length).toBeGreaterThan(4);
+    expect(run.state.faculty.roster.length).toBeGreaterThan(3);
+    expect(run.state.academics.programs.length).toBeGreaterThan(1);
+    expect(BUILDINGS.length).toBeGreaterThan(8);
+  });
+});
