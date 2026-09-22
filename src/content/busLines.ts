@@ -10,6 +10,8 @@ import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
 import { memoryLine } from '../sim/alumni.ts';
+import { EVENT_WORDS, findEvent } from './events.ts';
+import { fillEventText } from '../sim/events.ts';
 import { beatLine, studentById } from '../sim/students.ts';
 import raw from './bus-lines.json' with { type: 'json' };
 import { ContentError, obj, oneOf, optional, str, validate } from './schema.ts';
@@ -148,6 +150,20 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
         ? memoryLine(alumni)
         : `${classLabel(entry.classYear)} goes down unremembered.`;
       break;
+    }
+    case 'eventFired': {
+      const pending = state.events.pending.find((p) => p.instanceId === entry.instanceId);
+      const def = findEvent(entry.eventId);
+      vars.line = def ? fillEventText(def.title ?? def.text, pending?.vars ?? {}) : entry.eventId;
+      break;
+    }
+    case 'eventResolved': {
+      const def = findEvent(entry.eventId);
+      const choice = def?.choices.find((c) => c.id === entry.choiceId);
+      vars.line = fillArc(entry.timedOut ? EVENT_WORDS.timeout : EVENT_WORDS.resolved, {
+        choice: choice?.label ?? entry.choiceId,
+      });
+      return { text: fill(line.text, vars), tone: entry.timedOut ? 'bad' : undefined };
     }
     case 'reunionHeld':
       vars.label = classLabel(entry.classYear);

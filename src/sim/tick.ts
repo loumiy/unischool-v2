@@ -5,6 +5,7 @@ import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
 import { academicsWeek } from './academics.ts';
 import { estateWeek } from './estate.ts';
+import { eventsWeek } from './events.ts';
 import { openMarket } from './faculty.ts';
 import { peopleWeek } from './people.ts';
 import { treasuryWeek } from './treasury.ts';
@@ -18,8 +19,8 @@ import { treasuryWeek } from './treasury.ts';
 // week passed from a week refused by identity alone.
 //
 // Systems land here phase by phase in a fixed order (calendar, treasury,
-// distress, estate, people, academics, events, reputation). A system that
-// needs randomness draws it from the state's own stream and writes the
+// distress, estate, academics, people, events, reputation). A system
+// that needs randomness draws it from the state's own stream and writes the
 // stream back (people.ts does, for the named students), so a tick stays a
 // pure function of (state) including its own dice.
 export function tick(state: GameState): GameState {
@@ -32,6 +33,7 @@ export function tick(state: GameState): GameState {
     next = estateWeek(next);
     next = academicsWeek(next);
     next = peopleWeek(next);
+    next = eventsWeek(next);
     next = fireBeat(next);
   }
   return next;

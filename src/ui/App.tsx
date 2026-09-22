@@ -9,12 +9,17 @@ import {
   inAusterity,
   lastEntry,
   pendingBeat,
+  pendingInline,
+  pendingSeismic,
   type Financing,
   type Motif,
   type Speed,
 } from '../sim/index.ts';
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
+import EventLetter from './EventLetter.tsx';
+import EventPrompt, { eventPrompt } from './EventPrompt.tsx';
+import { eventById } from '../content/events.ts';
 import { BOARD_WORDS } from '../content/board.ts';
 import { autosave, boot, eraseAndRestart } from './boot.ts';
 import BuildPopup from './BuildPopup.tsx';
@@ -54,8 +59,9 @@ const TAB_HOTKEYS: Record<string, TabId> = {
   s: 'students',
 };
 
-// What fills the screen slot: a tab, or the pending beat's screen.
-type Overlay = TabId | 'beat' | 'letter';
+// What fills the screen slot: a tab, a calendar beat's screen, a letter
+// from the board, or a seismic event's letter.
+type Overlay = TabId | 'beat' | 'letter' | 'event';
 
 export default function App() {
   const { run, speed, weekProgress } = useGame();
@@ -81,6 +87,10 @@ export default function App() {
   const siting = state?.phase === 'siting';
   const beat = state ? pendingBeat(state) : null;
   const letter = state?.distress.pendingLetter ?? null;
+  // Two shapes of event (DD §10.1): the inline one grows out of the ticker
+  // and lets the weeks run; the seismic one is a letter that stops them.
+  const inlineEvent = state ? pendingInline(state) : null;
+  const seismic = state ? pendingSeismic(state) : null;
 
   useEffect(() => {
     if (identity) applySchoolColors(identity.colors);
@@ -99,7 +109,11 @@ export default function App() {
   // The beat screen exists only while its beat is pending: resolving it
   // closes the screen without the shell having to notice.
   const effectiveOverlay: Overlay | null =
-    (overlay === 'beat' && !beat) || (overlay === 'letter' && !letter) ? null : overlay;
+    (overlay === 'beat' && !beat) ||
+    (overlay === 'letter' && !letter) ||
+    (overlay === 'event' && !seismic)
+      ? null
+      : overlay;
 
   // Picking up a building and using a tool are two jobs for the same click,
   // so exactly one is ever live.
@@ -145,6 +159,13 @@ export default function App() {
     const applied = store.dispatch({ type: 'readLetter' });
     if (applied) void autosave(store.getSnapshot().run!);
     setOverlay(null);
+  }
+  function chooseEvent(instanceId: string, choiceId: string) {
+    const applied = store.dispatch({ type: 'resolveEvent', instanceId, choiceId });
+    if (applied) {
+      void autosave(store.getSnapshot().run!);
+      setOverlay((cur) => (cur === 'event' ? null : cur));
+    }
   }
   function hire(candidateId: string, programId: string | null) {
     store.dispatch({ type: 'hire', candidateId, programId });
@@ -217,15 +238,28 @@ export default function App() {
     );
   }
 
-  // The NEXT slot: Founders Hall while siting; the beat while one holds the
-  // clock; otherwise nothing, honestly.
+  // The NEXT slot: Founders Hall while siting; then whatever is holding the
+  // clock — a seismic event's letter, the board's, a beat — and otherwise
+  // nothing, honestly.
   const next: NextPrompt | null = siting
     ? { text: 'Place Founders Hall on the land', go: effectiveOverlay ? 'campus' : undefined }
-    : letter
-      ? { text: BOARD_WORDS.letterPrompt, go: 'letter', urgent: effectiveOverlay !== 'letter' }
-      : beat
-        ? { text: beat.prompt, go: 'beat', urgent: effectiveOverlay !== 'beat' }
-        : null;
+    : seismic
+      ? {
+          text: eventById(seismic.eventId).title ?? 'A letter is waiting',
+          go: 'event',
+          urgent: effectiveOverlay !== 'event',
+        }
+      : letter
+        ? { text: BOARD_WORDS.letterPrompt, go: 'letter', urgent: effectiveOverlay !== 'letter' }
+        : beat
+          ? { text: beat.prompt, go: 'beat', urgent: effectiveOverlay !== 'beat' }
+          : inlineEvent && effectiveOverlay
+            ? // The panel lives on the strip, over the map, and says all
+              // this itself when it is in view. From inside a screen, where
+              // it steps aside, the slot names the question and takes you
+              // back out to it rather than opening a second thing on top.
+              { text: eventPrompt(inlineEvent), go: 'campus' }
+            : null;
   const latest = lastEntry(state);
   const notice: Notice | null = latest
     ? {
@@ -291,10 +325,16 @@ export default function App() {
       {debugOpen && <DebugPanel onClose={() => setDebugOpen(false)} />}
 
       <div className="app">
+        {/* Inline means inline: the panel belongs to the strip and the map
+            under it, and steps aside for a screen rather than floating over
+            that screen's own buttons. */}
+        {inlineEvent && !effectiveOverlay && (
+          <EventPrompt state={state} pending={inlineEvent} onChoose={chooseEvent} />
+        )}
         <LogTicker
           notice={notice}
           next={next}
-          onGo={(go) => openTab(go === 'beat' || go === 'letter' ? go : null)}
+          onGo={(go) => openTab(go === 'campus' ? null : go)}
           journalOpen={journalOpen}
           onToggleJournal={toggleJournal}
         />
@@ -304,7 +344,11 @@ export default function App() {
           speed={speed}
           weekProgress={weekProgress}
           active={
-            effectiveOverlay === 'beat' || effectiveOverlay === 'letter' ? null : effectiveOverlay
+            effectiveOverlay === 'beat' ||
+            effectiveOverlay === 'letter' ||
+            effectiveOverlay === 'event'
+              ? null
+              : effectiveOverlay
           }
           onChangeTab={openTab}
           onSetSpeed={(s) => store.setSpeed(s)}
@@ -314,7 +358,13 @@ export default function App() {
             setBuildOpen(!effectiveBuildOpen);
           }}
           ringBuild={false}
-          heldFor={letter ? 'a letter from the board' : (beat?.name ?? null)}
+          heldFor={
+            seismic
+              ? (eventById(seismic.eventId).title ?? 'a letter')
+              : letter
+                ? 'a letter from the board'
+                : (beat?.name ?? null)
+          }
         />
         {effectiveBuildOpen && (
           <BuildPopup
@@ -329,6 +379,9 @@ export default function App() {
           />
         )}
         {journalOpen && <JournalPopup state={state} onClose={() => setJournalOpen(false)} />}
+        {effectiveOverlay === 'event' && seismic && (
+          <EventLetter state={state} pending={seismic} onChoose={chooseEvent} />
+        )}
         {effectiveOverlay === 'letter' && letter && (
           <BoardLetter state={state} letterId={letter} onRead={readLetter} />
         )}
@@ -341,63 +394,66 @@ export default function App() {
             onHire={hire}
           />
         )}
-        {effectiveOverlay && effectiveOverlay !== 'beat' && effectiveOverlay !== 'letter' && (
-          <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
-            {effectiveOverlay === 'treasury' ? (
-              <TreasuryScreen state={state} />
-            ) : effectiveOverlay === 'students' ? (
-              <StudentsScreen
-                state={state}
-                onReunion={(classYear) => {
-                  store.dispatch({ type: 'holdReunion', classYear });
-                }}
-              />
-            ) : effectiveOverlay === 'faculty' ? (
-              <FacultyScreen
-                state={state}
-                onHire={hire}
-                onAssign={(facultyId, programId) => {
-                  store.dispatch({ type: 'assignFaculty', facultyId, programId });
-                }}
-                onDismiss={(facultyId) => {
-                  store.dispatch({ type: 'dismiss', facultyId });
-                }}
-              />
-            ) : effectiveOverlay === 'curriculum' ? (
-              <CurriculumScreen
-                state={state}
-                financing={financing}
-                onFound={(schoolId, placementId, payWith) => {
-                  store.dispatch({
-                    type: 'foundSchool',
-                    schoolId,
-                    placementId,
-                    financing: payWith,
-                  });
-                }}
-                onOpen={(programId, payWith) => {
-                  store.dispatch({ type: 'openProgram', programId, financing: payWith });
-                }}
-                onClose={(programId) => {
-                  store.dispatch({ type: 'closeProgram', programId });
-                }}
-                onAdvance={(programId, payWith) => {
-                  store.dispatch({ type: 'advanceProgram', programId, financing: payWith });
-                }}
-                onSignature={(programId, signature) => {
-                  store.dispatch({
-                    type: signature ? 'designateSignature' : 'revokeSignature',
-                    programId,
-                  });
-                }}
-              />
-            ) : (
-              <StubScreen phase={tabById(effectiveOverlay).phase}>
-                {tabById(effectiveOverlay).stub}
-              </StubScreen>
-            )}
-          </TabOverlay>
-        )}
+        {effectiveOverlay &&
+          effectiveOverlay !== 'beat' &&
+          effectiveOverlay !== 'letter' &&
+          effectiveOverlay !== 'event' && (
+            <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
+              {effectiveOverlay === 'treasury' ? (
+                <TreasuryScreen state={state} />
+              ) : effectiveOverlay === 'students' ? (
+                <StudentsScreen
+                  state={state}
+                  onReunion={(classYear) => {
+                    store.dispatch({ type: 'holdReunion', classYear });
+                  }}
+                />
+              ) : effectiveOverlay === 'faculty' ? (
+                <FacultyScreen
+                  state={state}
+                  onHire={hire}
+                  onAssign={(facultyId, programId) => {
+                    store.dispatch({ type: 'assignFaculty', facultyId, programId });
+                  }}
+                  onDismiss={(facultyId) => {
+                    store.dispatch({ type: 'dismiss', facultyId });
+                  }}
+                />
+              ) : effectiveOverlay === 'curriculum' ? (
+                <CurriculumScreen
+                  state={state}
+                  financing={financing}
+                  onFound={(schoolId, placementId, payWith) => {
+                    store.dispatch({
+                      type: 'foundSchool',
+                      schoolId,
+                      placementId,
+                      financing: payWith,
+                    });
+                  }}
+                  onOpen={(programId, payWith) => {
+                    store.dispatch({ type: 'openProgram', programId, financing: payWith });
+                  }}
+                  onClose={(programId) => {
+                    store.dispatch({ type: 'closeProgram', programId });
+                  }}
+                  onAdvance={(programId, payWith) => {
+                    store.dispatch({ type: 'advanceProgram', programId, financing: payWith });
+                  }}
+                  onSignature={(programId, signature) => {
+                    store.dispatch({
+                      type: signature ? 'designateSignature' : 'revokeSignature',
+                      programId,
+                    });
+                  }}
+                />
+              ) : (
+                <StubScreen phase={tabById(effectiveOverlay).phase}>
+                  {tabById(effectiveOverlay).stub}
+                </StubScreen>
+              )}
+            </TabOverlay>
+          )}
       </div>
     </div>
   );

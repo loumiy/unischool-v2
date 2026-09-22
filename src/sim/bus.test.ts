@@ -159,6 +159,8 @@ describe('calendar beats (DD §3.3)', () => {
       describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
     const termLine = (i: number) =>
       describeEntry(entriesOfKind(run.state, 'termClosed')[i]!, run.state).text;
+    const eventLine = (kind: 'eventFired' | 'eventResolved') =>
+      describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
     expect(history).toEqual([
       'Blackmoor College is chartered.',
       'Ground is broken for Founders Hall.',
@@ -171,8 +173,12 @@ describe('calendar beats (DD §3.3)', () => {
       line('admissionsClosed'),
       'The admissions file closes.',
       'Founders Hall opens.',
+      // An event asks, goes unanswered for its four weeks, and settles
+      // into its stated default (events.ts).
+      eventLine('eventFired'),
       'Summer Term begins.',
       termLine(1),
+      eventLine('eventResolved'),
       'Budget & Hiring. The ledger is open, and so is the market.',
       'The hiring market opens: 8 candidates listed.',
       'The Year 2 budget is approved at a 4.5% draw.',
@@ -190,6 +196,8 @@ describe('calendar beats (DD §3.3)', () => {
         .map((e) => describeEntry(e, run.state).text),
       'Convocation. The new class is on the lawn.',
     ]);
+    expect(eventLine('eventFired')).toMatch(/^The Committee on Committee Reform/);
+    expect(eventLine('eventResolved')).toMatch(/, by default\.$/);
     expect(entriesOfKind(run.state, 'studentsNamed')).toHaveLength(1);
     expect(describeEntry(entriesOfKind(run.state, 'studentsNamed')[0]!, run.state).text).toMatch(
       /^The game will be following .+ of the Class of '05\.$/,

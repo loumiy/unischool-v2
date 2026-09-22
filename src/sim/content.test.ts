@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { beatsAt, CALENDAR_BEATS } from '../content/calendarBeats.ts';
-import { arr, ContentError, int, obj, oneOf, str, uniqueBy, validate } from '../content/schema.ts';
+import {
+  arr,
+  ContentError,
+  int,
+  obj,
+  oneOf,
+  optional,
+  str,
+  uniqueBy,
+  validate,
+} from '../content/schema.ts';
 
 describe('content: calendar beats', () => {
   it('loads the four annual beats (DD §3.3)', () => {
@@ -39,6 +49,19 @@ describe('content: schema', () => {
     expect(() => validate(schema, { id: 'x', n: 1, kind: 'a', extra: true }, 'f')).toThrow(
       'f.extra: unknown field',
     );
+  });
+
+  it('leaves an absent optional field absent', () => {
+    // Not cosmetic: a key present with an undefined value survives
+    // Object.keys and Object.entries, and content code counts and
+    // iterates those — an event's effects map reached its levers with
+    // `undefined` amounts and turned every figure it touched into NaN.
+    const loose = obj({ id: str, note: optional(str), n: optional(int) });
+    const parsed = validate(loose, { id: 'x' }, 'f');
+    expect(parsed).toEqual({ id: 'x' });
+    expect(Object.keys(parsed)).toEqual(['id']);
+    expect('note' in parsed).toBe(false);
+    expect(validate(loose, { id: 'x', n: 2 }, 'f')).toEqual({ id: 'x', n: 2 });
   });
 
   it('rejects duplicate ids', () => {

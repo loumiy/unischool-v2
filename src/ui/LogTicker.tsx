@@ -9,7 +9,7 @@ import { LogIcon } from './icons.tsx';
 
 export interface NextPrompt {
   text: string;
-  go?: 'campus' | 'beat' | 'letter';
+  go?: 'campus' | 'beat' | 'letter' | 'event';
   urgent?: boolean;
 }
 

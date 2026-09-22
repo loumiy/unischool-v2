@@ -10,6 +10,7 @@ import {
   ATTRITION_MAX,
   ATTRITION_PER_POINT,
   ATTRITION_PER_QUALITY_POINT,
+  MOOD_DECAY_PER_YEAR,
   ATTRITION_QUALITY_LINE,
   OUTCOME_ADRIFT_BASE,
   OUTCOME_ADRIFT_MAX,
@@ -42,6 +43,7 @@ import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import type { Placement } from './campus.ts';
 import { openPlacements } from './estate.ts';
 import { memoryFor, warmthFor } from './alumni.ts';
+import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import {
   nameNewcomers,
@@ -122,6 +124,9 @@ export interface People {
   // carrying no number the sim reads back.
   named: NamedStudent[];
   nextStudentId: number;
+  // What the last few events left them feeling (events.ts), in
+  // satisfaction points; it fades over a couple of years.
+  mood: number;
 }
 
 export function foundingPeople(): People {
@@ -134,6 +139,7 @@ export function foundingPeople(): People {
     alumni: [],
     named: [],
     nextStudentId: 1,
+    mood: 0,
   };
 }
 
@@ -379,7 +385,8 @@ export function campusCondition(state: GameState): number {
 // Satisfaction, term by term (DD §8.3): what the campus gives them —
 // housing, dining, seats, the state of the buildings — the teaching
 // (faculty.ts) and the faculty's quirks, what the layout is worth
-// (placement.ts, capped) and the conditions of the day (the ladder). Every term is a
+// (placement.ts, capped), what the events have left them feeling, and the
+// conditions of the day (the ladder). Every term is a
 // signed number of points, so the debug panel can trace cause to effect.
 // Student life arrives with its phase.
 export interface SatisfactionBreakdown {
@@ -391,6 +398,7 @@ export interface SatisfactionBreakdown {
   teaching: number;
   morale: number;
   placement: number;
+  events: number;
   conditions: number;
   total: number; // clamped 0–100
 }
@@ -407,6 +415,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     teaching: teachingSatisfaction(state),
     morale: quirkMorale(state),
     placement: placementSatisfaction(state).applied,
+    events: state.people.mood,
     conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
   };
   const sum =
@@ -418,6 +427,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     b.teaching +
     b.morale +
     b.placement +
+    b.events +
     b.conditions;
   return { ...b, total: Number(Math.min(100, Math.max(0, sum)).toFixed(1)) };
 }
@@ -566,7 +576,15 @@ export function arrive(state: GameState): GameState {
     },
   };
   const beats = tellYearBeats(next, enrolledBefore > 0 ? left / enrolledBefore : 0);
-  next = { ...next, people: { ...next.people, named: beats.named } };
+  next = {
+    ...next,
+    people: {
+      ...next.people,
+      named: beats.named,
+      // What the events did fades over a couple of years (events.ts).
+      mood: fadeMood(next.people.mood, MOOD_DECAY_PER_YEAR),
+    },
+  };
   if (left > 0) next = emit(next, { kind: 'studentsLeft', count: left });
   if (incoming && incoming.size > 0) {
     const triples = Math.max(0, total - campusCapacity(state).beds);

@@ -344,3 +344,28 @@ export const GIVING_YOUNG_SHARE = 0.15;
 export const REUNION_COST_PER_HEAD = 90;
 export const REUNION_WARMTH = 4;
 export const REUNION_WARMTH_CAP = 12;
+
+// ---------- The event engine (DD §10.1, §17.3, Phase 17) ----------
+
+// How often the world punches. The DD budgets about one player-decided
+// event every two to four weeks at mid-game; the engine rolls each week
+// against this, more often when the college is in trouble and never while
+// something is already waiting.
+export const EVENT_WEEKLY_ODDS = 1 / 14;
+export const EVENT_DISTRESS_ODDS = 0.02; // added per rung on the ladder
+export const EVENT_QUIET_WEEKS = 3; // after one resolves, before another can fire
+
+// Consequence-weighted sourcing (DD §10.1): an event whose preconditions
+// the player caused is preferred over one that could fire anywhere. Every
+// condition an event names multiplies its weight by this.
+export const EVENT_CONSEQUENCE_WEIGHT = 1.8;
+
+// A seismic event is rare and holds the clock; the engine will not deal
+// one until the run has some history to shake.
+export const SEISMIC_MIN_YEAR = 6;
+export const SEISMIC_ODDS_SHARE = 0.08; // of events fired, roughly
+
+// Mood: what the last few events left the students feeling, in
+// satisfaction points. It fades toward nothing over a couple of years.
+export const MOOD_CAP = 10;
+export const MOOD_DECAY_PER_YEAR = 0.5;

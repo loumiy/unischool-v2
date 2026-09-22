@@ -223,10 +223,20 @@ describe('maintenance, backlog and renovation (DD §6.4)', () => {
     expect(worn.condition).toBeLessThan(DERELICT_CONDITION);
     expect(worn.backlog).toBeGreaterThan(HALL.upkeep * 20);
     expect(renovationCost(worn)).toBeGreaterThan(HALL.upkeep * 20);
-    // Neglect saved cash along the way...
-    expect(neglected.state.treasury.cash).toBeGreaterThan(kept.state.treasury.cash);
+    // Neglect saved cash along the way — read off the maintenance line
+    // rather than the balance, which two runs of twenty years move for a
+    // hundred reasons that have nothing to do with the roof.
+    const years = Math.min(
+      neglected.state.treasury.history.length,
+      kept.state.treasury.history.length,
+    );
+    const upkeepSpent = (run: Run) =>
+      run.state.treasury.history
+        .slice(0, years)
+        .reduce((total, y) => total + y.expenses.maintenance, 0);
+    const saved = upkeepSpent(kept) - upkeepSpent(neglected);
+    expect(saved).toBeGreaterThan(0);
     // ...but the bill to put it right exceeds what was saved.
-    const saved = neglected.state.treasury.cash - kept.state.treasury.cash;
     expect(renovationCost(worn)).toBeGreaterThan(saved);
   });
 

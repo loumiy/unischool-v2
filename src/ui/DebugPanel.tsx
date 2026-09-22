@@ -21,6 +21,7 @@ import {
   SPEEDS,
   WEEKS_PER_YEAR,
 } from '../sim/index.ts';
+import { EVENTS } from '../content/events.ts';
 import { programById } from '../content/schools.ts';
 import { autosave, randomSeed } from './boot.ts';
 import {
@@ -48,6 +49,7 @@ function formatSaved(at: string): string {
 export default function DebugPanel({ onClose }: { onClose: () => void }) {
   const { run, speed, lastAutosave } = useGame();
   const [label, setLabel] = useState('');
+  const [eventPick, setEventPick] = useState(EVENTS[0]!.id);
   const [seedInput, setSeedInput] = useState('');
   const [slots, setSlots] = useState<SlotSummary[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
@@ -158,6 +160,16 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           <dd>
             {state.distress.rung} / {state.distress.confidence}
           </dd>
+          <dt>Event</dt>
+          <dd>
+            {state.events.pending.length > 0
+              ? state.events.pending.map((p) => `${p.eventId} (w${p.expiresWeek})`).join(', ')
+              : '—'}
+          </dd>
+          <dt>Events asked / mood</dt>
+          <dd>
+            {state.events.history.length} / {state.people.mood.toFixed(2)}
+          </dd>
           <dt>Cash / endowment</dt>
           <dd>
             {formatMoney(state.treasury.cash)} / {formatMoney(state.treasury.endowment)}
@@ -184,6 +196,7 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
                     'teaching',
                     'morale',
                     'placement',
+                    'events',
                     'conditions',
                   ] as const
                 ).map((k) => (
@@ -251,6 +264,31 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           </button>
           <button disabled={!running} onClick={() => store.stepWeeks(WEEKS_PER_YEAR)}>
             +1 year
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <h3>Events</h3>
+        {/* The authoring loop for a content file that grows to ~140
+            events (DD §14): write one, fire it, read it in the ticker. */}
+        <div className="row">
+          <select
+            value={eventPick}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) => setEventPick(e.target.value)}
+          >
+            {EVENTS.map((e) => (
+              <option key={e.id} value={e.id}>
+                {e.kind === 'seismic' ? '⚡ ' : ''}
+                {e.id}
+              </option>
+            ))}
+          </select>
+          <button
+            disabled={!running}
+            onClick={() => store.dispatch({ type: 'debug/fireEvent', eventId: eventPick })}
+          >
+            Fire
           </button>
         </div>
       </section>

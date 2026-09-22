@@ -60,10 +60,12 @@ describe('satisfaction as a sum of terms (DD §8.3)', () => {
       b.teaching +
       b.morale +
       b.placement +
+      b.events +
       b.conditions;
     expect(b.total).toBe(Number(Math.min(100, Math.max(0, sum)).toFixed(1)));
     expect(b.base).toBe(SATISFACTION_BASE);
     expect(b.placement).toBe(placementSatisfaction(run.state).applied);
+    expect(b.events).toBe(run.state.people.mood);
     expect(b.conditions).toBe(-RUNG_SATISFACTION_PENALTY[RUNG_SOUND]);
     expect(satisfactionFor(run.state, total)).toBe(b.total);
     const austere = { ...run.state, distress: { ...run.state.distress, rung: RUNG_AUSTERITY } };

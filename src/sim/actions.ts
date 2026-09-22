@@ -60,6 +60,8 @@ import {
 } from './faculty.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
+import { eventById, findEvent } from '../content/events.ts';
+import { fireEvent, resolveEvent } from './events.ts';
 import { holdReunion, reunionCost, reunionRoom } from './alumni.ts';
 import { approveBudget } from './treasury.ts';
 
@@ -92,6 +94,9 @@ export type Action =
   // A class brought back for a reunion (DD §8.4): it costs, and it warms
   // them a little, and only so far.
   | { type: 'holdReunion'; classYear: number }
+  // An event answered (DD §10.1). Unanswered, it settles into its stated
+  // default after its few weeks, which the engine does on its own.
+  | { type: 'resolveEvent'; instanceId: string; choiceId: string }
   // Resolves the calendar beat holding the clock (beats.ts), carrying the
   // beat's decision. Every field is optional: absent, the beat resolves to
   // its stated default (DD §3.3). Budget & Hiring: the endowment draw rate
@@ -126,7 +131,9 @@ export type Action =
   | { type: 'hire'; candidateId: string; programId?: string | null }
   | { type: 'assignFaculty'; facultyId: string; programId: string | null }
   | { type: 'dismiss'; facultyId: string }
-  | { type: 'debug/mark'; label: string };
+  | { type: 'debug/mark'; label: string }
+  // Puts a named event on the docket now, for authoring and inspection.
+  | { type: 'debug/fireEvent'; eventId: string };
 
 export type ActionType = Action['type'];
 
@@ -231,6 +238,15 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!canPay(state, reunionCost(alumni), 'cash')) return no('not enough cash');
       return YES;
     }
+    case 'resolveEvent': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const pending = state.events.pending.find((p) => p.instanceId === action.instanceId);
+      if (!pending) return no('no such event is waiting');
+      const def = eventById(pending.eventId);
+      if (!def.choices.some((c) => c.id === action.choiceId))
+        return no(`${action.choiceId} is not one of its choices`);
+      return YES;
+    }
     case 'resolveBeat':
       if (state.distress.pendingLetter !== null) return no('a letter from the board is waiting');
       if (state.pendingBeat === null) return no('no beat is waiting');
@@ -323,6 +339,12 @@ export function canApply(state: GameState, action: Action): Verdict {
       return YES;
     }
     case 'debug/mark':
+      return YES;
+    case 'debug/fireEvent':
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (findEvent(action.eventId) === undefined) return no('no such event');
+      if (state.events.pending.some((p) => p.eventId === action.eventId))
+        return no('that one is already waiting');
       return YES;
   }
 }
@@ -476,6 +498,8 @@ export function applyAction(state: GameState, action: Action): GameState {
         { kind: 'reunionHeld', classYear: action.classYear, warmth: warmed.warmth },
       );
     }
+    case 'resolveEvent':
+      return resolveEvent(state, action.instanceId, action.choiceId);
     case 'readLetter':
       return readLetter(state);
     case 'foundSchool':
@@ -498,5 +522,7 @@ export function applyAction(state: GameState, action: Action): GameState {
       return dismissFaculty(state, action.facultyId);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
+    case 'debug/fireEvent':
+      return fireEvent(state, action.eventId);
   }
 }

@@ -1,0 +1,294 @@
+{
+  "events": [
+    {
+      "id": "parking-study",
+      "kind": "inline",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": { "yearAtLeast": 3 },
+      "text": "The Faculty Senate has voted 31–2 to express 'grave concern' about the parking situation. It is unclear what they would like you to do, and neither of the two dissenters can be located.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "study",
+          "label": "Fund a parking study",
+          "note": "$250k",
+          "effects": { "cash": -250000, "confidence": 1 }
+        },
+        {
+          "id": "concern",
+          "label": "Express reciprocal concern",
+          "note": "Free",
+          "effects": { "mood": -1 }
+        }
+      ],
+      "default": "concern"
+    },
+    {
+      "id": "roof-goes",
+      "kind": "inline",
+      "weight": 4,
+      "cooldownYears": 4,
+      "when": { "backlogOver": 400000 },
+      "text": "A section of roof has come off {building} in the night. Facilities has cordoned off the quad beneath it and described the timber, in writing, as 'no longer load-bearing in the usual sense'.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "fix",
+          "label": "Make it good now",
+          "note": "$900k",
+          "effects": { "cash": -900000, "backlog": -900000, "mood": 2 }
+        },
+        {
+          "id": "tarpaulin",
+          "label": "Tarpaulin and a fundraising appeal",
+          "note": "Cheap; the hole stays",
+          "effects": { "cash": -60000, "backlog": 250000, "mood": -3 }
+        }
+      ],
+      "default": "tarpaulin"
+    },
+    {
+      "id": "triples-letter",
+      "kind": "inline",
+      "weight": 4,
+      "cooldownYears": 3,
+      "when": { "triplesOver": 60 },
+      "text": "Students in the overflow rooms have written a joint letter. It is polite, it is numbered, and it has been copied to the local paper.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "rebate",
+          "label": "Rebate their housing fee",
+          "note": "Costs; they notice",
+          "effects": { "cash": -180000, "mood": 4 }
+        },
+        {
+          "id": "meet",
+          "label": "Meet the signatories",
+          "note": "Free; they are not stupid",
+          "effects": { "mood": 1, "confidence": -1 }
+        },
+        {
+          "id": "ignore",
+          "label": "Thank them for their letter",
+          "note": "Nothing happens, loudly",
+          "effects": { "mood": -4, "confidence": -1 }
+        }
+      ],
+      "default": "ignore"
+    },
+    {
+      "id": "committee-reform",
+      "kind": "inline",
+      "weight": 2,
+      "cooldownYears": 10,
+      "when": { "adminShareOver": 0.35 },
+      "text": "The Committee on Committee Reform has reported. Its principal recommendation is the establishment of a standing subcommittee to monitor implementation.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "adopt",
+          "label": "Adopt the recommendation",
+          "note": "$120k a year, forever",
+          "effects": { "cash": -120000, "confidence": 1 }
+        },
+        {
+          "id": "thank",
+          "label": "Thank the committee and dissolve it",
+          "note": "Free; some feelings",
+          "effects": { "confidence": -1, "mood": 1 }
+        }
+      ],
+      "default": "thank"
+    },
+    {
+      "id": "anonymous-gift",
+      "kind": "inline",
+      "weight": 2,
+      "cooldownYears": 6,
+      "when": { "alumniOver": 400 },
+      "text": "An alumna of the {class} has left the college $1.2M, on the single condition that it never be spent on administration. Her solicitor was firm about this and appears to have enjoyed saying it.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "buildings",
+          "label": "Put it into the buildings",
+          "note": "Clears backlog",
+          "effects": { "cash": 1200000, "backlog": -1200000, "mood": 2 }
+        },
+        {
+          "id": "endowment",
+          "label": "Put it into the endowment",
+          "note": "Quietly, forever",
+          "effects": { "endowment": 1200000, "confidence": 2 }
+        }
+      ],
+      "default": "endowment"
+    },
+    {
+      "id": "star-poached",
+      "kind": "inline",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": { "facultyOver": 2 },
+      "text": "{faculty} has an offer from a college with a larger endowment and a worse library. They have brought you the letter, which is either a courtesy or an opening bid.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "counter",
+          "label": "Counter the offer",
+          "note": "$40k a year more, for good",
+          "effects": { "cash": -40000, "mood": 1, "confidence": -1 }
+        },
+        {
+          "id": "wish",
+          "label": "Wish them well",
+          "note": "They go",
+          "effects": { "mood": -2 }
+        }
+      ],
+      "default": "wish"
+    },
+    {
+      "id": "heating-fails",
+      "kind": "inline",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": { "conditionUnder": 0.8, "enrolledOver": 40 },
+      "text": "The heating has failed across the older buildings in the third week of a cold term. Students are attending lectures in coats and have begun, inevitably, to enjoy it.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "emergency",
+          "label": "Emergency contractors",
+          "note": "$400k, this week",
+          "effects": { "cash": -400000, "mood": 2 }
+        },
+        {
+          "id": "blankets",
+          "label": "Blankets and an apology",
+          "note": "$15k, and a memory",
+          "effects": { "cash": -15000, "mood": -3 }
+        }
+      ],
+      "default": "blankets"
+    },
+    {
+      "id": "prize-won",
+      "kind": "inline",
+      "weight": 2,
+      "cooldownYears": 5,
+      "when": { "teachingOver": 55 },
+      "text": "A student of {program} has won a national prize, and the local paper has run the photograph large. The department is behaving as though it planned this.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "celebrate",
+          "label": "Throw them a proper reception",
+          "note": "$30k",
+          "effects": { "cash": -30000, "mood": 3, "confidence": 1 }
+        },
+        {
+          "id": "note",
+          "label": "A note of congratulation",
+          "note": "Free",
+          "effects": { "mood": 1 }
+        }
+      ],
+      "default": "note"
+    },
+    {
+      "id": "auditors",
+      "kind": "inline",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": { "rungAtLeast": 2 },
+      "text": "The auditors have asked, in a footnote, whether the college's reserves policy is 'documented anywhere'. It is not, and writing one down now would mean writing down what it has been.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "write",
+          "label": "Write the policy honestly",
+          "note": "The board reads it",
+          "effects": { "confidence": -3, "mood": 1 }
+        },
+        {
+          "id": "defer",
+          "label": "Undertake to review it next year",
+          "note": "Free, for a year",
+          "effects": { "confidence": 1 }
+        }
+      ],
+      "default": "defer"
+    },
+    {
+      "id": "storm",
+      "kind": "seismic",
+      "weight": 3,
+      "cooldownYears": 15,
+      "when": { "yearAtLeast": 6, "buildingsOver": 2 },
+      "title": "The storm",
+      "text": "The storm came through on the Tuesday night and took the roofs off two buildings, a run of mature limes along the north walk, and the temporary structure nobody had got round to making permanent. Nobody was hurt. The engineers' report is nine pages long and uses the word 'char' as a verb, which the insurers have queried.\n\nThe college has been here before and the minutes say so: in the founder's time the same wind took the chapel and the response, recorded with some satisfaction, was to build it back higher.",
+      "timeoutWeeks": 6,
+      "choices": [
+        {
+          "id": "rebuild",
+          "label": "Rebuild properly",
+          "note": "$3.5M now; the campus is whole",
+          "effects": { "cash": -3500000, "backlog": -1500000, "mood": 4, "confidence": 2 }
+        },
+        {
+          "id": "patch",
+          "label": "Make safe and defer the rest",
+          "note": "$600k; the backlog carries it",
+          "effects": { "cash": -600000, "backlog": 1800000, "mood": -2 }
+        },
+        {
+          "id": "appeal",
+          "label": "Launch a storm appeal",
+          "note": "The alumni are asked, and remember being asked",
+          "effects": { "cash": 900000, "backlog": 600000, "warmth": -2, "mood": 1 }
+        }
+      ],
+      "default": "patch"
+    },
+    {
+      "id": "recession",
+      "kind": "seismic",
+      "weight": 3,
+      "cooldownYears": 20,
+      "when": { "yearAtLeast": 10, "endowmentOver": 20000000 },
+      "title": "The markets",
+      "text": "The markets have done in a fortnight what they usually take a decade to do. The endowment is worth materially less than it was at breakfast on the Monday, the investment committee has asked for a special meeting, and three members of it have separately telephoned to say they were always uneasy about the allocation.\n\nNone of this changes what the college costs to run this year. That is the whole of the problem.",
+      "timeoutWeeks": 6,
+      "choices": [
+        {
+          "id": "ride",
+          "label": "Ride it out on the standing draw",
+          "note": "The endowment takes it",
+          "effects": { "endowment": -4000000, "confidence": -2 }
+        },
+        {
+          "id": "cut",
+          "label": "Cut this year's spending to match",
+          "note": "$1.5M out of the year",
+          "effects": { "cash": -1500000, "mood": -4, "confidence": 3 }
+        }
+      ],
+      "default": "ride"
+    }
+  ],
+  "readings": {
+    "pending": "What the world is asking you about now. An inline event waits a few weeks and then resolves itself the way the ticker says it will.",
+    "mood": "How the last few events have left the students feeling; it fades over a year or two.",
+    "history": "Every event this run and what was chosen."
+  },
+  "lines": {
+    "timeout": "{choice}, by default.",
+    "resolved": "{choice}.",
+    "expiresIn": "{weeks} weeks to decide",
+    "expiresSoon": "Decides itself next week",
+    "defaultNote": "Left alone, this settles as: {choice}."
+  }
+}

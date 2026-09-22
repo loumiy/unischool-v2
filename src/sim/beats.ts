@@ -1,6 +1,8 @@
 import { beatById, beatsAt, type CalendarBeat } from '../content/calendarBeats.ts';
 import type { Action } from './actions.ts';
 import type { Clock } from './calendar.ts';
+import { eventById } from '../content/events.ts';
+import { pendingSeismic } from './events.ts';
 import { clockRuns, type GameState } from './state.ts';
 
 // CALENDAR BEATS IN THE SIM (DD §3.3). A beat fires on the tick that lands
@@ -23,7 +25,11 @@ export function pendingBeat(state: GameState): CalendarBeat | null {
 // A beat, or a letter from the board, is waiting on the player: the clock
 // does not move.
 export function clockHeld(state: GameState): boolean {
-  return state.pendingBeat !== null || state.distress.pendingLetter !== null;
+  return (
+    state.pendingBeat !== null ||
+    state.distress.pendingLetter !== null ||
+    pendingSeismic(state) !== null
+  );
 }
 
 // The clock is running AND nothing holds it — the driver's one question.
@@ -38,6 +44,16 @@ export function clockAdvances(state: GameState): boolean {
 // acknowledged; later phases give each beat real defaults (last year's
 // tuition, the proposed budget) and this is where they resolve to.
 export function defaultResolution(state: GameState): Action | null {
+  // A seismic event holds the clock like a letter; left alone it settles
+  // into its stated default (DD §10.1).
+  const seismic = pendingSeismic(state);
+  if (seismic) {
+    return {
+      type: 'resolveEvent',
+      instanceId: seismic.instanceId,
+      choiceId: eventById(seismic.eventId).default,
+    };
+  }
   if (state.distress.pendingLetter !== null) return { type: 'readLetter' };
   if (state.pendingBeat === null) return null;
   return { type: 'resolveBeat', beatId: state.pendingBeat };
