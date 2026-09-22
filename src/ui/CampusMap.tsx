@@ -36,6 +36,7 @@ import {
 } from '../tuning.ts';
 import { depthOrder, type DepthBox } from './map/depthSort.ts';
 import { groundGeometry, TerrainLayer } from './map/ground.tsx';
+import { STOREY } from './map/scale.ts';
 import {
   DEFAULT_CAMERA,
   PITCHES,
@@ -84,6 +85,18 @@ const KEY_PAN_SPEED = 1100;
 // How long a quarter turn takes. Short, because every frame of it
 // re-projects the campus (Phase 21A measured it on a full map).
 const TURN_MS = 260;
+// How far below the middle of the screen a turn pivots, as a share of one
+// storey. A building is drawn standing up from its footprint, so a hall the
+// player has centred has its base lower on screen than its mass — and the
+// mass is what they mean by "this building". Pivoting about the ground
+// directly under the middle therefore swings the thing they are looking at.
+//
+// Swept on the mature and dense-campus fixtures: at zero a centred hall
+// wanders 54px and does not come back, at two storeys it over-corrects, and
+// at about one and a fifth it holds within 30px through a quarter turn and
+// returns to where it started after four. Not half the building's height,
+// because the projection foreshortens and a roof reads higher than it stands.
+const PIVOT_STOREYS = 1.2;
 const MAX_PAN_FRAME_S = 0.1;
 const WORLD_TOP_HEADROOM = 140;
 const MAP_PADDING = 64;
@@ -446,8 +459,14 @@ export default function CampusMap({
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
   const stanceRef = useRef({ view: 0, pitch: 0 });
-  // The quarter turn in flight, if there is one.
-  const turnRef = useRef<{ frame: number; to: number } | null>(null);
+  // The quarter turn in flight, if there is one, and the point it is going
+  // round.
+  const turnRef = useRef<{
+    frame: number;
+    to: number;
+    anchor: { col: number; row: number };
+  } | null>(null);
+  const anchorRef = useRef<{ col: number; row: number } | null>(null);
 
   // A fresh pickup starts unrotated, and entering or leaving a tool closes
   // the inspector and drops the ghost — resets keyed on the prop itself,
@@ -522,17 +541,48 @@ export default function CampusMap({
     paintLabels(cursorRef.current);
   }
 
-  function applyCamera(next: Camera) {
+  // THE PIVOT. Turning and tilting hold one point still: whatever the
+  // player has in the middle of the screen. The point is found once, when
+  // the movement starts, and put back under the middle after every step of
+  // it, so a building the player is looking at is the thing the camera
+  // goes round rather than something that swings past.
+  function centreOfScreen() {
     const rect = svgRef.current?.getBoundingClientRect();
-    const px = rect ? rect.width / 2 : 0;
-    const py = rect ? rect.height / 2 : 0;
-    const v = viewRef.current;
-    const g = unproject((px - v.x) / v.zoom, (py - v.y) / v.zoom);
-    const applied = setCamera(next);
-    const w = project(g.col, g.row);
-    applyView({ x: px - w.x * v.zoom, y: py - w.y * v.zoom, zoom: v.zoom });
-    setCameraState(applied);
+    const lift = PIVOT_STOREYS * STOREY * (viewRef.current?.zoom ?? 1);
+    return { px: rect ? rect.width / 2 : 0, py: (rect ? rect.height / 2 : 0) + lift };
   }
+
+  function groundUnderCentre(): { col: number; row: number } {
+    const { px, py } = centreOfScreen();
+    const v = viewRef.current;
+    return unproject((px - v.x) / v.zoom, (py - v.y) / v.zoom);
+  }
+
+  // Slide the view so `anchor` sits under the middle again. Reads the
+  // projection as it stands, so it must run AFTER the polygons for this
+  // camera are in the DOM — see the layout effect below.
+  function holdAnchor(anchor: { col: number; row: number }) {
+    const { px, py } = centreOfScreen();
+    const v = viewRef.current;
+    const w = project(anchor.col, anchor.row);
+    applyView({ x: px - w.x * v.zoom, y: py - w.y * v.zoom, zoom: v.zoom });
+  }
+
+  function applyCamera(next: Camera, anchor?: { col: number; row: number }) {
+    anchorRef.current = anchor ?? groundUnderCentre();
+    setCameraState(setCamera(next));
+  }
+  // The polygons are projected from `camera` during render (setCamera above),
+  // so the transform that holds the pivot still cannot be written until that
+  // render is in the DOM. Written from the frame's own rAF callback it was a
+  // frame ahead of the geometry, and the campus leapt — measured at 1,233px
+  // off centre mid-turn before this moved here.
+  useLayoutEffect(() => {
+    const anchor = anchorRef.current;
+    if (anchor) holdAnchor(anchor);
+    // holdAnchor reads refs only; the camera is what makes it stale.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [camera]);
   // A quarter turn, taken as a turn rather than a cut. The camera's azimuth
   // is React state because it changes every polygon, so this re-renders the
   // map each frame it runs — hence TURN_MS is short and the easing does the
@@ -541,22 +591,27 @@ export default function CampusMap({
   function turnBy(steps: number) {
     const st = stanceRef.current;
     st.view = (((st.view + steps) % VIEWS.length) + VIEWS.length) % VIEWS.length;
-    const from = turnRef.current?.to ?? getCamera().azimuth;
+    const live = turnRef.current;
+    // One pivot for the whole turn, and for a turn asked for mid-turn: the
+    // point that was in the middle when the player started turning, not a
+    // fresh one each frame, which would let the campus wander.
+    const anchor = live?.anchor ?? groundUnderCentre();
+    const from = live?.to ?? getCamera().azimuth;
     const to = from + steps * (Math.PI / 2);
-    if (turnRef.current) cancelAnimationFrame(turnRef.current.frame);
+    if (live) cancelAnimationFrame(live.frame);
     const started = performance.now();
     const step = (now: number) => {
       const t = Math.min(1, (now - started) / TURN_MS);
       // Ease in and out, so the turn starts and lands softly.
       const k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-      applyCamera({ azimuth: from + (to - from) * k, pitch: PITCHES[st.pitch]! });
+      applyCamera({ azimuth: from + (to - from) * k, pitch: PITCHES[st.pitch]! }, anchor);
       if (t < 1) {
-        turnRef.current = { frame: requestAnimationFrame(step), to };
+        turnRef.current = { frame: requestAnimationFrame(step), to, anchor };
         return;
       }
       turnRef.current = null;
     };
-    turnRef.current = { frame: requestAnimationFrame(step), to };
+    turnRef.current = { frame: requestAnimationFrame(step), to, anchor };
   }
   function tiltBy(steps: number) {
     const st = stanceRef.current;
