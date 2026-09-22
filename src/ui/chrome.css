@@ -2940,9 +2940,8 @@ button.toolbar-stat.active svg {
 
 /* ---------- Phase 21B: the clock you cannot miss ---------- */
 
-/* A beat holds the week (DD §3.3) and the speed stays where the player set
-   it, which is the design — but nothing said so except a colour on the
-   clock. The hold now says itself, in words, beside the date. */
+/* A beat holds the week (DD §3.3), and nothing said so except a colour on
+   the clock. The hold now says itself, in words, beside the date. */
 .clock-held {
   display: inline-flex;
   align-items: baseline;
@@ -2984,12 +2983,22 @@ button.toolbar-stat.active svg {
   opacity: 0.45;
 }
 
-/* Nor is the speed advancing: the pills read as set-but-stopped rather than
-   as running. The player may still change speed, and it takes effect when
-   the clock resumes. */
+/* The clock is stopped, so the speed control sits at Paused — and says
+   which kind of stopped this is. A pause the player asked for is a plain
+   active pill; a pause the calendar imposed pulses with the chip beside the
+   clock, so the two are never confused. */
 .speeds.held button.active {
   border-style: dashed;
   animation: clock-held-pulse 1.6s ease-in-out infinite;
+}
+
+/* The control stays live through a hold (DD §3.3), so a speed pressed while
+   the week waits is a promise about after, not a claim about now: it is
+   outlined rather than filled, and Paused keeps the lit pill. */
+.speeds.held button.queued {
+  border-color: var(--school-secondary);
+  border-style: dashed;
+  color: var(--school-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -61,7 +61,7 @@ import { useGame } from './useGame.ts';
 type Overlay = TabId | 'beat' | 'letter' | 'event';
 
 export default function App() {
-  const { run, speed, weekProgress } = useGame();
+  const { run, speed, weekProgress, queuedSpeed } = useGame();
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [buildOpen, setBuildOpenState] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
@@ -95,9 +95,13 @@ export default function App() {
     if (identity) applySchoolColors(identity.colors);
   }, [identity]);
 
+  // What Space comes back to. While a beat holds the clock the speed is
+  // Paused and the player's choice lives in queuedSpeed, so that is the
+  // setting to remember (ui/store.ts).
   useEffect(() => {
-    if (speed !== 'paused') resumeSpeed.current = speed;
-  }, [speed]);
+    const setting = queuedSpeed ?? speed;
+    if (setting !== 'paused') resumeSpeed.current = setting;
+  }, [speed, queuedSpeed]);
 
   // The founding moment (DD §2.4): while siting, Founders Hall is the thing
   // in hand, no tool is, and the build menu stays shut. Derived rather than
@@ -218,7 +222,7 @@ export default function App() {
     else if (e.key === ' ') {
       if (isActivationTarget(e.target)) return;
       e.preventDefault();
-      store.setSpeed(speed === 'paused' ? resumeSpeed.current : 'paused');
+      store.setSpeed((queuedSpeed ?? speed) === 'paused' ? resumeSpeed.current : 'paused');
     }
   });
 
@@ -364,6 +368,7 @@ export default function App() {
           }
           onChangeTab={openTab}
           onSetSpeed={(s) => store.setSpeed(s)}
+          queuedSpeed={queuedSpeed}
           buildOpen={effectiveBuildOpen}
           onToggleBuild={() => {
             if (siting) return;

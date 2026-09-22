@@ -90,6 +90,7 @@ export default function Toolbar({
   active,
   onChangeTab,
   onSetSpeed,
+  queuedSpeed,
   buildOpen,
   onToggleBuild,
   ringBuild,
@@ -102,10 +103,15 @@ export default function Toolbar({
   active: TabId | null;
   onChangeTab: (tab: TabId | null) => void;
   onSetSpeed: (speed: Speed) => void;
+  // What the clock comes back at when the hold lifts; null when nothing
+  // holds it.
+  queuedSpeed: Speed | null;
   buildOpen: boolean;
   onToggleBuild: () => void;
   ringBuild: boolean;
-  // The beat holding the clock, by name, or null while time moves.
+  // The beat holding the clock, by name, or null while time moves. While it
+  // holds, the speed sits at Paused (ui/store.ts) and the chrome says which
+  // kind of stopped this is.
   heldFor: string | null;
 }) {
   const running = clockRuns(state);
@@ -221,11 +227,15 @@ export default function Toolbar({
             {SPEEDS.map((sp) => {
               const Icon = SPEED_ICONS[sp];
               const gate = running ? speedGate(state, sp) : null;
+              // While a beat holds the week the set speed is Paused, truly:
+              // the queued pill is the promise about after, outlined rather
+              // than lit so it cannot be read as the clock running now.
+              const queued = heldFor !== null && speed !== sp && queuedSpeed === sp;
               return (
                 <button
                   key={sp}
                   type="button"
-                  className={speed === sp ? 'active' : ''}
+                  className={speed === sp ? 'active' : queued ? 'queued' : ''}
                   aria-pressed={speed === sp}
                   aria-label={SPEED_LABELS[sp]}
                   title={
@@ -234,7 +244,11 @@ export default function Toolbar({
                       : gate
                         ? gateHint(sp, gate)
                         : heldFor
-                          ? `${SPEED_HINTS[sp]} — the clock holds for ${heldFor}`
+                          ? queued
+                            ? `The clock comes back at this speed once ${heldFor} is decided`
+                            : sp === 'paused'
+                              ? `The clock holds for ${heldFor}`
+                              : `${SPEED_HINTS[sp]} — the speed to come back at once ${heldFor} is decided`
                           : SPEED_HINTS[sp]
                   }
                   disabled={!running || !speedAllowed(state, sp)}
