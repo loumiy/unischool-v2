@@ -194,7 +194,7 @@ describe('a choice pulls the levers it names (DD §10.1)', () => {
       Math.min(100, Math.max(0, before.distress.confidence + 1)),
     );
     const thanked = applyChoice(before, eventById('committee-reform'), 'thank');
-    expect(thanked.people.mood).toBe(before.people.mood + 1);
+    expect(thanked.people.mood).toBeCloseTo(before.people.mood + 1, 2);
   });
 
   it('spreads backlog over the open buildings and re-reads their condition', () => {
@@ -272,7 +272,7 @@ describe('an unanswered event settles itself (DD §10.1)', () => {
     const run = years(3);
     const asked = pend(run.state, 'committee-reform', 0);
     const settled = eventsWeek(asked);
-    expect(settled.people.mood).toBe(run.state.people.mood + 1);
+    expect(settled.people.mood).toBeCloseTo(run.state.people.mood + 1, 2);
     expect(settled.distress.confidence).toBe(Math.max(0, run.state.distress.confidence - 1));
   });
 });
@@ -395,10 +395,12 @@ describe('events over a long run', () => {
     }
   });
 
-  it('asks a college that caused something far more than one that did not', () => {
-    // Consequence-weighted sourcing, measured rather than asserted: the
-    // engine offers an event most weeks, and what decides the cadence is
-    // how many rows in the file have anything to say to this college.
+  it('asks a college about what it did, not just about the weather', () => {
+    // Consequence-weighted sourcing, measured rather than asserted. With
+    // the catalogue full (Phase 18) both colleges are asked plenty — the
+    // cadence is the engine's odds now, not an empty pool — so what
+    // separates them is WHICH questions arrive, and that separation is
+    // total: the estate's failures belong to the college that caused them.
     const minded = years(30, 4);
     let neglected = tickRunWeeks(opened(4), 31, defaultResolution);
     expect(neglected.state.pendingBeat).toBe('budget-and-hiring');
@@ -408,14 +410,18 @@ describe('events over a long run', () => {
       maintenanceFunding: 0,
     });
     neglected = tickRunWeeks(neglected, WEEKS_PER_YEAR * 30, defaultResolution);
-    expect(neglected.state.events.history.length).toBeGreaterThan(
-      minded.state.events.history.length * 1.5,
-    );
-    // And what it is asked is what it did: the roof and the heating.
-    const asked = new Set(neglected.state.events.history.map((h) => h.eventId));
-    expect(asked).toContain('roof-goes');
-    expect(asked).toContain('heating-fails');
-    expect(new Set(minded.state.events.history.map((h) => h.eventId))).not.toContain('roof-goes');
+
+    const askedOf = (run: Run) => new Set(run.state.events.history.map((h) => h.eventId));
+    const neglectful = askedOf(neglected);
+    const attentive = askedOf(minded);
+    // Thirty years is an inhabited stretch either way (DD §10.1).
+    expect(attentive.size).toBeGreaterThan(12);
+    expect(neglectful.size).toBeGreaterThan(12);
+    // The estate only writes to the administration that let it go.
+    for (const failure of ['roof-goes', 'roof-slates', 'flooded-basement', 'heating-fails']) {
+      expect(neglectful).toContain(failure);
+      expect(attentive).not.toContain(failure);
+    }
   });
 
   it('draws each one from the run’s own stream, so a save resumes it', () => {

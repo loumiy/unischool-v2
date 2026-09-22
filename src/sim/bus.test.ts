@@ -196,7 +196,10 @@ describe('calendar beats (DD §3.3)', () => {
         .map((e) => describeEntry(e, run.state).text),
       'Convocation. The new class is on the lawn.',
     ]);
-    expect(eventLine('eventFired')).toMatch(/^The Committee on Committee Reform/);
+    // Which event the first year draws is the catalogue's business, not
+    // the journal's; that it reads as a sentence and settles as it said
+    // it would is the journal's.
+    expect(eventLine('eventFired').split(' ').length).toBeGreaterThan(8);
     expect(eventLine('eventResolved')).toMatch(/, by default\.$/);
     expect(entriesOfKind(run.state, 'studentsNamed')).toHaveLength(1);
     expect(describeEntry(entriesOfKind(run.state, 'studentsNamed')[0]!, run.state).text).toMatch(

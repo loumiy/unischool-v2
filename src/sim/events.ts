@@ -9,6 +9,7 @@ import {
 } from '../content/events.ts';
 import { programById } from '../content/schools.ts';
 import {
+  DERELICT_CONDITION,
   EVENT_CONSEQUENCE_WEIGHT,
   EVENT_DISTRESS_ODDS,
   EVENT_QUIET_WEEKS,
@@ -21,10 +22,14 @@ import { campusBeauty } from './beauty.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { conditionFor, openPlacements, totalBacklog } from './estate.ts';
+import { GRID_HEIGHT, GRID_WIDTH, tileIsOpen } from './campus.ts';
+import { tileKey } from './terrain.ts';
+import { detectQuads } from './quads.ts';
+import { enrolled, satisfactionFor } from './people.ts';
 import { teachingQuality } from './faculty.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
-import { adminShareOfPayroll } from './treasury.ts';
+import { adminShareOfPayroll, sumExpenses, sumRevenue } from './treasury.ts';
 
 // THE EVENT ENGINE (DD §10.1). The world keeps punching, and almost all
 // of it resolves inline in the ticker: an event fires, offers two or
@@ -72,38 +77,115 @@ export function foundingEvents(): Events {
 // Every condition, as a reading. A condition is a threshold on one of
 // these; the name says which way it points.
 const READINGS: Record<EventCondition, (s: GameState) => number> = {
+  // The calendar
   yearAtLeast: (s) => s.clock.year,
   yearAtMost: (s) => -s.clock.year,
-  enrolledOver: (s) => s.people.cohorts.reduce((t, c) => t + c.size, 0),
-  triplesOver: (s) => {
-    const beds = openPlacements(s).reduce(
-      (t, p) => t + (buildingById(p.buildingId).capacity?.beds ?? 0),
-      0,
-    );
-    return Math.max(0, s.people.cohorts.reduce((t, c) => t + c.size, 0) - beds);
+
+  // Money
+  cashUnder: (s) => -s.treasury.cash,
+  cashOver: (s) => s.treasury.cash,
+  endowmentOver: (s) => s.treasury.endowment,
+  endowmentUnder: (s) => -s.treasury.endowment,
+  debtOver: (s) => s.treasury.debt,
+  deficitOver: (s) =>
+    sumExpenses(s.treasury.actual.expenses) - sumRevenue(s.treasury.actual.revenue),
+  drawRateOver: (s) => s.treasury.drawRate,
+  tuitionOver: (s) => s.people.terms.tuition,
+  adminShareOver: (s) => adminShareOfPayroll(s.treasury.budget),
+  payrollShareOver: (s) => {
+    const spend = sumExpenses(s.treasury.budget.expenses);
+    if (spend <= 0) return 0;
+    const e = s.treasury.budget.expenses;
+    return (e.facultyPayroll + e.adminPayroll) / spend;
   },
+
+  // The board and the ladder
+  rungAtLeast: (s) => s.distress.rung,
+  confidenceUnder: (s) => -s.distress.confidence,
+  confidenceOver: (s) => s.distress.confidence,
+
+  // The estate
   backlogOver: (s) => totalBacklog(s),
   conditionUnder: (s) => {
     const open = openPlacements(s);
     return open.length === 0 ? -1 : -Math.min(...open.map((p) => p.condition));
   },
-  cashUnder: (s) => -s.treasury.cash,
-  cashOver: (s) => s.treasury.cash,
-  endowmentOver: (s) => s.treasury.endowment,
-  adminShareOver: (s) => adminShareOfPayroll(s.treasury.budget),
-  rungAtLeast: (s) => s.distress.rung,
-  facultyOver: (s) => s.faculty.roster.length,
-  programsOver: (s) => s.academics.programs.length,
-  teachingOver: (s) => teachingQuality(s),
-  alumniOver: (s) => s.people.alumni.reduce((t, a) => t + a.size, 0),
+  maintenanceUnder: (s) => -s.treasury.budget.maintenanceFunding,
   buildingsOver: (s) => openPlacements(s).length,
+  derelictOver: (s) => openPlacements(s).filter((p) => p.condition < DERELICT_CONDITION).length,
+  oldestBuildingOver: (s) => {
+    const open = openPlacements(s);
+    if (open.length === 0) return 0;
+    const oldest = Math.min(...open.map((p) => p.openedWeek ?? s.clock.absoluteWeek));
+    return (s.clock.absoluteWeek - oldest) / WEEKS_PER_YEAR;
+  },
+
+  // The campus
   beautyUnder: (s) => -campusBeauty(s),
+  beautyOver: (s) => campusBeauty(s),
+  quadsOver: (s) => detectQuads(s.campus).length,
+  treesUnder: (s) => -Object.keys(s.campus.trees).length,
+
+  // Schools, programs and the roster
+  schoolsOver: (s) => s.academics.schools.length,
+  programsOver: (s) => s.academics.programs.length,
+  programsUnder: (s) => -s.academics.programs.length,
+  facultyOver: (s) => s.faculty.roster.length,
+  facultyUnder: (s) => -s.faculty.roster.length,
+  studentsPerFacultyOver: (s) =>
+    s.faculty.roster.length === 0 ? 0 : enrolled(s) / s.faculty.roster.length,
+  teachingOver: (s) => teachingQuality(s),
+  teachingUnder: (s) => -teachingQuality(s),
+
+  // Students and alumni
+  enrolledOver: (s) => enrolled(s),
+  enrolledUnder: (s) => -enrolled(s),
+  triplesOver: (s) => {
+    const beds = openPlacements(s).reduce(
+      (t, p) => t + (buildingById(p.buildingId).capacity?.beds ?? 0),
+      0,
+    );
+    return Math.max(0, enrolled(s) - beds);
+  },
+  satisfactionOver: (s) => satisfactionFor(s, enrolled(s)),
+  satisfactionUnder: (s) => -satisfactionFor(s, enrolled(s)),
+  selectivityOver: (s) => s.people.terms.selectivity,
+  selectivityUnder: (s) => -s.people.terms.selectivity,
+  alumniOver: (s) => s.people.alumni.reduce((t, a) => t + a.size, 0),
+  warmthOver: (s) => averageWarmth(s),
+  warmthUnder: (s) => -averageWarmth(s),
+  moodOver: (s) => s.people.mood,
+  moodUnder: (s) => -s.people.mood,
 };
 
-// The "Under" readings are negated above, so every condition is the same
-// comparison: the reading is at least the threshold it names.
+// The ledger's feeling about the college, by head rather than by class: a
+// big warm class counts for more than a small cold one.
+function averageWarmth(s: GameState): number {
+  const alumni = s.people.alumni;
+  const heads = alumni.reduce((t, a) => t + a.size, 0);
+  if (heads === 0) return 0;
+  return alumni.reduce((t, a) => t + a.warmth * a.size, 0) / heads;
+}
+
+// What a condition is reading right now, in the direction its name points
+// (an "Under" reading is reported as the positive quantity it names). The
+// authoring tool for aiming a threshold at the middle of the distribution
+// rather than the tail (content/STYLE.md).
+export function readingOf(state: GameState, name: EventCondition): number {
+  const raw = READINGS[name](state);
+  return pointsDown(name) ? -raw : raw;
+}
+
+// A reading whose name points downwards is stored negated above, so every
+// condition is the same comparison: the reading is at least the threshold
+// it names. Both spellings count — `yearAtMost` is as negated as
+// `cashUnder`, and missing it made the clause silently unsatisfiable.
+function pointsDown(name: EventCondition): boolean {
+  return name.endsWith('Under') || name.endsWith('AtMost');
+}
+
 function thresholdOf(name: EventCondition, value: number): number {
-  return name.endsWith('Under') ? -value : value;
+  return pointsDown(name) ? -value : value;
 }
 
 export function conditionsHold(state: GameState, def: EventDef): boolean {
@@ -242,6 +324,63 @@ const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> =
       })),
     },
   }),
+  // Borrowed, or forgiven. Repayment is left where it stands: a gift that
+  // clears the principal shortens the schedule rather than the instalment.
+  debt: (s, amount) => ({
+    ...s,
+    treasury: { ...s.treasury, debt: Math.max(0, s.treasury.debt + amount) },
+  }),
+  quality: (s, amount) => ({
+    ...s,
+    people: {
+      ...s.people,
+      cohorts: s.people.cohorts.map((c) => ({
+        ...c,
+        quality: Number(Math.min(100, Math.max(0, c.quality + amount)).toFixed(2)),
+      })),
+    },
+  }),
+  // Students gained or lost, spread over the classes by size, so a small
+  // cohort is not wiped out by a number written for a big one.
+  enrollment: (s, amount) => {
+    const total = enrolled(s);
+    if (total <= 0) return s;
+    let left = Math.round(amount);
+    const cohorts = s.people.cohorts.map((c, i, all) => {
+      const share = i === all.length - 1 ? left : Math.round(amount * (c.size / total));
+      left -= share;
+      return { ...c, size: Math.max(0, c.size + share) };
+    });
+    return { ...s, people: { ...s.people, cohorts } };
+  },
+  // On the map itself: a stand planted, or a stand taken. Planting fills
+  // the bare tiles the campus has; taking starts with what is standing.
+  trees: (s, amount) => {
+    const standing = Object.keys(s.campus.trees);
+    if (amount < 0) {
+      const felled = new Set(standing.slice(0, Math.min(standing.length, -Math.round(amount))));
+      const trees = Object.fromEntries(
+        Object.entries(s.campus.trees).filter(([key]) => !felled.has(key)),
+      );
+      return { ...s, campus: { ...s.campus, trees } };
+    }
+    // A derived stream: a gift of trees is scenery, and should not move
+    // the dice the run's own weather is drawn from.
+    const rng = Rng.fromSeed(s.seed ^ Math.imul(s.clock.absoluteWeek, 0x9e3779b1));
+    const trees = { ...s.campus.trees };
+    const paths = new Set(s.campus.paths);
+    const want = Math.round(amount);
+    let planted = 0;
+    for (let tries = 0; tries < want * 40 && planted < want; tries++) {
+      const col = rng.int(0, GRID_WIDTH - 1);
+      const row = rng.int(0, GRID_HEIGHT - 1);
+      const key = tileKey(col, row);
+      if (trees[key] !== undefined || paths.has(key) || !tileIsOpen(s.campus, col, row)) continue;
+      trees[key] = rng.int(0, 0xffff);
+      planted++;
+    }
+    return { ...s, campus: { ...s.campus, trees } };
+  },
 };
 
 export function applyChoice(state: GameState, def: EventDef, choiceId: string): GameState {

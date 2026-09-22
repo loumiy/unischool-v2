@@ -12,23 +12,58 @@ import { arr, ContentError, num, obj, oneOf, optional, str, uniqueBy, validate }
 // Every condition an event may name. All of them are thresholds on a
 // number the sim already keeps, and all of a `when` must hold.
 export const EVENT_CONDITIONS = [
+  // The calendar
   'yearAtLeast',
   'yearAtMost',
-  'enrolledOver',
-  'triplesOver',
-  'backlogOver',
-  'conditionUnder',
+  // Money (treasury.ts)
   'cashUnder',
   'cashOver',
   'endowmentOver',
+  'endowmentUnder',
+  'debtOver',
+  'deficitOver', // this year's expenses over its revenue, so far
+  'drawRateOver',
+  'tuitionOver',
   'adminShareOver',
+  'payrollShareOver',
+  // The board and the ladder (distress.ts)
   'rungAtLeast',
-  'facultyOver',
-  'programsOver',
-  'teachingOver',
-  'alumniOver',
+  'confidenceUnder',
+  'confidenceOver',
+  // The estate (estate.ts)
+  'backlogOver',
+  'conditionUnder',
+  'maintenanceUnder', // the funding level itself, not what it has cost yet
   'buildingsOver',
+  'derelictOver',
+  'oldestBuildingOver', // in years since it opened
+  // The campus (beauty.ts, quads.ts)
   'beautyUnder',
+  'beautyOver',
+  'quadsOver',
+  'treesUnder',
+  // Schools, programs and the roster (academics.ts, faculty.ts)
+  'schoolsOver',
+  'programsOver',
+  'programsUnder',
+  'facultyOver',
+  'facultyUnder',
+  'studentsPerFacultyOver',
+  'teachingOver',
+  'teachingUnder',
+  // Students and alumni (people.ts, alumni.ts)
+  'enrolledOver',
+  'enrolledUnder',
+  'triplesOver',
+  'satisfactionOver',
+  'satisfactionUnder',
+  'selectivityOver',
+  'selectivityUnder',
+  'alumniOver',
+  'warmthOver',
+  'warmthUnder',
+  'moodOver',
+  'moodUnder',
 ] as const;
 export type EventCondition = (typeof EVENT_CONDITIONS)[number];
 
@@ -36,10 +71,14 @@ export type EventCondition = (typeof EVENT_CONDITIONS)[number];
 export const EVENT_EFFECTS = [
   'cash',
   'endowment',
+  'debt', // borrowed, or forgiven
   'confidence',
   'mood',
   'backlog',
   'warmth',
+  'quality', // the cohorts', nudged
+  'enrollment', // students gained or lost, spread over the classes
+  'trees', // planted or taken, on the map itself
 ] as const;
 export type EventEffect = (typeof EVENT_EFFECTS)[number];
 
