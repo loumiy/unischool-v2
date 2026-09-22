@@ -2704,3 +2704,109 @@ button.toolbar-stat.active svg {
 .chronicle li.bad {
   color: var(--danger-ink);
 }
+
+/* ---------- Phase 20: delegation ---------- */
+
+.seats {
+  margin-top: 28px;
+}
+.seats h3 {
+  margin: 0 0 10px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-lg);
+}
+.seat-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+}
+.seat {
+  padding: 12px 14px 13px;
+  background: var(--cream);
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-md);
+}
+/* A filled seat is a standing cost, and reads like one. */
+.seat.filled {
+  background: var(--cream-hi);
+  border-color: var(--school-primary);
+}
+.seat-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.seat-title {
+  flex: 1 1 auto;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-base);
+}
+.seat-holder {
+  flex: none;
+  font-size: var(--text-2xs);
+  font-family: var(--display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+.seat.filled .seat-holder {
+  color: var(--school-primary);
+}
+.seat-blurb {
+  margin: 0 0 10px;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.seat-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.seat-cost {
+  margin: 8px 0 0;
+  font-size: var(--text-2xs);
+  font-style: italic;
+  color: var(--ink-muted);
+}
+.seat-policies {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.seat-policy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 6px 10px;
+  text-align: left;
+  background: var(--cream);
+  color: var(--ink);
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font: inherit;
+}
+.seat-policy.chosen {
+  background: var(--school-primary);
+  color: var(--school-on-primary);
+}
+.seat-policy-label {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-sm);
+}
+.seat-policy-note {
+  font-size: var(--text-2xs);
+  color: var(--ink-muted);
+}
+.seat-policy.chosen .seat-policy-note {
+  color: var(--ink-lo);
+}

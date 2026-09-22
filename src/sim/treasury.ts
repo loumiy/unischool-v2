@@ -21,6 +21,7 @@ import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.
 import { annualFacultyPayroll } from './faculty.ts';
 import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
 import { Rng } from './rng.ts';
+import { seatPayroll } from './seats.ts';
 import type { GameState } from './state.ts';
 
 // THE TREASURY (DD §5). Money is the weather: every week the school takes
@@ -182,7 +183,7 @@ export function proposeBudget(
     expenses: {
       ...zeroExpenses(),
       facultyPayroll: annualFacultyPayroll(state),
-      adminPayroll: FOUNDING_ADMIN_PAYROLL,
+      adminPayroll: annualAdminPayroll(state),
       maintenance: projectedMaintenance(state, funding),
       financialAid: Math.round(
         projectedEnrollment(state) * state.people.terms.tuition * state.people.aidRate,
@@ -368,6 +369,12 @@ export function approveBudget(
 export function tuitionDependence(f: Flows): number {
   const total = sumRevenue(f.revenue);
   return total <= 0 ? 0 : f.revenue.tuition / total;
+}
+
+// The founding office, plus every seat the college has filled, forever
+// (DD §5.4, §9.4). This is the ratchet: it only goes up.
+export function annualAdminPayroll(state: GameState): number {
+  return FOUNDING_ADMIN_PAYROLL + seatPayroll(state);
 }
 
 export function adminShareOfPayroll(f: Flows): number {

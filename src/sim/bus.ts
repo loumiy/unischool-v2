@@ -57,6 +57,10 @@ export type BusEvent =
   | { kind: 'ambitionAccepted'; ambitionId: string; dueYear: number }
   | { kind: 'ambitionDeclined'; ambitionId: string }
   | { kind: 'ambitionSettled'; ambitionId: string; kept: boolean }
+  // Delegation (DD §9): a seat filled, and a routine handled without the
+  // player ever being asked.
+  | { kind: 'seatFilled'; seatId: string; schoolId: string | null; outside: boolean }
+  | { kind: 'eventDelegated'; eventId: string; choiceId: string; seatId: string }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -113,6 +117,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'ambitionAccepted',
   'ambitionDeclined',
   'ambitionSettled',
+  'seatFilled',
+  'eventDelegated',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

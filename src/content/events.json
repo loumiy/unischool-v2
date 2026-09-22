@@ -3,6 +3,7 @@
     {
       "id": "parking-study",
       "kind": "inline",
+      "domain": "academic",
       "weight": 2,
       "cooldownYears": 8,
       "when": {
@@ -34,6 +35,7 @@
     {
       "id": "roof-goes",
       "kind": "inline",
+      "domain": "estate",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -68,6 +70,7 @@
     {
       "id": "triples-letter",
       "kind": "inline",
+      "domain": "students",
       "weight": 4,
       "cooldownYears": 3,
       "when": {
@@ -109,6 +112,7 @@
     {
       "id": "committee-reform",
       "kind": "inline",
+      "domain": "board",
       "weight": 2,
       "cooldownYears": 10,
       "when": {
@@ -141,6 +145,7 @@
     {
       "id": "anonymous-gift",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 2,
       "cooldownYears": 6,
       "when": {
@@ -174,6 +179,7 @@
     {
       "id": "star-poached",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 4,
       "when": {
@@ -206,6 +212,7 @@
     {
       "id": "heating-fails",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -239,6 +246,7 @@
     {
       "id": "prize-won",
       "kind": "inline",
+      "domain": "academic",
       "weight": 2,
       "cooldownYears": 5,
       "when": {
@@ -271,6 +279,7 @@
     {
       "id": "auditors",
       "kind": "inline",
+      "domain": "board",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -302,6 +311,7 @@
     {
       "id": "storm",
       "kind": "seismic",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 15,
       "when": {
@@ -350,6 +360,7 @@
     {
       "id": "recession",
       "kind": "seismic",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 20,
       "when": {
@@ -385,6 +396,7 @@
     {
       "id": "boiler-condemned",
       "kind": "inline",
+      "domain": "estate",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -420,6 +432,7 @@
     {
       "id": "ivy-structural",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 8,
       "when": {
@@ -453,6 +466,7 @@
     {
       "id": "roof-slates",
       "kind": "inline",
+      "domain": "estate",
       "weight": 4,
       "cooldownYears": 3,
       "when": {
@@ -486,6 +500,7 @@
     {
       "id": "derelict-notice",
       "kind": "inline",
+      "domain": "estate",
       "weight": 4,
       "cooldownYears": 5,
       "when": {
@@ -520,6 +535,7 @@
     {
       "id": "asbestos",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 12,
       "when": {
@@ -554,6 +570,7 @@
     {
       "id": "flooded-basement",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 4,
       "when": {
@@ -588,6 +605,7 @@
     {
       "id": "bell-tower",
       "kind": "inline",
+      "domain": "estate",
       "weight": 2,
       "cooldownYears": 15,
       "when": {
@@ -622,6 +640,7 @@
     {
       "id": "elm-disease",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 10,
       "when": {
@@ -668,6 +687,7 @@
     {
       "id": "desire-path",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -701,6 +721,7 @@
     {
       "id": "arboretum-gift",
       "kind": "inline",
+      "domain": "estate",
       "weight": 2,
       "cooldownYears": 12,
       "when": {
@@ -735,6 +756,7 @@
     {
       "id": "bond-rating",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -767,6 +789,7 @@
     {
       "id": "overdraft",
       "kind": "inline",
+      "domain": "money",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -802,6 +825,7 @@
     {
       "id": "audit-qualified",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -834,6 +858,7 @@
     {
       "id": "endowment-manager",
       "kind": "inline",
+      "domain": "money",
       "weight": 2,
       "cooldownYears": 8,
       "when": {
@@ -867,6 +892,7 @@
     {
       "id": "bequest-conditions",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 10,
       "when": {
@@ -910,6 +936,7 @@
     {
       "id": "draw-questioned",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -942,6 +969,7 @@
     {
       "id": "frozen-post",
       "kind": "inline",
+      "domain": "board",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -976,6 +1004,7 @@
     {
       "id": "trustee-resigns",
       "kind": "inline",
+      "domain": "board",
       "weight": 3,
       "cooldownYears": 8,
       "when": {
@@ -1007,6 +1036,7 @@
     {
       "id": "press-inquiry",
       "kind": "inline",
+      "domain": "board",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1040,6 +1070,7 @@
     {
       "id": "board-retreat",
       "kind": "inline",
+      "domain": "board",
       "weight": 2,
       "cooldownYears": 10,
       "when": {
@@ -1074,6 +1105,7 @@
     {
       "id": "tenure-case",
       "kind": "inline",
+      "domain": "academic",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -1107,6 +1139,7 @@
     {
       "id": "sabbatical-overrun",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1139,6 +1172,7 @@
     {
       "id": "two-body",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -1181,6 +1215,7 @@
     {
       "id": "emeritus-office",
       "kind": "inline",
+      "domain": "academic",
       "weight": 2,
       "cooldownYears": 12,
       "when": {
@@ -1214,6 +1249,7 @@
     {
       "id": "adjunct-ratio",
       "kind": "inline",
+      "domain": "academic",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -1257,6 +1293,7 @@
     {
       "id": "star-lecture",
       "kind": "inline",
+      "domain": "academic",
       "weight": 2,
       "cooldownYears": 6,
       "when": {
@@ -1291,6 +1328,7 @@
     {
       "id": "teaching-review",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1324,6 +1362,7 @@
     {
       "id": "accreditation-visit",
       "kind": "inline",
+      "domain": "academic",
       "weight": 4,
       "cooldownYears": 5,
       "when": {
@@ -1357,6 +1396,7 @@
     {
       "id": "program-thin",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1392,6 +1432,7 @@
     {
       "id": "nothing-to-study",
       "kind": "inline",
+      "domain": "academic",
       "weight": 4,
       "cooldownYears": 6,
       "when": {
@@ -1426,6 +1467,7 @@
     {
       "id": "library-acquisition",
       "kind": "inline",
+      "domain": "academic",
       "weight": 2,
       "cooldownYears": 8,
       "when": {
@@ -1468,6 +1510,7 @@
     {
       "id": "sit-in",
       "kind": "inline",
+      "domain": "students",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -1512,6 +1555,7 @@
     {
       "id": "newspaper",
       "kind": "inline",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1553,6 +1597,7 @@
     {
       "id": "housing-lottery",
       "kind": "inline",
+      "domain": "students",
       "weight": 4,
       "cooldownYears": 3,
       "when": {
@@ -1585,6 +1630,7 @@
     {
       "id": "dining-petition",
       "kind": "inline",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 4,
       "when": {
@@ -1625,6 +1671,7 @@
     {
       "id": "rag-week",
       "kind": "inline",
+      "domain": "students",
       "weight": 2,
       "cooldownYears": 6,
       "when": {
@@ -1658,6 +1705,7 @@
     {
       "id": "mascot",
       "kind": "inline",
+      "domain": "students",
       "weight": 2,
       "cooldownYears": 15,
       "when": {
@@ -1691,6 +1739,7 @@
     {
       "id": "exam-scandal",
       "kind": "inline",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 8,
       "when": {
@@ -1725,6 +1774,7 @@
     {
       "id": "winter-outbreak",
       "kind": "inline",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1758,6 +1808,7 @@
     {
       "id": "annual-fund-drive",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 3,
       "cooldownYears": 4,
       "when": {
@@ -1799,6 +1850,7 @@
     {
       "id": "class-complaint",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1831,6 +1883,7 @@
     {
       "id": "alumni-trustee",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 2,
       "cooldownYears": 10,
       "when": {
@@ -1864,6 +1917,7 @@
     {
       "id": "naming-rights",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -1898,6 +1952,7 @@
     {
       "id": "yield-panic",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 4,
       "cooldownYears": 4,
       "when": {
@@ -1932,6 +1987,7 @@
     {
       "id": "tuition-letter",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -1964,6 +2020,7 @@
     {
       "id": "guidebook",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 2,
       "cooldownYears": 6,
       "when": {
@@ -1997,6 +2054,7 @@
     {
       "id": "recruiting-trip",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 2,
       "cooldownYears": 4,
       "when": {
@@ -2030,6 +2088,7 @@
     {
       "id": "fire",
       "kind": "seismic",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 20,
       "when": {
@@ -2080,6 +2139,7 @@
     {
       "id": "scandal",
       "kind": "seismic",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 25,
       "when": {
@@ -2126,6 +2186,7 @@
     {
       "id": "bequest",
       "kind": "seismic",
+      "domain": "advancement",
       "weight": 2,
       "cooldownYears": 30,
       "when": {
@@ -2175,6 +2236,7 @@
     {
       "id": "protest-era",
       "kind": "seismic",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 25,
       "when": {
@@ -2222,6 +2284,7 @@
     {
       "id": "unheard-of",
       "kind": "inline",
+      "domain": "advancement",
       "weight": 3,
       "cooldownYears": 8,
       "when": {
@@ -2255,6 +2318,7 @@
     {
       "id": "surplus-problem",
       "kind": "inline",
+      "domain": "money",
       "weight": 2,
       "cooldownYears": 8,
       "when": {
@@ -2298,6 +2362,7 @@
     {
       "id": "thin-fund",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -2342,6 +2407,7 @@
     {
       "id": "payroll-share",
       "kind": "inline",
+      "domain": "money",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -2376,6 +2442,7 @@
     {
       "id": "bleak-campus",
       "kind": "inline",
+      "domain": "estate",
       "weight": 3,
       "cooldownYears": 6,
       "when": {
@@ -2410,6 +2477,7 @@
     {
       "id": "good-year",
       "kind": "inline",
+      "domain": "students",
       "weight": 2,
       "cooldownYears": 5,
       "when": {
@@ -2443,6 +2511,7 @@
     {
       "id": "bad-run",
       "kind": "inline",
+      "domain": "students",
       "weight": 3,
       "cooldownYears": 5,
       "when": {
@@ -2475,6 +2544,7 @@
     {
       "id": "one-teacher",
       "kind": "inline",
+      "domain": "academic",
       "weight": 3,
       "cooldownYears": 5,
       "when": {

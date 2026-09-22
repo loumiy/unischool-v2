@@ -9,6 +9,7 @@ import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
 import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
+import { SEAT_WORDS, seatById } from './seats.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
 import { memoryLine } from '../sim/alumni.ts';
 import { EVENT_WORDS, findEvent } from './events.ts';
@@ -182,6 +183,25 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       const def = ambitionById(entry.ambitionId);
       vars.line = entry.kept ? def.kept : def.missed;
       return { text: fill(line.text, vars), tone: entry.kept ? 'good' : 'bad' };
+    }
+    case 'seatFilled': {
+      const def = seatById(entry.seatId);
+      const school = entry.schoolId === null ? null : findSchool(entry.schoolId);
+      const title = school ? `${def.title} of ${school.name}` : def.title;
+      vars.line = fillArc(SEAT_WORDS.appointed, {
+        title,
+        who: entry.outside ? SEAT_WORDS.outside : SEAT_WORDS.internal,
+      });
+      break;
+    }
+    case 'eventDelegated': {
+      const def = findEvent(entry.eventId);
+      const choice = def?.choices.find((c) => c.id === entry.choiceId);
+      vars.line = fillArc(SEAT_WORDS.delegated, {
+        title: seatById(entry.seatId).title,
+        choice: choice?.label ?? entry.choiceId,
+      });
+      break;
     }
     case 'reunionHeld':
       vars.label = classLabel(entry.classYear);

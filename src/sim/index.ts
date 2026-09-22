@@ -26,3 +26,4 @@ export * from './students.ts';
 export * from './alumni.ts';
 export * from './events.ts';
 export * from './ambitions.ts';
+export * from './seats.ts';

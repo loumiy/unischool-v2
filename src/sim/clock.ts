@@ -1,4 +1,5 @@
 import { WEEK_DURATION_MS_AT_1X } from '../tuning.ts';
+import { fastestTimeAllowed, fastTimeAllowed } from './seats.ts';
 import type { GameState } from './state.ts';
 
 // The real-time side of the weekly tick, kept pure so it is testable by
@@ -29,10 +30,13 @@ export function msPerWeek(speed: Speed): number {
   return m === 0 ? 0 : WEEK_DURATION_MS_AT_1X / m;
 }
 
-// DD §3.2: 4× needs a Provost, 8× a Provost plus four Deans. Delegation is
-// Phase 20; until then every speed is open. This is the typed no-op the
-// placeholder policy allows: the gate exists, it just says yes.
-export function speedAllowed(_state: GameState, _speed: Speed): boolean {
+// DD §3.2: 4× needs a Provost, 8× a Provost plus four Deans. Fast time is
+// only safe when the institution can make routine decisions without the
+// player, so the player literally buys fast-forward with payroll — which
+// is the same payroll the administrative ratchet is made of (§5.4).
+export function speedAllowed(state: GameState, speed: Speed): boolean {
+  if (speed === 'x4') return fastTimeAllowed(state);
+  if (speed === 'x8') return fastestTimeAllowed(state);
   return true;
 }
 

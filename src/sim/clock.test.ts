@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { WEEK_DURATION_MS_AT_1X } from '../tuning.ts';
 import { advanceWeekProgress, MAX_SAMPLE_MS, msPerWeek, SPEEDS, speedAllowed } from './clock.ts';
+import { seatById } from '../content/seats.ts';
+import { DEANS_FOR_FASTEST } from '../tuning.ts';
+import type { Seat } from './seats.ts';
 import { createNewGame } from './state.ts';
 
 describe('speeds', () => {
@@ -15,9 +18,44 @@ describe('speeds', () => {
     expect(msPerWeek('x8')).toBeGreaterThanOrEqual(MAX_SAMPLE_MS);
   });
 
-  it('gates nothing yet (Phase 20 replaces the stub)', () => {
-    const s = createNewGame(1);
-    for (const speed of SPEEDS) expect(speedAllowed(s, speed)).toBe(true);
+  it('sells the top two tiers for payroll (DD §3.2)', () => {
+    // An undelegated college runs at 1× and 2× and no faster: fast time is
+    // only safe when the institution can decide routine things without the
+    // player, so the player buys it with seats.
+    const bare = createNewGame(1);
+    for (const speed of ['paused', 'x1', 'x2'] as const) {
+      expect(speedAllowed(bare, speed)).toBe(true);
+    }
+    expect(speedAllowed(bare, 'x4')).toBe(false);
+    expect(speedAllowed(bare, 'x8')).toBe(false);
+
+    const seat = (seatId: string, schoolId: string | null): Seat => ({
+      seatId,
+      schoolId,
+      filledBy: { kind: 'outside' },
+      policy: seatById(seatId).defaultPolicy,
+      salary: seatById(seatId).outsideSalary,
+      appointedYear: 1,
+    });
+    const withProvost = { ...bare, delegation: { seats: [seat('provost', null)] } };
+    expect(speedAllowed(withProvost, 'x4')).toBe(true);
+    expect(speedAllowed(withProvost, 'x8')).toBe(false);
+
+    const schools = ['arts-letters', 'science', 'engineering', 'business'];
+    const staffed = {
+      ...bare,
+      delegation: {
+        seats: [seat('provost', null), ...schools.map((id) => seat('dean', id))],
+      },
+    };
+    expect(schools).toHaveLength(DEANS_FOR_FASTEST);
+    expect(speedAllowed(staffed, 'x8')).toBe(true);
+    // One Dean short is still not fast enough.
+    const nearly = {
+      ...staffed,
+      delegation: { seats: staffed.delegation.seats.slice(0, DEANS_FOR_FASTEST) },
+    };
+    expect(speedAllowed(nearly, 'x8')).toBe(false);
   });
 });
 
