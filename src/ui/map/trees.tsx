@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { roll, speciesOf, type Species } from '../../sim/index.ts';
 import { lift, polyPoints, project, projectedCircle, type Camera, type Pt } from './iso.ts';
 import { shadowOffset, sunScreenDir } from './light.ts';
 
@@ -6,16 +7,13 @@ import { shadowOffset, sunScreenDir } from './light.ts';
 // tree comes out of its seed: species, size, and where in its own tile it
 // stands, so a wood is varied without storing anything per tree beyond one
 // integer, and a tree looks the same every render, forever.
+//
+// The seed's hash and the species it means live in sim/trees.ts, not here:
+// since Phase 21A the player can ask for a kind of tree, so the sim has to
+// know what a seed means in order to hand back one that means it. This file
+// keeps only what is purely drawing — the size and the offset within a tile.
 
-export type Species = 'canopy' | 'conifer' | 'ornamental';
-const SPECIES: Species[] = ['canopy', 'canopy', 'canopy', 'conifer', 'conifer', 'ornamental'];
-
-function roll(seed: number, salt: number): number {
-  let h = (seed ^ (salt * 0x9e3779b1)) >>> 0;
-  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b) >>> 0;
-  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
-  return ((h ^ (h >>> 16)) >>> 0) / 0x100000000;
-}
+export type { Species };
 
 export interface TreeShape {
   species: Species;
@@ -26,7 +24,7 @@ export interface TreeShape {
 
 export function treeShape(seed: number): TreeShape {
   return {
-    species: SPECIES[Math.floor(roll(seed, 1) * SPECIES.length)]!,
+    species: speciesOf(seed),
     u: 0.2 + roll(seed, 2) * 0.6,
     v: 0.2 + roll(seed, 3) * 0.6,
     scale: 0.78 + roll(seed, 4) * 0.5,

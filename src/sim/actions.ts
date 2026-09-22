@@ -14,6 +14,7 @@ import { isValidName, MOTIFS, type Motif, type SchoolColors } from './identity.t
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { tileKey, TREE_SEED_RANGE } from './terrain.ts';
+import { seedForSpecies, type Species } from './trees.ts';
 import {
   canPay,
   demolitionCost,
@@ -93,7 +94,7 @@ export type Action =
   | { type: 'demolish'; placementId: string }
   // Pays the backlog off and closes the building for the works (DD §6.4).
   | { type: 'renovate'; placementId: string; financing?: Financing }
-  | { type: 'paint'; tool: PaintTool; col: number; row: number }
+  | { type: 'paint'; tool: PaintTool; col: number; row: number; species?: Species }
   // A quad the buildings enclose, renamed (DD §6.2); an empty name gives it
   // back the name the game chose.
   | { type: 'nameQuad'; key: string; name: string }
@@ -518,9 +519,12 @@ export function applyAction(state: GameState, action: Action): GameState {
           return { ...state, campus: { ...campus, paths: campus.paths.filter((k) => k !== key) } };
         case 'plant': {
           // The seed comes off the sim's own stream, so a replay plants the
-          // same tree.
+          // same tree. A species the player asked for is honoured by
+          // walking forward from that seed rather than drawing again, so
+          // the stream advances identically either way (trees.ts).
           const rng = Rng.fromState(state.rng);
-          const seed = rng.int(0, TREE_SEED_RANGE - 1);
+          const drawn = rng.int(0, TREE_SEED_RANGE - 1);
+          const seed = seedForSpecies(drawn, action.species);
           return {
             ...state,
             rng: rng.snapshot(),

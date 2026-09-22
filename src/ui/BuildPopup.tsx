@@ -22,6 +22,7 @@ import {
   hasFoundersHall,
   detectQuads,
   placementSatisfaction,
+  type Species,
 } from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
 import {
@@ -86,6 +87,16 @@ const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
 };
 
 const TOOLS_ID = 'campus-tools';
+
+// What the plant tool puts down. "Whatever grows" is the founding
+// behaviour — a seed straight off the run's dice — and the three named
+// kinds ask the sim for a seed that means that kind (sim/trees.ts).
+const SPECIES_TILES: { id: Species | null; label: string }[] = [
+  { id: null, label: 'Whatever grows' },
+  { id: 'canopy', label: 'Broadleaf' },
+  { id: 'conifer', label: 'Conifer' },
+  { id: 'ornamental', label: 'Ornamental' },
+];
 
 const TOOL_TILES: {
   tool: CampusTool;
@@ -198,6 +209,8 @@ export default function BuildPopup({
   onArmPlacement,
   tool,
   onSetTool,
+  species,
+  onSetSpecies,
   financing,
   onSetFinancing,
   onClose,
@@ -207,6 +220,8 @@ export default function BuildPopup({
   onArmPlacement: (id: string | null) => void;
   tool: CampusTool | null;
   onSetTool: (tool: CampusTool) => void;
+  species: Species | null;
+  onSetSpecies: (s: Species | null) => void;
   financing: Financing;
   onSetFinancing: (f: Financing) => void;
   onClose: () => void;
@@ -339,6 +354,21 @@ export default function BuildPopup({
                   />
                 ))}
           </div>
+          {activeId === TOOLS_ID && tool === 'plant' && (
+            <div className="tool-species" role="group" aria-label="What to plant">
+              {SPECIES_TILES.map(({ id, label }) => (
+                <button
+                  key={id ?? 'any'}
+                  type="button"
+                  className={`species-chip ${(species ?? null) === id ? 'active' : ''}`}
+                  aria-pressed={(species ?? null) === id}
+                  onClick={() => onSetSpecies(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </ToolbarPopup>

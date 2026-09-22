@@ -11,6 +11,7 @@ export * from './clock.ts';
 export * from './identity.ts';
 export * from './campus.ts';
 export * from './terrain.ts';
+export * from './trees.ts';
 export * from './bus.ts';
 export * from './beats.ts';
 export * from './treasury.ts';

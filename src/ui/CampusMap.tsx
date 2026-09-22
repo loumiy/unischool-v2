@@ -15,6 +15,7 @@ import {
 import BuildingInfoPanel from './BuildingInfoPanel.tsx';
 import HelpHint from './HelpHint.tsx';
 import { isTypingTarget, useHotkeys } from './hotkeys.ts';
+import { KEY_GROUPS, PAN_KEYS } from './keys.ts';
 import BuildingMotif, { drawnHeightOf, labelHeightOf, materialOf } from './map/buildingMotifs.tsx';
 import {
   ConstructionSite,
@@ -45,6 +46,7 @@ import {
   lift,
   polyPoints,
   project,
+  getCamera,
   setCamera,
   tileAt,
   unproject,
@@ -79,21 +81,13 @@ const DEFAULT_ZOOM = 0.55;
 const ZOOM_SPEED = 0.0016;
 const PAN_CLICK_THRESHOLD = 4;
 const KEY_PAN_SPEED = 1100;
+// How long a quarter turn takes. Short, because every frame of it
+// re-projects the campus (Phase 21A measured it on a full map).
+const TURN_MS = 260;
 const MAX_PAN_FRAME_S = 0.1;
 const WORLD_TOP_HEADROOM = 140;
 const MAP_PADDING = 64;
 const MAP_HEIGHT = WORLD.maxY - WORLD.minY + MAP_PADDING * 2 + WORLD_TOP_HEADROOM;
-
-const PAN_KEYS: Record<string, readonly [number, number]> = {
-  w: [0, 1],
-  a: [1, 0],
-  s: [0, -1],
-  d: [-1, 0],
-  arrowup: [0, 1],
-  arrowleft: [1, 0],
-  arrowdown: [0, -1],
-  arrowright: [-1, 0],
-};
 
 function drawnFootprint(p: Placement) {
   return {
@@ -452,6 +446,8 @@ export default function CampusMap({
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
   const stanceRef = useRef({ view: 0, pitch: 0 });
+  // The quarter turn in flight, if there is one.
+  const turnRef = useRef<{ frame: number; to: number } | null>(null);
 
   // A fresh pickup starts unrotated, and entering or leaving a tool closes
   // the inspector and drops the ghost — resets keyed on the prop itself,
@@ -537,10 +533,30 @@ export default function CampusMap({
     applyView({ x: px - w.x * v.zoom, y: py - w.y * v.zoom, zoom: v.zoom });
     setCameraState(applied);
   }
+  // A quarter turn, taken as a turn rather than a cut. The camera's azimuth
+  // is React state because it changes every polygon, so this re-renders the
+  // map each frame it runs — hence TURN_MS is short and the easing does the
+  // work of making it read as one movement. A turn asked for mid-turn picks
+  // up from wherever the view has got to, so holding Q does not stutter.
   function turnBy(steps: number) {
     const st = stanceRef.current;
     st.view = (((st.view + steps) % VIEWS.length) + VIEWS.length) % VIEWS.length;
-    applyCamera({ azimuth: VIEWS[st.view]!, pitch: PITCHES[st.pitch]! });
+    const from = turnRef.current?.to ?? getCamera().azimuth;
+    const to = from + steps * (Math.PI / 2);
+    if (turnRef.current) cancelAnimationFrame(turnRef.current.frame);
+    const started = performance.now();
+    const step = (now: number) => {
+      const t = Math.min(1, (now - started) / TURN_MS);
+      // Ease in and out, so the turn starts and lands softly.
+      const k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      applyCamera({ azimuth: from + (to - from) * k, pitch: PITCHES[st.pitch]! });
+      if (t < 1) {
+        turnRef.current = { frame: requestAnimationFrame(step), to };
+        return;
+      }
+      turnRef.current = null;
+    };
+    turnRef.current = { frame: requestAnimationFrame(step), to };
   }
   function tiltBy(steps: number) {
     const st = stanceRef.current;
@@ -550,6 +566,8 @@ export default function CampusMap({
     applyCamera({ azimuth: VIEWS[st.view]!, pitch: PITCHES[st.pitch]! });
   }
   function resetCamera() {
+    if (turnRef.current) cancelAnimationFrame(turnRef.current.frame);
+    turnRef.current = null;
     stanceRef.current = { view: 0, pitch: 0 };
     applyCamera(DEFAULT_CAMERA);
   }
@@ -775,8 +793,11 @@ export default function CampusMap({
     const key = e.key.toLowerCase();
     if (key === 'r' && canRotateSelected) setRotated((r) => !r);
     if (key === 'p') onSetTool('path');
-    if (key === 'q') turnBy(1);
-    if (key === 'e') turnBy(-1);
+    // E turns the view one way and Q the other, the way a hand on the
+    // left of the keyboard expects it (Phase 21A; they were the other way
+    // round and read as backwards).
+    if (key === 'q') turnBy(-1);
+    if (key === 'e') turnBy(1);
     if (key === 'z') tiltBy(-1);
     if (key === 'x') tiltBy(1);
     if (key === 'home') resetCamera();
@@ -985,8 +1006,27 @@ export default function CampusMap({
         <div className="campus-map-zoom-controls">
           <HelpHint
             align="end"
-            text="Where the university physically grows. Open Build to pick a building up, then click empty ground to set it down; R turns it a quarter turn. Campus Tools draws walkways (P) and plants trees, a tile at a time — drag to paint, right button for the opposite. Drag the map to pan, scroll to zoom, W/A/S/D to glide. Q/E turn the view a quarter turn round the campus, Z/X tilt it, Home brings back the opening view. Escape backs out one layer at a time."
-          />
+            label="Keys and controls"
+            text="Where the university physically grows. Open Build to pick a building up, then click empty ground to set it down. Campus Tools draws walkways and plants trees a tile at a time — drag to paint, the right button does the opposite."
+          >
+            <dl className="key-map">
+              {KEY_GROUPS.map((group) => (
+                <div key={group.title} className="key-map-group">
+                  <p className="key-map-title">{group.title}</p>
+                  {group.bindings.map((b) => (
+                    <div key={b.keys.join()} className="key-map-row">
+                      <dt>
+                        {b.keys.map((k) => (
+                          <kbd key={k}>{k}</kbd>
+                        ))}
+                      </dt>
+                      <dd>{b.does}</dd>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </dl>
+          </HelpHint>
           <button type="button" onClick={() => zoomBy(1.25)} aria-label="Zoom in">
             +
           </button>

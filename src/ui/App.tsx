@@ -34,6 +34,7 @@ import Pennant from './Pennant.tsx';
 import StartupScreen from './StartupScreen.tsx';
 import { store } from './store.ts';
 import TabOverlay, { StubScreen } from './TabOverlay.tsx';
+import { TAB_HOTKEYS } from './keys.ts';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
 import Toolbar from './Toolbar.tsx';
@@ -42,6 +43,7 @@ import FacultyScreen from './FacultyScreen.tsx';
 import HistoryScreen from './HistoryScreen.tsx';
 import StudentsScreen from './StudentsScreen.tsx';
 import TreasuryScreen from './TreasuryScreen.tsx';
+import type { Species } from '../sim/index.ts';
 import type { CampusTool } from './tools.ts';
 import { useCssHeightVar } from './useCssHeightVar.ts';
 import { useGame } from './useGame.ts';
@@ -54,15 +56,6 @@ import { useGame } from './useGame.ts';
 // One Escape ladder, here, backs out of whatever is open: a popup, then a
 // screen, then the map's own.
 
-const TAB_HOTKEYS: Record<string, TabId> = {
-  c: 'curriculum',
-  f: 'faculty',
-  t: 'treasury',
-  s: 'students',
-  // The chronicle in draft, which has something in it from Phase 19 on.
-  h: 'history',
-};
-
 // What fills the screen slot: a tab, a calendar beat's screen, a letter
 // from the board, or a seismic event's letter.
 type Overlay = TabId | 'beat' | 'letter' | 'event';
@@ -74,6 +67,8 @@ export default function App() {
   const [journalOpen, setJournalOpen] = useState(false);
   const [placingId, setPlacingIdState] = useState<string | null>(null);
   const [tool, setToolState] = useState<CampusTool | null>(null);
+  // Which tree the plant tool puts down; null is whatever the dice say.
+  const [species, setSpecies] = useState<Species | null>(null);
   // How the next construction is paid for (DD §5.2); cash unless told otherwise.
   const [financing, setFinancing] = useState<Financing>('cash');
   const [debugOpen, setDebugOpen] = useState(false);
@@ -311,7 +306,13 @@ export default function App() {
         }}
         financing={financing}
         onPaint={(t, col, row) => {
-          store.dispatch({ type: 'paint', tool: t, col, row });
+          store.dispatch({
+            type: 'paint',
+            tool: t,
+            col,
+            row,
+            ...(t === 'plant' && species ? { species } : {}),
+          });
         }}
         onDemolish={(placementId) => {
           store.dispatch({ type: 'demolish', placementId });
@@ -384,6 +385,8 @@ export default function App() {
             onArmPlacement={setPlacingId}
             tool={tool}
             onSetTool={setTool}
+            species={species}
+            onSetSpecies={setSpecies}
             financing={financing}
             onSetFinancing={setFinancing}
             onClose={closeBuild}
