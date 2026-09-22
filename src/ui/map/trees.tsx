@@ -1,21 +1,27 @@
 import { memo } from 'react';
-import { lift, polyPoints, project, projectedCircle, type Camera, type Pt } from './iso.ts';
+import { roll, speciesOf, type Species } from '../../sim/index.ts';
+import {
+  heightScale,
+  lift,
+  polyPoints,
+  project,
+  projectedCircle,
+  type Camera,
+  type Pt,
+} from './iso.ts';
 import { shadowOffset, sunScreenDir } from './light.ts';
 
 // Trees on the campus map (ported from v1's trees.tsx). Everything about one
 // tree comes out of its seed: species, size, and where in its own tile it
 // stands, so a wood is varied without storing anything per tree beyond one
 // integer, and a tree looks the same every render, forever.
+//
+// The seed's hash and the species it means live in sim/trees.ts, not here:
+// since Phase 21A the player can ask for a kind of tree, so the sim has to
+// know what a seed means in order to hand back one that means it. This file
+// keeps only what is purely drawing — the size and the offset within a tile.
 
-export type Species = 'canopy' | 'conifer' | 'ornamental';
-const SPECIES: Species[] = ['canopy', 'canopy', 'canopy', 'conifer', 'conifer', 'ornamental'];
-
-function roll(seed: number, salt: number): number {
-  let h = (seed ^ (salt * 0x9e3779b1)) >>> 0;
-  h = Math.imul(h ^ (h >>> 15), 0x85ebca6b) >>> 0;
-  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35) >>> 0;
-  return ((h ^ (h >>> 16)) >>> 0) / 0x100000000;
-}
+export type { Species };
 
 export interface TreeShape {
   species: Species;
@@ -26,7 +32,7 @@ export interface TreeShape {
 
 export function treeShape(seed: number): TreeShape {
   return {
-    species: SPECIES[Math.floor(roll(seed, 1) * SPECIES.length)]!,
+    species: speciesOf(seed),
     u: 0.2 + roll(seed, 2) * 0.6,
     v: 0.2 + roll(seed, 3) * 0.6,
     scale: 0.78 + roll(seed, 4) * 0.5,
@@ -38,6 +44,11 @@ interface Blob {
   dy: number;
   r: number;
 }
+// How much wider a crown reads when the camera is straight overhead.
+const CROWN_SPREAD = 0.28;
+// How much of a conifer's rise survives the same view.
+const CONIFER_FLOOR = 0.25;
+
 const CANOPY_BLOBS: Blob[] = [
   { dx: -0.42, dy: 0.16, r: 0.72 },
   { dx: 0.44, dy: 0.2, r: 0.68 },
@@ -67,6 +78,14 @@ export function woodlandShadow(col: number, row: number, seed: number): Pt[] {
 
 // A crown is a mass in the air, so it is drawn in SCREEN space: a roughly
 // spherical thing looks roughly circular from every direction.
+//
+// It does, though, answer the tilt. A tree is a vertical object, so as the
+// camera leans toward straight down its height foreshortens away and what
+// is left is its plan: the trunk shortens to nothing (lift already does
+// that), the crown settles onto the trunk instead of standing above it, and
+// it spreads, because a canopy seen from overhead covers more ground than
+// its elevation suggests. At the bird's eye the whole wood reads as the
+// circles of foliage an aerial photograph would show.
 export function TreeAt({
   col,
   row,
@@ -79,7 +98,14 @@ export function TreeAt({
   scale: number;
 }) {
   const foot = project(col, row);
-  const { trunkH, crownR, trunkW } = treeMetrics(species, scale);
+  // 1 at the opening pitch, 0 looking straight down.
+  const standing = Math.max(0, Math.min(1, heightScale()));
+  const { trunkH, crownR: sideR, trunkW } = treeMetrics(species, scale);
+  // What a crown loses in height it gains in spread — but only the broad
+  // ones. A spruce is columnar, so from overhead it is a tight dark dot
+  // beside the broadleaves, which is how a wood reads from the air.
+  const spread = species === 'conifer' ? 0 : CROWN_SPREAD;
+  const crownR = sideR * (1 + (1 - standing) * spread);
   const trunkTop = lift(foot, trunkH);
   const sun = sunScreenDir();
   return (
@@ -95,8 +121,14 @@ export function TreeAt({
       />
       {species === 'conifer' ? (
         [0, 1, 2].map((tier) => {
-          const halfW = crownR * (1 - (tier / 2) * 0.45);
-          const base = trunkTop.y - crownR * 0.75 * tier;
+          // A cone keeps a quarter of its rise at the bird's eye. Let it
+          // foreshorten all the way and the three tiers land on one line
+          // with no area at all, and the conifers drop out of the wood;
+          // this way a spruce stays a spruce from overhead, smaller and
+          // tighter than the broadleaves around it.
+          const rise = CONIFER_FLOOR + (1 - CONIFER_FLOOR) * standing;
+          const halfW = crownR * (1 - (tier / 2) * 0.45 * rise);
+          const base = trunkTop.y - crownR * 0.75 * tier * rise;
           return (
             <polygon
               key={tier}
@@ -104,7 +136,7 @@ export function TreeAt({
               points={polyPoints([
                 { x: foot.x - halfW, y: base },
                 { x: foot.x + halfW, y: base },
-                { x: foot.x, y: base - crownR * 1.5 },
+                { x: foot.x, y: base - crownR * 1.5 * rise },
               ])}
             />
           );
@@ -114,13 +146,13 @@ export function TreeAt({
           <circle
             className="campus-tree-crown"
             cx={trunkTop.x}
-            cy={trunkTop.y - crownR * 0.55}
+            cy={trunkTop.y - crownR * 0.55 * standing}
             r={crownR}
           />
           <circle
             className="campus-tree-crown-top"
             cx={trunkTop.x + sun.x * crownR * 0.42}
-            cy={trunkTop.y - crownR * 0.95}
+            cy={trunkTop.y - crownR * 0.95 * standing}
             r={crownR * 0.52}
           />
         </>
@@ -131,14 +163,14 @@ export function TreeAt({
               key={i}
               className="campus-tree-crown"
               cx={trunkTop.x + b.dx * crownR}
-              cy={trunkTop.y - crownR * 0.62 + b.dy * crownR}
+              cy={trunkTop.y - crownR * 0.62 * standing + b.dy * crownR}
               r={b.r * crownR}
             />
           ))}
           <circle
             className="campus-tree-crown-top"
             cx={trunkTop.x + sun.x * crownR * 0.36}
-            cy={trunkTop.y - crownR * 1.1}
+            cy={trunkTop.y - crownR * 1.1 * standing}
             r={crownR * 0.6}
           />
         </>
