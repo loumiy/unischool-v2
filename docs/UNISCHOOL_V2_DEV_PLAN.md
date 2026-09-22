@@ -135,6 +135,6 @@ Settings (colorblind-safe palette variants, font scaling, autosave cadence), mai
 ## Sequencing notes
 
 - **The first playable moment is Phase 8** (money + buildings + enrollment + distress = a game, however bare). Evaluate feel there before Stage 2 — it is the cheapest point to revise DD §5.
-- **The second checkpoint is Phase 21**: all pressure systems live. Play a full manual run before building the world layer; pacing problems found here are much cheaper than at Phase 31.
+- **The second checkpoint is Phase 21**: all pressure systems live. Play a full manual run before building the world layer; pacing problems found here are much cheaper than at Phase 31. _Done: `docs/audits/phase-21-checkpoint.md` is the audit, and the playtest that followed it produced `docs/UNISCHOOL_V2_DEV_PLAN_21X.md` — phases 21A–21I, which run between Phase 21 and Phase 22._
 - **Content phases (18, 30) are the schedule risk.** Writing 140 good events in-voice is the least automatable work in the plan; start drafting event ideas in a backlog file from Phase 17 onward, and treat every playtest complaint as an event prompt.
 - Phases average 1–2 Claude Code hours but 13, 20, 26, and 31 are the likeliest to run long; each has a natural split point (13: walkers/beauty · 20: seats/gating · 26: detection/screen · 31: harness/tuning) if a phase needs to become two PRs' worth after review.
