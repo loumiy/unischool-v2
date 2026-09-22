@@ -3,7 +3,7 @@ import { buildingById } from '../../content/buildings.ts';
 import { enrolled, type GameState, type Placement } from '../../sim/index.ts';
 import { MAX_WALKERS, STUDENTS_PER_WALKER } from '../../tuning.ts';
 import { wallHeightOf } from './buildingSpec.ts';
-import { boxFaces, project, type Camera, type Pt } from './iso.ts';
+import { boxFaces, heightScale, project, type Camera, type Pt } from './iso.ts';
 import { doors, findRoute, roadsides, walkGrid, type Waypoint } from './routes.ts';
 import { ambientDensity } from './season.ts';
 import { useGame } from '../useGame.ts';
@@ -81,6 +81,29 @@ function hiddenBy(s: Silhouette, p: Pt): boolean {
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+// A walker stands up, so it answers the tilt like the trees do: as the
+// camera leans overhead the body squats and widens into shoulders and the
+// head becomes most of what is left, which is what a person is from the
+// air. It keeps a fifth of its height whatever the view, because a figure
+// that foreshortens to nothing takes the crowd off the lawn with it.
+const WALKER_FLOOR = 0.22;
+const WALKER_SPREAD = 0.55;
+const WALKER_HALF_W = 3.1;
+
+function shapeWalker(g: SVGGElement): void {
+  const standing = Math.max(0, Math.min(1, heightScale()));
+  const s = WALKER_FLOOR + (1 - WALKER_FLOOR) * standing;
+  const half = WALKER_HALF_W * (1 + (1 - s) * WALKER_SPREAD);
+  const n = (v: number) => v.toFixed(2);
+  g.querySelector('.walker-body')?.setAttribute(
+    'd',
+    `M${n(-half)},0 L${n(-half)},${n(-8.5 * s)} Q0,${n(-11 * s)} ${n(half)},${n(-8.5 * s)} L${n(half)},0 Z`,
+  );
+  const head = g.querySelector('.walker-head');
+  head?.setAttribute('cy', n(-12.6 * s));
+  head?.setAttribute('r', n(3 * (1 + (1 - s) * 0.18)));
+}
+
 function makeWalker(shirt: string): SVGGElement {
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'walker');
@@ -90,13 +113,11 @@ function makeWalker(shirt: string): SVGGElement {
   shadow.setAttribute('ry', '2.1');
   const body = document.createElementNS(SVG_NS, 'path');
   body.setAttribute('class', 'walker-body');
-  body.setAttribute('d', 'M-3.1,0 L-3.1,-8.5 Q0,-11 3.1,-8.5 L3.1,0 Z');
   body.setAttribute('fill', shirt);
   const head = document.createElementNS(SVG_NS, 'circle');
   head.setAttribute('class', 'walker-head');
-  head.setAttribute('cy', '-12.6');
-  head.setAttribute('r', '3');
   g.append(shadow, body, head);
+  shapeWalker(g);
   return g;
 }
 
@@ -216,6 +237,9 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
       w.u = random() * (w.lengths[w.lengths.length - 1] ?? 0);
       walkers.push(w);
     }
+    // Figures already on the lawn are kept across a re-run, so a new tilt
+    // has to reach them here rather than waiting for them to be replaced.
+    for (const w of walkers) shapeWalker(w.el);
     // Routes may have gone stale (a building placed, a path paved): a
     // walker whose way is blocked sets off afresh; one whose route merely
     // changed takes the new one from where it stands.

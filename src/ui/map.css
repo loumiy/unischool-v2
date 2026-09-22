@@ -468,26 +468,33 @@
   fill: rgba(120, 104, 76, 0.55);
 }
 .scaffold-pole {
-  stroke: rgba(58, 47, 14, 0.55);
-  stroke-width: 1.6;
-  vector-effect: non-scaling-stroke;
+  fill: rgba(112, 95, 50, 0.92);
 }
 .scaffold-rail {
-  stroke: rgba(58, 47, 14, 0.4);
-  stroke-width: 1.2;
+  fill: rgba(112, 95, 50, 0.72);
+}
+/* The crane is massing, not a diagram: every part of it is a filled shape
+   so it holds up beside buildings that have bulk (Phase 21A). */
+.crane-steel {
+  fill: #d8a92a;
+}
+.crane-lattice {
+  fill: rgba(94, 74, 16, 0.75);
+}
+.crane-tie {
+  fill: rgba(72, 58, 18, 0.85);
+}
+.crane-cab {
+  fill: #f2f0e6;
+  stroke: rgba(58, 47, 14, 0.5);
+  stroke-width: 0.8;
   vector-effect: non-scaling-stroke;
 }
-.site-crane line {
-  stroke: #c9a227;
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
+.crane-weight {
+  fill: #5d564b;
 }
-.site-crane line.site-crane-tie {
-  stroke: rgba(80, 66, 20, 0.7);
-  stroke-width: 1;
-}
-.site-crane-weight {
-  fill: #6d6357;
+.crane-ballast {
+  fill: rgba(104, 98, 86, 0.9);
 }
 .campus-progress-track {
   fill: rgba(42, 56, 28, 0.3);
