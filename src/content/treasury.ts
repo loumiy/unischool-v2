@@ -52,7 +52,7 @@ const fileSchema = obj({
       renovate: str,
       demolish: str,
     }),
-    pay: obj({ cash: str, debt: str }),
+    pay: obj({ cash: str, debt: str, gift: str }),
   }),
 });
 

@@ -4,6 +4,7 @@ import { institutionName } from '../sim/identity.ts';
 import { formatMoney, formatPercent } from '../sim/treasury.ts';
 import type { GameState } from '../sim/state.ts';
 import { AMBITION_WORDS, ambitionById } from './ambitions.ts';
+import { CAMPAIGN_WORDS, campaignById } from './campaigns.ts';
 import { findBuilding } from './buildings.ts';
 import { CUT_WORDS, letterById, rungWords } from './board.ts';
 import { findBeat } from './calendarBeats.ts';
@@ -202,6 +203,20 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
         choice: choice?.label ?? entry.choiceId,
       });
       break;
+    }
+    case 'campaignLaunched': {
+      const def = campaignById(entry.campaignId);
+      vars.line = fillArc(CAMPAIGN_WORDS.launched, {
+        title: def.title,
+        target: formatMoney(def.target),
+        years: String(def.years),
+      });
+      break;
+    }
+    case 'campaignClosed': {
+      const def = campaignById(entry.campaignId);
+      vars.line = entry.met ? def.kept : def.missed;
+      return { text: fill(line.text, vars), tone: entry.met ? 'good' : 'bad' };
     }
     case 'reunionHeld':
       vars.label = classLabel(entry.classYear);

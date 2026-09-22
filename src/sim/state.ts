@@ -6,6 +6,7 @@ import { Rng, type RngState } from './rng.ts';
 import { foundingWoodland } from './terrain.ts';
 import { foundingAcademics, type Academics } from './academics.ts';
 import { foundingAmbitions, type Ambitions } from './ambitions.ts';
+import { foundingAdvancement, type AdvancementState } from './campaigns.ts';
 import { foundingDelegation, type Delegation } from './seats.ts';
 import { foundingDistress, type Distress } from './distress.ts';
 import { foundingEvents, type Events } from './events.ts';
@@ -18,7 +19,7 @@ import { foundingTreasury, type Treasury } from './treasury.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 18;
+export const SCHEMA_VERSION = 19;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -57,6 +58,8 @@ export interface GameState {
   ambitions: Ambitions;
   // The seats filled, what they cost and how they decide (seats.ts).
   delegation: Delegation;
+  // Campaigns against the ledger, and what they raised (campaigns.ts).
+  advancement: AdvancementState;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -87,6 +90,7 @@ export function createNewGame(seed: number): GameState {
     events: foundingEvents(),
     ambitions: foundingAmbitions(),
     delegation: foundingDelegation(),
+    advancement: foundingAdvancement(),
   };
 }
 

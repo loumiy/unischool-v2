@@ -59,7 +59,9 @@ import {
   severanceFor,
 } from './faculty.ts';
 import { answerAmbition } from './ambitions.ts';
+import { findCampaign } from '../content/campaigns.ts';
 import { findSeat } from '../content/seats.ts';
+import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts';
 import { SEAT_SENIOR_RANKS } from '../tuning.ts';
 import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
@@ -148,6 +150,9 @@ export type Action =
       from: { kind: 'internal'; facultyId: string } | { kind: 'outside' };
     }
   | { type: 'setSeatPolicy'; seatId: string; schoolId?: string | null; policy: string }
+  // Advancement (DD §9.3): a campaign launched against the ledger. It
+  // needs a VP, and the Development Office runs one at a time.
+  | { type: 'launchCampaign'; campaignId: string }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
   | { type: 'debug/fireEvent'; eventId: string };
@@ -387,6 +392,17 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!def.policies.some((p) => p.id === action.policy)) return no('not one of its policies');
       return YES;
     }
+    case 'launchCampaign': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (!findCampaign(action.campaignId)) return no('no such campaign');
+      if (!advancementAppointed(state)) return no('a campaign needs a VP of Advancement');
+      if (state.advancement.running !== null) return no('a campaign is already running');
+      if (state.advancement.closed.some((c) => c.campaignId === action.campaignId))
+        return no('that campaign has been run');
+      if (!launchable(state).some((c) => c.id === action.campaignId))
+        return no('the college has not earned that case yet');
+      return YES;
+    }
     case 'debug/mark':
       return YES;
     case 'debug/fireEvent':
@@ -579,6 +595,8 @@ export function applyAction(state: GameState, action: Action): GameState {
     }
     case 'setSeatPolicy':
       return setSeatPolicy(state, action.seatId, action.schoolId ?? null, action.policy);
+    case 'launchCampaign':
+      return launchCampaign(state, action.campaignId);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
     case 'debug/fireEvent':

@@ -158,6 +158,12 @@
     },
     "eventDelegated": {
       "text": "{line}"
+    },
+    "campaignLaunched": {
+      "text": "{line}"
+    },
+    "campaignClosed": {
+      "text": "{line}"
     }
   }
 }
