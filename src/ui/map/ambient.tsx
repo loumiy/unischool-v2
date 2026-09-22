@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { buildingById } from '../../content/buildings.ts';
-import { enrolled, type GameState, type Placement } from '../../sim/index.ts';
+import { enrolled, SPEED_MULTIPLIER, type GameState, type Placement } from '../../sim/index.ts';
 import { MAX_WALKERS, STUDENTS_PER_WALKER } from '../../tuning.ts';
 import { wallHeightOf } from './buildingSpec.ts';
 import { boxFaces, heightScale, project, type Camera, type Pt } from './iso.ts';
@@ -16,7 +16,11 @@ import { useGame } from '../useGame.ts';
 // moved by attribute) so sixty of them cost the SVG a few hundred nodes and
 // React nothing at all.
 
-const WALK_SPEED = 1.35; // tiles a second, real time, whatever the sim speed
+// Tiles a second at 1×. The crowd keeps the clock's own pace, so 8× looks
+// like 8× rather than like a fast year watched by people out for a stroll
+// (Phase 21B). DD §6.3 has them stopping with the clock; this is the rest
+// of that sentence.
+const WALK_SPEED = 1.35;
 const LINGER_MS = [600, 2600] as const; // at a door, before setting off again
 const SHIRTS = ['#c94b4b', '#3d6a9c', '#e0b64a', '#5b8a5b', '#8c5a9c', '#e88a4a', '#f2ede2'];
 
@@ -152,6 +156,14 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
   const students = enrolled(state);
   const { campus } = state;
   const running = speed !== 'paused';
+  // How fast the crowd walks: the clock's own multiplier, so the lawn is as
+  // busy as the year is fast. Held in a ref and read inside the frame loop,
+  // because changing speed should change the pace of the walk in progress,
+  // not tear the crowd down and build a new one.
+  const gaitRef = useRef(SPEED_MULTIPLIER[speed]);
+  useEffect(() => {
+    gaitRef.current = SPEED_MULTIPLIER[speed];
+  }, [speed]);
 
   useEffect(() => {
     const layer = layerRef.current;
@@ -263,7 +275,7 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
           if (w.u >= total) {
             if (now >= w.waitUntil) setOff(w, w.at, now);
           } else {
-            w.u = Math.min(total, w.u + WALK_SPEED * dt);
+            w.u = Math.min(total, w.u + WALK_SPEED * gaitRef.current * dt);
             if (w.u >= total)
               w.waitUntil = now + LINGER_MS[0] + random() * (LINGER_MS[1] - LINGER_MS[0]);
           }

@@ -165,6 +165,9 @@ describe('calendar beats (DD §3.3)', () => {
       'Blackmoor College is chartered.',
       'Ground is broken for Founders Hall.',
       'Blackmoor College breaks ground.',
+      // Since Phase 21B the hall is up within the month, so the founding
+      // autumn contains a college rather than a site.
+      'Founders Hall opens.',
       'The board is in session.',
       'The board adjourns.',
       'Spring Term begins.',
@@ -172,7 +175,6 @@ describe('calendar beats (DD §3.3)', () => {
       'Admissions Day. The applications are in.',
       line('admissionsClosed'),
       'The admissions file closes.',
-      'Founders Hall opens.',
       // An event asks, goes unanswered for its four weeks, and settles
       // into its stated default (events.ts).
       eventLine('eventFired'),

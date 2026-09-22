@@ -11,7 +11,7 @@
       },
       "cost": 8000000,
       "upkeep": 160000,
-      "buildWeeks": 24,
+      "buildWeeks": 4,
       "capacity": {
         "beds": 120,
         "meals": 150,

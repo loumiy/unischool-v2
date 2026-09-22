@@ -2937,3 +2937,80 @@ button.toolbar-stat.active svg {
   font-style: normal;
   font-weight: 700;
 }
+
+/* ---------- Phase 21B: the clock you cannot miss ---------- */
+
+/* A beat holds the week (DD §3.3) and the speed stays where the player set
+   it, which is the design — but nothing said so except a colour on the
+   clock. The hold now says itself, in words, beside the date. */
+.clock-held {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+  font-family: var(--display);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  animation: clock-held-pulse 1.6s ease-in-out infinite;
+}
+
+.clock-held-what {
+  /* Weight tells the beat's name from the label; opacity would have cost
+     contrast on a gold pill for nothing (the Phase 21 audit's L-findings). */
+  font-weight: 600;
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes clock-held-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(242, 193, 78, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(242, 193, 78, 0);
+  }
+}
+
+/* The days are not passing, so the squares stop looking as though they are. */
+.day-ticker.held {
+  opacity: 0.45;
+}
+
+/* Nor is the speed advancing: the pills read as set-but-stopped rather than
+   as running. The player may still change speed, and it takes effect when
+   the clock resumes. */
+.speeds.held button.active {
+  border-style: dashed;
+  animation: clock-held-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clock-held,
+  .speeds.held button.active {
+    animation: none;
+  }
+}
+
+/* The NEXT prompt is the one thing to do while the clock holds, so it reads
+   as a thing to press rather than as a footnote at the far right. */
+.log-ticker-next.urgent .log-ticker-next-text {
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+  padding: 2px 9px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.log-ticker-next.urgent .log-ticker-next-text:hover {
+  background: var(--school-on-secondary);
+  color: var(--school-secondary);
+}
