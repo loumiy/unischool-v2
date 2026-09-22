@@ -287,6 +287,17 @@ export const QUAD_MIN_ENCLOSURE = 0.55;
 // good quads make a full enclosure mark for beauty.
 export const QUAD_GREEN_WEIGHT = 0.5;
 export const QUAD_TARGET = 3;
+// A doorway is a hole through something thin: a gap at most this wide in
+// something at most this deep. The detector seals one before it floods, so
+// a courtyard left open for a path to run through is still a courtyard,
+// while a long alley or a narrow light well — narrow but not a hole in
+// anything — is left as the open ground it is (Phase 21C).
+export const QUAD_DOORWAY_WIDTH = 2;
+export const QUAD_DOORWAY_DEPTH = 2;
+// What a paved edge is worth against a building wall when the paving is
+// what encloses the space. Less than a wall, and enough on its own to pass
+// QUAD_MIN_ENCLOSURE, so a green laid out entirely in paths is a green.
+export const QUAD_PATH_WEIGHT = 0.6;
 
 // How far apart two buildings can stand and still count as paired: tiles
 // between their nearest edges.

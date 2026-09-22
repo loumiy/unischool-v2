@@ -49,6 +49,7 @@ export const MAP_KEYS: readonly string[] = [
   'x', // tilt it
   'r', // turn the building being placed
   'p', // the path tool
+  'n', // the quads' names, on and off (Phase 21C)
   'home', // back to the opening view
 ];
 
@@ -74,6 +75,7 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
       { keys: ['W', 'A', 'S', 'D'], does: 'glide the camera; the arrow keys do the same' },
       { keys: ['Q', 'E'], does: 'turn the view a quarter turn round the campus' },
       { keys: ['Z', 'X'], does: 'tilt: Z toward level, X toward a straight-down view' },
+      { keys: ['N'], does: "the quads' names, on and off; one shows on hover anyway" },
       { keys: ['Home'], does: 'back to the opening view' },
       { keys: ['drag', 'scroll'], does: 'pan and zoom with the mouse' },
     ],

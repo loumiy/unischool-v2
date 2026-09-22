@@ -634,6 +634,38 @@
   fill: var(--ink);
 }
 
+/* ---------- Phase 21C: quads the player recognises ---------- */
+
+/* The quad patch used to take every click on the ground it covers, so a
+   player could not lay a path or plant a tree inside their own green. With
+   something in hand the ground belongs to the tool, and the patch stands
+   aside; with empty hands it is a thing to click, as before. */
+.campus-map-svg.working .campus-quads,
+.campus-map-svg.working .campus-quad-names {
+  pointer-events: none;
+}
+
+/* A name is drawn when it is asked for — the cursor on the ground, the card
+   open, or N for all of them — so the one text on the map is an answer
+   rather than a caption. It fades in, because a name that blinks on under a
+   moving cursor reads as a fault. */
+.campus-quad-name {
+  animation: quad-name-in 140ms ease-out;
+}
+@keyframes quad-name-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .campus-quad-name {
+    animation: none;
+  }
+}
+
 /* ---------- Phase 21A: the key map, and what to plant ---------- */
 
 /* The map's '?' carries the whole key list, so it is wider than a hint and

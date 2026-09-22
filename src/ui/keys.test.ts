@@ -51,7 +51,17 @@ describe('the key map (Phase 21A)', () => {
     const described = new Set(
       KEY_GROUPS.flatMap((g) => g.bindings).flatMap((b) => b.keys.map((k) => k.toLowerCase())),
     );
-    const undescribed = [...Object.keys(TAB_HOTKEYS), ...SHELL_KEYS, 'q', 'e', 'z', 'x', 'r', 'p']
+    const undescribed = [
+      ...Object.keys(TAB_HOTKEYS),
+      ...SHELL_KEYS,
+      'q',
+      'e',
+      'z',
+      'x',
+      'r',
+      'p',
+      'n',
+    ]
       .map((k) => (k === ' ' ? 'space' : k))
       .filter((k) => !described.has(k));
     expect(undescribed, `undescribed keys: ${undescribed.join(', ')}`).toEqual([]);
