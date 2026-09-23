@@ -525,3 +525,24 @@ export const CAMPAIGN_PULL = 3.2;
 export const CAMPAIGN_RESONANCE_PULL = 0.9;
 // What a week of asking costs a class that is being asked personally.
 export const CAMPAIGN_ASK_COOLING = 0.004;
+
+// REPUTATION (DD §8.2, Phase 37): the talk at the school gate. Once a year,
+// at Commencement, it moves REPUTATION_TRAIL of the way to a reading of
+// what the students are getting — the teaching, how they feel, how the
+// last few classes turned out, the state of the buildings — weighted as
+// below. It is neutral at REPUTATION_NEUTRAL, and each point either side
+// moves the applicant pool by REPUTATION_POOL_SWING percent and the yield
+// by REPUTATION_YIELD_SWING percent, never below the floor.
+export const REPUTATION_START = 50;
+export const REPUTATION_NEUTRAL = 50;
+export const REPUTATION_TRAIL = 0.4;
+export const REPUTATION_OUTCOME_CLASSES = 4;
+export const REPUTATION_WEIGHTS = {
+  teaching: 0.45,
+  satisfaction: 0.25,
+  outcomes: 0.15,
+  condition: 0.15,
+} as const;
+export const REPUTATION_POOL_SWING = 2.5;
+export const REPUTATION_YIELD_SWING = 0.5;
+export const REPUTATION_POOL_FLOOR = 0.5;

@@ -4,6 +4,7 @@ import { canApply, type Action } from './actions.ts';
 import { defaultResolution } from './beats.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { dispatch, newRun, tickRunWeeks, type Run } from './run.ts';
+import { facultyOf, staffingNeed } from './faculty.ts';
 import type { GameState } from './state.ts';
 
 // SCRIPTED COLLEGES — the test harness Phase 18 built to prove no content
@@ -55,6 +56,10 @@ export type Policy = {
   // a scripted college with twenty sites queued is saving for buildings,
   // which is exactly when the game tells a player to turn it off.
   sweep?: boolean;
+  // Mends what has worn below half its value, once a year, while the cash
+  // allows (Phase 37: a hall that has fallen down teaches nobody, and the
+  // families notice). On unless the college funds no maintenance at all.
+  renovate?: boolean;
 };
 
 export function resolveWith(policy: Policy) {
@@ -161,13 +166,25 @@ export function played(
     // nothing, and every reading of teaching stays at zero.
     if (run.state.faculty.marketOpen && run.state.faculty.roster.length < (policy.hireCap ?? 30)) {
       for (const candidate of [...run.state.faculty.market]) {
-        const fit = run.state.academics.programs.find(
-          (open) => findProgram(open.programId)?.schoolId === candidate.schoolId,
-        );
+        // The thinnest programme in the candidate's school that still
+        // wants staff (Phase 37: a college is now known for the teaching it
+        // gives, and a roster piled into one programme, or hired into none,
+        // leaves the rest teaching nothing).
+        const fit = run.state.academics.programs
+          .filter(
+            (open) =>
+              findProgram(open.programId)?.schoolId === candidate.schoolId &&
+              facultyOf(run.state, open.programId).length < staffingNeed(open),
+          )
+          .sort(
+            (a, b) =>
+              facultyOf(run.state, a.programId).length - facultyOf(run.state, b.programId).length,
+          )[0];
+        if (!fit) continue;
         const action = {
           type: 'hire',
           candidateId: candidate.id,
-          programId: fit?.programId ?? null,
+          programId: fit.programId,
         } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }
@@ -182,7 +199,20 @@ export function played(
           }
         }
       }
+      if (policy.renovate ?? policy.maintenanceFunding !== 0) {
+        const worn = run.state.campus.placements
+          .filter((p) => p.status === 'open' && p.condition < 0.5)
+          .sort((a, b) => a.condition - b.condition);
+        for (const p of worn) {
+          const action = { type: 'renovate', placementId: p.id, financing: 'cash' } as const;
+          if (canApply(run.state, action).ok) run = dispatch(run, action);
+        }
+      }
       for (const program of PROGRAMS) {
+        // No more programmes than the roster can nearly staff.
+        const { programs } = run.state.academics;
+        const need = programs.reduce((t, p) => t + staffingNeed(p), 0);
+        if (programs.length >= 3 && need >= run.state.faculty.roster.length + 4) break;
         const action = { type: 'openProgram', programId: program.id } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }

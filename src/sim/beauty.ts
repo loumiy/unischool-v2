@@ -16,7 +16,8 @@ import { TERRAIN } from './terrain.ts';
 // share of a target, weighted. It reaches the applicant pool and the
 // cohorts' satisfaction only through the capped aggregation in
 // placement.ts. Coherent motifs take their share when motifs become
-// per-building.
+// per-building. Condition runs through all of it but the trees: a campus
+// of ruins keeps only its greenery.
 
 export interface BeautyTerms {
   greenery: number; // 0–1
@@ -32,11 +33,16 @@ export function beautyTerms(state: GameState): BeautyTerms {
   const trees = Object.keys(state.campus.trees).length;
   const greenery = Math.min(1, trees / Math.max(1, FOUNDING_TREES * GREENERY_TARGET_SHARE));
   const open = openPlacements(state);
-  const marks = open.reduce((t, p) => t + (buildingById(p.buildingId).beauty ?? 0), 0);
+  // A ruin is no landmark and a court of ruins is no quad (Phase 37): a
+  // landmark counts for its condition, and the quads for the estate's.
+  const marks = open.reduce(
+    (t, p) => t + (buildingById(p.buildingId).beauty ?? 0) * p.condition,
+    0,
+  );
   const landmarks = Math.min(1, marks / LANDMARK_TARGET);
   const upkeep = open.length === 0 ? 1 : open.reduce((t, p) => t + p.condition, 0) / open.length;
   const quads = detectQuads(state.campus);
-  const enclosure = Math.min(1, quads.reduce((t, q) => t + q.quality, 0) / QUAD_TARGET);
+  const enclosure = Math.min(1, quads.reduce((t, q) => t + q.quality, 0) / QUAD_TARGET) * upkeep;
   const score =
     100 *
     (greenery * BEAUTY_WEIGHTS.greenery +

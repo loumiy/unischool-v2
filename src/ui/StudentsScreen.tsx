@@ -9,12 +9,14 @@ import {
   formatPercent,
   inTriples,
   outcomesFor,
+  reputationPoolFactor,
+  reputationTerms,
   satisfactionBreakdown,
   teachingQuality,
   type GameState,
   type SatisfactionBreakdown,
 } from '../sim/index.ts';
-import { AID_DISCOUNT_RATE } from '../tuning.ts';
+import { AID_DISCOUNT_RATE, REPUTATION_WEIGHTS } from '../tuning.ts';
 import Figure from './Figure.tsx';
 import NamedStudents from './NamedStudents.tsx';
 import AlumniLedger from './AlumniLedger.tsx';
@@ -75,6 +77,70 @@ export function SatisfactionTable({ breakdown }: { breakdown: SatisfactionBreakd
   );
 }
 
+// REPUTATION (DD §8.2, Phase 37): the talk, the reading it is moving
+// towards, what it is doing to the pool, and the four causes with what
+// each contributes, so a falling number always has a reason on the page.
+const CAUSES = [
+  { key: 'teaching', label: 'Teaching', hint: PEOPLE_READINGS.repTeaching },
+  { key: 'satisfaction', label: 'Satisfaction', hint: PEOPLE_READINGS.repSatisfaction },
+  { key: 'outcomes', label: 'Graduates', hint: PEOPLE_READINGS.repOutcomes },
+  { key: 'condition', label: 'Buildings', hint: PEOPLE_READINGS.repCondition },
+] as const;
+
+function ReputationPanel({ state }: { state: GameState }) {
+  const reputation = state.people.reputation;
+  const terms = reputationTerms(state);
+  const pool = reputationPoolFactor(state) - 1;
+  const quiet = state.people.alumni.length === 0;
+  const trend = terms.reading - reputation;
+  return (
+    <section className="treasury-panel" id="students-reputation">
+      <h3>{PEOPLE_WORDS.reputationTitle}</h3>
+      <div className="figure-row inner">
+        <Figure
+          label="Reputation"
+          value={reputation.toFixed(0)}
+          hint={PEOPLE_READINGS.reputation}
+          tone={reputation < 40 ? 'bad' : reputation >= 60 ? 'good' : undefined}
+        />
+        <Figure
+          label="This year's reading"
+          value={terms.reading.toFixed(0)}
+          note={quiet ? undefined : trend > 1 ? 'rising' : trend < -1 ? 'falling' : 'steady'}
+          hint={PEOPLE_READINGS.reputationReading}
+          tone={quiet ? 'muted' : trend < -1 ? 'bad' : trend > 1 ? 'good' : undefined}
+        />
+        <Figure
+          label="Applicants"
+          value={`${signed(pool * 100)}%`}
+          hint={PEOPLE_READINGS.reputationPool}
+          tone={pool > 0 ? 'good' : pool < 0 ? 'bad' : undefined}
+        />
+      </div>
+      {quiet && <p className="treasury-note">{PEOPLE_WORDS.reputationQuiet}</p>}
+      <table className="budget-table satisfaction-table">
+        <tbody>
+          {CAUSES.map((c) => (
+            <tr
+              key={c.key}
+              className={terms[c.key] < 40 ? 'bad' : terms[c.key] >= 60 ? 'good' : ''}
+            >
+              <th>{c.label}</th>
+              <td className="figure" tabIndex={0}>
+                {terms[c.key].toFixed(0)}
+                <span className="figure-hint" role="tooltip">
+                  {c.hint}
+                </span>
+              </td>
+              <td>{(terms[c.key] * REPUTATION_WEIGHTS[c.key]).toFixed(1)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
 export default function StudentsScreen({
   state,
   onReunion,
@@ -108,6 +174,7 @@ export default function StudentsScreen({
           { label: 'Classes', id: 'students-classes' },
           { label: 'Named students', id: 'students-named' },
           { label: 'Layout', id: 'students-layout' },
+          { label: 'Reputation', id: 'students-reputation' },
           { label: 'Admissions', id: 'students-admissions' },
           { label: 'Alumni', id: 'students-alumni' },
           { label: 'Campaigns', id: 'students-campaigns' },
@@ -231,6 +298,8 @@ export default function StudentsScreen({
       </section>
 
       <PlacementPanel state={state} />
+
+      <ReputationPanel state={state} />
 
       <section className="treasury-panel" id="students-admissions">
         <h3>Admissions</h3>

@@ -38,6 +38,7 @@ import {
   YIELD_BASE,
   YIELD_PRICE_ELASTICITY,
   BUILDING_DRAW_CAP,
+  REPUTATION_START,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
@@ -49,6 +50,7 @@ import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import { varsityLife } from './athletics.ts';
 import { placementCapacity } from './lateGame.ts';
 import { prestigePoolFactor } from './prestige.ts';
+import { reputationPoolFactor, reputationYear, reputationYieldFactor } from './reputation.ts';
 import { tagPoolFactor, tagQualityShift } from './tags.ts';
 import {
   nameNewcomers,
@@ -132,6 +134,8 @@ export interface People {
   // What the last few events left them feeling (events.ts), in
   // satisfaction points; it fades over a couple of years.
   mood: number;
+  // What the families say (reputation.ts, Phase 37), 0–100.
+  reputation: number;
 }
 
 export function foundingPeople(): People {
@@ -145,6 +149,7 @@ export function foundingPeople(): People {
     named: [],
     nextStudentId: 1,
     mood: 0,
+    reputation: REPUTATION_START,
   };
 }
 
@@ -346,11 +351,16 @@ export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissio
     placementPoolFactor(state) *
       buildingDrawFactor(state) *
       prestigePoolFactor(state) *
-      tagPoolFactor(state),
+      tagPoolFactor(state) *
+      reputationPoolFactor(state),
   );
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
-  const yr = yieldRate(terms, state.people.aidRate);
+  const yr = Number(
+    Math.min(0.95, yieldRate(terms, state.people.aidRate) * reputationYieldFactor(state)).toFixed(
+      4,
+    ),
+  );
   const wanted = Math.round(admitted * yr);
   const cap = intakeCap(state);
   const size = Math.min(wanted, cap);
@@ -682,7 +692,8 @@ export function peopleWeek(state: GameState): GameState {
   // Commencement, whose farewells are that week's news on their own.
   if (clock.term === 'summer') {
     const graduating = state.people.cohorts.some((c) => c.classYear <= clock.year);
-    const done = graduate(state);
+    // The year's news is in: the talk moves (reputation.ts).
+    const done = reputationYear(graduate(state));
     return graduating ? done : termBeats(done);
   }
   return termBeats(state);

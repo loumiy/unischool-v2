@@ -39,3 +39,4 @@ export * from './lateGame.ts';
 export * from './chronicle.ts';
 export * from './ending.ts';
 export * from './notes.ts';
+export * from './reputation.ts';
