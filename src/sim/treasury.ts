@@ -107,6 +107,10 @@ export interface Treasury {
   debtRepayment: number;
   capitalThisYear: Capital;
   history: YearSummary[];
+  // Standing costs the college took on by deciding to (Phase 21H): dollars
+  // a year, forever, on the administration's payroll and the faculty's.
+  // They are what "$120k a year, forever" means.
+  standing: { admin: number; faculty: number };
 }
 
 export function zeroRevenue(): Revenue {
@@ -242,6 +246,7 @@ export function foundingTreasury(seed: number): Treasury {
     lastWeek: zeroFlows(),
     marketReturn: marketReturnFor(seed, 1),
     endowmentBasis: STARTING_ENDOWMENT,
+    standing: { admin: 0, faculty: 0 },
     debt: 0,
     debtRepayment: 0,
     capitalThisYear: { spent: 0, borrowed: 0 },
@@ -374,7 +379,7 @@ export function tuitionDependence(f: Flows): number {
 // The founding office, plus every seat the college has filled, forever
 // (DD §5.4, §9.4). This is the ratchet: it only goes up.
 export function annualAdminPayroll(state: GameState): number {
-  return FOUNDING_ADMIN_PAYROLL + seatPayroll(state);
+  return FOUNDING_ADMIN_PAYROLL + seatPayroll(state) + state.treasury.standing.admin;
 }
 
 export function adminShareOfPayroll(f: Flows): number {

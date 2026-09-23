@@ -189,7 +189,14 @@ describe('a choice pulls the levers it names (DD §10.1)', () => {
     const run = years(3);
     const before = run.state;
     const after = applyChoice(before, eventById('committee-reform'), 'adopt');
-    expect(after.treasury.cash).toBe(before.treasury.cash - 120000);
+    // "$120k a year, forever" is a standing cost now (Phase 21H): nothing
+    // leaves the bank today, and the administration's payroll carries it
+    // this year, next year and every year after.
+    expect(after.treasury.cash).toBe(before.treasury.cash);
+    expect(after.treasury.standing.admin).toBe(before.treasury.standing.admin + 120000);
+    expect(after.treasury.budget.expenses.adminPayroll).toBe(
+      before.treasury.budget.expenses.adminPayroll + 120000,
+    );
     expect(after.distress.confidence).toBe(
       Math.min(100, Math.max(0, before.distress.confidence + 1)),
     );

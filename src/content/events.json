@@ -126,7 +126,7 @@
           "label": "Adopt the recommendation",
           "note": "$120k a year, forever",
           "effects": {
-            "cash": -120000,
+            "adminPayroll": 120000,
             "confidence": 1
           }
         },
@@ -193,7 +193,7 @@
           "label": "Counter the offer",
           "note": "$40k a year more, for good",
           "effects": {
-            "cash": -40000,
+            "facultyPayroll": 40000,
             "mood": 1,
             "confidence": -1
           }
@@ -872,7 +872,7 @@
           "label": "Appoint a proper manager",
           "note": "$200k a year; better returns, eventually",
           "effects": {
-            "cash": -200000,
+            "adminPayroll": 200000,
             "endowment": 2000000,
             "confidence": 2
           }
@@ -984,7 +984,7 @@
           "label": "Fill the post",
           "note": "$140k a year",
           "effects": {
-            "cash": -140000,
+            "facultyPayroll": 140000,
             "mood": 2,
             "confidence": -1
           }
@@ -1100,7 +1100,8 @@
           }
         }
       ],
-      "default": "day"
+      "default": "day",
+      "needs": ["library"]
     },
     {
       "id": "tenure-case",
@@ -1119,7 +1120,7 @@
           "label": "Grant tenure",
           "note": "A career, and a salary line forever",
           "effects": {
-            "cash": -110000,
+            "facultyPayroll": 110000,
             "mood": 2,
             "quality": 1
           }
@@ -1179,38 +1180,39 @@
         "facultyOver": 2,
         "programsOver": 1
       },
-      "text": "The candidate the search wants has a spouse who is also an academic, in a field {school} does not teach, and has asked whether anything might be possible. Two other institutions have already said that something might be.",
+      "text": "{faculty}, the best appointment {school} has made in years, has a spouse who is also an academic, in a field the college does not teach, and has asked whether anything might be possible. Two other institutions have already said that something might be.",
       "timeoutWeeks": 3,
       "choices": [
         {
-          "id": "create",
-          "label": "Create a second post",
-          "note": "$130k a year; the college gains two",
+          "id": "line",
+          "label": "Fund a teaching line for the spouse",
+          "note": "$130k a year; the college keeps both",
           "effects": {
-            "cash": -130000,
+            "facultyPayroll": 130000,
             "quality": 2,
             "mood": 1
           }
         },
         {
-          "id": "adjunct",
+          "id": "courses",
           "label": "Offer teaching by the course",
-          "note": "$30k; it may hold for a year",
+          "note": "$30k this year; it may hold",
           "effects": {
             "cash": -30000,
             "quality": 1
           }
         },
         {
-          "id": "lose",
-          "label": "Make the single offer and accept the risk",
-          "note": "Free; they go elsewhere",
+          "id": "nothing",
+          "label": "Say that nothing is possible",
+          "note": "Free; they start looking",
           "effects": {
-            "quality": -1
+            "quality": -1,
+            "mood": -1
           }
         }
       ],
-      "default": "adjunct"
+      "default": "courses"
     },
     {
       "id": "emeritus-office",
@@ -1230,7 +1232,7 @@
           "label": "Leave them where they are",
           "note": "$40k a year in space nobody counts",
           "effects": {
-            "cash": -40000,
+            "adminPayroll": 40000,
             "warmth": 3,
             "mood": 1
           }
@@ -1263,7 +1265,7 @@
           "label": "Hire into the gap",
           "note": "$120k a year",
           "effects": {
-            "cash": -120000,
+            "facultyPayroll": 120000,
             "mood": 2,
             "quality": 1
           }
@@ -1505,7 +1507,8 @@
           }
         }
       ],
-      "default": "selective"
+      "default": "selective",
+      "needs": ["library"]
     },
     {
       "id": "sit-in",
@@ -1569,7 +1572,7 @@
           "label": "Fund it and give the undertaking",
           "note": "$25k a year",
           "effects": {
-            "cash": -25000,
+            "adminPayroll": 25000,
             "mood": 3,
             "confidence": -1
           }
@@ -1666,7 +1669,8 @@
           }
         }
       ],
-      "default": "committee"
+      "default": "committee",
+      "needs": ["dining-hall"]
     },
     {
       "id": "rag-week",
@@ -1803,7 +1807,8 @@
           }
         }
       ],
-      "default": "ride"
+      "default": "ride",
+      "needs": ["health-center"]
     },
     {
       "id": "annual-fund-drive",
@@ -2559,7 +2564,7 @@
           "label": "Hire, whatever it costs",
           "note": "$260k a year for two",
           "effects": {
-            "cash": -260000,
+            "facultyPayroll": 260000,
             "quality": 2,
             "mood": 2
           }
@@ -2657,7 +2662,8 @@
           }
         }
       ],
-      "default": "signs"
+      "default": "signs",
+      "needs": ["dining-hall", "residence-hall"]
     },
     {
       "id": "the-heating-bill",
@@ -2690,7 +2696,8 @@
           }
         }
       ],
-      "default": "pay"
+      "default": "pay",
+      "needs": ["library"]
     },
     {
       "id": "the-snow-day",

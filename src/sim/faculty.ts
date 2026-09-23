@@ -283,7 +283,7 @@ export function unassignFrom(state: GameState, programId: string): GameState {
 // ---------- money (DD §5.2) ----------
 
 export function annualFacultyPayroll(state: GameState): number {
-  return state.faculty.roster.reduce((t, f) => t + f.salary, 0);
+  return state.faculty.roster.reduce((t, f) => t + f.salary, 0) + state.treasury.standing.faculty;
 }
 
 // ---------- quality (DD §7.4) ----------

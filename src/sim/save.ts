@@ -560,6 +560,22 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { advancement: foundingAdvancement(), ...state, schemaVersion: 19 },
     };
   },
+  // v19 → v20 (Phase 21H): no standing costs. An older college paid its
+  // "a year, forever" once, which is what it was charged, so it starts owing
+  // nothing more.
+  19: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const treasury = (state.treasury ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 20,
+      state: {
+        ...state,
+        treasury: { standing: { admin: 0, faculty: 0 }, ...treasury },
+        schemaVersion: 20,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

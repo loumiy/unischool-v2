@@ -157,6 +157,9 @@ export const AID_MIN = 0;
 // Restructuring the administration under austerity abolishes the newest
 // seat; the term of chaos after it costs this much student mood.
 export const RESTRUCTURE_MOOD = 3;
+// How many years of a standing cost ("a year, forever") a decision is
+// weighed as, by the seats and by the escalation threshold (Phase 21H).
+export const STANDING_COST_YEARS = 5;
 
 // ---------- Academics (DD §7.2, Phase 9) ----------
 

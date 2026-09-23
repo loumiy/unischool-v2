@@ -1,6 +1,11 @@
-import { type EventDef, type EventDomain } from '../content/events.ts';
+import { type EventDef, type EventDomain, type EventEffect } from '../content/events.ts';
 import { SEATS, seatById, type PolicyRule, type SeatDef } from '../content/seats.ts';
-import { DEANS_FOR_FASTEST, ESCALATION_MONEY, SEAT_SENIOR_RANKS } from '../tuning.ts';
+import {
+  DEANS_FOR_FASTEST,
+  ESCALATION_MONEY,
+  SEAT_SENIOR_RANKS,
+  STANDING_COST_YEARS,
+} from '../tuning.ts';
 import { emit } from './bus.ts';
 import type { GameState } from './state.ts';
 
@@ -134,9 +139,15 @@ export function handlerFor(state: GameState, def: EventDef): Seat | null {
 // What a choice moves, in money. The escalation test (DD §9.2): anything
 // above the threshold reaches the player however well-staffed the college.
 export function moneyMoved(def: EventDef): number {
-  return Math.max(
-    ...def.choices.map((c) => Math.abs(c.effects.cash ?? 0) + Math.abs(c.effects.endowment ?? 0)),
-  );
+  return Math.max(...def.choices.map((c) => Math.abs(costOf(c.effects))));
+}
+
+// What a choice spends, counting a standing cost as the years it will
+// certainly be paid for (Phase 21H): "$120k a year, forever" is not a
+// $120k decision, and a seat choosing by thrift must not read it as one.
+function costOf(e: Partial<Record<EventEffect, number>>): number {
+  const standing = (e.adminPayroll ?? 0) + (e.facultyPayroll ?? 0);
+  return -(e.cash ?? 0) - (e.endowment ?? 0) + standing * STANDING_COST_YEARS;
 }
 
 // Escalations always surface (DD §9.2): a seismic letter, anything above
@@ -150,10 +161,7 @@ export function escalates(state: GameState, def: EventDef): boolean {
 // The choice a policy takes. Three rules over the effects the event
 // already carries, so a policy needs no per-event authoring.
 export function choiceByRule(def: EventDef, rule: PolicyRule): string {
-  const spend = (i: number) => {
-    const e = def.choices[i]!.effects;
-    return -(e.cash ?? 0) - (e.endowment ?? 0);
-  };
+  const spend = (i: number) => costOf(def.choices[i]!.effects);
   const mood = (i: number) => def.choices[i]!.effects.mood ?? 0;
   let best = 0;
   for (let i = 1; i < def.choices.length; i++) {

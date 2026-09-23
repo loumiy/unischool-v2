@@ -1,3 +1,4 @@
+import { BUILDINGS } from './buildings.ts';
 import raw from './events.json' with { type: 'json' };
 import { arr, ContentError, num, obj, oneOf, optional, str, uniqueBy, validate } from './schema.ts';
 
@@ -83,6 +84,13 @@ export const EVENT_EFFECTS = [
   'quality', // the cohorts', nudged
   'enrollment', // students gained or lost, spread over the classes
   'trees', // planted or taken, on the map itself
+  // A STANDING COST (Phase 21H): dollars a year, forever, added to a
+  // payroll line. "$120k a year, forever" used to pull `cash` exactly once;
+  // this is the recurring charge the satire assumed, and the ratchet DD
+  // §5.4 describes — the administration's share climbs from the events
+  // that deserve it.
+  'adminPayroll',
+  'facultyPayroll',
 ] as const;
 export type EventEffect = (typeof EVENT_EFFECTS)[number];
 
@@ -120,6 +128,11 @@ export interface EventDef {
   timeoutWeeks: number;
   choices: ChoiceDef[];
   default: string;
+  // Buildings the college must have OPEN for this to be true of it (Phase
+  // 21H): an event whose prose names the Health Centre cannot fire at a
+  // college without one. The `when` vocabulary is numbers; this is the
+  // standing clause it could not express.
+  needs: string[];
 }
 
 const PLACEHOLDERS = ['building', 'faculty', 'program', 'class', 'school'] as const;
@@ -146,6 +159,7 @@ const fileSchema = obj({
       timeoutWeeks: num,
       choices: arr(obj({ id: str, label: str, note: optional(str), effects })),
       default: str,
+      needs: optional(arr(str)),
     }),
   ),
   readings: obj({ pending: str, mood: str, history: str }),
@@ -160,9 +174,17 @@ const fileSchema = obj({
 
 function load() {
   const file = validate(fileSchema, raw, 'content/events.json');
-  const events = uniqueBy(file.events, (e) => e.id, 'content/events.json.events') as EventDef[];
+  const events = uniqueBy(
+    file.events.map((e) => ({ ...e, needs: e.needs ?? [] })),
+    (e) => e.id,
+    'content/events.json.events',
+  ) as EventDef[];
+  const catalogue = new Set(BUILDINGS.map((b) => b.id));
   for (const e of events) {
     const at = `content/events.json.${e.id}`;
+    for (const id of e.needs) {
+      if (!catalogue.has(id)) throw new ContentError(`${at}.needs`, `no building "${id}"`);
+    }
     // DD §10.1: two or three choices, each doing something, one of them
     // the stated default an unanswered event settles into.
     if (e.choices.length < 2 || e.choices.length > 3) {

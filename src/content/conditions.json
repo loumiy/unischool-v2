@@ -1,54 +1,201 @@
 {
   "readings": {
-    "yearAtLeast": { "label": "Year", "unit": "count" },
-    "yearAtMost": { "label": "Year", "unit": "count" },
-    "winterAtLeast": { "label": "Winter", "unit": "percent" },
-    "cashUnder": { "label": "Operating funds", "unit": "money" },
-    "cashOver": { "label": "Operating funds", "unit": "money" },
-    "endowmentOver": { "label": "Endowment", "unit": "money" },
-    "endowmentUnder": { "label": "Endowment", "unit": "money" },
-    "debtOver": { "label": "Debt", "unit": "money" },
-    "debtUnder": { "label": "Debt", "unit": "money" },
-    "deficitOver": { "label": "This year's deficit", "unit": "money" },
-    "drawRateOver": { "label": "Endowment draw", "unit": "rate" },
-    "tuitionOver": { "label": "Tuition", "unit": "money" },
-    "adminShareOver": { "label": "Administration's share of payroll", "unit": "percent" },
-    "payrollShareOver": { "label": "Payroll's share of spending", "unit": "percent" },
-    "rungAtLeast": { "label": "Distress rung", "unit": "count" },
-    "rungAtMost": { "label": "Distress rung", "unit": "count" },
-    "confidenceUnder": { "label": "Board confidence", "unit": "score" },
-    "confidenceOver": { "label": "Board confidence", "unit": "score" },
-    "backlogOver": { "label": "Backlog", "unit": "money" },
-    "backlogUnder": { "label": "Backlog", "unit": "money" },
-    "conditionUnder": { "label": "Worst building's condition", "unit": "percent" },
-    "maintenanceUnder": { "label": "Maintenance funded", "unit": "percent" },
-    "buildingsOver": { "label": "Buildings open", "unit": "count" },
-    "derelictOver": { "label": "Derelict buildings", "unit": "count" },
-    "oldestBuildingOver": { "label": "Oldest building", "unit": "years" },
-    "beautyUnder": { "label": "Campus beauty", "unit": "score" },
-    "beautyOver": { "label": "Campus beauty", "unit": "score" },
-    "quadsOver": { "label": "Quads", "unit": "count" },
-    "treesUnder": { "label": "Trees", "unit": "count" },
-    "schoolsOver": { "label": "Schools founded", "unit": "count" },
-    "programsOver": { "label": "Programs open", "unit": "count" },
-    "programsUnder": { "label": "Programs open", "unit": "count" },
-    "facultyOver": { "label": "Faculty", "unit": "count" },
-    "facultyUnder": { "label": "Faculty", "unit": "count" },
-    "studentsPerFacultyOver": { "label": "Students per faculty member", "unit": "ratio" },
-    "teachingOver": { "label": "Teaching quality", "unit": "score" },
-    "teachingUnder": { "label": "Teaching quality", "unit": "score" },
-    "enrolledOver": { "label": "Enrolled", "unit": "count" },
-    "enrolledUnder": { "label": "Enrolled", "unit": "count" },
-    "triplesOver": { "label": "Students in triples", "unit": "count" },
-    "satisfactionOver": { "label": "Satisfaction", "unit": "score" },
-    "satisfactionUnder": { "label": "Satisfaction", "unit": "score" },
-    "selectivityOver": { "label": "Selectivity", "unit": "percent" },
-    "selectivityUnder": { "label": "Selectivity", "unit": "percent" },
-    "alumniOver": { "label": "Living alumni", "unit": "count" },
-    "warmthOver": { "label": "Alumni warmth", "unit": "score" },
-    "warmthUnder": { "label": "Alumni warmth", "unit": "score" },
-    "moodOver": { "label": "Student mood", "unit": "signed" },
-    "moodUnder": { "label": "Student mood", "unit": "signed" }
+    "yearAtLeast": {
+      "label": "Year",
+      "unit": "count"
+    },
+    "yearAtMost": {
+      "label": "Year",
+      "unit": "count"
+    },
+    "winterAtLeast": {
+      "label": "Winter",
+      "unit": "percent"
+    },
+    "cashUnder": {
+      "label": "Operating funds",
+      "unit": "money"
+    },
+    "cashOver": {
+      "label": "Operating funds",
+      "unit": "money"
+    },
+    "endowmentOver": {
+      "label": "Endowment",
+      "unit": "money"
+    },
+    "endowmentUnder": {
+      "label": "Endowment",
+      "unit": "money"
+    },
+    "debtOver": {
+      "label": "Debt",
+      "unit": "money"
+    },
+    "debtUnder": {
+      "label": "Debt",
+      "unit": "money"
+    },
+    "deficitOver": {
+      "label": "This year's deficit",
+      "unit": "money"
+    },
+    "drawRateOver": {
+      "label": "Endowment draw",
+      "unit": "rate"
+    },
+    "tuitionOver": {
+      "label": "Tuition",
+      "unit": "money"
+    },
+    "adminShareOver": {
+      "label": "Administration's share of payroll",
+      "unit": "percent"
+    },
+    "payrollShareOver": {
+      "label": "Payroll's share of spending",
+      "unit": "percent"
+    },
+    "rungAtLeast": {
+      "label": "Distress rung",
+      "unit": "count"
+    },
+    "rungAtMost": {
+      "label": "Distress rung",
+      "unit": "count"
+    },
+    "confidenceUnder": {
+      "label": "Board confidence",
+      "unit": "score"
+    },
+    "confidenceOver": {
+      "label": "Board confidence",
+      "unit": "score"
+    },
+    "backlogOver": {
+      "label": "Backlog",
+      "unit": "money"
+    },
+    "backlogUnder": {
+      "label": "Backlog",
+      "unit": "money"
+    },
+    "conditionUnder": {
+      "label": "Worst building's condition",
+      "unit": "percent"
+    },
+    "maintenanceUnder": {
+      "label": "Maintenance funded",
+      "unit": "percent"
+    },
+    "buildingsOver": {
+      "label": "Buildings open",
+      "unit": "count"
+    },
+    "derelictOver": {
+      "label": "Derelict buildings",
+      "unit": "count"
+    },
+    "oldestBuildingOver": {
+      "label": "Oldest building",
+      "unit": "years"
+    },
+    "beautyUnder": {
+      "label": "Campus beauty",
+      "unit": "score"
+    },
+    "beautyOver": {
+      "label": "Campus beauty",
+      "unit": "score"
+    },
+    "quadsOver": {
+      "label": "Quads",
+      "unit": "count"
+    },
+    "treesUnder": {
+      "label": "Trees",
+      "unit": "count"
+    },
+    "schoolsOver": {
+      "label": "Schools founded",
+      "unit": "count"
+    },
+    "programsOver": {
+      "label": "Programs open",
+      "unit": "count"
+    },
+    "programsUnder": {
+      "label": "Programs open",
+      "unit": "count"
+    },
+    "facultyOver": {
+      "label": "Faculty",
+      "unit": "count"
+    },
+    "facultyUnder": {
+      "label": "Faculty",
+      "unit": "count"
+    },
+    "studentsPerFacultyOver": {
+      "label": "Students per faculty member",
+      "unit": "ratio"
+    },
+    "teachingOver": {
+      "label": "Teaching quality",
+      "unit": "score"
+    },
+    "teachingUnder": {
+      "label": "Teaching quality",
+      "unit": "score"
+    },
+    "enrolledOver": {
+      "label": "Enrolled",
+      "unit": "count"
+    },
+    "enrolledUnder": {
+      "label": "Enrolled",
+      "unit": "count"
+    },
+    "triplesOver": {
+      "label": "Students in triples",
+      "unit": "count"
+    },
+    "satisfactionOver": {
+      "label": "Satisfaction",
+      "unit": "score"
+    },
+    "satisfactionUnder": {
+      "label": "Satisfaction",
+      "unit": "score"
+    },
+    "selectivityOver": {
+      "label": "Selectivity",
+      "unit": "percent"
+    },
+    "selectivityUnder": {
+      "label": "Selectivity",
+      "unit": "percent"
+    },
+    "alumniOver": {
+      "label": "Living alumni",
+      "unit": "count"
+    },
+    "warmthOver": {
+      "label": "Alumni warmth",
+      "unit": "score"
+    },
+    "warmthUnder": {
+      "label": "Alumni warmth",
+      "unit": "score"
+    },
+    "moodOver": {
+      "label": "Student mood",
+      "unit": "signed"
+    },
+    "moodUnder": {
+      "label": "Student mood",
+      "unit": "signed"
+    }
   },
   "levers": {
     "cash": "operating funds",
@@ -60,7 +207,9 @@
     "warmth": "alumni warmth",
     "quality": "class quality",
     "enrollment": "enrolment",
-    "trees": "trees"
+    "trees": "trees",
+    "adminPayroll": "the administration's payroll",
+    "facultyPayroll": "the faculty payroll"
   },
   "lines": {
     "reaching": "{label} {now} of {target}",
