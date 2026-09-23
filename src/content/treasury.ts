@@ -5,7 +5,7 @@ import {
   type RevenueCategory,
 } from '../sim/treasury.ts';
 import raw from './treasury.json' with { type: 'json' };
-import { arr, int, num, obj, optional, str, validate } from './schema.ts';
+import { arr, num, obj, str, validate } from './schema.ts';
 
 // The words on the Treasury screen (DD §5.3, §13.2): a label and the one
 // tooltip sentence for every line and every reading. Content, so the
@@ -14,16 +14,15 @@ import { arr, int, num, obj, optional, str, validate } from './schema.ts';
 export interface LineWords {
   label: string;
   hint: string;
-  // The plan phase that makes the line move; absent when it already does.
-  phase?: number;
 }
 
-const lineSchema = obj({ label: str, hint: str, phase: optional(int) });
+const lineSchema = obj({ label: str, hint: str });
 
 const fileSchema = obj({
   revenue: obj(Object.fromEntries(REVENUE_CATEGORIES.map((k) => [k, lineSchema]))),
   expenses: obj(Object.fromEntries(EXPENSE_CATEGORIES.map((k) => [k, lineSchema]))),
   readings: obj({
+    backlogDefined: str,
     cash: str,
     weekNet: str,
     endowment: str,

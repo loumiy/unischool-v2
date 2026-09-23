@@ -250,7 +250,7 @@
     "teaching": "Program quality averaged over the open programs: faculty skill, damped by understaffing, lifted by tier, worn by the hall.",
     "market": "Candidates listed this summer; the list closes when the budget is approved.",
     "teachingSkill": "How well they teach, 0 to 100, with their quirk counted.",
-    "researchSkill": "How well they publish, 0 to 100, with their quirk counted; research lines arrive in Phase 12.",
+    "researchSkill": "How well they publish, 0 to 100, with their quirk counted.",
     "salary": "What they cost a year, on the faculty payroll from the week they are hired.",
     "programQuality": "This program's quality: its faculty's teaching, damped by understaffing, lifted by tier, worn by the hall.",
     "staffing": "Hires assigned against the hires this tier needs; below the need, quality is damped."

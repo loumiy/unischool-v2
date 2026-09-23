@@ -101,6 +101,7 @@ const fileSchema = obj({
       signaturesFull: str,
       neglected: str,
       crowded: str,
+      coursesOffered: str,
     }),
   }),
 });

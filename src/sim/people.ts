@@ -213,6 +213,24 @@ export function intakeCap(state: GameState): number {
   return Math.max(0, room - continuing);
 }
 
+// THE FILE AFTER THIS ONE (Phase 21F). By Budget & Hiring the next class
+// has already been admitted, so the admissions the player can still change
+// are the following spring's — and the one lever on them that takes a year
+// to pull is the beds. This is that file's cap, counted the way Admissions
+// Day will count it: the beds that will stand at the Convocation after
+// next, plus triples, less everyone who will still be here, the class
+// already admitted among them.
+export function followingIntakeCap(state: GameState): { cap: number; beds: number } {
+  const arrives = state.clock.year + 1;
+  const { beds } = capacityAt(state, arrives * WEEKS_PER_YEAR);
+  const room = Math.floor(beds * (1 + TRIPLES_OVERFLOW_SHARE));
+  const incoming = state.people.incoming;
+  const continuing =
+    state.people.cohorts.filter((c) => c.classYear > arrives).reduce((t, c) => t + c.size, 0) +
+    (incoming && incoming.year === arrives ? incoming.size : 0);
+  return { cap: Math.max(0, room - continuing), beds };
+}
+
 // ---------- the funnel (DD §8.2) ----------
 
 // The price the pool feels: the net of aid, against the market's own net.

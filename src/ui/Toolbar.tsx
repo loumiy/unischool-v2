@@ -209,11 +209,6 @@ export default function Toolbar({
 
       <div className="toolbar-right">
         <div className="toolbar-school">
-          {heldFor && (
-            <span className="clock-held" role="status">
-              Waiting for you<span className="clock-held-what">{heldFor}</span>
-            </span>
-          )}
           <span
             className={`toolbar-clock ${heldFor ? 'held' : ''}`}
             title={heldFor ? `The clock holds for ${heldFor}` : undefined}
@@ -223,6 +218,15 @@ export default function Toolbar({
           <DayTicker weekProgress={weekProgress} held={heldFor !== null} />
         </div>
         <div className="toolbar-speed">
+          {/* The hold sits by the speed control it has paused, not on the
+              clock's row: there it widened the right-hand zone enough to
+              wrap the whole bar onto two rows at 1440 (Phase 21F). */}
+          {heldFor && (
+            <span className="clock-held" role="status">
+              <span className="clock-held-lead">Waiting for you</span>
+              <span className="clock-held-what">{heldFor}</span>
+            </span>
+          )}
           <div className={`speeds ${heldFor ? 'held' : ''}`} role="group" aria-label="Speed">
             {SPEEDS.map((sp) => {
               const Icon = SPEED_ICONS[sp];

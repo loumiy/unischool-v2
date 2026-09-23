@@ -475,9 +475,7 @@ export default function App() {
               ) : effectiveOverlay === 'history' ? (
                 <HistoryScreen state={state} />
               ) : (
-                <StubScreen phase={tabById(effectiveOverlay).phase}>
-                  {tabById(effectiveOverlay).stub}
-                </StubScreen>
+                <StubScreen>{tabById(effectiveOverlay).stub}</StubScreen>
               )}
             </TabOverlay>
           )}

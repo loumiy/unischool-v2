@@ -542,7 +542,8 @@
       "dropSignature": "Drop signature",
       "signaturesFull": "Three signatures already named",
       "neglected": "Neglected {years} yr: without {rank} or under half its staff; the tier drops after {limit}",
-      "crowded": "{enrolled} enrolled against {seats} program seats: every program is teaching over capacity"
+      "crowded": "{enrolled} enrolled against {seats} program seats: every program is teaching over capacity",
+      "coursesOffered": "{offered} of {total} courses taught"
     }
   }
 }

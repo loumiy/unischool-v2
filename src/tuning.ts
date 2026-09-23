@@ -154,6 +154,9 @@ export const BOARD_POLICY_MAINTENANCE = 0.5;
 // Cutting aid takes this much off the discount at a time, to this floor.
 export const AID_CUT_STEP = 0.15;
 export const AID_MIN = 0;
+// Restructuring the administration under austerity abolishes the newest
+// seat; the term of chaos after it costs this much student mood.
+export const RESTRUCTURE_MOOD = 3;
 
 // ---------- Academics (DD §7.2, Phase 9) ----------
 
