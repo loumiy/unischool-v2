@@ -41,13 +41,12 @@ import Figure from './Figure.tsx';
 // against expenses, the net underneath.
 
 function Line({ words, amount, hint }: { words: LineWords; amount: number; hint?: string }) {
-  const idle = words.phase !== undefined && amount === 0;
+  // A line reading zero is a line reading zero: a college with no debt pays
+  // no debt service. It used to be styled as unbuilt and told the player
+  // which phase of the development plan would fill it (Phase 21F).
   return (
-    <div className={`statement-line ${idle ? 'idle' : ''}`} tabIndex={0}>
-      <span className="statement-line-label">
-        {words.label}
-        {idle && <span className="statement-line-note">arrives in Phase {words.phase}</span>}
-      </span>
+    <div className="statement-line" tabIndex={0}>
+      <span className="statement-line-label">{words.label}</span>
       <span className="statement-line-amount">{formatMoney(amount)}</span>
       <span className="figure-hint" role="tooltip">
         {hint ?? words.hint}
@@ -354,13 +353,9 @@ function BudgetRow({
   budget: number;
   actual: number;
 }) {
-  const idle = words.phase !== undefined && budget === 0 && actual === 0;
   return (
-    <tr className={idle ? 'idle' : ''}>
-      <th>
-        {words.label}
-        {idle && <span className="statement-line-note"> · Phase {words.phase}</span>}
-      </th>
+    <tr>
+      <th>{words.label}</th>
       <td className="figure" tabIndex={0}>
         {formatMoney(budget)}
         <span className="figure-hint" role="tooltip">

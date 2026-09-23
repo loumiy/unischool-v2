@@ -1,5 +1,29 @@
 import { AMBITION_WORDS, ambitionById } from '../content/ambitions.ts';
 import { activeAmbitions, goalMet, yearsLeft, type GameState } from '../sim/index.ts';
+import { costLine, measureAll, worthLine, type Measure } from './measure.ts';
+
+// The goal as a measurement (Phase 21F): where the college is against what
+// it said it would be, one line per clause, with a bar when there is a
+// distance to close. The docket used to say "not yet" and never what.
+function Goal({ measures }: { measures: Measure[] }) {
+  return (
+    <ul className="ambition-goal">
+      {measures.map((m) => (
+        <li key={m.text} className={m.met ? 'met' : ''}>
+          <span className="ambition-goal-text">{m.text}</span>
+          {m.progress !== undefined && (
+            <span className="ambition-goal-track" aria-hidden="true">
+              <span
+                className="ambition-goal-fill"
+                style={{ width: `${Math.round(m.progress * 100)}%` }}
+              />
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 // THE DOCKET (DD §10.2): what the college has promised in public and by
 // when. Shown at Convocation, where promises are made and read out, and on
@@ -43,6 +67,8 @@ export default function AmbitionsPanel({
                 {/* Whether the promise is true TODAY, which is not the same
                     as whether it will be true on the day it is read out. */}
                 <span className="ambition-state">{met ? 'true today' : 'not yet'}</span>
+                <Goal measures={measureAll(state, def.goal)} />
+                <span className="ambition-stakes">{costLine(def.penalty)}</span>
               </li>
             );
           })}
@@ -88,10 +114,14 @@ export function AmbitionOffer({
       <p className="ambition-text">
         {def.text.replace('{school}', state.identity?.name ?? 'the college')}
       </p>
+      <Goal measures={measureAll(state, def.goal)} />
       <p className="ambition-terms">
         {full
           ? AMBITION_WORDS.capReached
           : `${def.years} years from this Convocation. ${AMBITION_WORDS.note}`}
+      </p>
+      <p className="ambition-stakes">
+        {worthLine(def.reward)} {costLine(def.penalty)}
       </p>
       <div className="ambition-choices">
         <button

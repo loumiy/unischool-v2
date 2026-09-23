@@ -2,6 +2,7 @@ import { CUT_WORDS } from '../content/board.ts';
 import {
   AID_CUT_STEP,
   AID_MIN,
+  RESTRUCTURE_MOOD,
   AUSTERITY_AFTER_TERMS,
   BOARD_CONFIDENCE_START,
   BOARD_POLICY_DRAW,
@@ -137,6 +138,8 @@ export function cutAvailable(state: GameState, cut: AusterityCut): boolean {
       return state.treasury.budget.maintenanceFunding > 0;
     case 'closeProgram':
       return state.academics.programs.length > 0;
+    case 'restructureAdmin':
+      return state.delegation.seats.length > 0;
     default:
       return false;
   }
@@ -162,6 +165,23 @@ export function applyCut(state: GameState, cut: AusterityCut): GameState {
     case 'closeProgram': {
       const newest = newestProgram(state);
       return newest ? closeProgramIn(state, newest.programId) : state;
+    }
+    case 'restructureAdmin': {
+      // The ratchet back a notch (DD §5.4, §5.5): the seat appointed most
+      // recently is abolished, its salary with it, and the term that follows
+      // pays for the reorganisation in the students' patience. Whoever held
+      // it goes back to the faculty, or out of the college if they came in.
+      const seats = state.delegation.seats;
+      if (seats.length === 0) return state;
+      let newest = 0;
+      for (let i = 1; i < seats.length; i++) {
+        if (seats[i]!.appointedYear >= seats[newest]!.appointedYear) newest = i;
+      }
+      return {
+        ...state,
+        delegation: { ...state.delegation, seats: seats.filter((_, i) => i !== newest) },
+        people: { ...state.people, mood: state.people.mood - RESTRUCTURE_MOOD },
+      };
     }
     case 'deferMaintenance': {
       const t = state.treasury;

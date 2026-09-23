@@ -32,10 +32,12 @@ export default function TabOverlay({
   );
 }
 
-export function StubScreen({ phase, children }: { phase: number; children: ReactNode }) {
+// A screen the college does not have yet. It says so in the college's own
+// terms; a player should never read the development plan (Phase 21F).
+export function StubScreen({ children }: { children: ReactNode }) {
   return (
     <div className="stub-screen">
-      <div className="eyebrow">Arrives in Phase {phase}</div>
+      <div className="eyebrow">Not open yet</div>
       <p>{children}</p>
     </div>
   );

@@ -15,8 +15,10 @@ import { clockHeld, defaultResolution } from './beats.ts';
 import { entriesOfKind } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import {
+  applyCut,
   availableCuts,
   closeTerm,
+  cutAvailable,
   frozen,
   inAusterity,
   inReceivership,
@@ -316,5 +318,29 @@ describe('save migration v7 → v8', () => {
     expect(result.save.state.distress.rung).toBe(RUNG_SOUND);
     expect(result.save.state.people.aidRate).toBe(AID_DISCOUNT_RATE);
     expect(result.save.state.campus.placements).toHaveLength(2);
+  });
+});
+
+describe('restructuring the administration (DD §5.5, Phase 21F)', () => {
+  it('abolishes the newest seat, its salary with it, and costs a term of patience', () => {
+    const base = opened().state;
+    const seat = (seatId: string, appointedYear: number) => ({
+      seatId,
+      schoolId: null,
+      filledBy: { kind: 'outside' as const },
+      policy: 'balanced',
+      salary: 200_000,
+      appointedYear,
+    });
+    const state: GameState = {
+      ...base,
+      delegation: { seats: [seat('provost', 3), seat('vp-advancement', 7)] },
+    };
+    expect(cutAvailable(state, 'restructureAdmin')).toBe(true);
+    const after = applyCut(state, 'restructureAdmin');
+    expect(after.delegation.seats.map((s) => s.seatId)).toEqual(['provost']);
+    expect(after.people.mood).toBeLessThan(state.people.mood);
+    // Nothing to restructure is not a cut on offer.
+    expect(cutAvailable({ ...base, delegation: { seats: [] } }, 'restructureAdmin')).toBe(false);
   });
 });

@@ -53,6 +53,8 @@ const fileSchema = obj({
     breakdownTitle: str,
     outcomesTitle: str,
     nextClass: str,
+    housingAhead: str,
+    housingShort: str,
   }),
 });
 

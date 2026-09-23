@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { buildingById } from '../content/buildings.ts';
 import type { CalendarBeat } from '../content/calendarBeats.ts';
 import { EXPENSE_WORDS, READING_WORDS, REVENUE_WORDS } from '../content/treasury.ts';
 import {
@@ -7,6 +8,7 @@ import {
   boardPolicy,
   campusCapacity,
   cutAvailable,
+  followingIntakeCap,
   frozen,
   inAusterity,
   inReceivership,
@@ -96,12 +98,6 @@ export default function BeatScreen({
         {beat.id === 'board-meeting' && (
           <BoardBody state={state} decision={decision} onChange={setDecision} />
         )}
-        {beat.stub && (
-          <div className="beat-stub">
-            <div className="eyebrow">Arrives in Phase {beat.phase}</div>
-            <p>{beat.stub}</p>
-          </div>
-        )}
         <div className="beat-actions">
           <button type="button" className="beat-resolve" onClick={() => onResolve(decision)}>
             {beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
@@ -118,6 +114,32 @@ export default function BeatScreen({
 // draw rate, the lines the sim can foresee shown as they would land — the
 // faculty payroll among them, moving as the market below is hired from.
 // The market closes when the budget is approved.
+// THE BEDS, A YEAR AHEAD (Phase 21F). Admissions closes the file at the
+// beds the college will have, and the playtest met that as a surprise on
+// Admissions Day with nothing left to do about it. Budget & Hiring is the
+// last beat before next spring's file with time to break ground, so this is
+// where the college is told what that file will be able to take.
+function HousingAhead({ state }: { state: GameState }) {
+  const { cap, beds } = followingIntakeCap(state);
+  const size = state.people.incoming?.size ?? state.people.lastAdmissions?.size ?? 0;
+  if (size === 0) return null;
+  const hall = buildingById('residence-hall');
+  const short = cap < size;
+  return (
+    <div className={`housing-ahead ${short ? 'short' : ''}`} role={short ? 'alert' : undefined}>
+      <p>{fillWords(PEOPLE_WORDS.housingAhead, { cap, beds, size })}</p>
+      {short && (
+        <p>
+          {fillWords(PEOPLE_WORDS.housingShort, {
+            weeks: hall.buildWeeks,
+            hallBeds: hall.capacity?.beds ?? 0,
+          })}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function BudgetBody({
   state,
   decision,
@@ -160,9 +182,20 @@ function BudgetBody({
         <span className="draw-slider-label">
           Maintenance funded <strong>{formatPercent(funding, 0)}</strong>
           <span className="draw-slider-note">
-            {funding >= 1
-              ? `${formatMoney(budget.expenses.maintenance)} holds every building's condition`
-              : `${formatMoney(budget.expenses.maintenance)} funded; the rest becomes Backlog`}
+            {funding >= 1 ? (
+              `${formatMoney(budget.expenses.maintenance)} holds every building's condition`
+            ) : (
+              <>
+                {formatMoney(budget.expenses.maintenance)} funded; the rest becomes{' '}
+                {/* Where the word is first made, it is defined (Phase 21F). */}
+                <span className="figure defined-term" tabIndex={0}>
+                  Backlog
+                  <span className="figure-hint" role="tooltip">
+                    {READING_WORDS.backlogDefined}
+                  </span>
+                </span>
+              </>
+            )}
           </span>
         </span>
         <input
@@ -175,6 +208,7 @@ function BudgetBody({
           onChange={(e) => onChange({ ...decision, maintenanceFunding: Number(e.target.value) })}
         />
       </label>
+      <HousingAhead state={state} />
       <div className="income-statement compact">
         <div className="statement-col">
           <h4>Income</h4>
@@ -482,10 +516,7 @@ function BoardBody({
                       onChange={() => toggle(id)}
                     />
                     <span className="cut-label">{c.label}</span>
-                    <span className="cut-blurb">
-                      {c.blurb}
-                      {c.phase !== undefined && ` Arrives in Phase ${c.phase}.`}
-                    </span>
+                    <span className="cut-blurb">{c.blurb}</span>
                   </label>
                 </li>
               );

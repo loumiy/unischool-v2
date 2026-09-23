@@ -14,8 +14,7 @@
     },
     "researchOverhead": {
       "label": "Research overhead",
-      "hint": "The percentage the college skims off research grants for keeping the lights on.",
-      "phase": 11
+      "hint": "The percentage the college skims off research grants for keeping the lights on."
     },
     "auxiliaries": {
       "label": "Auxiliaries",
@@ -33,8 +32,7 @@
     },
     "maintenance": {
       "label": "Maintenance",
-      "hint": "Per building, scaling with size and age; what is not paid becomes Backlog.",
-      "phase": 6
+      "hint": "Per building, scaling with size and age; what is not paid becomes Backlog."
     },
     "financialAid": {
       "label": "Financial aid",
@@ -42,8 +40,7 @@
     },
     "debtService": {
       "label": "Debt service",
-      "hint": "Interest and principal on construction borrowing; the board caps leverage.",
-      "phase": 6
+      "hint": "Interest and principal on construction borrowing; the board caps leverage."
     },
     "programs": {
       "label": "Programs & student life",
@@ -65,7 +62,8 @@
     "debt": "Construction borrowing outstanding; interest accrues weekly and the principal retires over twenty years.",
     "borrowingRoom": "What the board will still lend: its cap is a share of the endowment, less what is already owed.",
     "capital": "Construction money this year, outside the income statement: it buys buildings, not weeks.",
-    "maintenanceFunding": "The share of required maintenance this year's budget funds; the rest becomes Backlog."
+    "maintenanceFunding": "The share of required maintenance this year's budget funds; the rest becomes Backlog.",
+    "backlogDefined": "Backlog is the repair work a building is owed and has not had. It grows by a share every year it waits, it wears the building down as it grows — a derelict hall is a building with a backlog it could not pay — and it is paid off by renovating, or not at all."
   },
   "estate": {
     "status": {

@@ -36,7 +36,7 @@ export default function HistoryScreen({ state }: { state: GameState }) {
         </section>
       )}
       <section className="beat-stub">
-        <div className="eyebrow">Arrives in Phase {stub.phase}</div>
+        <div className="eyebrow">Still being written</div>
         <p>{stub.stub}</p>
       </section>
     </div>

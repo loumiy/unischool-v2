@@ -122,8 +122,13 @@ function ProgramRow({
             {ACADEMIC_WORDS.readings.signatures}
           </span>
         </button>
+        {/* It printed "2 / 6" beside every program, which is two numbers
+            and no noun (Phase 21F). */}
         <span className="lane-count">
-          {listings.filter((c) => c.level <= tier.levels).length} / {listings.length}
+          {fillWords(ACADEMIC_WORDS.lines.coursesOffered, {
+            offered: listings.filter((c) => c.level <= tier.levels).length,
+            total: listings.length,
+          })}
         </span>
       </div>
       <p className="program-row-blurb">{def.blurb}</p>

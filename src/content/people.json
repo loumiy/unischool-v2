@@ -45,6 +45,8 @@
     "noAlumni": "Nobody has graduated yet.",
     "breakdownTitle": "Why they feel that way",
     "outcomesTitle": "How the classes turned out",
-    "nextClass": "The {label} would graduate today with {distinguished} distinguished, {placed} placed and {adrift} adrift."
+    "nextClass": "The {label} would graduate today with {distinguished} distinguished, {placed} placed and {adrift} adrift.",
+    "housingAhead": "Next spring's admissions file will close at about {cap}: the {beds} beds that will stand when that class arrives, with triples, less the classes still here. This year's class is {size}.",
+    "housingShort": "That is fewer than this year. A residence hall takes {weeks} weeks and sleeps {hallBeds}; ground broken before Admissions Day is counted."
   }
 }

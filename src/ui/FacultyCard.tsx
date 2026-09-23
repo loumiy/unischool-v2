@@ -81,8 +81,18 @@ export default function FacultyCard({
             {fillWords(FACULTY_WORDS.rankAndField, { rank: rank.name, school: school.name })}
           </span>
           <div className="faculty-bars">
-            <Bar label="T" value={effectiveTeaching(f)} hint={FACULTY_READINGS.teachingSkill} />
-            <Bar label="R" value={effectiveResearch(f)} hint={FACULTY_READINGS.researchSkill} />
+            {/* Words, not initials: "T" and "R" on thirty-two cards were two
+                letters a new player had to hover to decode (Phase 21F). */}
+            <Bar
+              label="Teaching"
+              value={effectiveTeaching(f)}
+              hint={FACULTY_READINGS.teachingSkill}
+            />
+            <Bar
+              label="Research"
+              value={effectiveResearch(f)}
+              hint={FACULTY_READINGS.researchSkill}
+            />
           </div>
           <span className="faculty-quirk">
             <strong>{quirk.name}.</strong> {quirk.line}
