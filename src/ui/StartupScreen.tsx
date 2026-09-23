@@ -1,3 +1,4 @@
+import { readHall } from './persistence.ts';
 import { useEffect, useState } from 'react';
 import { DEFAULT_MOTIF, MOTIF_CHOICES } from '../content/motifs.ts';
 import { DEFAULT_PALETTE, PALETTES, type PaletteChoice } from '../content/palettes.ts';
@@ -429,6 +430,12 @@ export default function StartupScreen({
   const [name, setName] = useState('');
   const [motif, setMotif] = useState<Motif>(DEFAULT_MOTIF);
   const [palette, setPalette] = useState<PaletteChoice>(DEFAULT_PALETTE);
+  const [hallRuns, setHallRuns] = useState(0);
+  useEffect(() => {
+    void readHall()
+      .then((h) => setHallRuns(h.length))
+      .catch(() => setHallRuns(0));
+  }, []);
   const colors: SchoolColors = { primary: palette.primary, secondary: palette.secondary };
 
   // The card previews the theme it is choosing: the pick is written to the
@@ -472,23 +479,33 @@ export default function StartupScreen({
           ))}
         </div>
         <div className="startup-colors" role="radiogroup" aria-label="School colours">
-          {PALETTES.map((pair) => (
-            <button
-              key={pair.id}
-              type="button"
-              role="radio"
-              className={`startup-color-btn ${palette.id === pair.id ? 'active' : ''}`}
-              aria-checked={palette.id === pair.id}
-              aria-label={pair.name}
-              title={pair.name}
-              onClick={() => setPalette(pair)}
-            >
-              <span className="startup-color-swatch" aria-hidden="true">
-                <span style={{ background: pair.primary }} />
-                <span style={{ background: pair.secondary }} />
-              </span>
-            </button>
-          ))}
+          {PALETTES.map((pair) => {
+            // Cosmetics only (DD §12.3): a pair unlocks once enough runs
+            // hang in the hall; nothing mechanical is ever gated.
+            const locked = (pair.unlockAfter ?? 0) > hallRuns;
+            return (
+              <button
+                key={pair.id}
+                type="button"
+                role="radio"
+                className={`startup-color-btn ${palette.id === pair.id ? 'active' : ''} ${locked ? 'locked' : ''}`}
+                aria-checked={palette.id === pair.id}
+                aria-label={pair.name}
+                disabled={locked}
+                title={
+                  locked
+                    ? `${pair.name} · unlocks when ${pair.unlockAfter} ${pair.unlockAfter === 1 ? 'run hangs' : 'runs hang'} in the hall of fame`
+                    : pair.name
+                }
+                onClick={() => setPalette(pair)}
+              >
+                <span className="startup-color-swatch" aria-hidden="true">
+                  <span style={{ background: pair.primary }} />
+                  <span style={{ background: pair.secondary }} />
+                </span>
+              </button>
+            );
+          })}
         </div>
         <div className="startup-color-name">{palette.name}</div>
         <button

@@ -8,9 +8,11 @@ import { MenuIcon } from './icons.tsx';
 export default function MainMenu({
   onSave,
   onNewGame,
+  onHall,
 }: {
   onSave: () => void;
   onNewGame: () => void;
+  onHall: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -66,6 +68,16 @@ export default function MainMenu({
                 title="Write the run to this browser now. The game also saves itself every year-turn."
               >
                 Save
+              </button>
+              <button
+                className="save-btn"
+                onClick={() => {
+                  onHall();
+                  close();
+                }}
+                title="Every college that reached its fiftieth year."
+              >
+                Hall of fame
               </button>
               <button
                 className="newgame-btn"

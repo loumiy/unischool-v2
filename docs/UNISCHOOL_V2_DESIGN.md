@@ -409,6 +409,8 @@ Six-axis grading (§11.1) against the fifty-year arc, ambition record, financial
 
 Each completed run hangs in the **hall of fame**: campus portrait (a rendered map snapshot), name, colors, title, final grades, and chronicle link. Meta-progression is deliberately light: completed runs unlock **cosmetics only** — additional palettes, motif variants, statue and landmark sets, seasonal decorations. Nothing mechanical is ever gated. The hall is the reason to play again; the cosmetics are the souvenir.
 
+**The hall, as built (Phase 28).** The hall-of-fame entry is written when the Final Report appears: the campus portrait is the live map's own SVG, taken without its labels, walkers or pan and zoom and shown again inside the game's styles; with it the name, colours, title, mark, grades, eras and the chronicle as text. The hall lives in this browser, across runs, and opens from the main menu and from the report. The first cosmetic unlocks are four colour pairs beyond the eight, offered once one, two, three and five runs hang in the hall; motif variants, landmark sets and seasonal decorations are for later content phases. Nothing mechanical is gated.
+
 ---
 
 ## §13. Presentation

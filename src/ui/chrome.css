@@ -3835,3 +3835,86 @@ th.figure > .figure-hint {
   color: var(--school-on-secondary);
   font-weight: 800;
 }
+
+/* ---------- the hall of fame (Phase 28) ---------- */
+.hall {
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  width: min(960px, calc(100vw - 48px));
+}
+.hall-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.hall-entry {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
+  padding: 12px;
+  border: 2px solid var(--outline);
+  border-radius: 12px;
+  background: var(--cream-hi);
+}
+.hall-portrait {
+  width: 320px;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--grass, #8fae6b);
+}
+.hall-portrait svg {
+  width: 100%;
+  height: 100%;
+}
+.hall-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hall-colors {
+  width: 28px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--outline);
+}
+.hall-school {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-lg, 1.1rem);
+  flex: 1;
+}
+.hall-mark {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 28px;
+  color: var(--school-primary);
+}
+.hall-title {
+  font-style: italic;
+  margin: 4px 0;
+}
+.hall-grades,
+.hall-eras {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  margin: 2px 0;
+}
+.hall-chronicle {
+  white-space: pre-wrap;
+  font-family: var(--sans);
+  font-size: var(--text-xs);
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--cream);
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.startup-color-btn.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

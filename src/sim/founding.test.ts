@@ -30,8 +30,9 @@ describe('content: identity', () => {
     expect(DEFAULT_MOTIF).toBe('georgian');
   });
 
-  it('offers eight readable colour pairs (DD §14)', () => {
-    expect(PALETTES).toHaveLength(8);
+  it('offers eight readable colour pairs, and more to unlock (DD §14, §12.3)', () => {
+    expect(PALETTES.filter((p) => p.unlockAfter === undefined)).toHaveLength(8);
+    expect(PALETTES.some((p) => (p.unlockAfter ?? 0) > 0)).toBe(true);
     for (const p of PALETTES) expect(pairIsReadable(p), p.name).toBe(true);
     expect(pairIsReadable({ primary: '#f7f2e8', secondary: '#ffffff' })).toBe(false);
   });

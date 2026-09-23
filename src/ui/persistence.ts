@@ -9,19 +9,50 @@ export type SlotId = 'autosave' | 'slot-1' | 'slot-2' | 'slot-3';
 export const SLOTS: readonly SlotId[] = ['autosave', 'slot-1', 'slot-2', 'slot-3'];
 export const MANUAL_SLOTS: readonly SlotId[] = ['slot-1', 'slot-2', 'slot-3'];
 
+// THE HALL OF FAME (DD §12.3, Phase 28): every completed run, kept across
+// runs in this browser — its portrait, its colours, its title and grades,
+// and its chronicle.
+export interface HallEntry {
+  id: string;
+  school: string;
+  colors: { primary: string; secondary: string };
+  motif: string;
+  title: string;
+  mark: string;
+  grades: { axis: string; grade: string }[];
+  eras: string[];
+  chronicle: string;
+  // The campus as it stood at Year 50: the map's own SVG, and the season
+  // class its colours were drawn under.
+  portrait: string;
+  season: string;
+  finishedAt: string;
+}
+
 interface SaveDb extends DBSchema {
   saves: { key: SlotId; value: SaveFile };
+  hall: { key: string; value: HallEntry };
 }
 
 let dbPromise: Promise<IDBPDatabase<SaveDb>> | null = null;
 
 function db(): Promise<IDBPDatabase<SaveDb>> {
-  dbPromise ??= openDB<SaveDb>('unischool-v2', 1, {
-    upgrade(database) {
-      database.createObjectStore('saves');
+  dbPromise ??= openDB<SaveDb>('unischool-v2', 2, {
+    upgrade(database, oldVersion) {
+      if (oldVersion < 1) database.createObjectStore('saves');
+      if (oldVersion < 2) database.createObjectStore('hall');
     },
   });
   return dbPromise;
+}
+
+export async function hangInHall(entry: HallEntry): Promise<void> {
+  await (await db()).put('hall', entry, entry.id);
+}
+
+export async function readHall(): Promise<HallEntry[]> {
+  const all = await (await db()).getAll('hall');
+  return all.sort((a, b) => b.finishedAt.localeCompare(a.finishedAt));
 }
 
 export async function writeSave(slot: SlotId, file: SaveFile): Promise<void> {

@@ -73,7 +73,7 @@ async function inject(page, name) {
   const file = JSON.parse(readFileSync(join(SCEN, `${name}.json`), 'utf8'));
   await page.evaluate(async (save) => {
     await new Promise((resolve, reject) => {
-      const open = indexedDB.open('unischool-v2', 1);
+      const open = indexedDB.open('unischool-v2');
       open.onupgradeneeded = () => open.result.createObjectStore('saves');
       open.onsuccess = () => {
         const tx = open.result.transaction('saves', 'readwrite');
