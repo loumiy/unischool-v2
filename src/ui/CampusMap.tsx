@@ -1,6 +1,8 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
 import {
+  campusCapacity,
+  enrolled,
   siteRefusal,
   effectiveDef,
   formatMoney,
@@ -58,6 +60,7 @@ import {
 } from './map/iso.ts';
 import { castShadow } from './map/light.ts';
 import PathwayLayer from './map/pathways.tsx';
+import DressingLayer from './map/dressing.tsx';
 import Tree, { woodlandShadow } from './map/trees.tsx';
 import { otherTool, type CampusTool } from './tools.ts';
 
@@ -452,6 +455,22 @@ const CampusScene = memo(function CampusScene({
         camera={camera}
       />
       <PathwayLayer paths={state.campus.paths} camera={camera} />
+      {/* The ground, used (Phase 45): wear, aprons, lamps, benches. */}
+      <DressingLayer
+        campus={state.campus}
+        motif={motif}
+        commuter={
+          state.perception.tags.includes('commuter') ||
+          enrolled(state) > campusCapacity(state).beds * 1.1
+        }
+        years={state.clock.year}
+        evening={
+          state.clock.term === 'spring'
+            ? state.clock.week < 6
+            : state.clock.term === 'fall' && state.clock.week > 8
+        }
+        camera={camera}
+      />
       <CastShadows placements={placements} scene={scene} motif={motif} camera={camera} />
       {groundPlaced.map((p) => (
         <PlacedBuilding
