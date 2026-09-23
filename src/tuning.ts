@@ -94,6 +94,22 @@ export const ADMIT_RATE_MAX = 0.95;
 // by campus beauty (beauty.ts), and by price position against the market.
 export const BASE_APPLICANTS = 1_600;
 export const PRESTIGE_STUB = 50; // 0–100
+// Prestige (DD §11.1, Phase 22): every standing starts here, and moves this
+// share of the way to the year's reading each year.
+export const PRESTIGE_START = 25;
+export const PRESTIGE_TRAIL = 0.25;
+// A research reading reaches its full weight at this many faculty.
+export const RESEARCH_FULL_ROSTER = 40;
+// The league (DD §11.3, Phase 22): a school's axes drift with a momentum
+// that decays toward nothing, noise on top, and a pull back toward the
+// school's home level.
+export const LEAGUE_MOMENTUM_KEEP = 0.6;
+export const LEAGUE_NOISE = 1.6;
+export const LEAGUE_HOME_PULL = 0.08;
+// The guide changes its methodology this often, on average, after the
+// first few tables.
+export const METHODOLOGY_CHANGE_CHANCE = 0.1;
+export const METHODOLOGY_FIRST_YEAR = 6;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.

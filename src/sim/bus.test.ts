@@ -155,7 +155,7 @@ describe('calendar beats (DD §3.3)', () => {
   it('reads as a coherent history', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR, defaultResolution);
     const history = run.state.bus.map((e) => describeEntry(e, run.state).text);
-    const line = (kind: 'admissionsClosed' | 'classArrived') =>
+    const line = (kind: 'admissionsClosed' | 'classArrived' | 'rankingsPublished') =>
       describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
     const termLine = (i: number) =>
       describeEntry(entriesOfKind(run.state, 'termClosed')[i]!, run.state).text;
@@ -196,6 +196,8 @@ describe('calendar beats (DD §3.3)', () => {
       ...run.state.bus
         .filter((e) => e.kind === 'studentsNamed' || e.kind === 'studentBeat')
         .map((e) => describeEntry(e, run.state).text),
+      // The guide's first table, at the turn of the year (Phase 22).
+      line('rankingsPublished'),
       'Convocation. The new class is on the lawn.',
     ]);
     // Which event the first year draws is the catalogue's business, not

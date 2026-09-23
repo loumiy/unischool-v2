@@ -45,6 +45,7 @@ export const TABS: readonly TabDef[] = [
     id: 'league',
     label: 'League',
     phase: 22,
+    // Live since Phase 22 (LeagueScreen.tsx); the stub line is never shown.
     stub: 'Twenty-four other schools and an annual table whose methodology occasionally changes, to everyone’s visible outrage.',
   },
   {

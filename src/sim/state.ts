@@ -13,13 +13,15 @@ import { foundingEvents, type Events } from './events.ts';
 import { foundingFaculty, type FacultyState } from './faculty.ts';
 import { foundingPeople, type People } from './people.ts';
 import { foundingTreasury, type Treasury } from './treasury.ts';
+import { foundingLeague, type League } from './league.ts';
+import { foundingPrestige, type Prestige } from './prestige.ts';
 
 // The one serialisable state tree (DD §15). Everything the sim knows lives
 // here; nothing here is a class, a function, or a reference into the UI.
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 21;
+export const SCHEMA_VERSION = 22;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -60,6 +62,10 @@ export interface GameState {
   delegation: Delegation;
   // Campaigns against the ledger, and what they raised (campaigns.ts).
   advancement: AdvancementState;
+  // The college's six standings (prestige.ts) and the world it is ranked
+  // against (league.ts).
+  prestige: Prestige;
+  league: League;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -91,6 +97,8 @@ export function createNewGame(seed: number): GameState {
     ambitions: foundingAmbitions(),
     delegation: foundingDelegation(),
     advancement: foundingAdvancement(),
+    prestige: foundingPrestige(),
+    league: foundingLeague(seed),
   };
 }
 

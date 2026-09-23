@@ -3387,3 +3387,104 @@ th.figure > .figure-hint {
   font-style: italic;
   color: var(--ink-muted);
 }
+
+/* ---------- the league (Phase 22) ---------- */
+.league-bar-cell {
+  width: 50%;
+}
+.league-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.league-table th,
+.league-table td,
+.league-axes th,
+.league-axes td {
+  text-align: left;
+}
+.league-table td:last-child,
+.league-axes td:last-child {
+  text-align: right;
+}
+.league-table th {
+  font-family: var(--sans);
+}
+.league-bar {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  min-width: 120px;
+  border-radius: 4px;
+  background: var(--parchment-line);
+  overflow: hidden;
+}
+.league-bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--school-primary);
+}
+.league-bar-value {
+  font-family: var(--display);
+  font-weight: 800;
+  min-width: 2ch;
+  text-align: right;
+}
+.league-axes td.good {
+  color: var(--good, #2e7d32);
+}
+.league-axes td.bad {
+  color: var(--bad, #b3261e);
+}
+.league-table .league-rank {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.league-move {
+  font-size: var(--text-2xs);
+  margin-left: 4px;
+}
+.league-move.up {
+  color: #2e7d32;
+}
+.league-move.down {
+  color: #b3261e;
+}
+.league-move.same,
+.league-move.new {
+  color: var(--ink-muted);
+}
+.league-crest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50% 50% 45% 45%;
+  color: #fff;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 12px;
+}
+.league-you th,
+.league-you td {
+  background: color-mix(in srgb, var(--school-secondary) 30%, transparent);
+  font-weight: 800;
+}
+.league-near {
+  margin-left: 8px;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.league-tag {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.stat-rank {
+  font-size: 0.8em;
+  opacity: 0.85;
+}

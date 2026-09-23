@@ -9,6 +9,9 @@ import { MAINTENANCE_FUNDING_DEFAULT } from '../tuning.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
+import { foundingLeague } from './league.ts';
+import { foundingPrestige } from './prestige.ts';
+import { AXES } from '../content/league.ts';
 import { foundingAmbitions } from './ambitions.ts';
 import { foundingAdvancement } from './campaigns.ts';
 import { foundingDelegation } from './seats.ts';
@@ -603,6 +606,23 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v21 → v22 (Phase 22): the world arrives. An older college is ranked
+  // from where it stands at its next turn of the year; its standings start
+  // where a founding college's do, and the league starts at home.
+  21: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const seed = typeof state.seed === 'number' ? state.seed : 0;
+    return {
+      ...raw,
+      version: 22,
+      state: {
+        prestige: foundingPrestige(),
+        league: foundingLeague(seed),
+        ...state,
+        schemaVersion: 22,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -817,6 +837,21 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     return 'state.distress lists are invalid';
   if (distress.pendingLetter !== null && typeof distress.pendingLetter !== 'string')
     return 'state.distress.pendingLetter is invalid';
+  const prestige = s.prestige as Record<string, unknown> | undefined;
+  const axes = prestige?.axes as Record<string, unknown> | undefined;
+  if (typeof axes !== 'object' || axes === null) return 'state.prestige is invalid';
+  for (const a of AXES)
+    if (typeof axes[a] !== 'number' || !Number.isFinite(axes[a]))
+      return `state.prestige.axes.${a} is invalid`;
+  const league = s.league as Record<string, unknown> | undefined;
+  if (
+    typeof league !== 'object' ||
+    league === null ||
+    !Array.isArray(league.schools) ||
+    !Array.isArray(league.tables) ||
+    typeof league.methodologyId !== 'string'
+  )
+    return 'state.league is invalid';
   if (typeof distress.maintenanceRestored !== 'boolean')
     return 'state.distress.maintenanceRestored is invalid';
   if (treasury.ownMaintenance !== null && typeof treasury.ownMaintenance !== 'number')

@@ -34,6 +34,7 @@ import Pennant from './Pennant.tsx';
 import StartupScreen from './StartupScreen.tsx';
 import { store } from './store.ts';
 import TabOverlay, { StubScreen } from './TabOverlay.tsx';
+import LeagueScreen from './LeagueScreen.tsx';
 import { TAB_HOTKEYS } from './keys.ts';
 import { tabById, type TabId } from './tabs.ts';
 import { applySchoolColors } from './theme.ts';
@@ -486,6 +487,8 @@ export default function App() {
                 />
               ) : effectiveOverlay === 'history' ? (
                 <HistoryScreen state={state} />
+              ) : effectiveOverlay === 'league' ? (
+                <LeagueScreen state={state} />
               ) : (
                 <StubScreen>{tabById(effectiveOverlay).stub}</StubScreen>
               )}

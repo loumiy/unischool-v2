@@ -12,6 +12,7 @@ import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
 import { SEAT_WORDS, seatById } from './seats.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
+import { methodologyById } from './league.ts';
 import { memoryLine } from '../sim/alumni.ts';
 import { EVENT_WORDS, findEvent } from './events.ts';
 import { fillEventText } from '../sim/events.ts';
@@ -111,6 +112,12 @@ export function dateline(text: string): string {
   return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 24)).replace(/[,;:\s]+$/, '')}…`;
 }
 
+export function ordinal(n: number): string {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return `${n}${s[(v - 20) % 10] ?? s[v] ?? s[0]}`;
+}
+
 export function describeEntry(entry: BusEntry, state: GameState): BusLine {
   const line = BUS_LINES[entry.kind];
   const vars: Partial<Record<Placeholder, string>> = {
@@ -186,6 +193,27 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       });
       return { text: fill(line.text, vars), tone: entry.timedOut ? 'bad' : undefined };
     }
+    case 'rankingsPublished': {
+      vars.year = String(entry.year);
+      vars.rank = ordinal(entry.rank);
+      vars.count = String(entry.total);
+      const moved = entry.previous === null ? 0 : entry.previous - entry.rank;
+      vars.line =
+        moved > 0
+          ? `, up ${moved}`
+          : moved < 0
+            ? `, down ${-moved}`
+            : entry.previous
+              ? ', unchanged'
+              : '';
+      return {
+        text: fill(line.text, vars),
+        tone: moved > 0 ? 'good' : moved < 0 ? 'bad' : undefined,
+      };
+    }
+    case 'methodologyChanged':
+      vars.line = methodologyById(entry.methodologyId).line;
+      break;
     case 'ambitionOffered':
       vars.line = fillArc(AMBITION_WORDS.offered, { title: ambitionById(entry.ambitionId).title });
       break;
