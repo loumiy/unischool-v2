@@ -36,6 +36,7 @@ import {
   type SlotSummary,
 } from './persistence.ts';
 import { store } from './store.ts';
+import AudioBench from './audio/AudioBench.tsx';
 import { useGame } from './useGame.ts';
 
 // The developer's window into the sim: state inspector, time controls, the
@@ -241,6 +242,8 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
           })}
         </dl>
       </section>
+
+      <AudioBench />
 
       <section>
         <h3>Time</h3>

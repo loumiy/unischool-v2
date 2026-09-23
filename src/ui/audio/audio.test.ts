@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { chordNotes, CUES, midiToHz, SFX, THEMES, themeById } from '../../content/audio.ts';
+import {
+  chordNotes,
+  CUES,
+  midiToHz,
+  sectionAt,
+  SFX,
+  THEMES,
+  themeById,
+} from '../../content/audio.ts';
 import { played } from '../../sim/colleges.ts';
 import { createNewGame, type BusEntry, type GameState } from '../../sim/index.ts';
 import { ambienceFor, cuesFor, entriesSince, lastSeq, themeFor } from './director.ts';
@@ -140,5 +148,40 @@ describe('the settings', () => {
     engine.play('place');
     engine.setAmbience(ambienceFor(running));
     expect(engine.started).toBe(false);
+  });
+});
+
+// THE MIX'S VARIATIONS (Phase 50): four hours of any theme never plays the
+// same eight bars more than twice in a row.
+describe('variations', () => {
+  it('never repeats eight bars more than twice running in four hours', () => {
+    for (const theme of THEMES) {
+      const eighth = 60 / theme.bpm / 2;
+      const steps = Math.floor((4 * 3600) / eighth);
+      const window = 64; // eight bars of eighths
+      let last = '';
+      let run = 0;
+      let worst = 0;
+      for (let start = 0; start + window <= steps; start += window) {
+        let sig = '';
+        for (let s = start; s < start + window; s++) {
+          const n = sectionAt(theme, s);
+          sig += `${n.degree}:${n.tone},`;
+        }
+        run = sig === last ? run + 1 : 1;
+        worst = Math.max(worst, run);
+        last = sig;
+      }
+      expect(worst, theme.id).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('gives every theme a B section and a second pattern', () => {
+    for (const theme of THEMES) {
+      expect(theme.progressionB?.length, theme.id).toBeGreaterThan(0);
+      expect(theme.patternB?.length, theme.id).toBe(8);
+      const b = Array.from({ length: 64 * 8 }, (_, s) => sectionAt(theme, s)).some((n) => n.b);
+      expect(b, theme.id).toBe(true);
+    }
   });
 });
