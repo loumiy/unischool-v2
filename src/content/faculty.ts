@@ -88,6 +88,8 @@ const fileSchema = obj({
     unassignedNote: str,
     quirkLabel: str,
     rankAndField: str,
+    untaughtWarning: str,
+    untaughtConfirm: str,
   }),
 });
 

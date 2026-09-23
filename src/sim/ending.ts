@@ -120,11 +120,13 @@ export function composeTitle(state: GameState, grades: AxisGrade[]): string {
   const weakest =
     [...byScore].reverse().find((g) => g.axis !== claims) ?? byScore[byScore.length - 1]!;
   const phrase = tag ? TAG_PHRASES[tag] : AXIS_PHRASES[strongest.axis];
-  const tail = weakest.score < 45 ? WEAKNESSES[weakest.axis] : REPORT_SHAPES.strengthTail;
-  return REPORT_SHAPES.titleShape
-    .replace('{school}', school)
-    .replace('{phrase}', phrase)
-    .replace('{tail}', tail);
+  // A college with no weak axis is not "a college that and was good": it
+  // is its phrase, and a good one (the Phase 34 playtest).
+  const shape =
+    weakest.score < 45
+      ? REPORT_SHAPES.titleShape.replace('{tail}', WEAKNESSES[weakest.axis])
+      : REPORT_SHAPES.strengthShape;
+  return shape.replace('{school}', school).replace('{phrase}', phrase);
 }
 
 function financialVerdict(state: GameState): string[] {

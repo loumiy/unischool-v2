@@ -80,6 +80,7 @@ const fileSchema = obj({
     lines: obj({
       found: str,
       needHall: str,
+      hallRising: str,
       frozen: str,
       noPrograms: str,
       open: str,

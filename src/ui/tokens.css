@@ -40,15 +40,15 @@
   --grass-highlight: #a3c17d;
   --building-shadow: rgba(42, 56, 28, 0.28);
 
-  /* Type: eight steps. */
-  --text-2xs: 10px;
-  --text-xs: 11px;
-  --text-sm: 12px;
-  --text-base: 13px;
-  --text-md: 14px;
-  --text-lg: 15px;
-  --text-xl: 17px;
-  --text-2xl: 24px;
+  /* Type: eight steps, times the player's text size (ui/settings.ts). */
+  --text-2xs: calc(10px * var(--text-scale, 1));
+  --text-xs: calc(11px * var(--text-scale, 1));
+  --text-sm: calc(12px * var(--text-scale, 1));
+  --text-base: calc(13px * var(--text-scale, 1));
+  --text-md: calc(14px * var(--text-scale, 1));
+  --text-lg: calc(15px * var(--text-scale, 1));
+  --text-xl: calc(17px * var(--text-scale, 1));
+  --text-2xl: calc(24px * var(--text-scale, 1));
 
   /* Corners: chips and tiles, not index cards. */
   --radius-xs: 4px;
@@ -92,6 +92,20 @@
   --toolbar-height: 64px;
   --corner-menu-height: 40px;
   --log-ticker-height: 26px;
+}
+
+/* Colour-vision-safe signals (Phase 34): good and bad as blue and orange,
+   which the common red–green deficiencies still tell apart, in place of
+   green and red. The school's own colours are the player's to choose. */
+:root[data-vision='safe'] {
+  --ok-on-light: #1d5fa6;
+  --bad-on-dark: #ffc27a;
+  --bad-on-light: #b55a00;
+  --warn-on-dark: #f5e38a;
+  --warn-on-light: #7a6a00;
+  --danger-ink: #b55a00;
+  --danger-bg: #fdebd6;
+  --danger-line: #e6b98a;
 }
 
 * {

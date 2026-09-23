@@ -8,6 +8,7 @@ import {
   type ProgramDef,
   type SchoolDef,
 } from '../content/schools.ts';
+import { buildingById } from '../content/buildings.ts';
 import { FACULTY_READINGS, FACULTY_WORDS, rankById, withArticle } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
 import {
@@ -263,6 +264,14 @@ function SchoolGroup({
 }) {
   const founded = foundedSchool(state, school.id);
   const halls = hallsAvailable(state);
+  // A hall still going up is a hall on its way, not a hall to go and build
+  // (the playtest: Founders Hall's first month read "build one first").
+  const rising = state.campus.placements.find(
+    (p) =>
+      p.status === 'building' &&
+      buildingById(p.buildingId).housesSchool &&
+      !state.academics.schools.some((sc) => sc.placementId === p.id),
+  );
   const [hallId, setHallId] = useState<string>('');
   const chosenHall = halls.find((h) => h.id === hallId) ?? halls[0] ?? null;
   const cost = schoolFoundingCost();
@@ -297,7 +306,14 @@ function SchoolGroup({
         <div className="founding-card">
           <p className="founding-blurb">{school.blurb}</p>
           <div className="founding-controls">
-            {halls.length === 0 ? (
+            {halls.length === 0 && rising ? (
+              <span className="treasury-note">
+                {fillWords(ACADEMIC_WORDS.lines.hallRising, {
+                  hall: buildingById(rising.buildingId).name,
+                  weeks: Math.max(1, (rising.completesWeek ?? 0) - state.clock.absoluteWeek),
+                })}
+              </span>
+            ) : halls.length === 0 ? (
               <span className="treasury-note bad">{ACADEMIC_WORDS.lines.needHall}</span>
             ) : iced ? (
               <span className="treasury-note bad">{ACADEMIC_WORDS.lines.frozen}</span>

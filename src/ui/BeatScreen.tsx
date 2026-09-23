@@ -1,6 +1,7 @@
 import RivalLine from './RivalLine.tsx';
 import { useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
+import { programById } from '../content/schools.ts';
 import type { CalendarBeat } from '../content/calendarBeats.ts';
 import { EXPENSE_WORDS, READING_WORDS, REVENUE_WORDS } from '../content/treasury.ts';
 import {
@@ -20,6 +21,7 @@ import {
   type AusterityCut,
   classLabel,
   enrolled,
+  facultyOf,
   EXPENSE_CATEGORIES,
   formatClock,
   formatMoney,
@@ -82,6 +84,21 @@ export default function BeatScreen({
   onHire: (candidateId: string, programId: string | null) => void;
 }) {
   const [decision, setDecision] = useState<BeatDecision>({});
+  // THE ONE WINDOW (the Phase 34 playtest): the market closes when the
+  // budget is approved, and there is no other time in the year to hire. A
+  // player who approves with programmes nobody teaches is told so once,
+  // by name, before the button does it.
+  const [warned, setWarned] = useState(false);
+  const untaught =
+    beat.id === 'budget-and-hiring' && state.faculty.market.length > 0
+      ? state.academics.programs
+          .filter((p) => facultyOf(state, p.programId).length === 0)
+          .map((p) => programById(p.programId).name)
+      : [];
+  const resolve = () => {
+    if (untaught.length > 0 && !warned) setWarned(true);
+    else onResolve(decision);
+  };
   return (
     <TabOverlay title={beat.name} onClose={onClose}>
       <div className={`beat-screen ${beat.id === 'budget-and-hiring' ? 'wide' : ''}`}>
@@ -102,10 +119,20 @@ export default function BeatScreen({
         {/* The decision's own button is pinned to the foot of the screen,
             so a mandatory beat can never hide the only way out of it. */}
         <div className="beat-actions">
-          <button type="button" className="beat-resolve" onClick={() => onResolve(decision)}>
-            {beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
-              ? 'Accept the cuts'
-              : beat.resolveLabel}
+          {warned && untaught.length > 0 && (
+            <p className="beat-warning" role="alert">
+              {fillWords(FACULTY_WORDS.untaughtWarning, {
+                programs: untaught.join(', '),
+                count: untaught.length,
+              })}
+            </p>
+          )}
+          <button type="button" className="beat-resolve" onClick={resolve}>
+            {warned && untaught.length > 0
+              ? FACULTY_WORDS.untaughtConfirm
+              : beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
+                ? 'Accept the cuts'
+                : beat.resolveLabel}
           </button>
         </div>
       </div>

@@ -36,6 +36,7 @@ const schema = obj({
     classes: str,
     troubles: str,
     titles: str,
+    title: str,
     tags: str,
     demolished: str,
     historicDown: str,

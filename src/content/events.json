@@ -1258,7 +1258,8 @@
       "weight": 4,
       "cooldownYears": 4,
       "when": {
-        "studentsPerFacultyOver": 26
+        "studentsPerFacultyOver": 26,
+        "enrolledOver": 100
       },
       "text": "The seminar that was capped at fifteen has thirty-one in it. The instructor has divided them into two groups meeting fortnightly, which is a solution, and has written to ask whether it is the college's solution.",
       "timeoutWeeks": 3,
@@ -1406,7 +1407,9 @@
       "cooldownYears": 5,
       "when": {
         "programsOver": 2,
-        "teachingUnder": 34
+        "teachingUnder": 34,
+        "yearAtLeast": 6,
+        "enrolledOver": 200
       },
       "text": "Enrolment in {program} is down for the fourth year. The department's case for keeping it is that it is the kind of thing a university should teach, which is true, and that it will recover, which is where the case becomes thinner.",
       "timeoutWeeks": 4,
@@ -3134,7 +3137,8 @@
       "favours": ["pressure-cooker"],
       "when": {
         "satisfactionUnder": 55,
-        "selectivityOver": 0.4
+        "selectivityOver": 0.4,
+        "enrolledOver": 100
       },
       "text": "The reading rooms were full at four in the morning for the third week running, and the college nurse has seen more exhaustion this term than flu. The student paper has a front page about it and a list of demands.",
       "timeoutWeeks": 2,

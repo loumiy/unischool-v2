@@ -383,16 +383,17 @@ function summarise(span: Span, recs: YearRecord[]): string[] {
   const graduated = years.flatMap((r) => r.graduated);
   if (graduated.length) {
     const distinguished = graduated.reduce((t, g) => t + g.distinguished, 0);
+    const classes = graduated.length === 1 ? 'One class' : `${graduated.length} classes`;
     lines.push(
       distinguished > 0
-        ? fill(L.classes, { count: graduated.length, distinguished })
-        : fill(L.classesPlain, { count: graduated.length }),
+        ? fill(L.classes, { classes, distinguished })
+        : fill(L.classesPlain, { classes }),
     );
   }
   const weathered = years.flatMap((r) => r.seismic);
   if (weathered.length) lines.push(fill(L.weathered, { list: listOf(weathered) }));
   const titles = years.reduce((t, r) => t + r.titles, 0);
-  if (titles) lines.push(fill(L.titles, { count: titles }));
+  if (titles) lines.push(titles === 1 ? L.title : fill(L.titles, { count: titles }));
   const tags = years.flatMap((r) => r.tags).map((t) => tagById(t as TagId).name);
   if (tags.length) lines.push(fill(L.tags, { tags: listOf(tags) }));
   const down = years.flatMap((r) => r.demolished).map((id) => findBuilding(id)?.name ?? id);

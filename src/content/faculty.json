@@ -560,6 +560,8 @@
   },
   "lines": {
     "noFaculty": "No one is on the faculty yet. The market opens at Budget & Hiring, in the summer.",
+    "untaughtWarning": "Nobody will teach {programs} next year. The market closes when the budget is approved, and there is no other time in the year to hire.",
+    "untaughtConfirm": "Approve anyway",
     "marketClosed": "The market is closed until Budget & Hiring.",
     "marketOpen": "The market is open: {count} candidates are listed, and every one of them is very excited about the opportunity.",
     "marketEmpty": "Every candidate is hired. The rest of the summer is quiet.",

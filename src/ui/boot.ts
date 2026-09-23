@@ -1,5 +1,6 @@
 import { serializeRun, type LoadResult, type Run } from '../sim/index.ts';
 import { deleteSave, readSave, writeAutosave } from './persistence.ts';
+import { getSettings } from './settings.ts';
 import { store } from './store.ts';
 
 export function randomSeed(): number {
@@ -37,6 +38,9 @@ export function pickBoot(
 // loadSaveFile has already collapsed every failure into a reason.
 export async function boot(): Promise<void> {
   store.onYearTurn = (run) => void autosave(run);
+  store.onTermTurn = (run) => {
+    if (getSettings().autosave === 'term') void autosave(run);
+  };
   const primary = await readSafely('autosave');
   const picked = pickBoot(primary, primary?.ok ? null : await readSafely('autosave-prev'));
   if (picked) {

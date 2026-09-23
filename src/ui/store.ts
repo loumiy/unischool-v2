@@ -57,6 +57,9 @@ export class GameStore {
   // Set by the app: called after any tick that crosses a year boundary, so
   // the autosave policy (DD §15: every year-turn) lives with the storage.
   onYearTurn: ((run: Run) => void) | null = null;
+  // And after a tick that begins a new term inside the year, for a player
+  // who asked to be saved every term (ui/settings.ts, Phase 34).
+  onTermTurn: ((run: Run) => void) | null = null;
 
   subscribe = (listener: Listener): (() => void) => {
     this.listeners.add(listener);
@@ -151,6 +154,7 @@ export class GameStore {
   private applyTicks(run: Run, ticks: number): void {
     let next = run;
     let yearTurned = false;
+    let termTurned = false;
     for (let i = 0; i < ticks; i++) {
       let after: Run;
       try {
@@ -165,10 +169,12 @@ export class GameStore {
       // here rather than spin on it.
       if (after.state === next.state) break;
       if (isYearTurn(next.state.clock, after.state.clock)) yearTurned = true;
+      else if (after.state.clock.term !== next.state.clock.term) termTurned = true;
       next = after;
     }
     this.set({ run: next, ...this.clockPatch(next) });
     if (yearTurned) this.onYearTurn?.(next);
+    else if (termTurned) this.onTermTurn?.(next);
   }
 
   // THE CLOCK CONTROL ACROSS A HOLD (DD §3.3). A beat, a letter or a seismic

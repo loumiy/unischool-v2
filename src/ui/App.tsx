@@ -18,6 +18,9 @@ import {
 } from '../sim/index.ts';
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
+import Credits from './Credits.tsx';
+import SettingsPanel from './SettingsPanel.tsx';
+import TitleScreen from './TitleScreen.tsx';
 import { FaultCard } from './Crash.tsx';
 import FinalReport from './FinalReport.tsx';
 import HallOfFame from './HallOfFame.tsx';
@@ -71,6 +74,11 @@ export default function App() {
   const { run, speed, weekProgress, queuedSpeed, fault } = useGame();
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [hallOpen, setHallOpen] = useState(false);
+  // The front of the game (Phase 34): the title the game opens on, and the
+  // settings and credits it and the main menu open.
+  const [titleOpen, setTitleOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [creditsOpen, setCreditsOpen] = useState(false);
   const [buildOpen, setBuildOpenState] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [placingId, setPlacingIdState] = useState<string | null>(null);
@@ -201,6 +209,8 @@ export default function App() {
 
   useHotkeys((e) => {
     if (!state) return;
+    // The title and its panels answer only Escape, and that themselves.
+    if (titleOpen || settingsOpen || creditsOpen) return;
     if (e.key.toLowerCase() === 'm') {
       audio.toggleMute();
       return;
@@ -244,6 +254,34 @@ export default function App() {
 
   if (!run || !state) return <div className="boot">Opening the doors…</div>;
 
+  // Over everything, above the title when the title opened them.
+  const front = (
+    <div className="front-layer">
+      {titleOpen && (
+        <TitleScreen
+          state={state}
+          onContinue={() => setTitleOpen(false)}
+          onNewCollege={() => {
+            setTitleOpen(false);
+            if (state.phase !== 'founding') {
+              setOverlay(null);
+              closeBuild();
+              setJournalOpen(false);
+              setPlacingIdState(null);
+              void eraseAndRestart();
+            }
+          }}
+          onHall={() => setHallOpen(true)}
+          onSettings={() => setSettingsOpen(true)}
+          onCredits={() => setCreditsOpen(true)}
+        />
+      )}
+      {hallOpen && <HallOfFame onClose={() => setHallOpen(false)} />}
+      {settingsOpen && <SettingsPanel onClose={() => setSettingsOpen(false)} />}
+      {creditsOpen && <Credits onClose={() => setCreditsOpen(false)} />}
+    </div>
+  );
+
   if (!started) {
     return (
       <>
@@ -260,6 +298,7 @@ export default function App() {
           }}
         />
         {debugOpen && <DebugPanel onClose={() => setDebugOpen(false)} />}
+        {front}
       </>
     );
   }
@@ -349,6 +388,8 @@ export default function App() {
       <MainMenu
         onSave={() => void autosave(run)}
         onHall={() => setHallOpen(true)}
+        onSettings={() => setSettingsOpen(true)}
+        onTitle={() => setTitleOpen(true)}
         onNewGame={() => {
           setOverlay(null);
           closeBuild();
@@ -453,7 +494,6 @@ export default function App() {
             }}
           />
         )}
-        {hallOpen && <HallOfFame onClose={() => setHallOpen(false)} />}
         {/* Onboarding by consequence (Phase 29): a note, when one is due. */}
         {!state.ending.pending && (
           <NoteCard state={state} onDismiss={(id) => store.dispatch({ type: 'dismissNote', id })} />
@@ -542,6 +582,7 @@ export default function App() {
             </TabOverlay>
           )}
       </div>
+      {front}
       {fault && <FaultCard message={fault} />}
     </div>
   );
