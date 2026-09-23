@@ -488,6 +488,8 @@ It is all derived from the campus, drawn once per campus change under the buildi
 
 At the other end, a historic building gathers ivy, climbing over the twenty years after it is declared. The marks are placed from the building's id, the same on every reload. The renovation flash the plan named is not built yet.
 
+**Light, flags and a campus that is used (Phase 47).** The sun moves with the seasons. Shadows lie long in winter and short in summer, and a wash over the map, never over the chrome, turns warm and low in the dark half of the year and white at midsummer. The college's colours fly where a college puts them: a flag over Founders Hall and the administration, and a banner on every lamp post in the weeks of Convocation and Commencement, when most of the crowd on the paths wears gowns. A crowd fills the stands in the last weeks of each term when the college fields teams. The dining halls have a queue while term is on. Traffic runs along the road, heavier as the college grows, and stands still for anyone who prefers reduced motion. All of it is read from the calendar and the state, and none of it is in the sim.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.

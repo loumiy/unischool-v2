@@ -25,7 +25,8 @@
       "icon": "academic",
       "blurb": "One multi-purpose hall, the first thing on the land and the last thing anyone will agree to demolish.",
       "limit": 1,
-      "housesSchool": true
+      "housesSchool": true,
+      "features": ["flagpole"]
     },
     {
       "id": "academic-hall",

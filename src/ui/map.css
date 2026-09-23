@@ -1014,3 +1014,36 @@
   font-size: 11px;
   font-weight: 600;
 }
+
+/* The sun, by season (Phase 47): a wash over the map, never over the
+   chrome, and deaf to the pointer. */
+.sun-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  transition: background 1.2s ease;
+}
+.season-winter .sun-wash {
+  background: rgba(255, 176, 92, 0.22);
+}
+.season-late-fall .sun-wash {
+  background: rgba(255, 190, 110, 0.16);
+}
+.season-early-fall .sun-wash {
+  background: rgba(255, 214, 150, 0.08);
+}
+.season-summer .sun-wash {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Gowns on the lawn at Convocation and Commencement (Phase 47): most of
+   the crowd, not all of it. */
+.campus-ambient.gowned > g:not(:nth-child(4n)) .walker-body {
+  fill: #1f1f2a;
+}
+
+.campus-life {
+  pointer-events: none;
+}
