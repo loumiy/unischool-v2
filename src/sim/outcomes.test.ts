@@ -100,7 +100,9 @@ describe('quality drifts toward the teaching (DD §8.3)', () => {
     expect(teachingQuality(run.state)).toBe(0);
     run = tickRunWeeks(run, WEEKS_PER_YEAR, defaultResolution);
     const later = run.state.people.cohorts.find((c) => c.classYear === first.classYear)!;
-    expect(later.quality).toBe(driftedQuality(first.quality, 0));
+    // The drift, give or take what the year's events nudged (the `quality`
+    // lever): at an event every few weeks, a point or two either way.
+    expect(Math.abs(later.quality - driftedQuality(first.quality, 0))).toBeLessThan(3);
     expect(later.quality).toBeLessThan(first.quality);
   });
 });

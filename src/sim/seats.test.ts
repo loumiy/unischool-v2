@@ -3,7 +3,12 @@ import { describeEntry } from '../content/busLines.ts';
 import { EVENTS, eventById } from '../content/events.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import { SEATS, seatById } from '../content/seats.ts';
-import { DEANS_FOR_FASTEST, ESCALATION_MONEY, FOUNDING_ADMIN_PAYROLL } from '../tuning.ts';
+import {
+  ADMIN_PER_STUDENT,
+  DEANS_FOR_FASTEST,
+  ESCALATION_MONEY,
+  FOUNDING_ADMIN_PAYROLL,
+} from '../tuning.ts';
 import { canApply } from './actions.ts';
 import { defaultResolution } from './beats.ts';
 import { entriesOfKind } from './bus.ts';
@@ -11,6 +16,7 @@ import { WEEKS_PER_YEAR } from './calendar.ts';
 import { speedAllowed } from './clock.ts';
 import { played } from './colleges.ts';
 import { dispatch, newRun, replay, tickRunWeeks, type Run } from './run.ts';
+import { enrolled } from './people.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
 import {
   choiceByRule,
@@ -100,18 +106,20 @@ describe('the seats the college can fill (DD §9.1)', () => {
 describe('what a seat costs, forever (DD §5.4, §9.4)', () => {
   it('adds permanent payroll from the week it is filled', () => {
     const run = played(4, 16);
-    expect(annualAdminPayroll(run.state)).toBe(FOUNDING_ADMIN_PAYROLL);
+    const office = FOUNDING_ADMIN_PAYROLL + ADMIN_PER_STUDENT * enrolled(run.state);
+    expect(annualAdminPayroll(run.state)).toBe(office);
     const staffed = withSeats(run.state, [seatOf('provost'), seatOf('facilities')]);
     expect(seatPayroll(staffed)).toBe(
       seatById('provost').outsideSalary + seatById('facilities').outsideSalary,
     );
-    expect(annualAdminPayroll(staffed)).toBe(FOUNDING_ADMIN_PAYROLL + seatPayroll(staffed));
+    expect(annualAdminPayroll(staffed)).toBe(office + seatPayroll(staffed));
     expect(ratchetSteps(staffed)).toBeGreaterThan(0);
   });
 
-  it('roughly doubles the administrative share when the suite is full', () => {
+  it('raises the administrative share by a third when the suite is full', () => {
     // DD §9.4's own claim, measured: a college with faculty on the books
-    // and every seat filled pays about twice the admin share it did bare.
+    // and every seat filled pays a third again the admin share it did bare
+    // (it was "twice" until Phase 31 grew the office with the roll).
     const run = played(4, 30);
     expect(run.state.faculty.roster.length).toBeGreaterThan(3);
     const bareShare = adminShareOfPayroll(run.state.treasury.budget);
@@ -124,8 +132,8 @@ describe('what a seat costs, forever (DD §5.4, §9.4)', () => {
       expenses: { ...full.treasury.budget.expenses, adminPayroll: annualAdminPayroll(full) },
     };
     const fullShare = adminShareOfPayroll(budget);
-    // Roughly doubles: at least half as much again, measured.
-    expect(fullShare).toBeGreaterThan(bareShare * 1.4);
+    // A third again, measured.
+    expect(fullShare).toBeGreaterThan(bareShare * 1.25);
     expect(fullShare).toBeGreaterThan(bareShare);
   });
 
@@ -386,7 +394,7 @@ describe('the bargain, over a run (the phase’s done-when)', () => {
     expect(speedAllowed(full, 'x8')).toBe(true);
 
     // Payroll: bled, permanently, and the Treasury reads it.
-    expect(annualAdminPayroll(full)).toBeGreaterThan(annualAdminPayroll(bare) * 2);
+    expect(annualAdminPayroll(full)).toBeGreaterThan(annualAdminPayroll(bare) * 1.5);
     expect(seatPayroll(full)).toBeGreaterThan(1_000_000);
 
     // And the routine stops reaching the player: the same twelve years,

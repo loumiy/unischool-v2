@@ -11,7 +11,15 @@ import type { GameState } from './state.ts';
 
 describe('what the guidebooks say', () => {
   const dear = played(4, 35, undefined, { tuition: 62_000, selectivity: 0.7, drawRate: 0.06 });
-  const cheap = played(4, 35, undefined, { tuition: 8_000, drawRate: 0.02 });
+  // Cheap and lean, and choosy enough to keep its students good: since the
+  // college pays for every student it admits (Phase 31), a bargain that
+  // hires freely and admits anyone cannot stay one.
+  const cheap = played(4, 35, undefined, {
+    tuition: 18_000,
+    drawRate: 0.05,
+    hireCap: 24,
+    selectivity: 0.6,
+  });
 
   it('tells two differently run colleges apart, in their tags and their pools', () => {
     const a = dear.state;

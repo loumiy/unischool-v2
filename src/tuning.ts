@@ -1,14 +1,15 @@
-// First-guess tuning constants, in one file, until Phase 31's pacing pass.
-// Do not hand-balance before then (docs/UNISCHOOL_V2_DEV_PLAN.md, conventions).
+// Tuning constants, in one file. Phase 31 balanced them against three
+// archetype colleges (`npm run balance`, DD §17 "The balance at 1.0"); a
+// change here should be read against that dashboard before it ships.
 
 // How long one sim week lasts in real time at 1× speed.
 //
 // DD §2.2 budgets fifty years in 3–5 real hours, front-loaded: about five
-// minutes a year while the player is hands-on. At 36 weeks a year, eight
-// seconds a week gives ~4.8 min/year at 1× and ~36 s/year at 8×, which is the
-// right neighbourhood for the early game and for the late game respectively.
-// It is a feel constant, so expect Phase 31 to move it.
-export const WEEK_DURATION_MS_AT_1X = 8000;
+// minutes a year while the player is hands-on. At 36 weeks a year, five
+// seconds a week gives 3 min/year at 1× and ~23 s/year at 8×; with the
+// beats and the questions on top, Phase 31 measured the steward's evening
+// inside every span of the budget.
+export const WEEK_DURATION_MS_AT_1X = 5000;
 
 // ---------- Treasury (DD §5, Phase 5) ----------
 // Dollars, per year unless the name says otherwise. First guesses at the
@@ -36,7 +37,16 @@ export const ENDOWMENT_RETURN_SPREAD = 0.1;
 
 // The founding administration: the president's office, the registrar,
 // the bursar. The administrative ratchet (DD §5.4, Ph.20) only adds to it.
-export const FOUNDING_ADMIN_PAYROLL = 1_800_000;
+export const FOUNDING_ADMIN_PAYROLL = 1_400_000;
+// The registry, admissions and student services, per student enrolled
+// (Phase 31): an administration that did not grow with the roll left a
+// large college's share of payroll far under DD §17's band.
+export const ADMIN_PER_STUDENT = 1_500;
+// Student life, per student enrolled (Phase 31): the library's hours, the
+// counsellors, the IT desk, the heating. Without it a full college cleared
+// a third of its revenue every year and money stopped mattering by Year
+// 10; with it the margin is the thin one colleges actually run on.
+export const STUDENT_LIFE_PER_STUDENT = 7_500;
 
 // Tuition dependence above this share of revenue is flagged as fragility
 // (DD §5.1).
@@ -281,7 +291,8 @@ export const RANK_ODDS = { assistant: 0.5, associate: 0.3, full: 0.2 } as const;
 
 // Teaching seats one hire can carry at full quality: a program's staffing
 // need is its tier's seats over this, and quality is damped below it.
-export const FACULTY_TEACHING_LOAD = 60;
+// Thirty (Phase 31): a staffed college lands near ten students a head.
+export const FACULTY_TEACHING_LOAD = 30;
 
 // Dismissal pays this many weeks of salary as severance.
 export const SEVERANCE_WEEKS = 12;
@@ -453,13 +464,14 @@ export const REUNION_WARMTH_CAP = 12;
 
 // ---------- The event engine (DD §10.1, §17.3, Phase 17) ----------
 
-// How often the world punches. The DD budgets about one player-decided
-// event every two to four weeks at mid-game; the engine rolls each week
-// against this, more often when the college is in trouble and never while
-// something is already waiting.
-export const EVENT_WEEKLY_ODDS = 1 / 14;
+// How often the world punches. The DD budgets about one event every two
+// to four weeks at mid-game, the President's share declining with
+// delegation; the engine rolls each week against this, more often when the
+// college is in trouble and never while something is already waiting.
+// Phase 31 measured one every three to four weeks all told.
+export const EVENT_WEEKLY_ODDS = 1 / 3;
 export const EVENT_DISTRESS_ODDS = 0.02; // added per rung on the ladder
-export const EVENT_QUIET_WEEKS = 3; // after one resolves, before another can fire
+export const EVENT_QUIET_WEEKS = 1; // after one resolves, before another can fire
 
 // Consequence-weighted sourcing (DD §10.1): an event whose preconditions
 // the player caused is preferred over one that could fire anywhere. Every

@@ -154,7 +154,13 @@ describe('calendar beats (DD §3.3)', () => {
 
   it('reads as a coherent history', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR, defaultResolution);
-    const history = run.state.bus.map((e) => describeEntry(e, run.state).text);
+    // The year's questions are read apart from its calendar: at an event
+    // every few weeks (Phase 31) how many the first year draws is the
+    // dice's, and they are checked below.
+    const asking = new Set(['eventFired', 'eventResolved', 'eventDelegated']);
+    const history = run.state.bus
+      .filter((e) => !asking.has(e.kind))
+      .map((e) => describeEntry(e, run.state).text);
     const line = (kind: 'admissionsClosed' | 'classArrived' | 'rankingsPublished') =>
       describeEntry(entriesOfKind(run.state, kind)[0]!, run.state).text;
     const termLine = (i: number) =>
@@ -175,12 +181,8 @@ describe('calendar beats (DD §3.3)', () => {
       'Admissions Day. The applications are in.',
       line('admissionsClosed'),
       'The admissions file closes.',
-      // An event asks, goes unanswered for its four weeks, and settles
-      // into its stated default (events.ts).
-      eventLine('eventFired'),
       'Summer Term begins.',
       termLine(1),
-      eventLine('eventResolved'),
       'Budget & Hiring. The ledger is open, and so is the market.',
       'The hiring market opens: 8 candidates listed.',
       'The Year 2 budget is approved at a 4.5% draw.',
@@ -203,6 +205,9 @@ describe('calendar beats (DD §3.3)', () => {
     // Which event the first year draws is the catalogue's business, not
     // the journal's; that it reads as a sentence and settles as it said
     // it would is the journal's.
+    // Every question asked is settled, unanswered, into its default.
+    const fired = entriesOfKind(run.state, 'eventFired');
+    expect(fired.length).toBeGreaterThan(0);
     expect(eventLine('eventFired').split(' ').length).toBeGreaterThan(8);
     expect(eventLine('eventResolved')).toMatch(/, by default\.$/);
     expect(entriesOfKind(run.state, 'studentsNamed')).toHaveLength(1);

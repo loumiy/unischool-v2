@@ -361,14 +361,14 @@
     },
     {
       "id": "one-fifty-million",
-      "title": "A hundred and fifty million in the fund",
+      "title": "A hundred and twenty-five million in the fund",
       "weight": 3,
       "deal": {
-        "endowmentOver": 90000000,
+        "endowmentOver": 75000000,
         "yearAtLeast": 15
       },
       "goal": {
-        "endowmentOver": 150000000
+        "endowmentOver": 125000000
       },
       "years": 15,
       "text": "The endowment has passed the point where it keeps {school} alive and reached the point where it could change what the college does. The Investment Committee has named the next number and would like the campaign to be judged by it.",
@@ -379,7 +379,7 @@
       "penalty": {
         "confidence": -6
       },
-      "kept": "A hundred and fifty million, and a college that can choose what it does next.",
+      "kept": "A hundred and twenty-five million, and a college that can choose what it does next.",
       "missed": "The fund grew, and did not grow to the number the college had printed."
     },
     {
@@ -469,7 +469,7 @@
       },
       "goal": {
         "enrolledOver": 800,
-        "satisfactionOver": 55
+        "satisfactionOver": 50
       },
       "years": 12,
       "text": "Every college that grows quickly is told it has lost something, usually by people who were there before it grew. The President has proposed a promise with two halves: eight hundred students, and those eight hundred as content as the few hundred are now.",
