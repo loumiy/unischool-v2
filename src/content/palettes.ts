@@ -1,6 +1,6 @@
 import type { SchoolColors } from '../sim/identity.ts';
 import raw from './palettes.json' with { type: 'json' };
-import { arr, ContentError, obj, str, uniqueBy, validate } from './schema.ts';
+import { arr, ContentError, int, obj, optional, str, uniqueBy, validate } from './schema.ts';
 
 // The authored colour pairs (DD §14: 8 palettes at 1.0). Pairs with names,
 // not two colour pickers: "Maroon and gold" is an identity a player
@@ -10,11 +10,18 @@ import { arr, ContentError, obj, str, uniqueBy, validate } from './schema.ts';
 export interface PaletteChoice extends SchoolColors {
   id: string;
   name: string;
+  // A cosmetic unlock (DD §12.3, Phase 28): offered once this many runs
+  // hang in the hall of fame. Absent, it is there from the start.
+  unlockAfter?: number;
 }
 
 const HEX = /^#[0-9a-f]{6}$/;
 
-const schema = obj({ palettes: arr(obj({ id: str, name: str, primary: str, secondary: str })) });
+const schema = obj({
+  palettes: arr(
+    obj({ id: str, name: str, primary: str, secondary: str, unlockAfter: optional(int) }),
+  ),
+});
 
 function load(): PaletteChoice[] {
   const file = validate(schema, raw, 'content/palettes.json');
@@ -69,6 +76,11 @@ export const PALETTES: readonly PaletteChoice[] = load();
 // The pair the game wears before anyone has picked one; also tokens.css's
 // literal defaults, so an unthemed page already matches it.
 export const DEFAULT_PALETTE: PaletteChoice = PALETTES[0]!;
+
+// The pairs on offer to a player with this many runs in the hall.
+export function unlockedPalettes(runs: number): PaletteChoice[] {
+  return PALETTES.filter((p) => (p.unlockAfter ?? 0) <= runs);
+}
 
 export function paletteById(id: string): PaletteChoice | undefined {
   return PALETTES.find((p) => p.id === id);

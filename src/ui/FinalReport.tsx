@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { chronicleText } from './HistoryScreen.tsx';
+import { hangInHall } from './persistence.ts';
+import { capturePortrait } from './portrait.ts';
 import { AXIS_WORDS } from '../content/league.ts';
 import { fillWords } from '../content/people.ts';
 import { REPORT_WORDS } from '../content/report.ts';
@@ -37,13 +40,38 @@ export function reportText(r: Report): string {
 export default function FinalReport({
   state,
   onContinue,
+  onHall,
 }: {
   state: GameState;
   onContinue: () => void;
+  onHall: () => void;
 }) {
   const r = state.ending.report!;
   const w = REPORT_WORDS;
   const [copied, setCopied] = useState(false);
+  const [hung, setHung] = useState(false);
+  // The hall-of-fame entry is written with the report (DD §2.3): the
+  // campus behind this card, as it stands, is the portrait.
+  useEffect(() => {
+    const shot = capturePortrait();
+    const id = `${state.seed}-${r.school}-${r.year}`;
+    void hangInHall({
+      id,
+      school: r.school,
+      colors: state.identity?.colors ?? { primary: '#7b1e2b', secondary: '#f2c14e' },
+      motif: state.identity?.motif ?? 'georgian',
+      title: r.title,
+      mark: r.mark,
+      grades: r.axes.map((a) => ({ axis: a.axis, grade: a.grade })),
+      eras: r.eras,
+      chronicle: chronicleText(state),
+      portrait: shot?.svg ?? '',
+      season: shot?.season ?? 'season-fall',
+      finishedAt: new Date().toISOString(),
+    }).then(() => setHung(true));
+    // Written once, for the report as it was frozen.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [r.year]);
   return (
     <div className="letter-backdrop" role="dialog" aria-modal="true" aria-label={w.title}>
       <article className="letter final-report">
@@ -93,6 +121,11 @@ export default function FinalReport({
         <h3 className="report-h">{w.chronicle}</h3>
         <p className="letter-para">{r.eras.join(' · ')}</p>
         <div className="letter-actions">
+          {hung && (
+            <button type="button" className="species-chip" onClick={onHall}>
+              Hung in the hall of fame · see it
+            </button>
+          )}
           <button
             type="button"
             className="species-chip"

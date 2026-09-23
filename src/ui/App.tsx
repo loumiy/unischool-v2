@@ -19,6 +19,7 @@ import {
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
 import FinalReport from './FinalReport.tsx';
+import HallOfFame from './HallOfFame.tsx';
 import EventLetter from './EventLetter.tsx';
 import EventPrompt, { eventPrompt } from './EventPrompt.tsx';
 import { eventById } from '../content/events.ts';
@@ -65,6 +66,7 @@ type Overlay = TabId | 'beat' | 'letter' | 'event';
 export default function App() {
   const { run, speed, weekProgress, queuedSpeed } = useGame();
   const [overlay, setOverlay] = useState<Overlay | null>(null);
+  const [hallOpen, setHallOpen] = useState(false);
   const [buildOpen, setBuildOpenState] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [placingId, setPlacingIdState] = useState<string | null>(null);
@@ -334,6 +336,7 @@ export default function App() {
       />
       <MainMenu
         onSave={() => void autosave(run)}
+        onHall={() => setHallOpen(true)}
         onNewGame={() => {
           setOverlay(null);
           closeBuild();
@@ -431,12 +434,14 @@ export default function App() {
         {state.ending.pending && !seismic && !letter && !beat && (
           <FinalReport
             state={state}
+            onHall={() => setHallOpen(true)}
             onContinue={() => {
               if (store.dispatch({ type: 'enterEpilogue' }))
                 void autosave(store.getSnapshot().run!);
             }}
           />
         )}
+        {hallOpen && <HallOfFame onClose={() => setHallOpen(false)} />}
         {effectiveOverlay === 'beat' && beat && (
           <BeatScreen
             beat={beat}

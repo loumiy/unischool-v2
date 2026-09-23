@@ -6,7 +6,12 @@
       "primary": "#7b1e2b",
       "secondary": "#f2c14e"
     },
-    { "id": "navy-gold", "name": "Navy and gold", "primary": "#1f3a6b", "secondary": "#e6b84a" },
+    {
+      "id": "navy-gold",
+      "name": "Navy and gold",
+      "primary": "#1f3a6b",
+      "secondary": "#e6b84a"
+    },
     {
       "id": "forest-gold",
       "name": "Forest and gold",
@@ -31,12 +36,45 @@
       "primary": "#4a2a6a",
       "secondary": "#e6b84a"
     },
-    { "id": "black-gold", "name": "Black and gold", "primary": "#1f1b17", "secondary": "#e6b84a" },
+    {
+      "id": "black-gold",
+      "name": "Black and gold",
+      "primary": "#1f1b17",
+      "secondary": "#e6b84a"
+    },
     {
       "id": "royal-gold",
       "name": "Royal blue and gold",
       "primary": "#1d3f86",
       "secondary": "#e6b84a"
+    },
+    {
+      "id": "midnight-silver",
+      "name": "Midnight and silver",
+      "primary": "#1b2440",
+      "secondary": "#c0c7d1",
+      "unlockAfter": 1
+    },
+    {
+      "id": "forest-copper",
+      "name": "Forest and copper",
+      "primary": "#173d2e",
+      "secondary": "#e8b07a",
+      "unlockAfter": 2
+    },
+    {
+      "id": "plum-saffron",
+      "name": "Plum and saffron",
+      "primary": "#4a2545",
+      "secondary": "#f0b429",
+      "unlockAfter": 3
+    },
+    {
+      "id": "ink-vermilion",
+      "name": "Ink and vermilion",
+      "primary": "#1d2a38",
+      "secondary": "#f07a5f",
+      "unlockAfter": 5
     }
   ]
 }
