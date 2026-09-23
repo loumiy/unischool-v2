@@ -18,6 +18,7 @@ import {
 } from '../sim/index.ts';
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
+import { FaultCard } from './Crash.tsx';
 import FinalReport from './FinalReport.tsx';
 import HallOfFame from './HallOfFame.tsx';
 import NoteCard from './NoteCard.tsx';
@@ -67,7 +68,7 @@ import { useAudioDirector } from './audio/useAudio.ts';
 type Overlay = TabId | 'beat' | 'letter' | 'event';
 
 export default function App() {
-  const { run, speed, weekProgress, queuedSpeed } = useGame();
+  const { run, speed, weekProgress, queuedSpeed, fault } = useGame();
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [hallOpen, setHallOpen] = useState(false);
   const [buildOpen, setBuildOpenState] = useState(false);
@@ -541,6 +542,7 @@ export default function App() {
             </TabOverlay>
           )}
       </div>
+      {fault && <FaultCard message={fault} />}
     </div>
   );
 }

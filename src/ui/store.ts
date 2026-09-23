@@ -29,6 +29,10 @@ export interface Snapshot {
   // when nothing holds it. While a beat waits, `speed` is Paused, because
   // that is the truth about the campus; this is the promise about after.
   queuedSpeed: Speed | null;
+  // What went wrong, when a tick or an action threw (Phase 33). The clock
+  // stops and stays stopped until the player has seen it; the run in the
+  // snapshot is the last one that was whole.
+  fault: string | null;
 }
 
 type Listener = () => void;
@@ -44,6 +48,7 @@ export class GameStore {
     weekProgress: 0,
     lastAutosave: null,
     queuedSpeed: null,
+    fault: null,
   };
   private listeners = new Set<Listener>();
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -66,7 +71,13 @@ export class GameStore {
   }
 
   newGame(seed: number): void {
-    this.set({ run: newRun(seed), speed: 'paused', weekProgress: 0, queuedSpeed: null });
+    this.set({
+      run: newRun(seed),
+      speed: 'paused',
+      weekProgress: 0,
+      queuedSpeed: null,
+      fault: null,
+    });
   }
 
   loadRun(run: Run, savedAt: string | null = null): void {
@@ -76,24 +87,46 @@ export class GameStore {
       weekProgress: 0,
       lastAutosave: savedAt,
       queuedSpeed: null,
+      fault: null,
     });
+  }
+
+  // THE FAULT (Phase 33). Whatever threw is caught here rather than left to
+  // kill the sampler silently: the clock stops, and the snapshot keeps the
+  // last whole run for the player to download (ui/Crash.tsx). The autosave
+  // declines to write a faulted run over the last good one (ui/boot.ts).
+  private faulted(error: unknown): void {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error('the simulation stopped:', error);
+    this.set({ speed: 'paused', queuedSpeed: null, fault: message });
+  }
+
+  // The player has read it: the clock may be started again, at their risk.
+  clearFault(): void {
+    this.set({ fault: null });
   }
 
   // Applies an action if the sim accepts it. Returns whether it did, so a
   // caller can follow a founding action with a save.
   dispatch(action: Action): boolean {
     const { run } = this.snap;
-    if (!run || !canApply(run.state, action).ok) return false;
-    const next = dispatchAction(run, action);
-    this.set({ run: next, ...this.clockPatch(next) });
-    return true;
+    if (!run) return false;
+    try {
+      if (!canApply(run.state, action).ok) return false;
+      const next = dispatchAction(run, action);
+      this.set({ run: next, ...this.clockPatch(next) });
+      return true;
+    } catch (error) {
+      this.faulted(error);
+      return false;
+    }
   }
 
   // The clock runs only once Founders Hall stands (DD §2.4). Speed changes
   // before that are refused, and the sampler below stays idle.
   setSpeed(speed: Speed): void {
-    const { run } = this.snap;
-    if (!run || !clockRuns(run.state) || !speedAllowed(run.state, speed)) return;
+    const { run, fault } = this.snap;
+    if (!run || fault || !clockRuns(run.state) || !speedAllowed(run.state, speed)) return;
     // DD §3.3 keeps the speed control live while a beat waits, but the week
     // is not moving and no pill may claim it is: a press during a hold sets
     // what the clock resumes at, and the control says so rather than lying
@@ -119,7 +152,15 @@ export class GameStore {
     let next = run;
     let yearTurned = false;
     for (let i = 0; i < ticks; i++) {
-      const after = tickRun(next);
+      let after: Run;
+      try {
+        after = tickRun(next);
+      } catch (error) {
+        // The weeks already run are kept; the one that threw is not.
+        if (next !== run) this.set({ run: next });
+        this.faulted(error);
+        return;
+      }
       // A held clock (a beat awaiting the player) refuses the week: stop
       // here rather than spin on it.
       if (after.state === next.state) break;
@@ -166,8 +207,8 @@ export class GameStore {
     const now = performance.now();
     const delta = Math.min(now - this.lastSample, MAX_SAMPLE_MS);
     this.lastSample = now;
-    const { run, speed, weekProgress } = this.snap;
-    if (!run || !clockAdvances(run.state)) return;
+    const { run, speed, weekProgress, fault } = this.snap;
+    if (!run || fault || !clockAdvances(run.state)) return;
     const { progress, ticks } = advanceWeekProgress(weekProgress, delta, msPerWeek(speed));
     if (ticks === 0 && progress === weekProgress) return;
     if (ticks > 0) this.applyTicks(run, ticks);
@@ -176,3 +217,6 @@ export class GameStore {
 }
 
 export const store = new GameStore();
+
+// The dev server's handle on the store, for poking from a console.
+if (import.meta.env?.DEV) (globalThis as Record<string, unknown>).__store = store;
