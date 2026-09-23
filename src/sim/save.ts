@@ -718,6 +718,12 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v29 → v30 (Phase 39): a hire may be an adjunct on a contract. Both
+  // fields are optional, and an older college has no adjuncts.
+  29: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return { ...raw, version: 30, state: { ...state, schemaVersion: 30 } };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

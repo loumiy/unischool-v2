@@ -133,6 +133,20 @@
       "text": "{name} is dismissed.",
       "tone": "bad"
     },
+    "adjunctHired": {
+      "text": "{name} is taken on for a year to teach {program}."
+    },
+    "adjunctLeft": {
+      "text": "{name}'s year is up; they clear their desk{assignment}."
+    },
+    "facultyRetired": {
+      "text": "{name} retires after a career here{assignment}.",
+      "tone": "good"
+    },
+    "facultyQuit": {
+      "text": "{name} takes a post somewhere steadier{assignment}.",
+      "tone": "bad"
+    },
     "termClosed": {
       "text": "{term} closes {net} {ledger}."
     },

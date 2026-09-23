@@ -216,16 +216,19 @@ describe('the drive, and what it leaves behind', () => {
     const warmthIn = (r: Run) => new Map(r.state.people.alumni.map((a) => [a.classYear, a.warmth]));
     const warmed = warmthIn(asking);
     const control = warmthIn(quiet);
-    let cooled = 0;
+    // Across the classes asked, not class by class: warmth is whole
+    // points with a ceiling, so one class near the top can read the same.
+    let askingTotal = 0;
+    let aloneTotal = 0;
     for (const [classYear, warmth] of warmed) {
       if (!asked.has(classYear)) continue;
       const alone = control.get(classYear);
-      // A class at the top of the scale can be asked and still read full.
-      if (alone === undefined || alone >= 100) continue;
-      expect(warmth).toBeLessThan(alone);
-      cooled++;
+      if (alone === undefined) continue;
+      expect(warmth).toBeLessThanOrEqual(alone);
+      askingTotal += warmth;
+      aloneTotal += alone;
     }
-    expect(cooled).toBeGreaterThan(0);
+    expect(askingTotal).toBeLessThan(aloneTotal);
   });
 });
 

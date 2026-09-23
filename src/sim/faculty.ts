@@ -25,9 +25,19 @@ import {
   TEACHING_NEUTRAL,
   TEACHING_WEIGHT,
   SHED_CANDIDATES,
+  ADJUNCT_CONTRACT_YEARS,
+  MARKET_PER_HIRE,
+  ADJUNCT_RESEARCH_CAP,
+  ADJUNCT_SALARY_PREMIUM,
+  ADJUNCT_TEACHING_CAP,
+  FACULTY_CAREER_SPREAD,
+  FACULTY_CAREER_YEARS,
+  FACULTY_LEAVE_CHANCE,
+  FACULTY_LEAVE_HALL_BELOW,
 } from '../tuning.ts';
 import { crowdingFactor, openProgram, type OpenProgram } from './academics.ts';
 import { emit } from './bus.ts';
+import { RUNG_AUSTERITY } from './distress.ts';
 import { mover } from './league.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { pay } from './estate.ts';
@@ -58,6 +68,10 @@ export interface Faculty {
   hiredWeek: number | null; // null while a candidate
   // A candidate a falling college let go (Phase 24): its id, or absent.
   fromSchool?: string;
+  // An adjunct (Phase 39): hired off-cycle on a one-year contract, and
+  // gone the week it ends.
+  adjunct?: boolean;
+  leavesWeek?: number;
 }
 
 export interface FacultyState {
@@ -158,7 +172,10 @@ export function listMarket(state: GameState, year: number): Faculty[] {
   const founded = state.academics.schools.map((s) => s.schoolId);
   const all = SCHOOLS.map((s) => s.id);
   const out: Faculty[] = [];
-  for (let i = 0; i < MARKET_SIZE; i++) {
+  // A bigger college runs more searches (Phase 39: careers now end, and a
+  // market sized for a new college could never replace a grown one's).
+  const size = MARKET_SIZE + Math.floor(state.faculty.roster.length * MARKET_PER_HIRE);
+  for (let i = 0; i < size; i++) {
     const field =
       founded.length > 0 && rng.chance(MARKET_FOUNDED_SHARE) ? rng.pick(founded) : rng.pick(all);
     out.push(generateCandidate(rng, `f${state.faculty.nextId + i}`, field));
@@ -306,6 +323,108 @@ export function unassignFrom(state: GameState, programId: string): GameState {
       ),
     },
   };
+}
+
+// ---------- adjuncts and departures (Phase 39, DD §7.3) ----------
+
+function hashOf(text: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
+
+// The adjunct a programme can have this week: the world's, like the
+// summer market — drawn from the seed, the week and the programme, so
+// asking twice shows the same person and a replay hires the same one.
+export function adjunctFor(state: GameState, programId: string): Faculty | null {
+  const def = findProgram(programId);
+  if (!def) return null;
+  const rng = Rng.fromSeed(
+    (state.seed ^ Math.imul(state.clock.absoluteWeek + 7_919, 0x9e3779b1) ^ hashOf(programId)) >>>
+      0,
+  );
+  const c = generateCandidate(rng, `f${state.faculty.nextId}`, def.schoolId);
+  const teaching = Math.min(ADJUNCT_TEACHING_CAP, c.teaching);
+  const research = Math.min(ADJUNCT_RESEARCH_CAP, c.research);
+  const salary =
+    Math.round(
+      (askingSalary('assistant', teaching, research, c.quirkId) * ADJUNCT_SALARY_PREMIUM) /
+        SALARY_ROUNDING,
+    ) * SALARY_ROUNDING;
+  return { ...c, rank: 'assistant', teaching, research, salary, adjunct: true };
+}
+
+export function hireAdjunct(state: GameState, programId: string): GameState {
+  const a = adjunctFor(state, programId)!;
+  const week = state.clock.absoluteWeek;
+  const hired: Faculty = {
+    ...a,
+    programId,
+    hiredWeek: week,
+    leavesWeek: week + ADJUNCT_CONTRACT_YEARS * WEEKS_PER_YEAR,
+  };
+  return emit(
+    {
+      ...state,
+      faculty: {
+        ...state.faculty,
+        roster: [...state.faculty.roster, hired],
+        nextId: state.faculty.nextId + 1,
+      },
+    },
+    { kind: 'adjunctHired', facultyId: hired.id, name: hired.name, programId },
+  );
+}
+
+// The year a hire's career ends: the rank they came at sets the span, and
+// their name moves it a few years either way.
+export function retirementYear(f: Faculty): number | null {
+  if (f.hiredWeek === null || f.adjunct) return null;
+  const hired = Math.floor(f.hiredWeek / WEEKS_PER_YEAR) + 1;
+  const spread = (hashOf(f.id + f.name) % (2 * FACULTY_CAREER_SPREAD + 1)) - FACULTY_CAREER_SPREAD;
+  return hired + FACULTY_CAREER_YEARS[f.rank] + spread;
+}
+
+// A bad year for one hire: the college on the ladder's lower rungs, or the
+// hall their school teaches in falling down around them.
+function unhappy(state: GameState, f: Faculty): boolean {
+  if (state.distress.rung >= RUNG_AUSTERITY) return true;
+  const def = f.programId ? findProgram(f.programId) : undefined;
+  const school = state.academics.schools.find((s) => s.schoolId === def?.schoolId);
+  const hall = state.campus.placements.find((p) => p.id === school?.placementId);
+  return hall !== undefined && hall.status === 'open' && hall.condition < FACULTY_LEAVE_HALL_BELOW;
+}
+
+// Every week an adjunct's contract may end; at Commencement the careers
+// that are over end, and in a bad year some take other posts. The dice for
+// who goes are the world's (seed, year, hire), never the run's stream.
+export function facultyWeek(state: GameState): GameState {
+  const week = state.clock.absoluteWeek;
+  const commencement = state.clock.term === 'summer' && state.clock.week === 1;
+  let s = state;
+  for (const f of state.faculty.roster) {
+    let kind: 'adjunctLeft' | 'facultyRetired' | 'facultyQuit' | null = null;
+    if (f.leavesWeek !== undefined && f.leavesWeek <= week) kind = 'adjunctLeft';
+    else if (commencement && !f.adjunct) {
+      const retires = retirementYear(f);
+      if (retires !== null && state.clock.year >= retires) kind = 'facultyRetired';
+      else if (unhappy(state, f)) {
+        const rng = Rng.fromSeed(
+          (state.seed ^ hashOf(f.id) ^ Math.imul(state.clock.year, 0x27d4eb2d)) >>> 0,
+        );
+        if (rng.chance(FACULTY_LEAVE_CHANCE)) kind = 'facultyQuit';
+      }
+    }
+    if (!kind) continue;
+    s = emit(
+      {
+        ...s,
+        faculty: { ...s.faculty, roster: s.faculty.roster.filter((g) => g.id !== f.id) },
+      },
+      { kind, facultyId: f.id, name: f.name, programId: f.programId },
+    );
+  }
+  return s;
 }
 
 // ---------- money (DD §5.2) ----------

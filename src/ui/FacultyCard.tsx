@@ -4,6 +4,8 @@ import { FACULTY_READINGS, FACULTY_WORDS, quirkById, rankById } from '../content
 import { fillWords } from '../content/people.ts';
 import { schoolById } from '../content/schools.ts';
 import {
+  clockFromAbsoluteWeek,
+  termName,
   effectiveResearch,
   effectiveTeaching,
   formatMoney,
@@ -45,6 +47,12 @@ function programOptions(state: GameState, f: Faculty) {
   return schoolById(f.schoolId).programs.filter((p) => openProgram(state, p.id));
 }
 
+// "the Fall of Year 12": when a contract runs out.
+function untilLabel(week: number): string {
+  const c = clockFromAbsoluteWeek(week);
+  return `the ${termName(c.term)} of Year ${c.year}`;
+}
+
 export default function FacultyCard({
   f,
   state,
@@ -78,6 +86,13 @@ export default function FacultyCard({
           <div className="faculty-card-head">
             <span className="faculty-name">{f.name}</span>
             {/* Let go by a college falling down the table (Phase 24). */}
+            {f.adjunct && f.leavesWeek !== undefined && (
+              <span className="faculty-from" title={FACULTY_READINGS.contract}>
+                {fillWords(FACULTY_WORDS.adjunctUntil, {
+                  season: untilLabel(f.leavesWeek),
+                })}
+              </span>
+            )}
             {f.fromSchool && (
               <span className="faculty-from" title="A falling college shed its faculty">
                 lately of {leagueSchoolById(f.fromSchool).short}

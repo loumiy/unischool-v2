@@ -94,6 +94,11 @@ export type BusEvent =
   | { kind: 'marketClosed'; count: number } // candidates who took other offers
   | { kind: 'facultyHired'; facultyId: string; name: string; programId: string | null }
   | { kind: 'facultyDismissed'; facultyId: string; name: string }
+  // Phase 39: the off-cycle hire, and the three ways a hire leaves.
+  | { kind: 'adjunctHired'; facultyId: string; name: string; programId: string }
+  | { kind: 'adjunctLeft'; facultyId: string; name: string; programId: string | null }
+  | { kind: 'facultyRetired'; facultyId: string; name: string; programId: string | null }
+  | { kind: 'facultyQuit'; facultyId: string; name: string; programId: string | null }
   | { kind: 'termClosed'; year: number; term: Term; net: number }
   | { kind: 'rungChanged'; from: number; to: number }
   | { kind: 'boardLetter'; letter: string }
@@ -178,6 +183,10 @@ export const BUS_KINDS: readonly BusKind[] = [
   'marketClosed',
   'facultyHired',
   'facultyDismissed',
+  'adjunctHired',
+  'adjunctLeft',
+  'facultyRetired',
+  'facultyQuit',
   'termClosed',
   'rungChanged',
   'boardLetter',

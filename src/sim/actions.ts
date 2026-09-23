@@ -58,6 +58,8 @@ import {
   closeMarket,
   dismissFaculty,
   facultyById,
+  adjunctFor,
+  hireAdjunct,
   hireCandidate,
   severanceFor,
 } from './faculty.ts';
@@ -147,6 +149,8 @@ export type Action =
   // program in their field or to none yet; a hire moved between programs;
   // a hire dismissed with severance.
   | { type: 'hire'; candidateId: string; programId?: string | null }
+  // An adjunct for a programme, any week of the year (Phase 39).
+  | { type: 'hireAdjunct'; programId: string }
   | { type: 'assignFaculty'; facultyId: string; programId: string | null }
   | { type: 'dismiss'; facultyId: string }
   // Delegation (DD §9.1): a seat filled from the roster or from outside,
@@ -386,6 +390,17 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!c) return no('no such candidate');
       if (action.programId && !canTeach(state, c, action.programId))
         return no('the program is not open in their field');
+      return YES;
+    }
+    case 'hireAdjunct': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (frozen(state)) return no('the board has frozen hiring');
+      if (!openProgram(state, action.programId)) return no('the program is not open');
+      const a = adjunctFor(state, action.programId);
+      if (!a) return no('no such program');
+      // A term's pay in hand: a contract the college cannot meet is not an offer.
+      if (state.treasury.cash < a.salary / 3)
+        return no('not enough cash for a term of the contract');
       return YES;
     }
     case 'assignFaculty': {
@@ -694,6 +709,8 @@ export function applyAction(state: GameState, action: Action): GameState {
       return dropSignature(state, action.programId);
     case 'hire':
       return hireCandidate(state, action.candidateId, action.programId ?? null);
+    case 'hireAdjunct':
+      return hireAdjunct(state, action.programId);
     case 'assignFaculty':
       return assignFaculty(state, action.facultyId, action.programId);
     case 'dismiss':

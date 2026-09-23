@@ -556,7 +556,9 @@
     "researchSkill": "How well they publish, 0 to 100, with their quirk counted.",
     "salary": "What they cost a year, on the faculty payroll from the week they are hired.",
     "programQuality": "This program's quality: its faculty's teaching, damped by understaffing, lifted by tier, worn by the hall.",
-    "staffing": "Hires assigned against the hires this tier needs; below the need, quality is damped."
+    "staffing": "Hires assigned against the hires this tier needs; below the need, quality is damped.",
+    "adjunct": "Hire now, any week of the year. An adjunct is taken on for one year at half as much again as a summer hire, teaches below a good hire's level and does no research. They leave when the year is up.",
+    "contract": "An adjunct on a one-year contract. They leave the week it ends, and the programme is short again unless the summer market fills the seat."
   },
   "lines": {
     "noFaculty": "No one is on the faculty yet. The market opens at Budget & Hiring, in the summer.",
@@ -575,6 +577,8 @@
     "unfoundedField": "Their field, {school}, is not founded here.",
     "taughtBy": "Taught by {names}",
     "nobodyTeaches": "No faculty assigned",
+    "hireAdjunct": "Hire an adjunct · {salary} for a year",
+    "adjunctUntil": "adjunct until {season}",
     "unassignedNote": "{count} on the roster are not teaching anything.",
     "quirkLabel": "Quirk",
     "rankAndField": "{rank} · {school}"

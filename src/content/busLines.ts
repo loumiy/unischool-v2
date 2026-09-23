@@ -388,6 +388,18 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'facultyDismissed':
       vars.name = entry.name;
       break;
+    case 'adjunctHired':
+      vars.name = entry.name;
+      vars.program = findProgram(entry.programId)?.name ?? 'a programme';
+      break;
+    case 'adjunctLeft':
+    case 'facultyRetired':
+    case 'facultyQuit': {
+      vars.name = entry.name;
+      const program = entry.programId ? findProgram(entry.programId) : undefined;
+      vars.assignment = program ? `, and ${program.name} is a teacher short` : '';
+      break;
+    }
     case 'termClosed': {
       vars.term = termLabel(entry.term);
       vars.net = formatMoney(Math.abs(entry.net));

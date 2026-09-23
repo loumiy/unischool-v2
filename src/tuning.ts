@@ -276,6 +276,8 @@ export const PROGRAM_ANNUAL_COST = 250_000;
 // The summer market: how many candidates are listed at Budget & Hiring,
 // and the share of them working in fields the college has founded.
 export const MARKET_SIZE = 8;
+// ...and one more for every so many on the roster (Phase 39).
+export const MARKET_PER_HIRE = 0.06;
 export const MARKET_FOUNDED_SHARE = 0.75;
 
 // The asking salary by rank, moved by skill: a hire at skill 100 asks
@@ -566,3 +568,21 @@ export const ATHLETICS_CLIMB_FROM = 30;
 export const ATHLETICS_CLIMB = 0.35;
 export const ATHLETICS_BUDGET_SCHEDULE = 0.6;
 export const RIVAL_MATCH = 0.6;
+
+// STAFFING WITHOUT A TRAP (Phase 39, DD §7.3). An adjunct can be hired to
+// any open programme at any time of year: a one-year contract at
+// ADJUNCT_SALARY_PREMIUM times an assistant's asking salary, whose
+// teaching is capped at ADJUNCT_TEACHING_CAP and research at
+// ADJUNCT_RESEARCH_CAP. Faculty leave for reasons: a career runs
+// FACULTY_CAREER_YEARS from the rank they were hired at (give or take
+// FACULTY_CAREER_SPREAD), and in a bad year — the ladder at Austerity or
+// worse, or their school's hall falling down — FACULTY_LEAVE_CHANCE of them
+// take another post.
+export const ADJUNCT_SALARY_PREMIUM = 1.5;
+export const ADJUNCT_TEACHING_CAP = 45;
+export const ADJUNCT_RESEARCH_CAP = 15;
+export const ADJUNCT_CONTRACT_YEARS = 1;
+export const FACULTY_CAREER_YEARS = { assistant: 34, associate: 26, full: 18 } as const;
+export const FACULTY_CAREER_SPREAD = 6;
+export const FACULTY_LEAVE_CHANCE = 0.1;
+export const FACULTY_LEAVE_HALL_BELOW = 0.3;

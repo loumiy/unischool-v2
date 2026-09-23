@@ -580,6 +580,9 @@ export default function App() {
                       programId,
                     });
                   }}
+                  onAdjunct={(programId) => {
+                    store.dispatch({ type: 'hireAdjunct', programId });
+                  }}
                 />
               ) : effectiveOverlay === 'history' ? (
                 <HistoryScreen state={state} />
