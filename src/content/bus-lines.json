@@ -49,6 +49,9 @@
     "beatResolved": {
       "text": "{line}"
     },
+    "beatPassed": {
+      "text": "{line}"
+    },
     "budgetApproved": {
       "text": "The Year {year} budget is approved at a {rate} draw."
     },

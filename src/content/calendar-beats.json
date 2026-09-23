@@ -12,7 +12,8 @@
       "resolvedLine": "The new class is welcomed, at some length.",
       "blurb": "The new class files onto the lawn and is told, at some length, that these will be the best years of their lives. Nobody has mentioned the parking.",
       "stub": "The year's report card, drawn from the chronicle.",
-      "resolveLabel": "Welcome the class"
+      "resolveLabel": "Welcome the class",
+      "passedLine": "Convocation. The new class is welcomed on the lawn, and the year begins."
     },
     {
       "id": "board-meeting",
@@ -26,7 +27,8 @@
       "resolvedLine": "The board adjourns.",
       "blurb": "The trustees have read the year's numbers, or have had them read to them over lunch. They have views.",
       "stub": "The board's view of the rival, and of how the college compares.",
-      "resolveLabel": "Adjourn"
+      "resolveLabel": "Adjourn",
+      "passedLine": "The board meets, finds the books in order, and adjourns before lunch."
     },
     {
       "id": "admissions-day",
@@ -54,5 +56,13 @@
       "blurb": "Next year's budget wants approving, and the hiring market is open for the summer. Every candidate is very excited about the opportunity.",
       "resolveLabel": "Approve and adjourn"
     }
-  ]
+  ],
+  "words": {
+    "passed": "Nothing to decide",
+    "headline": "The year's headline:",
+    "delegated": "The seats decided {count} questions this year. The last of them:",
+    "arrived": "The {label} arrives, {size} strong.",
+    "among": "Among them: {names}.",
+    "dismiss": "Carry on"
+  }
 }

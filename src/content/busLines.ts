@@ -145,10 +145,16 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       vars.year = String(entry.year);
       break;
     case 'beatFired':
-    case 'beatResolved': {
+    case 'beatResolved':
+    case 'beatPassed': {
       const beat = findBeat(entry.beatId);
       vars.beat = beat?.name ?? entry.beatId;
-      vars.line = (entry.kind === 'beatFired' ? beat?.firedLine : beat?.resolvedLine) ?? vars.beat;
+      vars.line =
+        (entry.kind === 'beatFired'
+          ? beat?.firedLine
+          : entry.kind === 'beatPassed'
+            ? (beat?.passedLine ?? beat?.resolvedLine)
+            : beat?.resolvedLine) ?? vars.beat;
       break;
     }
     case 'budgetApproved':

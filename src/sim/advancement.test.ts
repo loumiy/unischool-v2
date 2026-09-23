@@ -41,8 +41,12 @@ const FOUND = {
 } as const;
 
 function untilBeat(run: Run, beatId: string): Run {
+  const from = run.state.clock.absoluteWeek;
   for (let guard = 0; guard < WEEKS_PER_YEAR * 2; guard++) {
     if (run.state.pendingBeat === beatId) return run;
+    // A beat with nothing to decide passes without holding (Phase 41).
+    const last = lastEntry(run.state);
+    if (last?.kind === 'beatPassed' && last.beatId === beatId && last.week !== from) return run;
     if (run.state.pendingBeat !== null || run.state.distress.pendingLetter !== null) {
       run = dispatch(run, defaultResolution(run.state)!);
       continue;
@@ -204,7 +208,7 @@ describe('holding a tier, and decay', () => {
     run = dispatch(run, { type: 'designateSignature', programId: 'biology' });
     run = toConvocation(run);
     expect(biology(run)).toMatchObject({ tier: 'established', neglectYears: 1 });
-    run = dispatch(run, defaultResolution(run.state)!);
+    if (run.state.pendingBeat) run = dispatch(run, defaultResolution(run.state)!);
     // The decay week alone, on the state as it stands: the board's hit.
     const eve = {
       ...run.state,

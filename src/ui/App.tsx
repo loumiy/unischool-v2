@@ -25,6 +25,7 @@ import { FaultCard } from './Crash.tsx';
 import FinalReport from './FinalReport.tsx';
 import HallOfFame from './HallOfFame.tsx';
 import NoteCard from './NoteCard.tsx';
+import PassingBeat from './PassingBeat.tsx';
 import EventLetter from './EventLetter.tsx';
 import EventPrompt, { eventPrompt } from './EventPrompt.tsx';
 import { eventById } from '../content/events.ts';
@@ -500,6 +501,8 @@ export default function App() {
             }}
           />
         )}
+        {/* A beat with nothing to decide, passing (Phase 41). */}
+        {!state.ending.pending && <PassingBeat state={state} />}
         {/* Onboarding by consequence (Phase 29): a note, when one is due. */}
         {!state.ending.pending && (
           <NoteCard

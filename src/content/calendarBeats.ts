@@ -21,6 +21,10 @@ export interface CalendarBeat {
   // Journal lines when the beat fires and when it is resolved.
   firedLine: string;
   resolvedLine: string;
+  // The journal line when the beat has nothing to decide and passes
+  // without stopping the clock (Phase 41); absent for a beat that always
+  // decides something.
+  passedLine?: string;
   // The screen's lede, and — while a phase is still owed — what the
   // screen will hold once it lands.
   blurb: string;
@@ -39,15 +43,30 @@ const beatSchema = obj({
   prompt: str,
   firedLine: str,
   resolvedLine: str,
+  passedLine: optional(str),
   blurb: str,
   stub: optional(str),
   resolveLabel: str,
 });
 
-const fileSchema = obj({ beats: arr(beatSchema) });
+const fileSchema = obj({
+  beats: arr(beatSchema),
+  // The card a passing beat shows, and the year in review (Phase 41).
+  words: obj({
+    passed: str,
+    headline: str,
+    delegated: str,
+    arrived: str,
+    among: str,
+    dismiss: str,
+  }),
+});
+
+const file = validate(fileSchema, raw, 'content/calendar-beats.json');
+
+export const BEAT_WORDS = file.words;
 
 function load(): CalendarBeat[] {
-  const file = validate(fileSchema, raw, 'content/calendar-beats.json');
   const beats = uniqueBy(file.beats, (b) => b.id, 'content/calendar-beats.json.beats');
   const weeks = new Set<string>();
   for (const [i, b] of beats.entries()) {
