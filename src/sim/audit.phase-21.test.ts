@@ -72,6 +72,7 @@ describe('audit A1 — what teaching is worth (DD §7.2, guardrail §17.1)', () 
   // true; so the claim is now the one that would mean it had been fixed:
   // closing every classroom costs at least a tenth of what the college has.
   // Phase 31's to make true.
+  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
   it.fails('closing every classroom for 25 years costs the college dearly', () => {
     for (const seed of SEEDS) {
       const staffed = reading(played(seed, 25).state);
@@ -112,6 +113,7 @@ describe('audit A2 — what the estate is worth (DD §6.3, guardrail §17.1)', (
     }
   });
 
+  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
   it.fails('a campus of ruins is not still prettier than the average campus', () => {
     // Upkeep is a quarter of beauty (tuning.ts BEAUTY_WEIGHTS), so a campus
     // where every building stands at condition zero still scores above the
@@ -123,6 +125,7 @@ describe('audit A2 — what the estate is worth (DD §6.3, guardrail §17.1)', (
     }
   });
 
+  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
   it.fails('letting the campus fall down costs the college its money or its students', () => {
     for (const seed of SEEDS) {
       const kept = reading(played(seed, 30, undefined, KEPT).state);
@@ -156,11 +159,11 @@ describe('audit A3 — austerity does not hand the college back (DD §5.5)', () 
     expect(t.pendingBudget?.maintenanceFunding ?? 0).toBe(0);
   });
 
-  it.fails('the first budget after the emergency proposes maintenance again', () => {
+  it('the first budget after the emergency proposes maintenance again', () => {
     // Out of austerity, at the next Budget & Hiring, with the player taking
-    // the stated default. approveBudget falls back to the standing level,
-    // which the cut set to zero and nothing ever raises: the emergency
-    // measure outlives the emergency unless the player finds the slider.
+    // the stated default. Promoted in Phase 21L: the cut holds the college's
+    // own level (treasury.ownMaintenance) and the first budget after the
+    // emergency hands it back.
     const run = cutMade();
     const sound: GameState = { ...run.state, distress: { ...run.state.distress, rung: 0 } };
     const after = approveBudget(sound, undefined, undefined);

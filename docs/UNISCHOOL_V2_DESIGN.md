@@ -153,6 +153,8 @@ Climbing down the ladder is always mechanically clear ("two surplus terms," visi
 
 **The ladder's clock.** The board reads the books once a term, when a term closes. Reserves are operating funds against one term of budgeted expenses. The ladder moves at most one rung a term except that exhausted reserves go straight to Freeze; two consecutive surplus terms with cash in hand climb back from Freeze or Austerity to wherever the conditions then put the college. A year frozen brings Austerity; a year of Austerity brings the interim CFO, whose term is fixed at three years whatever the books do. Board confidence (0–100) rises with sound surpluses and falls with deficits, freezes, austerity, an overdrawn endowment and students in triples. The board writes a letter, presented full-screen and holding the clock like a beat, at every rung entered on the way down, at the CFO's departure, and on the return to a sound footing. Under austerity the Board Meeting will not adjourn without a cut from the board's list; if the administration chooses none, the board chooses. The interim CFO does not borrow, and the freeze bans new construction as well as hires and programs; renovation is never banned.
 
+**The emergency ends (Phase 21L).** Deferring maintenance under austerity, and the interim CFO's board policy under receivership, hold the college's own maintenance level rather than overwrite it. When the college leaves austerity the level is handed back, the next budget is proposed at it, and the board's letter says so; leaving austerity is itself a letter now.
+
 ---
 
 ## §6. Campus (System 2)
@@ -160,6 +162,8 @@ Climbing down the ladder is always mechanically clear ("two surplus terms," visi
 ### §6.1 The canvas
 
 One fixed map for every run: a bounded parcel (grid-based, ~64×64 tiles of buildable land) with a fixed frame of terrain features (tree line, a stream on one edge, a road frontage). No procedural variation. Players learn the land the way chess players learn the board; layouts differ because players differ.
+
+**A way to walk there (Phase 21L).** Every building with a door, and every field, must have a walking route to the road — over lawn, paving, the road, a gate's way through or a footbridge's deck — and nothing may be placed that walls off something already standing. A placement that fails is refused with the reason, shown under the footprint as it is aimed. The stream is crossed by the road at the parcel's foot, so the far bank was never unreachable, only far; the **footbridge** (a landmark, four tiles, land–water–water–land) makes it near.
 
 ### §6.2 Placement is expression, lightly rewarded
 
@@ -202,6 +206,8 @@ Buildings age. Funded maintenance holds condition; underfunding accrues **Backlo
 ### §6.5 Historic status and the politics of demolition
 
 At age 25, buildings may gain **Historic** status (higher odds for the founding hall, named quads' enclosures, and buildings with strong class memories attached, §8.4). Demolishing a historic building costs alumni goodwill and donor mood, triggers protest events, and permanently marks the chronicle. Sometimes it is still the right call. This is pillar 2's centerpiece: the late game is arguing with your own past, and the game makes the argument audible.
+
+**Until historic status arrives (Phase 21L).** Founders Hall is not demolished at all — its own catalogue line promises as much, and the rule now agrees; the late game that makes historic buildings demolishable at a price may revisit it. A hall that houses a school stands while the school does: demolition is refused with the school's name.
 
 ### §6.6 The full-canvas late game
 

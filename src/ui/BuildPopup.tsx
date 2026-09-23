@@ -29,6 +29,7 @@ import HelpHint from './HelpHint.tsx';
 import {
   AcademicIcon,
   ArtsIcon,
+  BridgeIcon,
   AthleticsIcon,
   CafeIcon,
   ChapelIcon,
@@ -109,6 +110,7 @@ const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
   gate: GateIcon,
   tower: TowerIcon,
   garden: GardenIcon,
+  bridge: BridgeIcon,
 };
 
 const TOOLS_ID = 'campus-tools';

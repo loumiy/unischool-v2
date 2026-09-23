@@ -16,7 +16,7 @@ import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { annualProgramCosts } from './academics.ts';
 import { annualGiving } from './alumni.ts';
-import { boardPolicy, inReceivership } from './distress.ts';
+import { boardPolicy, inReceivership, RUNG_AUSTERITY } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualFacultyPayroll } from './faculty.ts';
 import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
@@ -111,6 +111,11 @@ export interface Treasury {
   // a year, forever, on the administration's payroll and the faculty's.
   // They are what "$120k a year, forever" means.
   standing: { admin: number; faculty: number };
+  // The college's own maintenance level while an emergency has overridden
+  // it (Phase 21L): the austerity cut that defers maintenance, or the
+  // interim CFO's board policy. Handed back when the emergency ends; null
+  // when nothing is being held.
+  ownMaintenance: number | null;
 }
 
 export function zeroRevenue(): Revenue {
@@ -247,6 +252,7 @@ export function foundingTreasury(seed: number): Treasury {
     marketReturn: marketReturnFor(seed, 1),
     endowmentBasis: STARTING_ENDOWMENT,
     standing: { admin: 0, faculty: 0 },
+    ownMaintenance: null,
     debt: 0,
     debtRepayment: 0,
     capitalThisYear: { spent: 0, borrowed: 0 },
@@ -352,21 +358,51 @@ export function approveBudget(
   drawRate: number | undefined,
   maintenanceFunding: number | undefined,
 ): GameState {
-  const t = state.treasury;
-  // Under the interim CFO the sliders lock to board policy (DD §5.5).
+  // An emergency that has ended hands the college its own level back
+  // before the budget is proposed at it (Phase 21L).
+  const restored = restoreOwnMaintenance(state);
+  const t = restored.treasury;
+  // Under the interim CFO the sliders lock to board policy (DD §5.5), and
+  // the level the college had set is held until the CFO leaves.
   const policy = inReceivership(state) ? boardPolicy() : null;
   const rate = clampDrawRate(policy?.drawRate ?? drawRate ?? t.drawRate);
   const funding = clampFunding(
     policy?.maintenanceFunding ?? maintenanceFunding ?? t.maintenanceFunding,
   );
-  const budget = proposeBudget(state, state.clock.year + 1, rate, funding);
+  // Held while the policy overrides it; let go once the administration
+  // sets a level of its own instead of taking the one the emergency left.
+  const ownMaintenance = policy
+    ? (t.ownMaintenance ?? t.maintenanceFunding)
+    : funding !== t.maintenanceFunding
+      ? null
+      : t.ownMaintenance;
+  const budget = proposeBudget(restored, state.clock.year + 1, rate, funding);
   return emit(
     {
-      ...state,
-      treasury: { ...t, drawRate: rate, maintenanceFunding: funding, pendingBudget: budget },
+      ...restored,
+      treasury: {
+        ...t,
+        drawRate: rate,
+        maintenanceFunding: funding,
+        ownMaintenance,
+        pendingBudget: budget,
+      },
     },
     { kind: 'budgetApproved', year: budget.year, drawRate: rate },
   );
+}
+
+// THE LATCH, UNDONE (Phase 21L). Once the college is out of austerity and
+// out of receivership, a maintenance level the emergency held is handed
+// back as the standing level, and the next budget is proposed at it.
+export function restoreOwnMaintenance(state: GameState): GameState {
+  const t = state.treasury;
+  if (t.ownMaintenance === null) return state;
+  if (state.distress.rung >= RUNG_AUSTERITY) return state;
+  return {
+    ...state,
+    treasury: { ...t, maintenanceFunding: t.ownMaintenance, ownMaintenance: null },
+  };
 }
 
 // ---------- readings (DD §5.3) ----------

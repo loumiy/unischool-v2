@@ -2402,6 +2402,7 @@ function BuildingMass({
       />
     );
   }
+  if (form === 'bridge') return <Footbridge col={col} row={row} w={w} h={h} stone={stone} />;
   if (form === 'observatory') {
     return <Observatory col={col} row={row} w={w} h={h} pal={pal} />;
   }
@@ -3827,6 +3828,47 @@ function BellTower({
       />
       {openings}
       {crown}
+    </g>
+  );
+}
+
+// A FOOTBRIDGE (Phase 21L): a stone deck on the stream, a parapet down
+// each side, and the arch under it as a dark crescent on the water.
+function Footbridge({
+  col,
+  row,
+  w,
+  h,
+  stone,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+}) {
+  const along = w >= h;
+  const inset = 0.16;
+  const deck = up(0.9);
+  const wall = up(1.0);
+  const plank = along
+    ? boxFaces(col, row + inset, w, 1 - inset * 2, 0, deck)
+    : boxFaces(col + inset, row, 1 - inset * 2, h, 0, deck);
+  const rail = (side: number) =>
+    along
+      ? boxFaces(col, row + (side < 0 ? inset : 1 - inset - 0.1), w, 0.1, deck, wall)
+      : boxFaces(col + (side < 0 ? inset : 1 - inset - 0.1), row, 0.1, h, deck, wall);
+  const [far, near] = [rail(-1), rail(1)].sort((a, b) => (a.top[0]?.y ?? 0) - (b.top[0]?.y ?? 0));
+  // The arch's shadow on the water: the middle of the span.
+  const mid = along
+    ? boxFaces(col + 1, row + inset, w - 2, 1 - inset * 2, 0, 0)
+    : boxFaces(col + inset, row + 1, 1 - inset * 2, h - 2, 0, 0);
+  return (
+    <g className="campus-bridge">
+      <polygon points={polyPoints(mid.top)} className="bridge-arch" />
+      <StoneBox f={far!} tone={stone.towerStone} />
+      <StoneBox f={plank} tone={stone.towerStone} lid={0.96} />
+      <StoneBox f={near!} tone={stone.towerStone} />
     </g>
   );
 }

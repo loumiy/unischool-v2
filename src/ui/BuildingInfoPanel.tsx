@@ -6,6 +6,7 @@ import { conditionWord, ESTATE_WORDS, providesLine } from '../content/treasury.t
 import {
   affordableFinancing,
   ageYearsOf,
+  canApply,
   canPay,
   demolitionCost,
   formatMoney,
@@ -83,6 +84,10 @@ export default function BuildingInfoPanel({
     : affordableFinancing(state, renoCost);
   const demoCost = demolitionCost(def);
   const demoPayable = canPay(state, demoCost, 'cash');
+  // What the sim would say (Phase 21L): Founders Hall and a housed hall
+  // are refused whatever the cash.
+  const demoCheck = canApply(state, { type: 'demolish', placementId: placement.id });
+  const demoRefusal = demoCheck.ok || /cash/.test(demoCheck.reason) ? null : demoCheck.reason;
   return (
     <aside className="building-panel" role="dialog" aria-label={def.name}>
       <div className="building-panel-head">
@@ -161,6 +166,10 @@ export default function BuildingInfoPanel({
               Keep it
             </button>
           </>
+        ) : demoRefusal ? (
+          <span className="building-panel-refusal">
+            {demoRefusal.charAt(0).toUpperCase() + demoRefusal.slice(1)}.
+          </span>
         ) : (
           <button
             type="button"

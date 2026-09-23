@@ -67,6 +67,8 @@ export interface Distress {
   scars: number[]; // the years receivership began: the chronicle's scars
   pendingLetter: string | null; // a board letter awaiting the player
   cutsTaken: AusterityCut[]; // this spell of austerity
+  // The letter awaiting the player also hands maintenance back (Phase 21L).
+  maintenanceRestored: boolean;
 }
 
 export function foundingDistress(): Distress {
@@ -82,6 +84,7 @@ export function foundingDistress(): Distress {
     scars: [],
     pendingLetter: null,
     cutsTaken: [],
+    maintenanceRestored: false,
   };
 }
 
@@ -189,6 +192,8 @@ export function applyCut(state: GameState, cut: AusterityCut): GameState {
         ...state,
         treasury: {
           ...t,
+          // What the college had set, held for when the emergency ends.
+          ownMaintenance: t.ownMaintenance ?? t.maintenanceFunding,
           maintenanceFunding: 0,
           budget: { ...t.budget, maintenanceFunding: 0 },
           pendingBudget: t.pendingBudget ? { ...t.pendingBudget, maintenanceFunding: 0 } : null,
@@ -272,6 +277,8 @@ function letterFor(from: Rung, to: Rung): string | null {
   // The CFO's departure is its own letter, whatever footing she leaves
   // the college on.
   if (from === RUNG_RECEIVERSHIP && to < from) return 'exit-5';
+  // Out of austerity: the cuts end, and the board says which (Phase 21L).
+  if (from === RUNG_AUSTERITY && to < from) return 'exit-4';
   if (from >= RUNG_DEFICIT && to === RUNG_SOUND) return 'recovered';
   return null;
 }
@@ -298,6 +305,10 @@ export function closeTerm(state: GameState, year: number, term: Term): GameState
   const scars =
     to === RUNG_RECEIVERSHIP && from !== RUNG_RECEIVERSHIP ? [...d.scars, year] : d.scars;
   const letter = entering ? letterFor(from, to) : null;
+  // Leaving the rungs where the emergency overrides maintenance hands the
+  // college's own level back (Phase 21L).
+  const handBack =
+    from >= RUNG_AUSTERITY && to < RUNG_AUSTERITY && state.treasury.ownMaintenance !== null;
   const next: Distress = {
     ...before,
     rung: to,
@@ -309,8 +320,20 @@ export function closeTerm(state: GameState, year: number, term: Term): GameState
     scars,
     pendingLetter: letter ?? d.pendingLetter,
     cutsTaken: to >= RUNG_AUSTERITY ? d.cutsTaken : [],
+    maintenanceRestored: handBack ? letter !== null : d.maintenanceRestored,
   };
   let s: GameState = { ...state, distress: next };
+  if (handBack) {
+    const t = s.treasury;
+    s = {
+      ...s,
+      treasury: {
+        ...t,
+        maintenanceFunding: t.ownMaintenance ?? t.maintenanceFunding,
+        ownMaintenance: null,
+      },
+    };
+  }
   s = emit(s, { kind: 'termClosed', year, term, net });
   if (entering) s = emit(s, { kind: 'rungChanged', from, to });
   if (letter) s = emit(s, { kind: 'boardLetter', letter });
@@ -341,5 +364,8 @@ export function distressWeek(state: GameState): GameState {
 }
 
 export function readLetter(state: GameState): GameState {
-  return { ...state, distress: { ...state.distress, pendingLetter: null } };
+  return {
+    ...state,
+    distress: { ...state.distress, pendingLetter: null, maintenanceRestored: false },
+  };
 }

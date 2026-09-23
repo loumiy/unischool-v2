@@ -8,6 +8,7 @@ import {
   BOARD_CONFIDENCE_START,
   BOARD_POLICY_DRAW,
   BOARD_POLICY_MAINTENANCE,
+  MAINTENANCE_FUNDING_DEFAULT,
   RECEIVERSHIP_TERMS,
 } from '../tuning.ts';
 import { canApply } from './actions.ts';
@@ -28,12 +29,14 @@ import {
   RUNG_FREEZE,
   RUNG_RECEIVERSHIP,
   RUNG_SOUND,
+  readLetter,
   RUNG_TIGHT,
   termExpenses,
 } from './distress.ts';
 import { dispatch, newRun, replay, tickRunWeeks, type Run } from './run.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
 import type { GameState } from './state.ts';
+import { approveBudget } from './treasury.ts';
 
 const FOUND = {
   type: 'found',
@@ -342,5 +345,78 @@ describe('restructuring the administration (DD §5.5, Phase 21F)', () => {
     expect(after.people.mood).toBeLessThan(state.people.mood);
     // Nothing to restructure is not a cut on offer.
     expect(cutAvailable({ ...base, delegation: { seats: [] } }, 'restructureAdmin')).toBe(false);
+  });
+});
+
+describe('the maintenance latch, undone (Phase 21L)', () => {
+  function austere(): GameState {
+    const base = tickRunWeeks(opened(4242), 31).state;
+    const state: GameState = {
+      ...base,
+      distress: { ...base.distress, rung: RUNG_AUSTERITY, termsAtRung: 1 },
+    };
+    return applyCut(state, 'deferMaintenance');
+  }
+
+  it('holds the college’s own level when the cut is made', () => {
+    const s = austere();
+    expect(s.treasury.maintenanceFunding).toBe(0);
+    expect(s.treasury.ownMaintenance).toBe(MAINTENANCE_FUNDING_DEFAULT);
+  });
+
+  it('hands it back when the college leaves austerity, and the letter says so', () => {
+    const s = austere();
+    // A term far in surplus with reserves to spare: the ladder comes down.
+    const flush: GameState = {
+      ...s,
+      treasury: { ...s.treasury, cash: 500e6 },
+      distress: {
+        ...s.distress,
+        surplusRun: 5,
+        deficitRun: 0,
+        term: {
+          revenue: { ...s.distress.term.revenue, tuition: 50e6 },
+          expenses: s.distress.term.expenses,
+        },
+      },
+    };
+    const after = closeTerm(flush, s.clock.year, 'fall');
+    expect(after.distress.rung).toBeLessThan(RUNG_AUSTERITY);
+    expect(after.treasury.maintenanceFunding).toBe(MAINTENANCE_FUNDING_DEFAULT);
+    expect(after.treasury.ownMaintenance).toBeNull();
+    expect(after.distress.pendingLetter).toBe('exit-4');
+    expect(after.distress.maintenanceRestored).toBe(true);
+    expect(letterById('exit-4').title).toMatch(/austerity/i);
+    expect(readLetter(after).distress.maintenanceRestored).toBe(false);
+  });
+
+  it('holds it under the interim CFO and hands it back when she leaves', () => {
+    const base = tickRunWeeks(opened(4242), 31).state;
+    const cfo: GameState = {
+      ...base,
+      treasury: { ...base.treasury, maintenanceFunding: 0.8 },
+      distress: { ...base.distress, rung: RUNG_RECEIVERSHIP, receivershipTermsLeft: 2 },
+    };
+    const approved = approveBudget(cfo, undefined, undefined);
+    expect(approved.treasury.maintenanceFunding).toBe(BOARD_POLICY_MAINTENANCE);
+    expect(approved.treasury.ownMaintenance).toBe(0.8);
+    const out: GameState = { ...approved, distress: { ...approved.distress, rung: RUNG_DEFICIT } };
+    expect(approveBudget(out, undefined, undefined).treasury.maintenanceFunding).toBe(0.8);
+  });
+
+  it('migrates a v20 save that deferred maintenance to hand back the default', () => {
+    const run = tickRunWeeks(opened(12), 40, defaultResolution);
+    const file = JSON.parse(JSON.stringify(serializeRun(run)));
+    file.version = 20;
+    file.state.schemaVersion = 20;
+    delete file.state.treasury.ownMaintenance;
+    delete file.state.distress.maintenanceRestored;
+    file.state.treasury.maintenanceFunding = 0;
+    file.state.distress.cutsTaken = ['deferMaintenance'];
+    const result = loadSaveFile(file);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.save.state.treasury.ownMaintenance).toBe(MAINTENANCE_FUNDING_DEFAULT);
+    expect(result.save.state.distress.maintenanceRestored).toBe(false);
   });
 });

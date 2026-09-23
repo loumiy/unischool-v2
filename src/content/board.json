@@ -100,6 +100,15 @@
         "The Board looks forward to a meeting at which the numbers are not the first item."
       ],
       "signed": "The Board of Trustees"
+    },
+    "exit-4": {
+      "title": "On the end of austerity",
+      "body": [
+        "The college's finances no longer require the measures the Board asked of the administration. Austerity is lifted with effect from this term.",
+        "What was cut stays cut until the administration decides otherwise: programmes closed are closed, and aid reduced is reduced. The Board does not reverse the administration's decisions, only its own.",
+        "The Board expects the next budget to be drawn up as the college's, not as the Board's."
+      ],
+      "signed": "The Board of Trustees"
     }
   },
   "cuts": [
@@ -135,6 +144,7 @@
     "policy": "Board policy while the checkbook is in the CFO's drawer: the draw and the maintenance funding the sliders lock to.",
     "cutsRequired": "The board requires at least one cut from its list before it adjourns.",
     "cutsNone": "Nothing on the board's list can be cut further; the board adjourns with its point made.",
-    "letterPrompt": "A letter from the board"
+    "letterPrompt": "A letter from the board",
+    "maintenanceRestored": "Maintenance returns to the level the college had set before the emergency. Buildings do not know there was an emergency, and the Board would rather they never found out."
   }
 }

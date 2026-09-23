@@ -33,12 +33,20 @@ export const FORMS = [
   'fountain', // a basin and a jet
   'gate', // two piers and an arch, walked through
   'tower', // a freestanding bell tower
+  'bridge', // a footbridge over the stream (Phase 21L)
 ] as const;
 export type Form = (typeof FORMS)[number];
 
 // Campus furniture (Phase 21J): no floors, no door, drawn by its own
 // renderer rather than the massing code.
-export const FURNITURE_FORMS: readonly Form[] = ['sign', 'statue', 'fountain', 'gate', 'tower'];
+export const FURNITURE_FORMS: readonly Form[] = [
+  'sign',
+  'statue',
+  'fountain',
+  'gate',
+  'tower',
+  'bridge',
+];
 
 // What open ground is marked out as (Phase 21J). A field is a pitch unless
 // its row says otherwise.
@@ -89,6 +97,7 @@ export const BUILDING_ICONS = [
   'gate',
   'tower',
   'garden',
+  'bridge',
 ] as const;
 export type BuildingIcon = (typeof BUILDING_ICONS)[number];
 

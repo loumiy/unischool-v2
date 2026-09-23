@@ -3,7 +3,6 @@ import { RENOVATION_WEEKS } from '../tuning.ts';
 import { emit } from './bus.ts';
 import {
   FOUNDERS_HALL_ID,
-  footprintIsClear,
   apronTiles,
   builtCount,
   footprintTiles,
@@ -66,6 +65,7 @@ import { findCampaign } from '../content/campaigns.ts';
 import { findSeat } from '../content/seats.ts';
 import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts';
 import { SEAT_SENIOR_RANKS } from '../tuning.ts';
+import { accessRefusal, groundRefusal } from './reach.ts';
 import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
@@ -197,9 +197,8 @@ export function canApply(state: GameState, action: Action): Verdict {
         );
       }
       const { w, h } = orientedFootprint(def.footprint, action.rotated);
-      if (!footprintIsClear(state.campus, action.col, action.row, w, h)) {
-        return no('footprint is off the parcel, on water or road, or occupied');
-      }
+      const ground = groundRefusal(state.campus, def, action.col, action.row, w, h);
+      if (ground) return no(ground);
       const financing = action.financing ?? 'cash';
       if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
       // The freeze (DD §5.5): nothing new is built; the interim CFO does
@@ -210,12 +209,23 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!canPay(state, def.cost, financing)) {
         return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
       }
+      // Last, because it floods the parcel twice (Phase 21L).
+      const access = accessRefusal(state.campus, def, action.col, action.row, w, h);
+      if (access) return no(access);
       return YES;
     }
     case 'demolish': {
       if (state.phase !== 'running') return no('nothing to demolish yet');
       const p = state.campus.placements.find((q) => q.id === action.placementId);
       if (!p) return no('no such building');
+      // Founders Hall is the last thing anyone will agree to demolish, and
+      // now the rule says so too (Phase 21L; DD §6.5).
+      if (p.buildingId === FOUNDERS_HALL_ID) return no('Founders Hall is not coming down');
+      // A school is housed somewhere (Phase 21L): its hall stands while
+      // the school does.
+      const housed = schoolInHall(state, p.id);
+      if (housed)
+        return no(`it houses the School of ${findSchool(housed.schoolId)?.name ?? 'a school'}`);
       if (!canPay(state, demolitionCost(buildingById(p.buildingId)), 'cash'))
         return no('not enough cash to demolish');
       return YES;

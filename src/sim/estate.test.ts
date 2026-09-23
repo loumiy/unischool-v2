@@ -26,6 +26,7 @@ import {
   totalBacklog,
   weeklyMaintenance,
 } from './estate.ts';
+import { played } from './colleges.ts';
 import { dispatch, newRun, replay, tickRunWeeks, type Run } from './run.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
 import type { GameState } from './state.ts';
@@ -164,11 +165,47 @@ describe('construction (DD §6.4, §5.2)', () => {
   });
 
   it('charges a share of the build cost to demolish', () => {
-    const run = tickRunWeeks(opened(), 30, defaultResolution);
+    const base = tickRunWeeks(opened(), 30, defaultResolution);
+    const lab = buildingById('lab');
+    const site = {
+      id: 'p90',
+      buildingId: 'lab',
+      col: 10,
+      row: 10,
+      w: 5,
+      h: 3,
+      status: 'open' as const,
+      completesWeek: null,
+      openedWeek: 0,
+      backlog: 0,
+      condition: 1,
+    };
+    const run = {
+      ...base,
+      state: {
+        ...base.state,
+        campus: { ...base.state.campus, placements: [...base.state.campus.placements, site] },
+      },
+    };
     const before = run.state.treasury.cash;
-    const gone = dispatch(run, { type: 'demolish', placementId: 'p1' });
-    expect(gone.state.treasury.cash).toBe(before - Math.round(HALL.cost * DEMOLITION_COST_SHARE));
+    const gone = dispatch(run, { type: 'demolish', placementId: 'p90' });
+    expect(gone.state.treasury.cash).toBe(before - Math.round(lab.cost * DEMOLITION_COST_SHARE));
     expect(demolitionCost(HALL)).toBe(Math.round(HALL.cost * DEMOLITION_COST_SHARE));
+  });
+
+  it('will not take down Founders Hall, or a hall a school is housed in (Phase 21L)', () => {
+    const run = tickRunWeeks(opened(), 30, defaultResolution);
+    expect(canApply(run.state, { type: 'demolish', placementId: 'p1' })).toMatchObject({
+      ok: false,
+      reason: /Founders Hall/,
+    });
+    const s = played(4, 6).state;
+    const school = s.academics.schools.find((x) => x.placementId !== 'p1');
+    if (!school) return;
+    expect(canApply(s, { type: 'demolish', placementId: school.placementId })).toMatchObject({
+      ok: false,
+      reason: /houses the School of/,
+    });
   });
 });
 

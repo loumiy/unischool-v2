@@ -1,6 +1,13 @@
 import { buildingById, BUILDINGS } from '../content/buildings.ts';
 import { RANKS, type RankId } from '../content/faculty.ts';
-import { programById, schoolById, tierById, TIERS, type TierId } from '../content/schools.ts';
+import {
+  ACADEMIC_WORDS,
+  programById,
+  schoolById,
+  tierById,
+  TIERS,
+  type TierId,
+} from '../content/schools.ts';
 import {
   ADVANCEMENT,
   DECAY_AFTER_YEARS,
@@ -368,7 +375,17 @@ function decayYear(state: GameState): GameState {
   return s;
 }
 
+// A hall by the name a person would use (Phase 21L): the building's own,
+// numbered where the college has more than one of it — "Academic Hall
+// III", in the order they went up — and a word, never a placement id,
+// for one that is gone.
+const NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 export function hallName(state: GameState, placementId: string): string {
   const p = state.campus.placements.find((q) => q.id === placementId);
-  return p ? buildingById(p.buildingId).name : placementId;
+  if (!p) return ACADEMIC_WORDS.lines.hallGone;
+  const name = buildingById(p.buildingId).name;
+  const same = state.campus.placements.filter((q) => q.buildingId === p.buildingId);
+  if (same.length < 2) return name;
+  const n = same.indexOf(p);
+  return `${name} ${NUMERALS[n] ?? String(n + 1)}`;
 }

@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
 import {
-  footprintIsClear,
+  siteRefusal,
   formatMoney,
   FOUNDERS_HALL_ID,
   orientedFootprint,
@@ -501,6 +501,30 @@ const CampusScene = memo(function CampusScene({
   );
 });
 
+// The reason a ghost is red, under it (Phase 21L): a red footprint said
+// no without saying why, and "no way to walk to it" is not something a
+// player can see from the colour.
+function PreviewRefusal({
+  preview,
+}: {
+  preview: { col: number; row: number; w: number; h: number; refusal: string | null };
+}) {
+  const at = project(preview.col + preview.w / 2, preview.row + preview.h);
+  const text = preview.refusal ?? '';
+  const width = text.length * 6.4 + 16;
+  return (
+    <g
+      className="campus-refusal"
+      transform={`translate(${at.x.toFixed(1)}, ${(at.y + 34).toFixed(1)})`}
+    >
+      <rect x={-width / 2} y={-11} width={width} height={22} rx={11} />
+      <text textAnchor="middle" dominantBaseline="central">
+        {text.charAt(0).toUpperCase() + text.slice(1)}
+      </text>
+    </g>
+  );
+}
+
 export default function CampusMap({
   state,
   placingId,
@@ -974,7 +998,14 @@ export default function CampusMap({
     if (selected && selectedFootprint) {
       const at = anchorFor(tile, selectedFootprint);
       if (
-        footprintIsClear(state.campus, at.col, at.row, selectedFootprint.w, selectedFootprint.h)
+        siteRefusal(
+          state.campus,
+          selected,
+          at.col,
+          at.row,
+          selectedFootprint.w,
+          selectedFootprint.h,
+        ) === null
       ) {
         if (onPlace(selected.id, at.col, at.row, rotated)) {
           onArmPlacement(null);
@@ -1016,17 +1047,17 @@ export default function CampusMap({
     selected && hover && selectedFootprint
       ? (() => {
           const at = anchorFor(hover, selectedFootprint);
-          return {
-            ...at,
-            ...selectedFootprint,
-            ok: footprintIsClear(
-              state.campus,
-              at.col,
-              at.row,
-              selectedFootprint.w,
-              selectedFootprint.h,
-            ),
-          };
+          // Why not, from the sim itself (Phase 21L): the ground, the walk
+          // to it, and what it would wall off.
+          const refusal = siteRefusal(
+            state.campus,
+            selected,
+            at.col,
+            at.row,
+            selectedFootprint.w,
+            selectedFootprint.h,
+          );
+          return { ...at, ...selectedFootprint, ok: refusal === null, refusal };
         })()
       : null;
   const paintGhost = paintTool && hover ? { ...hover, tool: paintTool } : null;
@@ -1094,6 +1125,7 @@ export default function CampusMap({
                     boxFaces(preview.col, preview.row, preview.w, preview.h, 0, 0).top,
                   )}
                 />
+                {preview.refusal && <PreviewRefusal preview={preview} />}
                 {canRotateSelected && rotateAt && (
                   <g
                     className="campus-rotate-btn"

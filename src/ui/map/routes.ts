@@ -4,6 +4,7 @@ import {
   GRID_WIDTH,
   parseTileKey,
   terrainAt,
+  throughTiles,
   type Campus,
   type Placement,
 } from '../../sim/index.ts';
@@ -47,11 +48,9 @@ export function walkGrid(campus: Campus): Float32Array {
   for (const p of campus.placements) {
     for (let r = p.row; r < p.row + p.h; r++)
       for (let c = p.col; c < p.col + p.w; c++) g[idx(c, r)] = -1;
-    // A gate is walked through (Phase 21J): its middle tile is a way, as
-    // good as paving once it is open.
-    if (p.status === 'open' && buildingById(p.buildingId).form === 'gate') {
-      g[idx(p.col + Math.floor(p.w / 2), p.row + Math.floor(p.h / 2))] = PATH_COST;
-    }
+    // A gate is walked through (Phase 21J), and a footbridge walked across
+    // (Phase 21L): their ways are as good as paving once they are open.
+    if (p.status === 'open') for (const t of throughTiles(p)) g[idx(t.col, t.row)] = PATH_COST;
   }
   for (const key of campus.paths) {
     const t = parseTileKey(key);
