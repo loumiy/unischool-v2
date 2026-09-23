@@ -79,3 +79,24 @@ The college has a reputation, which moves the applicant pool and the yield. Phas
 - **The steward** is rewarded: its reputation settles in the 70s, its pool grows by about half, and it keeps rank 1–3 with a larger college. Its cash cover stays in band because the sweep takes the extra surplus.
 - **The frugal college** is punished within a decade of its first graduates: its reputation falls to the floor and its enrolment falls to about 380.
 - The three open Phase 21 audit findings (A1 teaching, A2 estate ×2) are promoted from `it.fails` to `it`.
+
+## After Phase 38 (ceilings)
+
+Students judge the college against its promise, the top of the satisfaction scale is hard going, and the athletics schedule climbs with the team.
+
+| Archetype | Seed | Saturated years | Title rate | Experience axis | Athletics axis | Students | Mark · rank |
+| --------- | ---- | --------------- | ---------- | --------------- | -------------- | -------- | ----------- |
+| steward   | 4    | 0               | 14%        | 80              | 69             | 2772     | B · 2       |
+| steward   | 11   | 0               | 11%        | 82              | 70             | 3207     | B · 5       |
+| steward   | 21   | 0               | 11%        | 81              | 71             | 2956     | B · 2       |
+| growth    | 4    | 0               | 0%         | 80              | 45             | 1974     | B · 10      |
+| growth    | 11   | 0               | 0%         | 78              | 45             | 2041     | C · 15      |
+| growth    | 21   | 0               | 0%         | 74              | 45             | 1978     | C · 11      |
+| frugal    | 4    | 0               | 0%         | 29              | 0              | 394      | D · 25      |
+| frugal    | 11   | 0               | 0%         | 28              | 0              | 381      | D · 25      |
+| frugal    | 21   | 0               | 0%         | 27              | 0              | 383      | D · 25      |
+
+- **Saturation** is gone: no archetype has a class above 95 in any year (was 11–13 years for the steward).
+- **Titles**: the steward wins 11–14% of its seasons (was 49–57%), inside the 10–25% band.
+- **Investment still pays**: the steward's experience standing is about 81 against the frugal college's 28, and its athletics standing is about 70 against 0.
+- The steward's end-of-run grade falls from A to B on two seeds, because the experience axis no longer sits at the ceiling; its rank is 2, 5 and 2.
