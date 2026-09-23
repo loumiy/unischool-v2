@@ -90,7 +90,9 @@ describe('every schema version since v1 still opens (DD §15)', () => {
       }
     }
     expect(failures).toEqual([]);
-  });
+    // Every rung replays six years to check the file it loaded: slow by
+    // design, and slower under a full parallel suite.
+  }, 30_000);
 
   it('opens the oldest save the game ever wrote', () => {
     // A v1 file exactly as Phase 1 wrote one (commit 51aca06): a seed, the

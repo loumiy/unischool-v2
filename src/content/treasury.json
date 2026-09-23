@@ -28,7 +28,7 @@
     },
     "adminPayroll": {
       "label": "Administration",
-      "hint": "The president's office and the administration, which only ever grows."
+      "hint": "The president's office, the registry and student services growing with the roll, and every seat filled, which only ever grows."
     },
     "maintenance": {
       "label": "Maintenance",
@@ -44,7 +44,7 @@
     },
     "programs": {
       "label": "Programs & student life",
-      "hint": "Per active program, club and varsity team."
+      "hint": "Per active program and varsity team, and per student: the library, the counsellors, the IT desk, the heating."
     }
   },
   "readings": {

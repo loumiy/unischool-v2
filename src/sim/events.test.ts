@@ -137,7 +137,18 @@ describe('an event fires only where it fits (DD §10.1)', () => {
       },
     };
     expect(worn.campus.placements[0]!.condition).toBeLessThan(0.8);
-    expect(conditionsHold(worn, eventById('heating-fails'))).toBe(true);
+    // Worn is not enough since Phase 31: the heating fails where the
+    // maintenance was cut, so the letter belongs to whoever cut it.
+    expect(conditionsHold(worn, eventById('heating-fails'))).toBe(false);
+    const cut: GameState = {
+      ...worn,
+      treasury: {
+        ...worn.treasury,
+        budget: { ...worn.treasury.budget, maintenanceFunding: 0.5 },
+        maintenanceFunding: 0.5,
+      },
+    };
+    expect(conditionsHold(cut, eventById('heating-fails'))).toBe(true);
   });
 
   it('will not ask the same thing twice inside its cooldown', () => {
@@ -434,8 +445,6 @@ describe('events over a long run', () => {
       'flooded-basement',
       'heating-fails',
       'the-buckets',
-      'the-burst-pipe',
-      'the-insurance-renewal',
     ];
     expect(failures.filter((f) => neglectful.has(f)).length).toBeGreaterThanOrEqual(3);
     for (const failure of failures) expect(attentive).not.toContain(failure);

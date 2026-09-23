@@ -39,7 +39,8 @@
       "weight": 4,
       "cooldownYears": 4,
       "when": {
-        "backlogOver": 400000
+        "backlogOver": 400000,
+        "maintenanceUnder": 0.95
       },
       "text": "A section of roof has come off {building} in the night. Facilities has cordoned off the quad beneath it and described the timber, in writing, as 'no longer load-bearing in the usual sense'.",
       "timeoutWeeks": 3,
@@ -217,7 +218,8 @@
       "cooldownYears": 5,
       "when": {
         "conditionUnder": 0.8,
-        "enrolledOver": 40
+        "enrolledOver": 40,
+        "maintenanceUnder": 0.95
       },
       "text": "The heating has failed across the older buildings in the third week of a cold term. Students are attending lectures in coats and have begun, inevitably, to enjoy it.",
       "timeoutWeeks": 2,
@@ -470,7 +472,8 @@
       "weight": 4,
       "cooldownYears": 3,
       "when": {
-        "backlogOver": 900000
+        "backlogOver": 900000,
+        "maintenanceUnder": 0.95
       },
       "text": "Slates have been coming off {building} in ones and twos for a month. Nobody has been hit. The Head of Facilities has begun describing this as the college's good fortune rather than its policy.",
       "timeoutWeeks": 3,
@@ -3445,7 +3448,8 @@
       "cooldownYears": 4,
       "when": {
         "conditionUnder": 0.75,
-        "backlogOver": 500000
+        "backlogOver": 500000,
+        "maintenanceUnder": 0.95
       },
       "text": "Rain has been getting into {building} along the valley gutter, and there are now nine buckets in the top-floor corridor. The porters empty them twice a day and have begun logging the volumes in a notebook, which they would like someone senior to read, because the numbers are going up.",
       "timeoutWeeks": 3,
@@ -3925,7 +3929,7 @@
       "cooldownYears": 5,
       "when": {
         "enrolledOver": 150,
-        "moodOver": 0
+        "yearAtLeast": 3
       },
       "text": "The dining hall added a vegan dish to the lunch counter this term, and it has sold out by half past twelve every day since. The catering manager would like to know whether the college intends to plan for this, or to go on being surprised by it at half past twelve.",
       "timeoutWeeks": 3,
@@ -3959,7 +3963,7 @@
         }
       ],
       "default": "keep",
-      "needs": ["dining-hall"],
+      "needs": ["dining-hall", "dining-hall"],
       "favours": ["artsy"]
     },
     {
@@ -5268,7 +5272,8 @@
       "when": {
         "yearAtLeast": 12,
         "endowmentOver": 30000000,
-        "schoolsOver": 0
+        "schoolsOver": 0,
+        "buildingsOver": 4
       },
       "title": "The Harrowgate pledge",
       "text": "Harrowgate & Sons has gone into administration owing more than anyone outside the firm had guessed, and with it has gone the second half of Arthur Harrowgate's pledge to {school}. The first half is spent. It is in the foundations of a building that already has his name cut into the lintel in letters eleven inches high.\n\nThe administrators have written to ask whether the college regards the money received so far as a gift or as an asset of the estate, and have enclosed a form. Mr Harrowgate has written separately, by hand, to apologise.",

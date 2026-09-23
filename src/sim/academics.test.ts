@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { describeEntry } from '../content/busLines.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import { courseListings, PROGRAMS, SCHOOLS, TIERS } from '../content/schools.ts';
-import { PROGRAM_ANNUAL_COST, PROGRAM_OPENING_COST, SCHOOL_FOUNDING_COST } from '../tuning.ts';
+import {
+  PROGRAM_ANNUAL_COST,
+  PROGRAM_OPENING_COST,
+  SCHOOL_FOUNDING_COST,
+  STUDENT_LIFE_PER_STUDENT,
+} from '../tuning.ts';
 import {
   annualProgramCosts,
   foundedSchool,
@@ -15,6 +20,7 @@ import { defaultResolution } from './beats.ts';
 import { entriesOfKind, lastEntry } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { applyCut, availableCuts, RUNG_FREEZE } from './distress.ts';
+import { enrolled } from './people.ts';
 import { dispatch, newRun, replay, tickRunWeeks, type Run } from './run.ts';
 import { loadSaveFile, serializeRun } from './save.ts';
 
@@ -140,8 +146,11 @@ describe('founding schools and opening programs (DD §7.2)', () => {
     expect(annualProgramCosts(run.state)).toBe(2 * PROGRAM_ANNUAL_COST);
     expect(programSeats(run.state)).toBe(240);
     run = tickRunWeeks(run, 1, defaultResolution);
+    // The line is the programs and the students they look after.
     expect(run.state.treasury.lastWeek.expenses.programs).toBe(
-      Math.round((2 * PROGRAM_ANNUAL_COST) / WEEKS_PER_YEAR),
+      Math.round(
+        (2 * PROGRAM_ANNUAL_COST + STUDENT_LIFE_PER_STUDENT * enrolled(run.state)) / WEEKS_PER_YEAR,
+      ),
     );
     expect(entriesOfKind(run.state, 'programOpened')).toHaveLength(2);
   });

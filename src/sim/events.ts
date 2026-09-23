@@ -348,13 +348,18 @@ const LEVERS: Record<
       mood: Number(Math.min(MOOD_CAP, Math.max(-MOOD_CAP, s.people.mood + amount)).toFixed(2)),
     },
   }),
-  // Backlog spreads over the open buildings by what each already carries
-  // (repairs go to the worst first; new damage lands on everything).
+  // Repairs spread over the open buildings by what each already carries,
+  // so the worst is mended first. New damage lands on the estate by what
+  // each building is worth (Phase 31): spread by backlog, it fell hardest
+  // on whatever was already worst — Founders Hall, first built — and a
+  // run of storms ate the one hall every early school teaches in.
   backlog: (s, amount) => {
     const open = openPlacements(s);
     if (open.length === 0) return s;
-    const carried = open.reduce((t, p) => t + p.backlog, 0);
-    const shares = open.map((p) => (carried > 0 ? p.backlog / carried : 1 / open.length));
+    const weigh = (p: (typeof open)[number]) =>
+      amount < 0 ? p.backlog : buildingById(p.buildingId).cost;
+    const carried = open.reduce((t, p) => t + weigh(p), 0);
+    const shares = open.map((p) => (carried > 0 ? weigh(p) / carried : 1 / open.length));
     const byId = new Map(open.map((p, i) => [p.id, shares[i]!]));
     return {
       ...s,

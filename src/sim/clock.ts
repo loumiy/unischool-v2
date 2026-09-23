@@ -79,5 +79,5 @@ export function advanceWeekProgress(
 // background tabs, so a tab left for ten minutes would otherwise hand the
 // accumulator one enormous delta and lurch the sim through months in a frame.
 // Capping the sample makes an unattended tab effectively pause. At 8× a week
-// is 1000 ms, so the cap never drops a tick during ordinary play.
-export const MAX_SAMPLE_MS = 1000;
+// is 625 ms (Phase 31), so the cap never drops a tick during ordinary play.
+export const MAX_SAMPLE_MS = 600;

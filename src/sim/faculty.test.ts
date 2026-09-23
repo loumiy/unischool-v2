@@ -256,7 +256,10 @@ describe('program quality (DD §7.4) and the students who feel it', () => {
     expect(programQuality(run.state, biology)).toBe(Number(half));
     if (b) {
       run = dispatch(run, { type: 'hire', candidateId: b.id, programId: 'biology' });
-      const mean = ((effectiveTeaching(a!) + effectiveTeaching(b)) / 2) * crowding;
+      // Two hands: the mean teaching, damped by however much of the need
+      // two still leave unmet.
+      const staffed = Math.min(1, 2 / staffingNeed(biology));
+      const mean = ((effectiveTeaching(a!) + effectiveTeaching(b)) / 2) * staffed * crowding;
       expect(programQuality(run.state, biology)).toBe(Number(mean.toFixed(1)));
       expect(teachingQuality(run.state)).toBe(programQuality(run.state, biology));
     }

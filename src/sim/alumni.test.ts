@@ -298,30 +298,23 @@ describe('the long memory (plan Phase 16)', () => {
     expect(marked.length).toBeGreaterThanOrEqual(3);
 
     // Those classes are colder, and still giving less two decades later.
+    // Measured against each run's own later classes, which the crunch never
+    // touched: at an event every few weeks (Phase 31) the `warmth` lever
+    // moves every alumnus in a run together, and the two runs' events
+    // differ, so only a comparison inside a run is fair.
     const warmth = (as: typeof control.people.alumni) =>
       as.reduce((t, a) => t + a.warmth, 0) / Math.max(1, as.length);
-    // Colder by a margin the world's weather can move (Phase 24 widened
-    // the gap between the two runs' events); the claim is the sign, and
-    // the giving below is the size of it.
-    expect(warmth(marked)).toBeLessThan(warmth(lived(control)) - 1);
-    const gave = (s: typeof control, a: (typeof control.people.alumni)[number]) =>
-      givingOf(a, s.clock.year);
-    for (const a of marked) {
-      const twin = lived(control).find((b) => b.classYear === a.classYear);
-      if (!twin) continue;
-      expect(gave(crunched, a)).toBeLessThan(gave(control, twin));
-    }
-    // And the fund is down where the crunch was lived. The WHOLE ledger is
-    // no longer a fair comparison: since the world arrived (Phase 24) the
-    // two runs' admissions differ, so do their events, and every other
-    // class's warmth wanders with them. The measurable claim is about the
-    // classes that lived through it.
-    const fromMarked = marked.reduce((t, a) => t + gave(crunched, a), 0);
-    const fromTwins = marked.reduce((t, a) => {
-      const twin = lived(control).find((b) => b.classYear === a.classYear);
-      return t + (twin ? gave(control, twin) : 0);
-    }, 0);
-    expect(fromMarked).toBeLessThan(fromTwins * 0.9);
+    const after = (s: typeof control) =>
+      s.people.alumni.filter((a) => a.classYear >= 18 && a.classYear <= 22);
+    const chill = (s: typeof control, as: typeof control.people.alumni) =>
+      warmth(as) - warmth(after(s));
+    const giving = (s: typeof control, as: typeof control.people.alumni) =>
+      as.reduce((t, a) => t + givingOf(a, s.clock.year), 0) / Math.max(1, as.length);
+    expect(chill(crunched, marked)).toBeLessThan(chill(control, lived(control)) - 1);
+    // And the fund is down where the crunch was lived, by the same yardstick.
+    const share = (s: typeof control, as: typeof control.people.alumni) =>
+      giving(s, as) / Math.max(1, giving(s, after(s)));
+    expect(share(crunched, marked)).toBeLessThan(share(control, lived(control)) * 0.95);
     expect(entriesOfKind(crunched, 'classRemembered').length).toBeGreaterThan(10);
   });
 });

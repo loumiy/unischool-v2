@@ -7,9 +7,11 @@ import {
   ENDOWMENT_DRAW_STEP,
   ENDOWMENT_MEAN_RETURN,
   ENDOWMENT_RETURN_SPREAD,
+  ADMIN_PER_STUDENT,
   FOUNDING_ADMIN_PAYROLL,
   MAINTENANCE_FUNDING_DEFAULT,
   STARTING_CASH,
+  STUDENT_LIFE_PER_STUDENT,
   STARTING_ENDOWMENT,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
@@ -20,7 +22,13 @@ import { annualAthleticsCost } from './athletics.ts';
 import { boardPolicy, inReceivership, RUNG_AUSTERITY } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualFacultyPayroll } from './faculty.ts';
-import { annualAid, annualAuxiliaries, annualTuition, projectedEnrollment } from './people.ts';
+import {
+  annualAid,
+  annualAuxiliaries,
+  annualTuition,
+  enrolled,
+  projectedEnrollment,
+} from './people.ts';
 import { Rng } from './rng.ts';
 import { seatPayroll } from './seats.ts';
 import type { GameState } from './state.ts';
@@ -199,8 +207,12 @@ export function proposeBudget(
         projectedEnrollment(state) * state.people.terms.tuition * state.people.aidRate,
       ),
       debtService: annualDebtService(t),
-      // Programs and student life, varsity teams among them (Phase 23).
-      programs: annualProgramCosts(state) + annualAthleticsCost(state),
+      // Programs and student life, varsity teams among them (Phase 23),
+      // and what every student costs to look after (Phase 31).
+      programs:
+        annualProgramCosts(state) +
+        annualAthleticsCost(state) +
+        STUDENT_LIFE_PER_STUDENT * projectedEnrollment(state),
     },
   };
 }
@@ -289,7 +301,10 @@ export function weeklyFlows(state: GameState): Flows {
   expenses.facultyPayroll = Math.round(annualFacultyPayroll(state) / WEEKS_PER_YEAR);
   expenses.maintenance = weeklyMaintenance(state);
   expenses.programs = Math.round(
-    (annualProgramCosts(state) + annualAthleticsCost(state)) / WEEKS_PER_YEAR,
+    (annualProgramCosts(state) +
+      annualAthleticsCost(state) +
+      STUDENT_LIFE_PER_STUDENT * enrolled(state)) /
+      WEEKS_PER_YEAR,
   );
   const service = weeklyDebtService(t);
   expenses.debtService = service.interest + service.principal;
@@ -416,10 +431,17 @@ export function tuitionDependence(f: Flows): number {
   return total <= 0 ? 0 : f.revenue.tuition / total;
 }
 
-// The founding office, plus every seat the college has filled, forever
-// (DD §5.4, §9.4). This is the ratchet: it only goes up.
+// The founding office, the registry and student services that grow with
+// the roll (Phase 31), plus every seat the college has filled and every
+// standing charge an event added, forever (DD §5.4, §9.4). The seats and
+// the charges are the ratchet: they only go up.
 export function annualAdminPayroll(state: GameState): number {
-  return FOUNDING_ADMIN_PAYROLL + seatPayroll(state) + state.treasury.standing.admin;
+  return (
+    FOUNDING_ADMIN_PAYROLL +
+    ADMIN_PER_STUDENT * enrolled(state) +
+    seatPayroll(state) +
+    state.treasury.standing.admin
+  );
 }
 
 export function adminShareOfPayroll(f: Flows): number {
