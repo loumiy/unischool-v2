@@ -65,7 +65,14 @@ Each phase is one plan, one branch and one PR (or a few), in V1's `docs/plans/` 
 
 Make V1 ready to receive V2's systems, and able to measure them.
 
-- **Seeded random generator in `GameState`.** Replace `Math.random` in about 15 files, and `crypto.randomUUID`, with draws from it. The harness's monkey-patch goes away.
+- **Clean-up pass first** (`V1_CLUTTER_AUDIT.md`):
+  - tests typechecked, on Vitest, with CI;
+  - a comment trim (38% of V1's lines are comments, much of it history);
+  - shared formatting and maths helpers;
+  - dead exports and dead save fields removed;
+  - long reducer cases moved into their systems;
+  - retroactive siting replaced.
+- **Seeded random generator in `GameState`.** Replace `Math.random` (65 calls in 17 files) and `crypto.randomUUID` (8 calls) with draws from it. The harness's monkey-patch goes away.
 - **Action log and replay.** Take `saveGame()` out of the reducer. A replay test proves a logged run reproduces exactly.
 - **Content validation.** New content goes in data files with a loader that validates it. Existing `src/data/*.ts` moves over opportunistically, starting with anything a later phase touches.
 - **Merged balance harness (V1-39).** V1's seven strategies, reference bands, scorecard and `--compare`, plus V2's seeds and guardrails: pacing minutes, sting, saturation, event variety, idle stops.
