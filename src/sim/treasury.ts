@@ -33,6 +33,7 @@ import {
 import { Rng } from './rng.ts';
 import { seatPayroll } from './seats.ts';
 import type { GameState } from './state.ts';
+import { tagTeeth } from './tags.ts';
 
 // THE TREASURY (DD §5). Money is the weather: every week the school takes
 // in and pays out along the categories of §5.1 and §5.2, the year runs
@@ -218,7 +219,7 @@ export function proposeBudget(
       programs:
         annualProgramCosts(state) +
         annualAthleticsCost(state) +
-        STUDENT_LIFE_PER_STUDENT * projectedEnrollment(state),
+        (STUDENT_LIFE_PER_STUDENT + tagTeeth(state, 'studentCost')) * projectedEnrollment(state),
     },
   };
 }
@@ -310,7 +311,7 @@ export function weeklyFlows(state: GameState): Flows {
   expenses.programs = Math.round(
     (annualProgramCosts(state) +
       annualAthleticsCost(state) +
-      STUDENT_LIFE_PER_STUDENT * enrolled(state)) /
+      (STUDENT_LIFE_PER_STUDENT + tagTeeth(state, 'studentCost')) * enrolled(state)) /
       WEEKS_PER_YEAR,
   );
   const service = weeklyDebtService(t);

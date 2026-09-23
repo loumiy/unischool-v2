@@ -9,6 +9,7 @@ import {
 import { openPlacements } from './estate.ts';
 import { detectQuads } from './quads.ts';
 import type { GameState } from './state.ts';
+import { tagTeeth } from './tags.ts';
 import { TERRAIN } from './terrain.ts';
 
 // CAMPUS BEAUTY (DD §6.2): a campus-wide score, 0–100, from greenery,
@@ -43,18 +44,20 @@ export function beautyTerms(state: GameState): BeautyTerms {
   const upkeep = open.length === 0 ? 1 : open.reduce((t, p) => t + p.condition, 0) / open.length;
   const quads = detectQuads(state.campus);
   const enclosure = Math.min(1, quads.reduce((t, q) => t + q.quality, 0) / QUAD_TARGET) * upkeep;
+  // Studios and galleries everywhere (Phase 43): an artsy college's own.
   const score =
+    tagTeeth(state, 'beauty') +
     100 *
-    (greenery * BEAUTY_WEIGHTS.greenery +
-      landmarks * BEAUTY_WEIGHTS.landmarks +
-      upkeep * BEAUTY_WEIGHTS.upkeep +
-      enclosure * BEAUTY_WEIGHTS.enclosure);
+      (greenery * BEAUTY_WEIGHTS.greenery +
+        landmarks * BEAUTY_WEIGHTS.landmarks +
+        upkeep * BEAUTY_WEIGHTS.upkeep +
+        enclosure * BEAUTY_WEIGHTS.enclosure);
   return {
     greenery,
     landmarks,
     upkeep,
     enclosure: Number(enclosure.toFixed(3)),
-    score: Number(score.toFixed(1)),
+    score: Number(Math.min(100, score).toFixed(1)),
   };
 }
 

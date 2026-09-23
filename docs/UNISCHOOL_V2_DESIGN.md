@@ -66,6 +66,8 @@ The founding hall is the player's first act, not a pre-placed fixture. Completin
 
 The player types only half the name. Every school opens as _"<Name> College"_: the second word is fixed at founding and carved into the facade on the startup screen rather than typed, so the institution reads as permanent without a caption saying so. Whether and how a school later becomes a _University_ is an event's business (§10.1), not the founding screen's.
 
+**The founding charter (amended in Phase 43).** Every college used to be founded the same way, and the review found three very different strategies converging on the same college with the same tags. The startup screen now asks what the founders meant it to be: a **Liberal Arts College**, a **Research University**, a **Polytechnic** or a **Land-Grant College** (content/charters.json). The charter is not a class and locks nothing. It makes one school cheaper to found (half the cost), one capital project cheaper (three quarters of the price) and one grand landmark cheaper (half). It leans the standings its way, by a few points on two axes, and a land-grant college's mission draws a tenth more applicants. That lean fades over the first 25 years to a third of itself, and never to nothing. The charter weights the world's questions by domain, and it nudges the guidebooks toward the tag it implies, which the college keeps only if it lives up to it. It also sets the second word of the name, still fixed at founding and carved into the facade: a research university is _Blackmoor University_ and a polytechnic _Blackmoor Polytechnic_. The other two stay _College_. A college founded before charters has none, and stays a College.
+
 ---
 
 ## §3. Time and the Calendar
@@ -402,6 +404,18 @@ Prestige is the long-term composite across six axes (kept from v1's report card)
 Separately from prestige, the school accrues **identity tags** derived from behavior: _Research Powerhouse, Teaching College, Party School, Jock School, Artsy, Commuter, Country Club, Pressure Cooker, The Bargain, Old Money._ Tags are earned and shed slowly, are visible ("what the guidebooks say"), shape the applicant pool (§8.2), color event selection and writing, and headline the final report's title. Identity is the mechanical answer to "a university that is uniquely theirs."
 
 **Identity, as built (Phase 24).** Each tag has an indicator, 0–1, read from the college at the turn of the year: research and teaching standings against each other, satisfaction against class quality, varsity teams and venues, the arts' share of a full catalogue, beds against students, sticker against the market with beauty, selectivity against satisfaction, net price against the market, and the endowment over time. Two years over 0.6 earns a tag; two years under 0.4 sheds it; a college is at most three things. Each tag moves the applicant pool's size and the admitted class's quality (content/identity-tags.json), and events may favour a tag (two and a half times as likely where the college holds it). Prestige moves the pool too, neutral at a founding college's standing and 0.8 more for every hundred points above it. A league school that climbs three places or more in a year may make one of the college's stars an outside offer, to counter at a quarter more salary for good or to let go; a school that falls as far sheds two strong faculty onto the next summer's market. Taking a star is the surest way to become a rival.
+
+**Tags with teeth, and builds that diverge (Phase 43).** A tag moved the applicant pool and nothing else, and every archetype earned "Artsy" because the arts open first in Founders Hall. Each tag now does one thing beyond the pool, written with it in content/identity-tags.json:
+
+- A research powerhouse wins a tenth more giving, and a country club fifteen per cent.
+- A teaching college loses a point less of each class a year, and a pressure cooker a point and a half more.
+- A party school pays $400 a student a year more on discipline and student life.
+- A jock school's teams are six points stronger.
+- An artsy college's campus is five points more beautiful.
+- A commuter college's students are two points less satisfied.
+- The bargain and old money raise the yield.
+
+Artsy now needs a large arts catalogue (two in five of eight or more programmes) and the buildings the arts live in, and Old Money needs a far larger endowment than it did. **One grand landmark to a college:** the Campanile, the Great Dome and the Triumphal Gate are a set, and a college builds one of the three, never two; its charter makes one of them half price. The dashboard plays the steward under each charter. The four finish with four different profiles and four different Final Report titles, and the three archetypes share no tag on any seed.
 
 ### §11.3 The league
 

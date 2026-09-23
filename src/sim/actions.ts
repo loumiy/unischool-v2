@@ -42,7 +42,6 @@ import {
   openProgram,
   openProgramIn,
   programOpeningCost,
-  schoolFoundingCost,
   schoolInHall,
 } from './academics.ts';
 import {
@@ -66,6 +65,8 @@ import {
   severanceFor,
 } from './faculty.ts';
 import { answerAmbition, answerDecade } from './ambitions.ts';
+import { buildCost, schoolFoundingCostFor } from './charter.ts';
+import { CHARTER_IDS, type CharterId } from '../content/charters.ts';
 import { findCampaign } from '../content/campaigns.ts';
 import { findSeat } from '../content/seats.ts';
 import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts';
@@ -93,7 +94,15 @@ export const PAINT_TOOLS = ['path', 'erasePath', 'plant', 'fell'] as const;
 export type PaintTool = (typeof PAINT_TOOLS)[number];
 
 export type Action =
-  | { type: 'found'; name: string; motif: Motif; paletteId: string; colors: SchoolColors }
+  | {
+      type: 'found';
+      name: string;
+      motif: Motif;
+      paletteId: string;
+      colors: SchoolColors;
+      // What the founders meant it to be (Phase 43); absent, none.
+      charter?: CharterId;
+    }
   // Ground is broken, paid in cash or borrowed (DD §5.2); absent, cash.
   | {
       type: 'placeBuilding';
@@ -205,6 +214,8 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (state.phase !== 'founding') return no('already founded');
       if (!isValidName(action.name)) return no('name is empty or too long');
       if (!MOTIFS.includes(action.motif)) return no(`unknown motif ${action.motif}`);
+      if (action.charter !== undefined && !CHARTER_IDS.includes(action.charter))
+        return no(`unknown charter ${action.charter}`);
       return YES;
     }
     case 'placeBuilding': {
@@ -225,6 +236,12 @@ export function canApply(state: GameState, action: Action): Verdict {
             : `the college has ${def.limit} of these already`,
         );
       }
+      // One grand landmark to a college (Phase 43).
+      if (
+        def.group &&
+        state.campus.placements.some((p) => findBuilding(p.buildingId)?.group === def.group)
+      )
+        return no('the college has its grand landmark');
       const { w, h } = orientedFootprint(def.footprint, action.rotated);
       const ground = groundRefusal(state.campus, def, action.col, action.row, w, h);
       if (ground) return no(ground);
@@ -240,7 +257,7 @@ export function canApply(state: GameState, action: Action): Verdict {
       const allowed = constructionAllowed(state);
       if (!allowed.ok) return no(allowed.reason);
       if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
-      if (!canPay(state, def.cost, financing)) {
+      if (!canPay(state, buildCost(state, def), financing)) {
         return no(
           financing === 'cash'
             ? 'not enough cash'
@@ -359,7 +376,8 @@ export function canApply(state: GameState, action: Action): Verdict {
         );
       const financing = action.financing ?? 'cash';
       if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
-      if (!canPay(state, schoolFoundingCost(), financing)) return no('not enough cash');
+      if (!canPay(state, schoolFoundingCostFor(state, action.schoolId), financing))
+        return no('not enough cash');
       return YES;
     }
     case 'openProgram': {
@@ -553,6 +571,7 @@ export function applyAction(state: GameState, action: Action): GameState {
             motif: action.motif,
             paletteId: action.paletteId,
             colors: { ...action.colors },
+            charter: action.charter ?? null,
           },
         },
         { kind: 'founded', name, motif: action.motif },
@@ -584,7 +603,7 @@ export function applyAction(state: GameState, action: Action): GameState {
         condition: 1,
       };
       const opening = state.phase === 'siting';
-      const paid = pay(state, def.cost, action.financing ?? 'cash');
+      const paid = pay(state, buildCost(state, def), action.financing ?? 'cash');
       let next = emit(
         {
           ...paid,

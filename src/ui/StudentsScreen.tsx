@@ -47,6 +47,7 @@ const TERMS: { key: keyof SatisfactionBreakdown; label: string; hint: string }[]
   { key: 'events', label: 'What happened', hint: PEOPLE_READINGS.eventsTerm },
   { key: 'conditions', label: 'The ladder', hint: PEOPLE_READINGS.conditions },
   { key: 'expectations', label: 'Expectations', hint: PEOPLE_READINGS.expectationsTerm },
+  { key: 'identity', label: 'What we are known for', hint: PEOPLE_READINGS.identityTerm },
   { key: 'returns', label: 'Near the top', hint: PEOPLE_READINGS.returnsTerm },
 ];
 

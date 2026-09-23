@@ -1,0 +1,88 @@
+{
+  "charters": [
+    {
+      "id": "liberal-arts",
+      "name": "Liberal Arts College",
+      "blurb": "Small classes, a great books seminar and a chapel bell. The founders believed a college should make people, not careers.",
+      "school": "arts-letters",
+      "project": "arts-centre",
+      "landmark": "campanile",
+      "demand": 0.95,
+      "lean": {
+        "academics": 6,
+        "experience": 8
+      },
+      "domains": {
+        "students": 1.3,
+        "academic": 1.1
+      },
+      "tag": "teaching-college",
+      "suffix": "College"
+    },
+    {
+      "id": "research-university",
+      "name": "Research University",
+      "blurb": "Laboratories before lawns. The founders wanted discoveries, and they expected the undergraduates to keep up.",
+      "school": "science",
+      "project": "medical-school",
+      "landmark": "great-dome",
+      "demand": 1,
+      "lean": {
+        "research": 12,
+        "academics": 2
+      },
+      "domains": {
+        "academic": 1.4,
+        "advancement": 1.1
+      },
+      "tag": "research-powerhouse",
+      "suffix": "University"
+    },
+    {
+      "id": "polytechnic",
+      "name": "Polytechnic",
+      "blurb": "Workshops, drawing offices and a motto about useful knowledge. The founders built bridges and wanted more people who could.",
+      "school": "engineering",
+      "project": "research-park",
+      "landmark": "great-dome",
+      "demand": 1,
+      "lean": {
+        "research": 6,
+        "academics": 6
+      },
+      "domains": {
+        "estate": 1.3,
+        "money": 1.1
+      },
+      "tag": "pressure-cooker",
+      "suffix": "Polytechnic"
+    },
+    {
+      "id": "land-grant",
+      "name": "Land-Grant College",
+      "blurb": "Founded on a public mission, with a farm, a football team and a promise that anyone who could do the work would be let in.",
+      "school": "health",
+      "project": "championship-stadium",
+      "landmark": "triumphal-gate",
+      "demand": 1.1,
+      "lean": {
+        "athletics": 8,
+        "access": 10
+      },
+      "domains": {
+        "board": 1.2,
+        "students": 1.1
+      },
+      "tag": "the-bargain",
+      "suffix": "College"
+    }
+  ],
+  "words": {
+    "title": "The founding charter",
+    "hint": "What the founders meant the college to be. It sets which school is cheaper to found, which capital project and grand landmark come at a discount, where the standings lean in the first decades, and the questions the world tends to ask. It is a college's first identity, not its last: the lean fades by Year 25.",
+    "school": "{school} founded at half the cost",
+    "project": "{project} at three quarters of the price",
+    "landmark": "{landmark} at half the price",
+    "tag": "Starts out on its way to being called {tag}"
+  }
+}
