@@ -595,3 +595,15 @@ export const ENDOWMENT_PROJECT_SHARE = 0.5;
 export const DECADE_YEARS = 10;
 export const DECADE_LIST = 3;
 export const DECADE_PICKS = 2;
+
+// FOUNDING CHARTERS (Phase 43). The charter's school is founded at this
+// share of the cost, its capital project and its grand landmark at theirs,
+// and its lean on the standings and the pool fades to nothing by this year.
+export const CHARTER_SCHOOL_SHARE = 0.5;
+export const CHARTER_PROJECT_SHARE = 0.75;
+export const CHARTER_LANDMARK_SHARE = 0.5;
+export const CHARTER_FADE_YEARS = 25;
+// ...to this floor for the lean on the standings and the tag, never to
+// nothing; and the charter's own tag's indicator is nudged by this much.
+export const CHARTER_LEAN_FLOOR = 0.35;
+export const CHARTER_TAG_NUDGE = 0.7;

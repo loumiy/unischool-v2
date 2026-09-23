@@ -55,6 +55,7 @@ describe('expectations', () => {
       b.events +
       b.conditions +
       b.expectations +
+      b.identity +
       b.returns;
     expect(b.total).toBeCloseTo(Math.min(100, Math.max(0, sum)), 0);
   });

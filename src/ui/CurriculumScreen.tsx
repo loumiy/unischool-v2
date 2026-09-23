@@ -37,7 +37,7 @@ import {
   enrolled,
   programOpeningCost,
   programQuality,
-  schoolFoundingCost,
+  schoolFoundingCostFor,
   signatureRoom,
   signatures,
   staffingNeed,
@@ -299,7 +299,7 @@ function SchoolGroup({
   );
   const [hallId, setHallId] = useState<string>('');
   const chosenHall = halls.find((h) => h.id === hallId) ?? halls[0] ?? null;
-  const cost = schoolFoundingCost();
+  const cost = schoolFoundingCostFor(state, school.id);
   const payWith = canPay(state, cost, financing) ? financing : affordableFinancing(state, cost);
   const iced = frozen(state);
   const open = school.programs.filter((p) => openProgram(state, p.id));

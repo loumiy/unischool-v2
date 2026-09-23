@@ -46,7 +46,8 @@
     "repOutcomes": "How the last four classes turned out: distinguished graduates count in full, placed graduates count for three fifths.",
     "repCondition": "The state of the buildings the students live and learn in.",
     "expectationsTerm": "What they were promised. A famous college is judged harder, and so is one whose price is above the market's. A bargain is forgiven a little.",
-    "returnsTerm": "Near the top, every point is harder to win: above 80, each further point counts for less than half a point."
+    "returnsTerm": "Near the top, every point is harder to win: above 80, each further point counts for less than half a point.",
+    "identityTerm": "What the guidebooks' tags do to how the students feel. A commuter college's students go home at five."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",

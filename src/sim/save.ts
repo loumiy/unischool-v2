@@ -741,6 +741,21 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v31 → v32 (Phase 43): the founding charter. A college founded before
+  // charters has none.
+  31: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const identity = state.identity as Record<string, unknown> | null | undefined;
+    return {
+      ...raw,
+      version: 32,
+      state: {
+        ...state,
+        identity: identity ? { charter: null, ...identity } : (identity ?? null),
+        schemaVersion: 32,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

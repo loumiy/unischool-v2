@@ -40,3 +40,4 @@ export * from './chronicle.ts';
 export * from './ending.ts';
 export * from './notes.ts';
 export * from './reputation.ts';
+export * from './charter.ts';

@@ -1,9 +1,10 @@
-import { TAG_IDS, tagById, type TagId } from '../content/identityTags.ts';
+import { TAG_IDS, tagById, type TagId, type TagLever } from '../content/identityTags.ts';
 import { buildingById } from '../content/buildings.ts';
 import { programById } from '../content/schools.ts';
 import { MARKET_TUITION, TAG_EARN_AT, TAG_LIMIT, TAG_SHED_AT, TAG_YEARS } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { campusBeauty } from './beauty.ts';
+import { charterTagNudge } from './charter.ts';
 import { openPlacements } from './estate.ts';
 import { teachingQuality } from './faculty.ts';
 import { campusCapacity, enrolled, marketNetTuition, netTuition } from './people.ts';
@@ -65,13 +66,14 @@ export function tagIndicators(state: GameState): Record<TagId, number> {
         (venues / 4) * 0.2 +
         (axes.athletics / 100) * 0.4,
     ),
-    // A college of three arts programmes is not "artsy"; one whose arts are
-    // a third or more of a full catalogue, with the buildings, is.
-    artsy: clamp01(
-      (((programs.length ? arts / programs.length : 0) - 0.2) / 0.2) *
-        Math.min(1, programs.length / 8) +
-        artsBuildings * 0.15,
-    ),
+    // A college of three arts programmes is not "artsy", and neither is one
+    // that opened Arts & Letters first because it opens in Founders Hall
+    // (Phase 43). Artsy is a large arts catalogue — two in five of eight or
+    // more programmes — with the buildings the arts live in.
+    artsy:
+      clamp01(((programs.length ? arts / programs.length : 0) - 0.3) / 0.15) *
+      clamp01((programs.length - 6) / 4) *
+      clamp01(artsBuildings / 2),
     commuter: students > 0 ? clamp01((students - beds) / Math.max(1, students) / 0.3) : 0,
     'country-club': clamp01(
       ((state.people.terms.tuition / MARKET_TUITION - 1.05) / 0.25) *
@@ -80,8 +82,10 @@ export function tagIndicators(state: GameState): Record<TagId, number> {
     'pressure-cooker': clamp01((selectivity - 0.45) / 0.25) * clamp01((58 - satisfaction) / 12),
     'the-bargain': clamp01((1 - net / market - 0.1) / 0.25) * (quality >= 45 ? 1 : 0.4),
     'old-money':
-      clamp01((state.treasury.endowment / 1e6 - 250) / 350) * clamp01(state.clock.year / 20),
+      clamp01((state.treasury.endowment / 1e6 - 400) / 400) * clamp01(state.clock.year / 25),
   };
+  // The founders' intent (Phase 43): the charter's own tag is nearer.
+  for (const id of TAG_IDS) out[id] = clamp01(out[id] + charterTagNudge(state, id));
   if (!started) for (const id of TAG_IDS) out[id] = 0;
   for (const id of TAG_IDS) out[id] = Number(out[id].toFixed(3));
   return out;
@@ -128,6 +132,17 @@ export function hasTag(state: GameState, id: TagId): boolean {
 // shift, from what the guidebooks say.
 export function tagPoolFactor(state: GameState): number {
   return 1 + state.perception.tags.reduce((t, id) => t + tagById(id).size, 0);
+}
+
+// What the tags the college holds do beyond the pool (Phase 43), summed
+// by lever.
+export function tagTeeth(state: GameState, lever: TagLever): number {
+  // An old save being migrated is read before it has any perception.
+  const tags = (state.perception as GameState['perception'] | undefined)?.tags ?? [];
+  return tags.reduce((t, id) => {
+    const teeth = tagById(id).teeth;
+    return teeth.lever === lever ? t + teeth.amount : t;
+  }, 0);
 }
 
 export function tagQualityShift(state: GameState): number {

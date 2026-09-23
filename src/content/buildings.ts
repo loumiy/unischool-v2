@@ -151,6 +151,8 @@ export interface BuildingDef {
   // what it does to the college's standings once it opens, as points on
   // the year's axis readings (prestige.ts).
   project?: ProjectTerms;
+  // A set of which a college builds one (Phase 43): the grand landmarks.
+  group?: 'grand';
 }
 
 export const PROJECT_AXES = ['academics', 'research', 'experience', 'athletics'] as const;
@@ -203,6 +205,7 @@ const schema = obj({
       ground: optional(oneOf(GROUNDS)),
       icon: oneOf(BUILDING_ICONS),
       blurb: optional(str),
+      group: optional(oneOf(['grand'] as const)),
       project: optional(
         obj({
           fromYear: int,

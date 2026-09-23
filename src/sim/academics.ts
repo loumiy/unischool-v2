@@ -20,6 +20,7 @@ import {
   SIGNATURE_DECAY_CONFIDENCE,
   SIGNATURE_LIMIT,
 } from '../tuning.ts';
+import { schoolFoundingCostFor } from './charter.ts';
 import { emit } from './bus.ts';
 import type { Placement } from './campus.ts';
 import { pay, type Financing } from './estate.ts';
@@ -145,7 +146,7 @@ export function foundSchool(
 ): GameState {
   const school = schoolById(schoolId);
   const hall = state.campus.placements.find((p) => p.id === placementId)!;
-  const paid = pay(state, SCHOOL_FOUNDING_COST, financing);
+  const paid = pay(state, schoolFoundingCostFor(state, schoolId), financing);
   const founded: FoundedSchool = {
     schoolId: school.id,
     placementId,

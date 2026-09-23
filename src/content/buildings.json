@@ -1115,6 +1115,79 @@
         }
       },
       "blurb": "A concert hall, two theatres and a foyer with opinions about acoustics: four years of works. Student life, applicants and the experience standing all gain."
+    },
+    {
+      "id": "campanile",
+      "name": "Campanile",
+      "category": "landmark",
+      "group": "grand",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "cost": 7000000,
+      "upkeep": 60000,
+      "buildWeeks": 40,
+      "beauty": 7,
+      "capacity": {
+        "draw": 2
+      },
+      "form": "tower",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "tower",
+      "limit": 1,
+      "blurb": "A grand landmark: a tall bell tower on the skyline, seen from the road and from every quad. A college builds one of the three grand landmarks, never two."
+    },
+    {
+      "id": "great-dome",
+      "name": "Great Dome",
+      "category": "landmark",
+      "group": "grand",
+      "footprint": {
+        "w": 5,
+        "h": 5
+      },
+      "cost": 9000000,
+      "upkeep": 90000,
+      "buildWeeks": 48,
+      "beauty": 7,
+      "capacity": {
+        "draw": 2,
+        "life": 150
+      },
+      "form": "observatory",
+      "material": "limestone",
+      "storeys": 2,
+      "door": "civic",
+      "icon": "observatory",
+      "limit": 1,
+      "blurb": "A grand landmark: a rotunda under a great dome, and a reading room under that. A college builds one of the three grand landmarks, never two."
+    },
+    {
+      "id": "triumphal-gate",
+      "name": "Triumphal Gate",
+      "category": "landmark",
+      "group": "grand",
+      "footprint": {
+        "w": 5,
+        "h": 1
+      },
+      "cost": 6000000,
+      "upkeep": 40000,
+      "buildWeeks": 36,
+      "beauty": 7,
+      "capacity": {
+        "draw": 2
+      },
+      "form": "gate",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "gate",
+      "limit": 1,
+      "blurb": "A grand landmark: an arch the whole college processes through at Commencement. A college builds one of the three grand landmarks, never two."
     }
   ]
 }

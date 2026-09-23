@@ -13,6 +13,7 @@ import { ESTATE_WORDS, providesLine } from '../content/treasury.ts';
 import {
   beautyTerms,
   borrowingRoom,
+  buildCost,
   canPay,
   type Financing,
   FINANCINGS,
@@ -197,20 +198,32 @@ function BuildTile({
   // Hall always has, instead of offering a second of something no
   // university has two of.
   const count = builtCount(state.campus, def.id);
+  // One grand landmark to a college (Phase 43): the other two read as
+  // spoken for once it has its own.
+  const grandTaken =
+    def.group !== undefined &&
+    count === 0 &&
+    state.campus.placements.some((p) => buildingById(p.buildingId).group === def.group);
   const placed =
     (isFounders && hasFoundersHall(state.campus)) ||
-    (def.limit !== undefined && count >= def.limit);
+    (def.limit !== undefined && count >= def.limit) ||
+    grandTaken;
   // The endowment pays for capital projects only, and a project waits for
   // its year (Phase 42).
   const payWith = financing === 'endowment' && !def.project ? 'cash' : financing;
   const early = def.project !== undefined && state.clock.year < def.project.fromYear;
-  const affordable = !early && canPay(state, def.cost, payWith);
+  const cost = buildCost(state, def);
+  const affordable = !early && canPay(state, cost, payWith);
   if (placed) {
     return (
       <div
         className="build-tile done"
         title={
-          def.limit === 1 ? `${def.name} · the college has one` : `${def.name} · ${count} standing`
+          grandTaken
+            ? `${def.name} · the college has its grand landmark`
+            : def.limit === 1
+              ? `${def.name} · the college has one`
+              : `${def.name} · ${count} standing`
         }
       >
         <span className="build-tile-icon">
@@ -218,7 +231,11 @@ function BuildTile({
         </span>
         <span className="build-tile-name">{def.name}</span>
         <span className="build-tile-foot">
-          {def.limit && def.limit > 1 ? `✓ ${count} standing` : '✓ standing'}
+          {grandTaken
+            ? 'another stands'
+            : def.limit && def.limit > 1
+              ? `✓ ${count} standing`
+              : '✓ standing'}
         </span>
       </div>
     );
@@ -231,10 +248,10 @@ function BuildTile({
       : payWith === 'endowment'
         ? `The board will release at most ${formatMoney(state.treasury.endowment * ENDOWMENT_PROJECT_SHARE)} of the endowment.`
         : payWith === 'gift'
-          ? `Not enough restricted building money for ${formatMoney(def.cost)}.`
+          ? `Not enough restricted building money for ${formatMoney(cost)}.`
           : payWith === 'cash'
-            ? `Not enough cash: ${formatMoney(def.cost)} to build.`
-            : `The board will not lend ${formatMoney(def.cost)} more.`;
+            ? `Not enough cash: ${formatMoney(cost)} to build.`
+            : `The board will not lend ${formatMoney(cost)} more.`;
   return (
     <button
       type="button"
@@ -256,7 +273,10 @@ function BuildTile({
         {def.footprint.w}×{def.footprint.h} tiles · {def.buildWeeks} wks
       </span>
       <span className="build-tile-gives">{providesLine(def)}</span>
-      <span className="build-tile-price">{formatMoney(def.cost)}</span>
+      <span className="build-tile-price">
+        {formatMoney(cost)}
+        {cost < def.cost && <span className="build-tile-was"> (was {formatMoney(def.cost)})</span>}
+      </span>
       <span className="build-tile-foot">
         {armed
           ? 'placing…'
@@ -319,7 +339,7 @@ export default function BuildPopup({
           <span className="build-holding-name">
             {fillWords(ESTATE_WORDS.holding, {
               building: def.name,
-              cost: formatMoney(def.cost),
+              cost: formatMoney(buildCost(state, def)),
               pay: ESTATE_WORDS.pay[financing],
             })}
           </span>

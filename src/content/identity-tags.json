@@ -6,7 +6,12 @@
       "blurb": "The papers come out faster than the undergraduates.",
       "size": 0.05,
       "quality": 3,
-      "why": "The research is strong, and stronger than the teaching."
+      "why": "The research is strong, and stronger than the teaching.",
+      "teeth": {
+        "lever": "giving",
+        "amount": 0.1,
+        "line": "Grants and gifts follow the papers: a tenth more giving each year."
+      }
     },
     {
       "id": "teaching-college",
@@ -14,7 +19,12 @@
       "blurb": "Small classes, and professors who know your name.",
       "size": 0,
       "quality": 2,
-      "why": "The teaching is strong, and stronger than the research."
+      "why": "The teaching is strong, and stronger than the research.",
+      "teeth": {
+        "lever": "attrition",
+        "amount": -0.01,
+        "line": "Students who are known by name stay: one point less attrition a year."
+      }
     },
     {
       "id": "party-school",
@@ -22,7 +32,12 @@
       "blurb": "Thursday is the weekend.",
       "size": 0.1,
       "quality": -4,
-      "why": "The students are happy, and the classes they arrive in are not the most demanding."
+      "why": "The students are happy, and the classes they arrive in are not the most demanding.",
+      "teeth": {
+        "lever": "studentCost",
+        "amount": 400,
+        "line": "The college pays for the parties: $400 a student a year more on discipline and student life."
+      }
     },
     {
       "id": "jock-school",
@@ -30,7 +45,12 @@
       "blurb": "The stadium is the biggest building on campus, and everyone knows the fight song.",
       "size": 0.08,
       "quality": -2,
-      "why": "The teams and their venues are what the college is known for."
+      "why": "The teams and their venues are what the college is known for.",
+      "teeth": {
+        "lever": "athletics",
+        "amount": 6,
+        "line": "Recruits want to play here: every team six points stronger."
+      }
     },
     {
       "id": "artsy",
@@ -38,7 +58,12 @@
       "blurb": "Studios open all night and a gallery in every stairwell.",
       "size": -0.03,
       "quality": 1,
-      "why": "The arts: their programmes, their buildings, their share of the campus."
+      "why": "The arts: their programmes, their buildings, their share of the campus.",
+      "teeth": {
+        "lever": "beauty",
+        "amount": 5,
+        "line": "Studios and galleries everywhere: five points of campus beauty."
+      }
     },
     {
       "id": "commuter",
@@ -46,7 +71,12 @@
       "blurb": "Most of the students go home at five.",
       "size": 0.05,
       "quality": -3,
-      "why": "Too few beds for the students: most of them go home at night."
+      "why": "Too few beds for the students: most of them go home at night.",
+      "teeth": {
+        "lever": "satisfaction",
+        "amount": -2,
+        "line": "Nobody stays after five: two points off every class's satisfaction."
+      }
     },
     {
       "id": "country-club",
@@ -54,7 +84,12 @@
       "blurb": "Beautiful grounds, a long waiting list, and a lot of sailing.",
       "size": -0.05,
       "quality": 2,
-      "why": "A dear sticker, little aid, and a beautiful campus."
+      "why": "A dear sticker, little aid, and a beautiful campus.",
+      "teeth": {
+        "lever": "giving",
+        "amount": 0.15,
+        "line": "Old boys write cheques: fifteen per cent more giving each year."
+      }
     },
     {
       "id": "pressure-cooker",
@@ -62,7 +97,12 @@
       "blurb": "The library never closes, and nobody leaves it.",
       "size": -0.05,
       "quality": 4,
-      "why": "Very selective, and the students are not happy about it."
+      "why": "Very selective, and the students are not happy about it.",
+      "teeth": {
+        "lever": "attrition",
+        "amount": 0.015,
+        "line": "Not everyone lasts: one and a half points more attrition a year."
+      }
     },
     {
       "id": "the-bargain",
@@ -70,7 +110,12 @@
       "blurb": "A good degree at a price a family can say out loud.",
       "size": 0.12,
       "quality": -1,
-      "why": "A net price well under the market's, for a respectable class."
+      "why": "A net price well under the market's, for a respectable class.",
+      "teeth": {
+        "lever": "yield",
+        "amount": 0.04,
+        "line": "Families say yes: four points more of the admitted accept."
+      }
     },
     {
       "id": "old-money",
@@ -78,7 +123,12 @@
       "blurb": "Endowed before anyone alive was born, and dressed for it.",
       "size": 0.06,
       "quality": 3,
-      "why": "A large endowment, held a long time."
+      "why": "A large endowment, held a long time.",
+      "teeth": {
+        "lever": "yield",
+        "amount": 0.03,
+        "line": "A name that opens doors: three points more of the admitted accept."
+      }
     }
   ],
   "words": {

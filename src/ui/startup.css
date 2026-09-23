@@ -162,3 +162,25 @@
   font-weight: 700;
   color: var(--ink);
 }
+
+/* The founding charter (Phase 43): the motif chips' register, and one
+   line on what it means. */
+.startup-charters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.startup-charter-blurb {
+  margin: 8px 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+  text-align: center;
+}
+.startup-charter-terms {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+}

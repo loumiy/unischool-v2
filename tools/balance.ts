@@ -7,6 +7,7 @@
 //   npm run balance -- --json           # machine-readable
 
 import { buildingById } from '../src/content/buildings.ts';
+import { charterById, CHARTER_IDS, type CharterId } from '../src/content/charters.ts';
 import { DEFAULT_PALETTE } from '../src/content/palettes.ts';
 import { findProgram, PROGRAMS, SCHOOLS } from '../src/content/schools.ts';
 import { CAMPAIGNS } from '../src/content/campaigns.ts';
@@ -44,6 +45,8 @@ interface Archetype {
   blurb: string;
   play: Play;
   resolve?: (s: GameState) => Action | null;
+  // The founding charter it would choose (Phase 43).
+  charter: CharterId;
 }
 
 function tryAction(run: Run, action: Action): Run {
@@ -105,7 +108,14 @@ const PROJECT_ORDER = [
 
 function projectsOpenToBuild(state: GameState): string[] {
   const y = state.clock.year;
-  return PROJECT_ORDER.filter(
+  // Its charter's project first (Phase 43).
+  const charter = state.identity?.charter;
+  const own = charter ? charterById(charter).project : null;
+  const wanted = charter ? CHARTER_PLAY[charter].projects : PROJECT_ORDER;
+  const order = [...PROJECT_ORDER]
+    .filter((id) => wanted.includes(id))
+    .sort((a, b) => Number(b === own) - Number(a === own));
+  return order.filter(
     (id) => has(state, id) === 0 && (buildingById(id).project?.fromYear ?? 99) <= y,
   );
 }
@@ -135,7 +145,9 @@ function projectAffordable(state: GameState): boolean {
     (p) => p.status === 'building' && buildingById(p.buildingId).project,
   );
   // A college with every project standing has nothing left to want.
-  const allBuilt = PROJECT_ORDER.every((id) => has(state, id) > 0);
+  const charter = state.identity?.charter;
+  const wanted = charter ? CHARTER_PLAY[charter].projects : PROJECT_ORDER;
+  const allBuilt = wanted.every((id) => has(state, id) > 0);
   return (
     underway ||
     allBuilt ||
@@ -192,7 +204,10 @@ function academicYear(run: Run, maxPrograms: number, cashFloor: number, ambition
     for (const p of r.state.academics.programs)
       r = tryAction(r, { type: 'designateSignature', programId: p.programId });
   }
-  for (const school of SCHOOLS) {
+  // A college plays its charter (Phase 43): its own school first.
+  const own = r.state.identity?.charter ? charterById(r.state.identity.charter).school : null;
+  const schools = [...SCHOOLS].sort((a, b) => Number(b.id === own) - Number(a.id === own));
+  for (const school of schools) {
     for (const p of r.state.campus.placements) {
       const a = { type: 'foundSchool', schoolId: school.id, placementId: p.id } as const;
       if (canApply(r.state, a).ok && r.state.treasury.cash > cashFloor) {
@@ -201,7 +216,10 @@ function academicYear(run: Run, maxPrograms: number, cashFloor: number, ambition
       }
     }
   }
-  for (const program of PROGRAMS) {
+  const programs = [...PROGRAMS].sort(
+    (a, b) => Number(b.schoolId === own) - Number(a.schoolId === own),
+  );
+  for (const program of programs) {
     if (r.state.academics.programs.length >= maxPrograms) break;
     if (r.state.treasury.cash < cashFloor) break;
     r = tryAction(r, { type: 'openProgram', programId: program.id });
@@ -263,8 +281,30 @@ function renovate(run: Run, below: number, cashFloor: number): Run {
   return r;
 }
 
+// HOW A STEWARD PLAYS EACH CHARTER (Phase 43): the one policy, pointed where
+// the founders pointed it. A land-grant college fields teams and keeps its
+// price down; a polytechnic is choosy; the others leave the teams to later
+// colleges and set their terms at the default.
+const CHARTER_PLAY: Record<
+  CharterId,
+  { teams: boolean; tuition?: number; selectivity?: number; projects: string[] }
+> = {
+  'liberal-arts': { teams: false, projects: ['arts-centre', 'great-lawn'] },
+  'research-university': {
+    teams: false,
+    projects: ['medical-school', 'research-park', 'great-lawn'],
+  },
+  polytechnic: { teams: false, selectivity: 0.72, projects: ['research-park', 'great-lawn'] },
+  'land-grant': {
+    teams: true,
+    tuition: 30_000,
+    projects: ['championship-stadium', 'great-lawn', 'arts-centre'],
+  },
+};
+
 const STEWARD: Archetype = {
   id: 'steward',
+  charter: 'research-university',
   blurb: 'builds to need, staffs every programme, delegates on schedule, fields teams',
   play: (run, week) => {
     let r = staff(run, 200);
@@ -295,8 +335,11 @@ const STEWARD: Archetype = {
             from: { kind: 'outside' },
           });
       for (const c of CAMPAIGNS) r = tryAction(r, { type: 'launchCampaign', campaignId: c.id });
-      for (const sportId of ['rowing', 'soccer', 'basketball'])
-        r = tryAction(r, { type: 'setVarsity', sportId, on: true });
+      // Teams where the charter wants them (Phase 43).
+      const charter = r.state.identity?.charter;
+      if (!charter || CHARTER_PLAY[charter].teams)
+        for (const sportId of ['rowing', 'soccer', 'basketball'])
+          r = tryAction(r, { type: 'setVarsity', sportId, on: true });
     }
     return r;
   },
@@ -304,6 +347,7 @@ const STEWARD: Archetype = {
 
 const GROWTH: Archetype = {
   id: 'growth',
+  charter: 'land-grant',
   blurb:
     'builds fast on debt, opens everything, delegates early — and pulls back when the board does',
   play: (run, week) => {
@@ -332,6 +376,7 @@ const GROWTH: Archetype = {
 
 const FRUGAL: Archetype = {
   id: 'frugal',
+  charter: 'liberal-arts',
   blurb: 'builds only what the students need, a small faculty, no administration',
   play: (run, week) => {
     let r = staff(run, 24);
@@ -369,6 +414,8 @@ interface Report {
   placementShare: number;
   spans: number[]; // minutes per §2.2 span
   mark: string;
+  title: string; // the Final Report's (Phase 43)
+  charter: CharterId;
   rank: number | null;
   enrolled: number;
   faculty: number;
@@ -459,8 +506,8 @@ function demandResponse(
   return pa > 0 ? (pb - pa) / pa : null;
 }
 
-export function measure(a: Archetype, seed: number): Report {
-  let run = dispatch(dispatch(newRun(seed), FOUND), {
+export function measure(a: Archetype, seed: number, charter: CharterId = a.charter): Report {
+  let run = dispatch(dispatch(newRun(seed), { ...FOUND, charter }), {
     type: 'placeBuilding',
     buildingId: 'founders-hall',
     col: 28,
@@ -479,9 +526,18 @@ export function measure(a: Archetype, seed: number): Report {
   let heard = 0;
   // A player answers the question on the strip when it arrives, as the
   // stated default unless they have a reason not to.
+  const play = CHARTER_PLAY[charter];
   const resolve =
     a.resolve ??
     ((st: GameState): Action | null => {
+      // Admissions set the way the charter would (Phase 43).
+      if (st.pendingBeat === 'admissions-day' && (play.tuition || play.selectivity))
+        return {
+          type: 'resolveBeat',
+          beatId: 'admissions-day',
+          ...(play.tuition ? { tuition: play.tuition } : {}),
+          ...(play.selectivity ? { selectivity: play.selectivity } : {}),
+        };
       const inline = pendingInline(st);
       if (inline)
         return {
@@ -597,6 +653,8 @@ export function measure(a: Archetype, seed: number): Report {
     placementShare: Math.abs(placementSatisfaction(s).applied) / (PLACEMENT_CAP * 100),
     spans: spans.map((m) => Number(m.toFixed(0))),
     mark: s.ending.report?.mark ?? '—',
+    title: s.ending.report?.title ?? '—',
+    charter,
     rank: table ? rankOf(table) : null,
     enrolled: enrolled(s),
     faculty: s.faculty.roster.length,
@@ -684,6 +742,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       console.log(
         `seed ${seed}: tags every archetype earned: ${shared.join(', ') || 'none'} ${shared.length === 0 ? 'ok' : 'OUT'}`,
       );
+    }
+    // The steward under each charter, seed 4 (Phase 43): four colleges, not
+    // one college four times.
+    console.log('\nsteward by charter, seed 4, Year 50');
+    for (const c of CHARTER_IDS) {
+      const r = c === STEWARD.charter ? reports[0]! : measure(STEWARD, 4, c);
+      const axes = Object.entries(r.axes)
+        .map(([k, v]) => `${k.slice(0, 4)} ${Math.round(v as number)}`)
+        .join(' ');
+      console.log(`  ${c.padEnd(20)} ${axes} · ${r.mark} · "${r.title}" · ${r.tags.join(',')}`);
     }
   }
 }

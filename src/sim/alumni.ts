@@ -29,6 +29,7 @@ import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
 import { RUNG_AUSTERITY, RUNG_FREEZE, RUNG_RECEIVERSHIP } from './distress.ts';
 import type { AlumniClass, Cohort, Outcomes } from './people.ts';
 import type { GameState } from './state.ts';
+import { tagTeeth } from './tags.ts';
 
 // THE ALUMNI LEDGER (DD §8.4): the game's long memory. A class is stamped
 // at graduation with one line about its four years — read off the journal
@@ -226,7 +227,8 @@ export function buildingGivingFactor(state: GameState): number {
 
 export function annualGiving(state: GameState): number {
   const base = state.people.alumni.reduce((t, a) => t + givingOf(a, state.clock.year), 0);
-  return Math.round(base * buildingGivingFactor(state));
+  // Old boys and grant officers (Phase 43): what the tags do for giving.
+  return Math.round(base * buildingGivingFactor(state) * (1 + tagTeeth(state, 'giving')));
 }
 
 // ---------- reunions (DD §8.4) ----------

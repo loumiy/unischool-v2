@@ -26,6 +26,7 @@ import {
 } from '../tuning.ts';
 import { campusBeauty } from './beauty.ts';
 import { emit } from './bus.ts';
+import { charterDomainWeight } from './charter.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { conditionFor, openPlacements, totalBacklog } from './estate.ts';
 import { GRID_HEIGHT, GRID_WIDTH, tileIsOpen } from './campus.ts';
@@ -261,7 +262,10 @@ export function eligible(state: GameState, kind: EventDef['kind']): EventDef[] {
 export function weightOf(def: EventDef, state?: GameState): number {
   const earned = def.weight * Math.pow(EVENT_CONSEQUENCE_WEIGHT, Object.keys(def.when).length);
   const known = state && def.favours.some((t) => state.perception.tags.includes(t));
-  return known ? earned * EVENT_TAG_WEIGHT : earned;
+  // The world asks a college what its charter makes it likely to be asked
+  // (Phase 43).
+  const chartered = state ? charterDomainWeight(state, def.domain) : 1;
+  return (known ? earned * EVENT_TAG_WEIGHT : earned) * chartered;
 }
 
 export function pickEvent(rng: Rng, pool: EventDef[], state?: GameState): EventDef | null {

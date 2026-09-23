@@ -54,9 +54,10 @@ import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import { varsityLife } from './athletics.ts';
 import { placementCapacity } from './lateGame.ts';
+import { charterDemand } from './charter.ts';
 import { collegePrestige, prestigePoolFactor } from './prestige.ts';
 import { reputationPoolFactor, reputationYear, reputationYieldFactor } from './reputation.ts';
-import { tagPoolFactor, tagQualityShift } from './tags.ts';
+import { tagPoolFactor, tagQualityShift, tagTeeth } from './tags.ts';
 import {
   nameNewcomers,
   tellGraduationBeats,
@@ -357,14 +358,19 @@ export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissio
       buildingDrawFactor(state) *
       prestigePoolFactor(state) *
       tagPoolFactor(state) *
-      reputationPoolFactor(state),
+      reputationPoolFactor(state) *
+      charterDemand(state),
   );
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
+  // The families who say yes: reputation (Phase 37) and a name that opens
+  // doors (Phase 43's tags).
   const yr = Number(
-    Math.min(0.95, yieldRate(terms, state.people.aidRate) * reputationYieldFactor(state)).toFixed(
-      4,
-    ),
+    Math.min(
+      0.95,
+      yieldRate(terms, state.people.aidRate) * reputationYieldFactor(state) +
+        tagTeeth(state, 'yield'),
+    ).toFixed(4),
   );
   const wanted = Math.round(admitted * yr);
   const cap = intakeCap(state);
@@ -465,6 +471,9 @@ export interface SatisfactionBreakdown {
   // What they were promised (Phase 37b/38): a dear, famous college is
   // judged harder than a cheap new one.
   expectations: number;
+  // What the college is known for (Phase 43): a commuter college's
+  // students go home at five.
+  identity: number;
   // Near the top every point is harder won (Phase 38): what the sum lost
   // to diminishing returns, zero or less.
   returns: number;
@@ -500,6 +509,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     events: state.people.mood,
     conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
     expectations: expectationsTerm(state),
+    identity: tagTeeth(state, 'satisfaction'),
   };
   const sum =
     b.base +
@@ -513,7 +523,8 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     b.life +
     b.events +
     b.conditions +
-    b.expectations;
+    b.expectations +
+    b.identity;
   const soft = diminished(sum);
   return {
     ...b,
@@ -659,7 +670,13 @@ export function arrive(state: GameState): GameState {
   let left = 0;
   const cohorts = p.cohorts.map((c) => {
     const quality = driftedQuality(c.quality, teaching);
-    const gone = Math.round(c.size * attritionRate(satisfaction, quality));
+    const gone = Math.round(
+      c.size *
+        Math.min(
+          1,
+          Math.max(0, attritionRate(satisfaction, quality) + tagTeeth(state, 'attrition')),
+        ),
+    );
     left += gone;
     return { ...c, size: c.size - gone, satisfaction, quality };
   });

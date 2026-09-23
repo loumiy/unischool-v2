@@ -1,4 +1,5 @@
 import { buildingById } from '../content/buildings.ts';
+import type { CharterId } from '../content/charters.ts';
 import { useEffect, useRef, useState } from 'react';
 import { describeEntry } from '../content/busLines.ts';
 import type { PaletteChoice } from '../content/palettes.ts';
@@ -293,13 +294,14 @@ export default function App() {
     return (
       <>
         <StartupScreen
-          onStart={(name: string, motif: Motif, palette: PaletteChoice) => {
+          onStart={(name: string, motif: Motif, palette: PaletteChoice, charter: CharterId) => {
             const applied = store.dispatch({
               type: 'found',
               name,
               motif,
               paletteId: palette.id,
               colors: { primary: palette.primary, secondary: palette.secondary },
+              charter,
             });
             if (applied) void autosave(store.getSnapshot().run!);
           }}

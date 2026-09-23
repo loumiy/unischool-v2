@@ -2,7 +2,17 @@ import { readHall } from './persistence.ts';
 import { useEffect, useState } from 'react';
 import { DEFAULT_MOTIF, MOTIF_CHOICES } from '../content/motifs.ts';
 import { DEFAULT_PALETTE, PALETTES, type PaletteChoice } from '../content/palettes.ts';
-import { INSTITUTION_SUFFIX, isValidName, type Motif, type SchoolColors } from '../sim/index.ts';
+import {
+  INSTITUTION_SUFFIX,
+  institutionSuffix,
+  isValidName,
+  type Motif,
+  type SchoolColors,
+} from '../sim/index.ts';
+import { CHARTER_WORDS, CHARTERS, charterById, type CharterId } from '../content/charters.ts';
+import { buildingById } from '../content/buildings.ts';
+import { schoolById } from '../content/schools.ts';
+import { fillWords } from '../content/people.ts';
 import { MOTIF_SPECS, shade } from './motifSpec.ts';
 import { applySchoolColors } from './theme.ts';
 
@@ -59,12 +69,15 @@ export function SchoolFacade({
   name,
   motif,
   colors,
+  suffixWord = INSTITUTION_SUFFIX,
 }: {
   name: string;
   motif: Motif;
   colors: SchoolColors;
+  // The second word of the name (Phase 43: a charter may set it).
+  suffixWord?: string;
 }) {
-  const suffix = INSTITUTION_SUFFIX.toUpperCase();
+  const suffix = suffixWord.toUpperCase();
   const bannerText = name.trim() ? `${name.trim().toUpperCase()} ${suffix}` : suffix;
   const fontSize = bannerFontSize(bannerText.length);
   const compress = bannerText.length * fontSize * AVG_GLYPH_WIDTH_EM > TEXT_WIDTH;
@@ -425,9 +438,12 @@ export function SchoolFacade({
 export default function StartupScreen({
   onStart,
 }: {
-  onStart: (name: string, motif: Motif, palette: PaletteChoice) => void;
+  onStart: (name: string, motif: Motif, palette: PaletteChoice, charter: CharterId) => void;
 }) {
   const [name, setName] = useState('');
+  // What the founders meant it to be (Phase 43).
+  const [charter, setCharter] = useState<CharterId>('liberal-arts');
+  const chosen = charterById(charter);
   const [motif, setMotif] = useState<Motif>(DEFAULT_MOTIF);
   const [palette, setPalette] = useState<PaletteChoice>(DEFAULT_PALETTE);
   const [hallRuns, setHallRuns] = useState(0);
@@ -461,8 +477,36 @@ export default function StartupScreen({
           autoFocus
         />
         <div className="startup-facade">
-          <SchoolFacade name={name} motif={motif} colors={colors} />
+          <SchoolFacade
+            name={name}
+            motif={motif}
+            colors={colors}
+            suffixWord={institutionSuffix(charter)}
+          />
         </div>
+        <div className="startup-charters" role="radiogroup" aria-label={CHARTER_WORDS.title}>
+          {CHARTERS.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              role="radio"
+              className={`startup-motif-btn ${charter === c.id ? 'active' : ''}`}
+              aria-checked={charter === c.id}
+              title={c.blurb}
+              onClick={() => setCharter(c.id)}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+        <p className="startup-charter-blurb" title={CHARTER_WORDS.hint}>
+          {chosen.blurb}{' '}
+          <span className="startup-charter-terms">
+            {fillWords(CHARTER_WORDS.school, { school: schoolById(chosen.school).name })} ·{' '}
+            {fillWords(CHARTER_WORDS.project, { project: buildingById(chosen.project).name })} ·{' '}
+            {fillWords(CHARTER_WORDS.landmark, { landmark: buildingById(chosen.landmark).name })}
+          </span>
+        </p>
         <div className="startup-motifs" role="radiogroup" aria-label="Architecture">
           {MOTIF_CHOICES.map((choice) => (
             <button
@@ -512,7 +556,7 @@ export default function StartupScreen({
           className="startup-begin-btn"
           disabled={!isValidName(name)}
           aria-describedby={isValidName(name) ? undefined : 'startup-needs-name'}
-          onClick={() => onStart(name.trim(), motif, palette)}
+          onClick={() => onStart(name.trim(), motif, palette, charter)}
         >
           Open the Doors
         </button>

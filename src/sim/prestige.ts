@@ -7,6 +7,7 @@ import {
   PRESTIGE_TRAIL,
   RESEARCH_FULL_ROSTER,
 } from '../tuning.ts';
+import { charterLean } from './charter.ts';
 import { openPlacements } from './estate.ts';
 import { teachingQuality } from './faculty.ts';
 import { enrolled, inTriples } from './people.ts';
@@ -82,12 +83,14 @@ export function axisReadings(state: GameState): Axes {
     8 * state.distress.rung;
 
   const lift = projectBoosts(state);
+  // The founders' intent, while it lasts (Phase 43).
+  const lean = charterLean(state);
   return {
-    academics: clamp(academics + lift.academics),
-    research: clamp(research + lift.research),
-    experience: clamp(experience + lift.experience),
-    athletics: clamp(athletics + lift.athletics),
-    access: clamp(access),
+    academics: clamp(academics + lift.academics + (lean.academics ?? 0)),
+    research: clamp(research + lift.research + (lean.research ?? 0)),
+    experience: clamp(experience + lift.experience + (lean.experience ?? 0)),
+    athletics: clamp(athletics + lift.athletics + (lean.athletics ?? 0)),
+    access: clamp(access + (lean.access ?? 0)),
     finance: clamp(finance),
   };
 }

@@ -27,6 +27,7 @@ import { openPlacements } from './estate.ts';
 import { latestTable, PLAYER_ID, rankOf } from './league.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
+import { tagTeeth } from './tags.ts';
 
 // ATHLETICS-LITE AND THE RIVAL (DD §8.5, §11.3). Varsity teams are toggled
 // on where the college has the facilities they need; each costs a year at
@@ -130,7 +131,9 @@ function hashOf(text: string): number {
 export function teamStrength(state: GameState, sport: SportDef): number {
   const edge = (budgetFactor(state.athletics.budget) - 1) * VARSITY_BUDGET_EDGE;
   const venues = sport.requires.length === 0 ? 1 : sportHasVenue(state, sport) ? 1 : 0;
-  return 30 + 0.5 * state.prestige.axes.athletics + edge + venues * 10;
+  return (
+    30 + 0.5 * state.prestige.axes.athletics + edge + venues * 10 + tagTeeth(state, 'athletics')
+  );
 }
 
 // How much harder the schedule is than the league's own standings say: a
