@@ -110,6 +110,22 @@ export const LEAGUE_HOME_PULL = 0.08;
 // first few tables.
 export const METHODOLOGY_CHANGE_CHANCE = 0.1;
 export const METHODOLOGY_FIRST_YEAR = 6;
+// Athletics-lite (DD §8.5, Phase 23): a season is this many games, this
+// many won is a title; the budget's edge on a team's strength per unit of
+// factor; each varsity team reaches this many students.
+export const GAMES_PER_SEASON = 10;
+export const TITLE_WINS = 8;
+export const VARSITY_BUDGET_EDGE = 20;
+export const VARSITY_LIFE = 150;
+// The rival (DD §11.3): neighbours start with this much rivalry and gain
+// this much a year; every season adds one to each; a school past the line
+// is the rival, from this year on at the earliest; a mid-term taunt this
+// often.
+export const RIVAL_NEAR_START = 3;
+export const RIVAL_NEAR_YEARLY = 1;
+export const RIVAL_THRESHOLD = 10;
+export const RIVAL_FIRST_YEAR = 5;
+export const TAUNT_CHANCE = 0.6;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.

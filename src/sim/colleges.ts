@@ -46,6 +46,11 @@ export type Policy = {
   // How many hires the college will carry. A college that cannot afford
   // faculty is a different college, and half a dozen readings say so.
   hireCap?: number;
+  // Varsity teams fielded once they can be (Phase 23), and the sites that
+  // give them venues, built after every other site.
+  varsity?: string[];
+  athleticsBudget?: 'lean' | 'standard' | 'ambitious';
+  extraSites?: [string, number, number, boolean][];
 };
 
 export function resolveWith(policy: Policy) {
@@ -107,6 +112,7 @@ export function played(
     // Last, so every earlier site keeps its week: a college this size has a
     // health centre, and the events that name one need it to (Phase 21H).
     ['health-center', 6, 18, false],
+    ...(policy.extraSites ?? []),
   ];
   let next = 0;
   // Week by week, because the things a player does have windows: the
@@ -173,6 +179,14 @@ export function played(
       }
       for (const program of PROGRAMS) {
         const action = { type: 'openProgram', programId: program.id } as const;
+        if (canApply(run.state, action).ok) run = dispatch(run, action);
+      }
+      if (policy.athleticsBudget && run.state.athletics.budget !== policy.athleticsBudget) {
+        const action = { type: 'setAthleticsBudget', budget: policy.athleticsBudget } as const;
+        if (canApply(run.state, action).ok) run = dispatch(run, action);
+      }
+      for (const sportId of policy.varsity ?? []) {
+        const action = { type: 'setVarsity', sportId, on: true } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }
     }

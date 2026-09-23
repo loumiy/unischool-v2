@@ -47,6 +47,7 @@ import { openPlacements } from './estate.ts';
 import { memoryFor, warmthFor } from './alumni.ts';
 import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
+import { varsityLife } from './athletics.ts';
 import {
   nameNewcomers,
   tellGraduationBeats,
@@ -449,7 +450,9 @@ export interface SatisfactionBreakdown {
 // the one number the students are made of.
 export function studentLifeTerm(state: GameState, total: number): number {
   if (total <= 0) return 0;
-  return STUDENT_LIFE_POINTS * Math.min(1, campusCapacity(state).life / total);
+  return (
+    STUDENT_LIFE_POINTS * Math.min(1, (campusCapacity(state).life + varsityLife(state)) / total)
+  );
 }
 
 export function satisfactionBreakdown(state: GameState, total: number): SatisfactionBreakdown {

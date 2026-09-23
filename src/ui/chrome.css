@@ -3488,3 +3488,97 @@ th.figure > .figure-hint {
   font-size: 0.8em;
   opacity: 0.85;
 }
+
+/* ---------- athletics and the rival (Phase 23) ---------- */
+.rival-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: var(--text-sm);
+  margin: 0 0 10px;
+}
+.rival-line.none {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+.league-rival th,
+.league-rival td {
+  background: color-mix(in srgb, #b3261e 10%, transparent);
+}
+.league-near.rival {
+  color: #b3261e;
+}
+.athletics-budget {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.athletics-budget-label {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  margin-right: 6px;
+}
+.athletics-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.athletics-sport {
+  border: 1.5px solid var(--parchment-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--cream-hi);
+}
+.athletics-sport.on {
+  border-color: var(--outline);
+}
+.athletics-sport-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.athletics-sport-name {
+  font-family: var(--display);
+  font-weight: 800;
+}
+.athletics-sport-season {
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+.athletics-sport-blurb,
+.athletics-sport-meta,
+.athletics-sport-record {
+  margin: 0;
+  font-size: var(--text-xs);
+}
+.athletics-sport-meta {
+  color: var(--ink-muted);
+}
+.athletics-sport-record.title {
+  font-weight: 800;
+  color: #8a6d00;
+}
+.athletics-toggle {
+  margin-top: auto;
+  flex: 0 0 auto;
+}
+.athletics-toggle.chosen {
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+}
+.athletics-toggle.chosen .event-choice-note {
+  color: inherit;
+  opacity: 0.8;
+}

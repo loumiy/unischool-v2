@@ -195,6 +195,22 @@
     "moodUnder": {
       "label": "Student mood",
       "unit": "signed"
+    },
+    "rankAtLeast": {
+      "label": "Place in the guide",
+      "unit": "count"
+    },
+    "varsityAtLeast": {
+      "label": "Varsity teams",
+      "unit": "count"
+    },
+    "titlesAtLeast": {
+      "label": "Championships",
+      "unit": "count"
+    },
+    "rivalAtLeast": {
+      "label": "A rival",
+      "unit": "count"
     }
   },
   "levers": {

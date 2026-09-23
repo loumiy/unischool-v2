@@ -114,7 +114,9 @@ describe('the file reads like the style guide says (content/STYLE.md)', () => {
     const placeholders = /\{(\w+)\}/g;
     for (const def of EVENTS) {
       for (const match of def.text.matchAll(placeholders)) {
-        expect(['building', 'faculty', 'program', 'class', 'school']).toContain(match[1]);
+        expect(['building', 'faculty', 'program', 'class', 'school', 'rival', 'sport']).toContain(
+          match[1],
+        );
       }
       // Anything that moves real money says so where the player is choosing.
       for (const choice of def.choices) {
@@ -186,6 +188,15 @@ describe('nothing in the file is unreachable', () => {
       return r;
     };
     sample(played(4, 50, watch, { drawRate: 0.06, tuition: 62_000, selectivity: 0.7 }).state);
+    // One that fields teams (Phase 23): rowing needs only the stream, and
+    // the field for soccer goes up after everything else.
+    sample(
+      played(9, 50, watch, {
+        varsity: ['rowing', 'soccer'],
+        athleticsBudget: 'ambitious',
+        extraSites: [['playing-field', 36, 8, false]],
+      }).state,
+    );
     // Run into the ground two different ways: one that cannot afford
     // faculty, and one that cannot afford the faculty it has.
     sample(

@@ -1,0 +1,128 @@
+{
+  "sports": [
+    {
+      "id": "football",
+      "name": "Football",
+      "season": "fall",
+      "requires": ["stadium", "playing-field"],
+      "cost": 900000,
+      "blurb": "Eleven a side, a marching band, and the one fixture the alumni drive in for."
+    },
+    {
+      "id": "soccer",
+      "name": "Soccer",
+      "season": "fall",
+      "requires": ["playing-field", "stadium"],
+      "cost": 300000,
+      "blurb": "Cheap to field, hard to win, and played in every weather."
+    },
+    {
+      "id": "rowing",
+      "name": "Rowing",
+      "season": "fall",
+      "requires": [],
+      "cost": 400000,
+      "blurb": "Eight in a boat on the stream at six in the morning. The boats cost what boats cost."
+    },
+    {
+      "id": "basketball",
+      "name": "Basketball",
+      "season": "spring",
+      "requires": ["gymnasium", "recreation-center"],
+      "cost": 500000,
+      "blurb": "Indoors, all winter, with a student section that has opinions about referees."
+    },
+    {
+      "id": "swimming",
+      "name": "Swimming",
+      "season": "spring",
+      "requires": ["natatorium"],
+      "cost": 350000,
+      "blurb": "Early mornings and chlorine; the natatorium earns its heating bill."
+    },
+    {
+      "id": "track",
+      "name": "Track and field",
+      "season": "spring",
+      "requires": ["stadium"],
+      "cost": 250000,
+      "blurb": "Every event a different kind of fast."
+    },
+    {
+      "id": "tennis",
+      "name": "Tennis",
+      "season": "spring",
+      "requires": ["tennis-courts"],
+      "cost": 150000,
+      "blurb": "Quiet, polite and ferociously competitive."
+    }
+  ],
+  "budgets": [
+    {
+      "id": "lean",
+      "label": "Lean",
+      "factor": 0.6,
+      "note": "Teams play; nobody is recruited."
+    },
+    {
+      "id": "standard",
+      "label": "Standard",
+      "factor": 1,
+      "note": "Coaches, travel and a trainer."
+    },
+    {
+      "id": "ambitious",
+      "label": "Ambitious",
+      "factor": 1.6,
+      "note": "Recruiting, scholarships, and the risk that comes with them."
+    }
+  ],
+  "taunts": {
+    "ahead": [
+      "{rival}'s student paper runs the rankings under the headline 'Still Ahead'.",
+      "{rival} sends a fruit basket to mark the rankings. The card says 'Better luck next year'.",
+      "A {rival} dean, asked about {school}, says he had not realised it was still open."
+    ],
+    "behind": [
+      "{rival}'s president tells a reporter that rankings are a crude instrument, which is new.",
+      "{rival} students paint the {school} entrance sign in their colours. It takes the grounds staff a morning.",
+      "{rival} announces a new strategic plan. Page one names {school} twice."
+    ],
+    "beat": [
+      "{school} beats {rival}. The student section is still singing on the bus home.",
+      "{rival}'s coach says the field was wet. It was wet for both teams."
+    ],
+    "lost": [
+      "{rival} beats {school}, and their mascot does a lap of our field.",
+      "{rival} wins the meeting, and their students chant the score all the way to the car park."
+    ]
+  },
+  "words": {
+    "title": "Athletics",
+    "varsity": "Varsity",
+    "budget": "Athletics budget",
+    "budgetHint": "What the college spends on each varsity team a year, scaled: a lean programme plays, an ambitious one recruits.",
+    "cost": "{cost} a year",
+    "needs": "Needs {buildings}",
+    "noNeed": "Needs nothing but the stream",
+    "on": "Varsity",
+    "off": "Not fielded",
+    "record": "Last season {wins}–{losses}",
+    "title_won": "Champions",
+    "noSeasons": "No season played yet.",
+    "rival": "The rival",
+    "rivalLine": "{rival} is the rival: {since}.",
+    "rivalSince": "since Year {year}",
+    "rivalNone": "No rival yet. Rivals are made by proximity, by meeting on the field, and by what one college takes from another.",
+    "headToHead": "Against {rival} this year: {us} to their {them} in the table.",
+    "rivalAhead": "{rival} sits {n} places above us in the guide.",
+    "rivalBehind": "We sit {n} places above {rival} in the guide.",
+    "rivalLevel": "{rival} and the college sit level in the guide.",
+    "lifeHint": "Each varsity team reaches students the way a student-life building does."
+  },
+  "lines": {
+    "season": "{sport} closes the season {wins}–{losses}.",
+    "champions": "Champions: {sport} goes {wins}–{losses} and brings home the title.",
+    "rivalNamed": "{rival} is the rival now. Nobody decided it; everybody knows it."
+  }
+}

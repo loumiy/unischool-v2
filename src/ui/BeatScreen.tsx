@@ -1,3 +1,4 @@
+import RivalLine from './RivalLine.tsx';
 import { useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
 import type { CalendarBeat } from '../content/calendarBeats.ts';
@@ -475,6 +476,8 @@ function BoardBody({
   return (
     <div className="budget-body board-body">
       <h3>The board's view</h3>
+      {/* Head to head with the rival, where the board reads it (Phase 23). */}
+      <RivalLine state={state} />
       <div className="figure-row">
         <Figure
           label="Confidence"

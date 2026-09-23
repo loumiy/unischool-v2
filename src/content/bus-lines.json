@@ -144,6 +144,16 @@
     "methodologyChanged": {
       "text": "{line}"
     },
+    "seasonClosed": {
+      "text": "{line}"
+    },
+    "rivalNamed": {
+      "text": "{line}",
+      "tone": "bad"
+    },
+    "rivalTaunt": {
+      "text": "{line}"
+    },
     "mark": {
       "text": "{label}"
     },

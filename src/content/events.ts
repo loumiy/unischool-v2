@@ -69,6 +69,11 @@ export const EVENT_CONDITIONS = [
   'warmthUnder',
   'moodOver',
   'moodUnder',
+  // The world (Phases 22–23)
+  'rankAtLeast', // the college's place in the guide's latest table
+  'varsityAtLeast', // varsity teams fielded
+  'titlesAtLeast', // championships won this year and last
+  'rivalAtLeast', // 1 once the college has a rival
 ] as const;
 export type EventCondition = (typeof EVENT_CONDITIONS)[number];
 
@@ -135,7 +140,15 @@ export interface EventDef {
   needs: string[];
 }
 
-const PLACEHOLDERS = ['building', 'faculty', 'program', 'class', 'school'] as const;
+const PLACEHOLDERS = [
+  'building',
+  'faculty',
+  'program',
+  'class',
+  'school',
+  'rival',
+  'sport',
+] as const;
 
 const conditions = obj(
   Object.fromEntries(EVENT_CONDITIONS.map((c) => [c, optional(num)])),

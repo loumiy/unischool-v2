@@ -19,6 +19,7 @@ import {
   type GameState,
 } from '../sim/index.ts';
 import Figure from './Figure.tsx';
+import RivalLine from './RivalLine.tsx';
 
 // THE LEAGUE SCREEN (DD §11.3): the guide's table, the college's place in
 // it, the six standings it is ranked on, and the methodology currently in
@@ -130,6 +131,7 @@ export default function LeagueScreen({ state }: { state: GameState }) {
 
       <section className="treasury-panel">
         <h3>{LEAGUE_WORDS.title}</h3>
+        <RivalLine state={state} />
         {!table ? (
           <p className="treasury-note">{LEAGUE_WORDS.notYet}</p>
         ) : (
@@ -149,7 +151,12 @@ export default function LeagueScreen({ state }: { state: GameState }) {
                 const def = mine ? null : leagueSchoolById(row.id);
                 const was = before ? rankOf(before, row.id) : null;
                 return (
-                  <tr key={row.id} className={mine ? 'league-you' : ''}>
+                  <tr
+                    key={row.id}
+                    className={
+                      mine ? 'league-you' : row.id === state.athletics.rivalId ? 'league-rival' : ''
+                    }
+                  >
                     <td className="league-rank">
                       {i + 1} <Movement now={i + 1} before={was} />
                     </td>
@@ -164,7 +171,10 @@ export default function LeagueScreen({ state }: { state: GameState }) {
                     </td>
                     <th>
                       {mine ? you : def!.name}
-                      {def?.region === 'near' && (
+                      {row.id === state.athletics.rivalId && (
+                        <span className="league-near rival">the rival</span>
+                      )}
+                      {def?.region === 'near' && row.id !== state.athletics.rivalId && (
                         <span className="league-near">{LEAGUE_WORDS.region.near}</span>
                       )}
                     </th>

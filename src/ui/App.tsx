@@ -443,6 +443,12 @@ export default function App() {
                   onReunion={(classYear) => {
                     store.dispatch({ type: 'holdReunion', classYear });
                   }}
+                  onVarsity={(sportId, on) => {
+                    store.dispatch({ type: 'setVarsity', sportId, on });
+                  }}
+                  onAthleticsBudget={(budget) => {
+                    store.dispatch({ type: 'setAthleticsBudget', budget });
+                  }}
                 />
               ) : effectiveOverlay === 'faculty' ? (
                 <FacultyScreen

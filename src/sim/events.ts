@@ -30,6 +30,10 @@ import { enrolled, satisfactionFor } from './people.ts';
 import { teachingQuality } from './faculty.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
+import { latestTable, rankOf } from './league.ts';
+import { titlesIn } from './athletics.ts';
+import { leagueSchoolById } from '../content/league.ts';
+import { sportById } from '../content/athletics.ts';
 import { policyChoice } from './seats.ts';
 import { adminShareOfPayroll, sumExpenses, sumRevenue } from './treasury.ts';
 
@@ -131,6 +135,15 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
   beautyOver: (s) => campusBeauty(s),
   quadsOver: (s) => detectQuads(s.campus).length,
   treesUnder: (s) => -Object.keys(s.campus.trees).length,
+
+  // The world (Phases 22–23)
+  rankAtLeast: (s) => {
+    const t = latestTable(s);
+    return t ? rankOf(t) : 0;
+  },
+  varsityAtLeast: (s) => s.athletics.varsity.length,
+  titlesAtLeast: (s) => titlesIn(s, s.clock.year) + titlesIn(s, s.clock.year - 1),
+  rivalAtLeast: (s) => (s.athletics.rivalId ? 1 : 0),
 
   // Schools, programs and the roster
   schoolsOver: (s) => s.academics.schools.length,
@@ -276,6 +289,21 @@ export function subjectsFor(state: GameState, rng: Rng, def: EventDef): Record<s
   }
   if (def.text.includes('{school}')) {
     vars.school = state.identity?.name ?? 'the college';
+  }
+  // The world (Phase 23): the rival by name, and a team — the champions
+  // if there are any, else any varsity side.
+  const said = `${def.title ?? ''} ${def.text}`;
+  if (said.includes('{rival}')) {
+    const rival = state.athletics.rivalId;
+    vars.rival = rival ? leagueSchoolById(rival).name : 'a neighbouring college';
+  }
+  if (said.includes('{sport}')) {
+    const recent = state.athletics.seasons.filter((x) => x.year >= state.clock.year - 1);
+    const champ = [...recent].reverse().find((x) => x.title);
+    const pickId =
+      champ?.sportId ??
+      (state.athletics.varsity.length > 0 ? rng.pick(state.athletics.varsity) : null);
+    vars.sport = pickId ? sportById(pickId).name.toLowerCase() : 'the team';
   }
   return vars;
 }

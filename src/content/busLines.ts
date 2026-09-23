@@ -12,7 +12,8 @@ import { rankById, withArticle } from './faculty.ts';
 import { findProgram, findSchool, tierById } from './schools.ts';
 import { SEAT_WORDS, seatById } from './seats.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
-import { methodologyById } from './league.ts';
+import { leagueSchoolById, methodologyById } from './league.ts';
+import { ATHLETICS_LINES, sportById, TAUNTS } from './athletics.ts';
 import { memoryLine } from '../sim/alumni.ts';
 import { EVENT_WORDS, findEvent } from './events.ts';
 import { fillEventText } from '../sim/events.ts';
@@ -214,6 +215,34 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'methodologyChanged':
       vars.line = methodologyById(entry.methodologyId).line;
       break;
+    case 'seasonClosed': {
+      const sport = sportById(entry.sportId).name;
+      vars.line = fillArc(entry.title ? ATHLETICS_LINES.champions : ATHLETICS_LINES.season, {
+        sport,
+        wins: String(entry.wins),
+        losses: String(entry.losses),
+      });
+      return {
+        text: fill(line.text, vars),
+        tone: entry.title ? 'good' : entry.wins < entry.losses ? 'bad' : undefined,
+      };
+    }
+    case 'rivalNamed':
+      vars.line = fillArc(ATHLETICS_LINES.rivalNamed, {
+        rival: leagueSchoolById(entry.schoolId).name,
+      });
+      break;
+    case 'rivalTaunt': {
+      const lines = TAUNTS[entry.mood];
+      vars.line = fillArc(lines[entry.index % lines.length]!, {
+        rival: leagueSchoolById(entry.schoolId).short,
+        school: vars.school ?? 'the college',
+      });
+      return {
+        text: fill(line.text, vars),
+        tone: entry.mood === 'beat' || entry.mood === 'behind' ? 'good' : 'bad',
+      };
+    }
     case 'ambitionOffered':
       vars.line = fillArc(AMBITION_WORDS.offered, { title: ambitionById(entry.ambitionId).title });
       break;
