@@ -11,6 +11,7 @@ import {
   type Motif,
   type Placement,
   quadAt,
+  winterDepth,
 } from '../sim/index.ts';
 import BuildingInfoPanel from './BuildingInfoPanel.tsx';
 import HelpHint from './HelpHint.tsx';
@@ -27,7 +28,7 @@ import {
 import AmbientLayer from './map/ambient.tsx';
 import QuadLayer, { QuadNameLayer } from './map/quadLabels.tsx';
 import QuadPanel from './QuadPanel.tsx';
-import { seasonOf } from './map/season.ts';
+import { flakesOf, seasonOf } from './map/season.ts';
 import {
   DERELICT_CONDITION,
   RENOVATION_WEEKS,
@@ -153,6 +154,7 @@ function PlacedBuilding({
   inspected,
   camera,
   schoolName,
+  snow,
 }: {
   p: Placement;
   motif: Motif;
@@ -162,6 +164,7 @@ function PlacedBuilding({
   camera: Camera;
   // Only the entrance sign uses it, and only to write it on the board.
   schoolName: string;
+  snow: number;
 }) {
   const def = buildingById(p.buildingId);
   const d = drawnFootprint(p);
@@ -192,6 +195,7 @@ function PlacedBuilding({
             shadeSeed={p.id}
             camera={camera}
             schoolName={schoolName}
+            snow={snow}
           />
         </g>
       )}
@@ -211,6 +215,47 @@ function PlacedBuilding({
     </g>
   );
 }
+
+// SNOWFALL (Phase 21E): a fixed budget of flakes over the map, each an
+// absolutely positioned dot on a CSS animation the compositor runs, so the
+// weather costs the map nothing per frame beyond painting them. Placed by a
+// fixed sequence rather than the dice, so the same count always falls the
+// same way and a heavier week is the lighter one with more flakes in it.
+const Snowfall = memo(function Snowfall({ flakes }: { flakes: number }) {
+  if (flakes <= 0) return null;
+  const spots = Array.from({ length: flakes }, (_, i) => {
+    const a = (i * 0.618034) % 1; // spread across the width without clumping
+    const b = (i * 0.414214 + 0.13) % 1;
+    const c = (i * 0.732051 + 0.29) % 1;
+    return {
+      left: `${(a * 100).toFixed(2)}%`,
+      size: (2 + c * 3).toFixed(1),
+      duration: (7 + b * 7).toFixed(2),
+      delay: (-b * 14).toFixed(2),
+      drift: ((c - 0.5) * 60).toFixed(0),
+    };
+  });
+  return (
+    <div className="campus-snowfall" aria-hidden="true">
+      {spots.map((f, i) => (
+        <span
+          key={i}
+          className="campus-flake"
+          style={
+            {
+              left: f.left,
+              width: `${f.size}px`,
+              height: `${f.size}px`,
+              animationDuration: `${f.duration}s`,
+              animationDelay: `${f.delay}s`,
+              '--drift': `${f.drift}px`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+});
 
 // Every cast shadow, in one pass, under everything that stands.
 function CastShadows({
@@ -334,6 +379,7 @@ const CampusScene = memo(function CampusScene({
 }) {
   const motif = state.identity?.motif ?? 'georgian';
   const schoolName = state.identity?.name ?? '';
+  const snow = winterDepth(state.clock);
   const placements = state.campus.placements;
   const groundPlaced = placements.filter((p) => buildingById(p.buildingId).form === 'grounds');
   const scene = useMemo(() => {
@@ -399,6 +445,7 @@ const CampusScene = memo(function CampusScene({
           inspected={p.id === inspectedId}
           camera={camera}
           schoolName={schoolName}
+          snow={snow}
         />
       ))}
       {scene.map((entry) =>
@@ -414,6 +461,7 @@ const CampusScene = memo(function CampusScene({
               inspected={entry.placement.id === inspectedId}
               camera={camera}
               schoolName={schoolName}
+              snow={snow}
             />
           </g>
         ),
@@ -984,7 +1032,10 @@ export default function CampusMap({
   };
 
   return (
-    <section className={`campus-map season-${seasonOf(state.clock)}`}>
+    <section
+      className={`campus-map season-${seasonOf(state.clock)}`}
+      style={{ '--snow': winterDepth(state.clock).toFixed(2) } as React.CSSProperties}
+    >
       <div className="campus-map-canvas">
         <svg
           ref={svgRef}
@@ -1067,6 +1118,7 @@ export default function CampusMap({
             )}
           </g>
         </svg>
+        <Snowfall flakes={flakesOf(state.clock)} />
         {inspectedQuadObj && (
           <QuadPanel
             quad={inspectedQuadObj}

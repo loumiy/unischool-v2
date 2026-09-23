@@ -108,6 +108,27 @@ export function TreeAt({
   const crownR = sideR * (1 + (1 - standing) * spread);
   const trunkTop = lift(foot, trunkH);
   const sun = sunScreenDir();
+  // The bare tree under the leaves (Phase 21E): the limbs a broadleaf is
+  // left with in winter, drawn always and shown only when the stylesheet
+  // says it is cold, so the season is a class change and not a re-render of
+  // every tree on the parcel. Conifers keep their needles and get none.
+  const limbs =
+    species === 'conifer'
+      ? null
+      : (() => {
+          const head = { x: trunkTop.x, y: trunkTop.y - crownR * 0.55 * standing };
+          const reach = crownR * 0.92;
+          const n = (v: number) => v.toFixed(1);
+          const arm = (dx: number, dy: number) =>
+            `M${n(trunkTop.x)},${n(trunkTop.y)} Q${n(head.x + dx * 0.4)},${n(head.y + dy * 0.2)} ${n(head.x + dx * reach)},${n(head.y + dy * reach)}`;
+          return [
+            arm(-0.8, -0.35),
+            arm(0.75, -0.45),
+            arm(-0.35, -0.95),
+            arm(0.3, -1),
+            arm(0, -0.6),
+          ].join(' ');
+        })();
   return (
     <g className={`campus-tree ${species}`} aria-hidden="true">
       <polygon
@@ -119,6 +140,13 @@ export function TreeAt({
           { x: trunkTop.x - trunkW * 0.6, y: trunkTop.y },
         ])}
       />
+      {limbs && (
+        <path
+          className="campus-tree-limbs"
+          d={limbs}
+          strokeWidth={Math.max(0.8, trunkW * 0.55).toFixed(2)}
+        />
+      )}
       {species === 'conifer' ? (
         [0, 1, 2].map((tier) => {
           // A cone keeps a quarter of its rise at the bird's eye. Let it

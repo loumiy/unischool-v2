@@ -15,6 +15,7 @@ export const EVENT_CONDITIONS = [
   // The calendar
   'yearAtLeast',
   'yearAtMost',
+  'winterAtLeast', // how deep the winter is this week, 0–1 (sim/weather.ts)
   // Money (treasury.ts)
   'cashUnder',
   'cashOver',

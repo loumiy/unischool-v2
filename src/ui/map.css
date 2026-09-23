@@ -585,6 +585,102 @@
   fill: #d07a3e;
 }
 
+/* ---------- Phase 21E: winter ---------- */
+
+/* The limbs a broadleaf is left with in winter: drawn under every crown,
+   shown only when it is cold. */
+.campus-tree-limbs {
+  display: none;
+  fill: none;
+  stroke: #6a543e;
+  stroke-linecap: round;
+}
+
+/* Snow lies on the ground as a mix toward white by how deep the winter is
+   (--snow, 0–1, set on the map's root from sim/weather.ts): thin at the
+   first snow before finals, thick when the spring term starts in the dark.
+   The grass it lies on is the late fall's, gone dull. */
+.campus-map.season-winter {
+  --grass: color-mix(in srgb, #8f966a, #eef2f5 calc(20% + var(--snow, 0) * 70%));
+  --grass-deep: color-mix(in srgb, #7c8358, #dfe5ea calc(20% + var(--snow, 0) * 70%));
+  --grass-line: rgba(70, 86, 104, 0.14);
+  --grass-line-idle: rgba(70, 86, 104, 0.05);
+}
+.season-winter .ground-lawn,
+.season-winter .ground-turf {
+  fill: color-mix(in srgb, #8fae6b, #eef2f5 calc(20% + var(--snow, 0) * 70%));
+}
+/* Water goes cold and grey; the paths are what gets cleared, so they read
+   as the dark network through the white, which is how a campus under snow
+   actually looks from above. */
+.season-winter .terrain-water {
+  fill: #86a7b6;
+}
+.season-winter .campus-path-fill {
+  fill: #a7a497;
+}
+.season-winter .campus-path-kerb {
+  stroke: #f4f6f8;
+}
+
+/* Bare broadleaves: the leaves go, the limbs show, and what is left of the
+   crown is the grey haze of twigs a winter wood is from a distance. */
+.season-winter .campus-tree.canopy .campus-tree-limbs,
+.season-winter .campus-tree.ornamental .campus-tree-limbs {
+  display: inline;
+}
+.season-winter .campus-tree.canopy .campus-tree-crown,
+.season-winter .campus-tree.ornamental .campus-tree-crown {
+  fill: rgba(110, 94, 78, 0.22);
+}
+.season-winter .campus-tree.canopy .campus-tree-crown-top,
+.season-winter .campus-tree.ornamental .campus-tree-crown-top {
+  fill: rgba(240, 244, 247, 0.55);
+}
+/* Conifers keep their needles and carry the snow on their top tier. */
+.season-winter .campus-tree.conifer .campus-tree-crown {
+  fill: #3d5a40;
+}
+.season-winter .campus-tree.conifer .campus-tree-crown-top {
+  fill: #eef2f5;
+}
+/* Walkers in winter are wrapped up, so their shirts are coats: darker. */
+.season-winter .walker-body {
+  filter: brightness(0.72);
+}
+
+/* The snow itself, falling over the map and under the chrome. */
+.campus-snowfall {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.campus-flake {
+  position: absolute;
+  top: -12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+  animation-name: flake-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+@keyframes flake-fall {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(var(--drift, 0), 105vh, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .campus-snowfall {
+    display: none;
+  }
+}
+
 /* Walkers: a shadow, a body in a shirt, a head. Moved by attribute from
    ui/map/ambient.tsx; nothing here animates. */
 .campus-ambient {
