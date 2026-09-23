@@ -10,6 +10,7 @@ import {
 } from '../../sim/index.ts';
 import { boxFaces, lift, polyPoints, project, type Camera, type Pt } from './iso.ts';
 import { up } from './scale.ts';
+import { layoutKey } from './layout.ts';
 import { doors, findRoute, walkGrid, type Waypoint } from './routes.ts';
 
 // THE GROUND THE CAMPUS STANDS ON (Phase 45). The land between the
@@ -248,11 +249,13 @@ function DressingLayer({
   strung: boolean;
   camera: Camera;
 }) {
+  // What stands where, not how worn it is (Phase 52).
+  const layout = layoutKey(campus.placements);
   const d = useMemo(
     () => build(campus, commuter),
-    // The camera changes the projection; the campus changes the rest.
+    // The camera changes the projection; the layout changes the rest.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [campus.placements, campus.paths, commuter, camera],
+    [layout, campus.paths, commuter, camera],
   );
   const wear = Math.min(0.55, 0.1 + years / 40);
   return (

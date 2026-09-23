@@ -31,6 +31,8 @@ import {
 import AmbientLayer from './map/ambient.tsx';
 import QuadLayer, { QuadNameLayer } from './map/quadLabels.tsx';
 import QuadPanel from './QuadPanel.tsx';
+import { layoutKey } from './map/layout.ts';
+import { useGame } from './useGame.ts';
 import { flakesOf, seasonOf } from './map/season.ts';
 import {
   DERELICT_CONDITION,
@@ -181,17 +183,7 @@ function progressOf(p: Placement, week: number): number {
 // placement did not change, under the same season, draws nothing new: the
 // week reaches only the ones with works on, and the inspect handler takes
 // the id so it can be one function for all of them.
-const PlacedBuilding = memo(function PlacedBuilding({
-  p,
-  motif,
-  week,
-  onInspect,
-  inspected,
-  camera,
-  schoolName,
-  snow,
-  era,
-}: {
+interface PlacedBuildingProps {
   p: Placement;
   motif: Motif;
   week: number;
@@ -203,7 +195,19 @@ const PlacedBuilding = memo(function PlacedBuilding({
   // Only the entrance sign uses it, and only to write it on the board.
   schoolName: string;
   snow: number;
-}) {
+}
+
+const PlacedBuilding = memo(function PlacedBuilding({
+  p,
+  motif,
+  week,
+  onInspect,
+  inspected,
+  camera,
+  schoolName,
+  snow,
+  era,
+}: PlacedBuildingProps) {
   // As it stands: the storeys the late game added are drawn (Phase 25).
   const def = effectiveDef(p);
   const d = drawnFootprint(p);
@@ -262,7 +266,41 @@ const PlacedBuilding = memo(function PlacedBuilding({
       {(def.form !== 'grounds' || works) && <title>{title}</title>}
     </g>
   );
-});
+}, sameDrawing);
+
+// Whether a building would draw the same (Phase 52). The estate wears every
+// week, so a placement is a new object every week; what the drawing reads
+// of the wear is only its stage, so a roof a few dollars more behind on its
+// maintenance is not a reason to draw the whole building again.
+function sameDrawing(a: PlacedBuildingProps, b: PlacedBuildingProps): boolean {
+  const p = a.p;
+  const q = b.p;
+  const samePlacement =
+    p === q ||
+    (p.id === q.id &&
+      p.buildingId === q.buildingId &&
+      p.col === q.col &&
+      p.row === q.row &&
+      p.w === q.w &&
+      p.h === q.h &&
+      p.status === q.status &&
+      p.completesWeek === q.completesWeek &&
+      p.storeysAdded === q.storeysAdded &&
+      p.historic === q.historic &&
+      p.historicSince === q.historicSince &&
+      ageStage(p) === ageStage(q));
+  return (
+    samePlacement &&
+    a.motif === b.motif &&
+    a.week === b.week &&
+    a.era === b.era &&
+    a.onInspect === b.onInspect &&
+    a.inspected === b.inspected &&
+    a.camera === b.camera &&
+    a.schoolName === b.schoolName &&
+    a.snow === b.snow
+  );
+}
 
 // SNOWFALL (Phase 21E): a fixed budget of flakes over the map, each an
 // absolutely positioned dot on a CSS animation the compositor runs, so the
@@ -307,12 +345,16 @@ const Snowfall = memo(function Snowfall({ flakes }: { flakes: number }) {
 
 // Every cast shadow, in one pass, under everything that stands.
 function CastShadows({
+  layout,
   placements,
   scene,
   motif,
   camera,
   sunLength,
 }: {
+  // What stands where (Phase 52): a shadow is cast by a building's mass,
+  // and the mass does not change as the roof ages.
+  layout: string;
   placements: readonly Placement[];
   scene: readonly SceneEntry[];
   motif: Motif;
@@ -345,7 +387,7 @@ function CastShadows({
       if (e.kind === 'tree') trees.push(sub(woodlandShadow(e.col, e.row, e.seed)));
     return { buildings: buildings.join(''), trees: trees.join('') };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [placements, scene, motif, camera, sunLength]);
+  }, [layout, scene, motif, camera, sunLength]);
   return (
     <g className="campus-shadows" aria-hidden="true">
       {d.buildings && <path className="campus-building-shadow" d={d.buildings} />}
@@ -441,6 +483,9 @@ const CampusScene = memo(function CampusScene({
   const { winterLights } = useSettings();
   const placements = state.campus.placements;
   const groundPlaced = placements.filter((p) => buildingById(p.buildingId).form === 'grounds');
+  // What stands where, not how worn it is (Phase 52): sorting the scene
+  // every week was most of the map's cost at 8×.
+  const layout = layoutKey(placements);
   const scene = useMemo(() => {
     const entries: SceneEntry[] = [];
     for (const p of placements) {
@@ -472,7 +517,10 @@ const CampusScene = memo(function CampusScene({
     }
     return depthOrder(entries);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [placements, state.campus.trees, state.campus.paths, camera]);
+  }, [layout, state.campus.trees, state.campus.paths, camera]);
+  // The scene is sorted when the layout changes; the placements it draws are
+  // this week's (Phase 52).
+  const current = new Map(placements.map((p) => [p.id, p]));
   // The camera is read by the projection, not here; it is what changes the grid.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ground = useMemo(() => groundGeometry(), [camera]);
@@ -521,6 +569,7 @@ const CampusScene = memo(function CampusScene({
         camera={camera}
       />
       <CastShadows
+        layout={layout}
         placements={placements}
         scene={scene}
         motif={motif}
@@ -547,9 +596,9 @@ const CampusScene = memo(function CampusScene({
         ) : (
           <g key={entry.key}>
             <PlacedBuilding
-              p={entry.placement}
+              p={current.get(entry.placement.id) ?? entry.placement}
               motif={motif}
-              week={weekFor(entry.placement)}
+              week={weekFor(current.get(entry.placement.id) ?? entry.placement)}
               onInspect={onInspect}
               inspected={entry.placement.id === inspectedId}
               camera={camera}
@@ -670,6 +719,11 @@ export default function CampusMap({
   // ground at all times.
   const [hoveredQuad, setHoveredQuad] = useState<string | null>(null);
   const [showQuadNames, setShowQuadNames] = useState(false);
+  // At 4× and 8× the map keeps its detail but drops its two dearest
+  // effects (Phase 52): the soft-light wash blends at normal, and the glint
+  // on the stream holds still.
+  const { speed } = useGame();
+  const fast = speed === 'x4' || speed === 'x8';
   const [hover, setHover] = useState<{ row: number; col: number } | null>(null);
   const [camera, setCameraState] = useState<Camera>(DEFAULT_CAMERA);
   setCamera(camera);
@@ -1176,7 +1230,7 @@ export default function CampusMap({
 
   return (
     <section
-      className={`campus-map season-${seasonOf(state.clock)}`}
+      className={`campus-map season-${seasonOf(state.clock)}${fast ? ' fast' : ''}`}
       style={{ '--snow': winterDepth(state.clock).toFixed(2) } as React.CSSProperties}
     >
       <div className="campus-map-canvas">

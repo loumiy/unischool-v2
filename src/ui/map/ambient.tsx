@@ -9,6 +9,7 @@ import {
 import { MAX_WALKERS, STUDENTS_PER_WALKER } from '../../tuning.ts';
 import { wallHeightOf } from './buildingSpec.ts';
 import { boxFaces, cameraAxes, heightScale, project, type Camera, type Pt } from './iso.ts';
+import { layoutKey } from './layout.ts';
 import { doors, findRoute, roadsides, walkGrid, type Waypoint } from './routes.ts';
 import { ambientDensity } from './season.ts';
 import { useGame } from '../useGame.ts';
@@ -265,9 +266,19 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
   const layerRef = useRef<SVGGElement>(null);
   const walkersRef = useRef<Walker[]>([]);
   const randomRef = useRef(rng(0x5eed));
-  const density = ambientDensity(state.clock);
+  // In tenths: winter thins the crowd week by week, and a crowd rebuilt
+  // every week is a crowd that never gets anywhere (Phase 52).
+  const density = Math.round(ambientDensity(state.clock) * 10) / 10;
   const students = enrolled(state);
+  // The crowd: the enrolment by the term, a few visitors before it exists.
+  // The effect below hangs on this number, not on the roll: a week that
+  // loses a student should not rebuild the crowd (Phase 52).
+  const want = Math.min(
+    MAX_WALKERS,
+    Math.max(students > 0 ? 0 : 3, Math.round((students / STUDENTS_PER_WALKER) * density)),
+  );
   const { campus } = state;
+  const layout = layoutKey(campus.placements);
   const running = speed !== 'paused';
   // How fast the crowd walks: the clock's own multiplier, so the lawn is as
   // busy as the year is fast. Held in a ref and read inside the frame loop,
@@ -337,11 +348,6 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
       }
       return false;
     };
-    // The crowd: the enrolment by the term, a few visitors before it exists.
-    const want = Math.min(
-      MAX_WALKERS,
-      Math.max(students > 0 ? 0 : 3, Math.round((students / STUDENTS_PER_WALKER) * density)),
-    );
     const walkers = walkersRef.current;
     while (walkers.length > want) walkers.pop()!.el.remove();
     while (walkers.length < want) {
@@ -427,7 +433,9 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
     // The camera changes the projection the silhouettes are built on.
-  }, [campus, students, density, running, camera]);
+    // What stands where, not how worn it is (Phase 52).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [layout, campus.paths, want, running, camera]);
 
   // Gowns on the lawn in the weeks of Convocation and Commencement
   // (Phase 47).

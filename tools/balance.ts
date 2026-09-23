@@ -414,6 +414,9 @@ interface Report {
   uniqueEvents: number; // distinct events the college met in the run, delegated or not (Phase 51)
   uniqueAsked: number; // of which the President answered, the 1.0 review's measure
   askedIds: string[]; // the events the President answered, by id
+  answered: number; // events the President answered over the run
+  answeredSeismic: number; // of which letters
+  titles: number; // varsity titles over the run
   placementShare: number;
   spans: number[]; // minutes per §2.2 span
   mark: string;
@@ -448,10 +451,12 @@ interface Middle {
 }
 
 // A beat with nothing to decide: the Board Meeting of a sound college with
-// no cuts on its list, and a Convocation with no promise to accept. The
-// other two beats set terms and budgets, which is always a decision.
+// no cuts on its list and no decade's list to choose from (Phase 42), and
+// a Convocation with no promise to accept. The other two beats set terms
+// and budgets, which is always a decision.
 function idleBeat(s: GameState, beatId: string): boolean {
-  if (beatId === 'board-meeting') return s.distress.rung < 2 && s.ambitions.offered === null;
+  if (beatId === 'board-meeting')
+    return s.distress.rung < 2 && s.ambitions.offered === null && s.ambitions.decadeOffer === null;
   if (beatId === 'convocation') return s.ambitions.offered === null;
   return false;
 }
@@ -656,6 +661,11 @@ export function measure(a: Archetype, seed: number, charter: CharterId = a.chart
     uniqueEvents: new Set(s.events.history.map((h) => h.eventId)).size,
     uniqueAsked: new Set(s.events.history.filter((h) => !h.delegated).map((h) => h.eventId)).size,
     askedIds: [...new Set(s.events.history.filter((h) => !h.delegated).map((h) => h.eventId))],
+    answered: s.events.history.filter((h) => !h.delegated).length,
+    answeredSeismic: s.events.history.filter(
+      (h) => !h.delegated && eventById(h.eventId).kind === 'seismic',
+    ).length,
+    titles: entriesOfKind(s, 'seasonClosed').filter((e) => e.title).length,
     placementShare: Math.abs(placementSatisfaction(s).applied) / (PLACEMENT_CAP * 100),
     spans: spans.map((m) => Number(m.toFixed(0))),
     mark: s.ending.report?.mark ?? '—',

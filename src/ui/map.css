@@ -1038,6 +1038,18 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+/* The level of detail at speed (Phase 52): at 4× and 8× the wash tints
+   at normal rather than soft light, which is most of its cost, and at a
+   little under half the strength so the colour it gives is about the same;
+   the glint on the stream holds still. */
+.campus-map.fast .sun-wash {
+  mix-blend-mode: normal;
+  opacity: 0.45;
+}
+.campus-map.fast .terrain-water-glint {
+  animation-play-state: paused;
+}
+
 /* Gowns on the lawn at Convocation and Commencement (Phase 47): most of
    the crowd, not all of it. */
 .campus-ambient.gowned > g:not(:nth-child(4n)) .walker-body {
