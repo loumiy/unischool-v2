@@ -159,12 +159,34 @@ function build(campus: Campus, commuter: boolean): Dressing {
   return { wear, aprons, lamps, benches, racks, bins, parking, bays, busStop };
 }
 
-function Lamp({ at, motif, lit }: { at: Pt; motif: Motif; lit: boolean }) {
+function Lamp({
+  at,
+  motif,
+  lit,
+  festive,
+}: {
+  at: Pt;
+  motif: Motif;
+  lit: boolean;
+  festive: boolean;
+}) {
   const top = lift(at, up(4.2));
   const post = motif === 'modern' ? '#9aa0a6' : '#2f3437';
   return (
     <g>
       <line x1={at.x} y1={at.y} x2={top.x} y2={top.y} stroke={post} strokeWidth={1.1} />
+      {/* Convocation and Commencement (Phase 47): a banner on every post. */}
+      {festive && (
+        <rect
+          x={top.x + 0.6}
+          y={top.y + 2}
+          width={3.4}
+          height={6}
+          fill="var(--school-primary)"
+          stroke="var(--school-secondary)"
+          strokeWidth={0.5}
+        />
+      )}
       <circle
         cx={top.x}
         cy={top.y - 1}
@@ -199,6 +221,7 @@ function DressingLayer({
   commuter,
   years,
   evening,
+  festive,
   camera,
 }: {
   campus: Campus;
@@ -208,6 +231,8 @@ function DressingLayer({
   years: number;
   // The lamps are lit in the dark half of the year.
   evening: boolean;
+  // The weeks of Convocation and Commencement, when the posts wear banners.
+  festive: boolean;
   camera: Camera;
 }) {
   const d = useMemo(
@@ -245,7 +270,7 @@ function DressingLayer({
         <Bench key={`s${i}`} at={b.at} along={b.along} />
       ))}
       {d.lamps.map((p, i) => (
-        <Lamp key={`l${i}`} at={p} motif={motif} lit={evening} />
+        <Lamp key={`l${i}`} at={p} motif={motif} lit={evening} festive={festive} />
       ))}
       {d.busStop && (
         <g className="dressing-bus-stop">

@@ -429,5 +429,11 @@ export default function AmbientLayer({ state, camera }: { state: GameState; came
     // The camera changes the projection the silhouettes are built on.
   }, [campus, students, density, running, camera]);
 
-  return <g ref={layerRef} className="campus-ambient" aria-hidden="true" />;
+  // Gowns on the lawn in the weeks of Convocation and Commencement
+  // (Phase 47).
+  const c = state.clock;
+  const gowned = (c.term === 'fall' || c.term === 'summer') && c.week <= 2;
+  return (
+    <g ref={layerRef} className={`campus-ambient ${gowned ? 'gowned' : ''}`} aria-hidden="true" />
+  );
 }

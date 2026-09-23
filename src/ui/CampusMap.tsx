@@ -62,6 +62,17 @@ import { castShadow } from './map/light.ts';
 import PathwayLayer from './map/pathways.tsx';
 import DressingLayer from './map/dressing.tsx';
 import AgeMarks, { type AgeStage } from './map/age.tsx';
+import LifeLayer from './map/life.tsx';
+import type { Season } from './map/season.ts';
+
+// How long the shadows lie, by season (Phase 47).
+const SUN_LENGTH: Record<Season, number> = {
+  winter: 1.6,
+  'late-fall': 1.3,
+  'early-fall': 1.1,
+  spring: 1,
+  summer: 0.75,
+};
 import Tree, { woodlandShadow } from './map/trees.tsx';
 import { otherTool, type CampusTool } from './tools.ts';
 
@@ -299,11 +310,14 @@ function CastShadows({
   scene,
   motif,
   camera,
+  sunLength,
 }: {
   placements: readonly Placement[];
   scene: readonly SceneEntry[];
   motif: Motif;
   camera: Camera;
+  // How long the shadows lie (Phase 47): low sun in winter, high in summer.
+  sunLength: number;
 }) {
   const d = useMemo(() => {
     const sub = (pts: { x: number; y: number }[]) => `M${polyPoints(pts).replace(/ /g, 'L')}Z`;
@@ -323,14 +337,14 @@ function CastShadows({
       )
         continue;
       const f = drawnFootprint(p);
-      buildings.push(sub(castShadow(f.col, f.row, f.w, f.h, height)));
+      buildings.push(sub(castShadow(f.col, f.row, f.w, f.h, height * sunLength)));
     }
     const trees: string[] = [];
     for (const e of scene)
       if (e.kind === 'tree') trees.push(sub(woodlandShadow(e.col, e.row, e.seed)));
     return { buildings: buildings.join(''), trees: trees.join('') };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [placements, scene, motif, camera]);
+  }, [placements, scene, motif, camera, sunLength]);
   return (
     <g className="campus-shadows" aria-hidden="true">
       {d.buildings && <path className="campus-building-shadow" d={d.buildings} />}
@@ -491,6 +505,10 @@ const CampusScene = memo(function CampusScene({
           enrolled(state) > campusCapacity(state).beds * 1.1
         }
         years={state.clock.year}
+        festive={
+          (state.clock.term === 'fall' && state.clock.week <= 2) ||
+          (state.clock.term === 'summer' && state.clock.week <= 2)
+        }
         evening={
           state.clock.term === 'spring'
             ? state.clock.week < 6
@@ -498,7 +516,13 @@ const CampusScene = memo(function CampusScene({
         }
         camera={camera}
       />
-      <CastShadows placements={placements} scene={scene} motif={motif} camera={camera} />
+      <CastShadows
+        placements={placements}
+        scene={scene}
+        motif={motif}
+        camera={camera}
+        sunLength={SUN_LENGTH[seasonOf(state.clock)]}
+      />
       {groundPlaced.map((p) => (
         <PlacedBuilding
           key={p.id}
@@ -533,6 +557,18 @@ const CampusScene = memo(function CampusScene({
         ),
       )}
       <AmbientLayer state={state} camera={camera} />
+      {/* What the calendar puts on the map (Phase 47). */}
+      <LifeLayer
+        campus={state.campus}
+        gameWeek={
+          state.athletics.varsity.length > 0 &&
+          state.clock.term !== 'summer' &&
+          state.clock.week >= 11
+        }
+        termOn={state.clock.term !== 'summer' && enrolled(state) > 0}
+        cars={Math.min(8, Math.round(enrolled(state) / 300) + 1)}
+        camera={camera}
+      />
       <QuadNameLayer
         campus={state.campus}
         selectedKey={inspectedQuad}
@@ -1140,6 +1176,9 @@ export default function CampusMap({
       style={{ '--snow': winterDepth(state.clock).toFixed(2) } as React.CSSProperties}
     >
       <div className="campus-map-canvas">
+        {/* The sun (Phase 47): gold and low in winter, white and high in
+            summer, over the map and never over the chrome. */}
+        <div className="sun-wash" aria-hidden="true" />
         <svg
           ref={svgRef}
           className={`campus-map-svg ${selected ? 'placing' : ''} ${paintTool ? `path-${paintTool}` : ''} ${tool === 'demolish' ? 'demolishing' : ''} ${inspectedId ? 'inspecting' : ''} ${selected || tool ? 'working' : ''}`}
