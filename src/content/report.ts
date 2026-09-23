@@ -12,7 +12,7 @@ const schema = obj({
   tagPhrases: obj(Object.fromEntries(TAG_IDS.map((t) => [t, str]))),
   axisPhrases: obj(Object.fromEntries(AXES.map((a) => [a, str]))),
   weaknesses: obj(Object.fromEntries(AXES.map((a) => [a, str]))),
-  strengthTail: str,
+  strengthShape: str,
   titleShape: str,
   verdicts: obj({
     rich: str,
@@ -51,7 +51,7 @@ export const GRADE_BANDS = [...file.grades].sort((a, b) => b.at - a.at);
 export const TAG_PHRASES = file.tagPhrases as Record<(typeof TAG_IDS)[number], string>;
 export const AXIS_PHRASES = file.axisPhrases as Record<(typeof AXES)[number], string>;
 export const WEAKNESSES = file.weaknesses as Record<(typeof AXES)[number], string>;
-export const REPORT_SHAPES = { strengthTail: file.strengthTail, titleShape: file.titleShape };
+export const REPORT_SHAPES = { strengthShape: file.strengthShape, titleShape: file.titleShape };
 export const VERDICTS = file.verdicts;
 export const REPORT_WORDS = file.words;
 

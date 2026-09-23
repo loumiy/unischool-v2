@@ -49,7 +49,7 @@
     "access": "never opened its doors very wide",
     "finance": "never balanced its books"
   },
-  "strengthTail": "and was very good at it",
+  "strengthShape": "{school}: {phrase}, and a very good one",
   "titleShape": "{school}: {phrase} that {tail}",
   "verdicts": {
     "rich": "It left its successors far richer than it found itself: the endowment grew from {from} to {to}.",

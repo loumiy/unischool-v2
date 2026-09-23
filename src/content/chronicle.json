@@ -27,9 +27,10 @@
     "rank": "The guide had the college {from} at the start and {to} at the end.",
     "rankFlat": "The guide had the college {to} throughout, give or take.",
     "money": "The books closed {net} over the era, and the endowment went from {from} to {to}.",
-    "classes": "{count} classes graduated, {distinguished} of their students distinguished.",
+    "classes": "{classes} graduated, {distinguished} of their students distinguished.",
     "troubles": "The board climbed to {rung} and the college spent terms in distress.",
     "titles": "The teams won {count} titles.",
+    "title": "The teams won a title.",
     "tags": "The guidebooks started calling it {tags}.",
     "demolished": "{list} came down.",
     "historicDown": "Historic {list} came down, over the protests.",
@@ -37,7 +38,7 @@
     "kept": "It kept its promise to {list}.",
     "missed": "It missed its promise to {list}.",
     "weathered": "It weathered {list}.",
-    "classesPlain": "{count} classes graduated."
+    "classesPlain": "{classes} graduated."
   },
   "words": {
     "title": "The chronicle",

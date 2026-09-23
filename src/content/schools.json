@@ -522,6 +522,7 @@
     "lines": {
       "found": "Found the School of {school}",
       "needHall": "Build an Academic Hall first: every school needs a hall of its own.",
+      "hallRising": "{hall} is going up and opens in {weeks} weeks; a school can be founded in it then.",
       "frozen": "The board has frozen new programs.",
       "noPrograms": "No programs yet. Open one below.",
       "open": "Open · {cost}",

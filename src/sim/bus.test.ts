@@ -154,10 +154,18 @@ describe('calendar beats (DD §3.3)', () => {
 
   it('reads as a coherent history', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR, defaultResolution);
-    // The year's questions are read apart from its calendar: at an event
-    // every few weeks (Phase 31) how many the first year draws is the
-    // dice's, and they are checked below.
-    const asking = new Set(['eventFired', 'eventResolved', 'eventDelegated']);
+    // The year's questions — events, and the promises the board asks for —
+    // are read apart from its calendar: at an event every few weeks (Phase
+    // 31) how many the first year draws is the dice's, and they are checked
+    // below.
+    const asking = new Set([
+      'eventFired',
+      'eventResolved',
+      'eventDelegated',
+      'ambitionOffered',
+      'ambitionAccepted',
+      'ambitionDeclined',
+    ]);
     const history = run.state.bus
       .filter((e) => !asking.has(e.kind))
       .map((e) => describeEntry(e, run.state).text);

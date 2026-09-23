@@ -1135,6 +1135,7 @@ button.build-tile {
 .beat-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   margin-top: 20px;
 }
 .beat-resolve {
@@ -4185,4 +4186,13 @@ th.figure > .figure-hint {
 }
 .credits-list dd {
   margin: 0;
+}
+
+/* The one window's warning (Phase 34). */
+.beat-warning {
+  margin: 0 12px 0 0;
+  max-width: 460px;
+  color: var(--danger-ink);
+  font-weight: 600;
+  line-height: 1.4;
 }
