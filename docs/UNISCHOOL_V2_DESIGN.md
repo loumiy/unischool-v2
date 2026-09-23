@@ -499,6 +499,8 @@ At the other end, a historic building gathers ivy, climbing over the twenty year
 
 Every event and letter carries its domain (estate, academic, students, advancement, money, board) as a coloured stripe and a word, so the strip can be scanned. The ticking numbers, the yearbook chronicle and the full layout audit are not done yet.
 
+**The hall and the frame (Phase 49).** The hall of fame is a gallery wall. Each portrait hangs in a frame in its college's colours, with a brass plaque under it (name, mark and years), and opens to its grades and chronicle. A portrait is now framed on the campus, the union of what stands with a margin of lawn, not on the parcel's empty corners, and is shown at golden hour whatever week it was taken. The first of the cosmetic unlocks DD §12.3 names is built. **Winter lights** are strings of lights on the lamp posts in winter; they unlock once two colleges hang in the hall and are a setting kept in the browser. A test holds that a run stepped with them on is the same run as one stepped with them off. Motif variants and landmark sets are not built yet.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.

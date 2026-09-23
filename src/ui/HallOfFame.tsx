@@ -45,10 +45,30 @@ export default function HallOfFame({ onClose }: { onClose: () => void }) {
             portrait of its campus.
           </p>
         ) : (
-          <ul className="hall-list">
+          <ul className="hall-list hall-wall">
             {entries.map((e) => (
-              <li key={e.id} className="hall-entry">
-                <Portrait entry={e} />
+              <li
+                key={e.id}
+                className="hall-entry hall-frame"
+                style={
+                  {
+                    '--frame': e.colors.primary,
+                    '--mat': e.colors.secondary,
+                  } as React.CSSProperties
+                }
+              >
+                {/* A frame in the college's colours, and a brass plaque
+                    (Phase 49). */}
+                <div className="hall-frame-border">
+                  <Portrait entry={e} />
+                </div>
+                <div className="hall-plaque">
+                  <span className="hall-plaque-name">{e.school}</span>
+                  <span className="hall-plaque-mark">{e.mark}</span>
+                  <span className="hall-plaque-years">
+                    Years 1–50 · finished {new Date(e.finishedAt).getFullYear()}
+                  </span>
+                </div>
                 <div className="hall-body">
                   <div className="hall-head">
                     <span
