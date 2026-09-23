@@ -10,6 +10,7 @@ import {
   ADMIN_PER_STUDENT,
   FOUNDING_ADMIN_PAYROLL,
   MAINTENANCE_FUNDING_DEFAULT,
+  RESERVES_SWEEP_YEARS,
   STARTING_CASH,
   STUDENT_LIFE_PER_STUDENT,
   STARTING_ENDOWMENT,
@@ -125,6 +126,11 @@ export interface Treasury {
   // interim CFO's board policy. Handed back when the emergency ends; null
   // when nothing is being held.
   ownMaintenance: number | null;
+  // The board's standing policy on idle money (Phase 36): at the turn of
+  // the year, sweep operating cash beyond RESERVES_SWEEP_YEARS of expenses
+  // into the endowment. On unless the college says otherwise — a college
+  // saving for a building turns it off.
+  sweep: boolean;
 }
 
 export function zeroRevenue(): Revenue {
@@ -267,6 +273,7 @@ export function foundingTreasury(seed: number): Treasury {
     endowmentBasis: STARTING_ENDOWMENT,
     standing: { admin: 0, faculty: 0 },
     ownMaintenance: null,
+    sweep: true,
     debt: 0,
     debtRepayment: 0,
     capitalThisYear: { spent: 0, borrowed: 0 },
@@ -367,7 +374,49 @@ function turnFiscalYear(state: GameState): GameState {
       history: [...t.history, closed],
     },
   };
-  return emit(next, { kind: 'yearClosed', year: closed.year, net: closed.net });
+  return sweepReserves(
+    emit(next, { kind: 'yearClosed', year: closed.year, net: closed.net }),
+    closed.net,
+  );
+}
+
+// ---------- idle money (Phase 36) ----------
+
+// What the bank can spare for the endowment: everything above a term of
+// the year's budgeted expenses, which the board wants kept liquid.
+export function investable(state: GameState): number {
+  const term = sumExpenses(state.treasury.budget.expenses) / 3;
+  return Math.max(0, Math.floor(state.treasury.cash - term));
+}
+
+// Operating cash into the endowment, as a quasi-endowment: the principal
+// earns the market's return and the draw spends a share of it each year.
+export function investReserves(state: GameState, amount: number): GameState {
+  const moved = Math.min(Math.round(amount), investable(state));
+  if (moved <= 0) return state;
+  const t = state.treasury;
+  return emit(
+    { ...state, treasury: { ...t, cash: t.cash - moved, endowment: t.endowment + moved } },
+    { kind: 'reservesInvested', amount: moved },
+  );
+}
+
+// The board's standing policy at the turn of the year: the year's
+// operating surplus goes into the endowment, as far as the bank holds more
+// than RESERVES_SWEEP_YEARS of the new year's expenses. Only the surplus —
+// the founding gift and money raised for a building are the college's to
+// spend — and not while the college is on the ladder, since a college in
+// trouble keeps its cash, nor when it has asked the board to leave it.
+function sweepReserves(state: GameState, surplus: number): GameState {
+  if (!state.treasury.sweep || state.distress.rung > 0 || surplus <= 0) return state;
+  const t = state.treasury;
+  const keep = sumExpenses(t.budget.expenses) * RESERVES_SWEEP_YEARS;
+  const idle = Math.floor(Math.min(surplus, t.cash - keep));
+  if (idle <= 0) return state;
+  return emit(
+    { ...state, treasury: { ...t, cash: t.cash - idle, endowment: t.endowment + idle } },
+    { kind: 'reservesSwept', amount: idle },
+  );
 }
 
 // The Budget & Hiring decision (DD §3.3, §5.1): approve next year's budget

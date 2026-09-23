@@ -681,6 +681,28 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { onboarding: { seen: NOTES.map((n) => n.id) }, ...state, schemaVersion: 27 },
     };
   },
+  // v27 → v28 (Phase 36): an event waiting on the docket carries the scale
+  // its prices were quoted at — one written before prices grew with the
+  // college was quoted as written — and the treasury the board's policy on
+  // idle money, which starts on.
+  27: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const events = (state.events ?? {}) as Record<string, unknown>;
+    const pending = Array.isArray(events.pending) ? events.pending : [];
+    return {
+      ...raw,
+      version: 28,
+      state: {
+        ...state,
+        events: {
+          ...events,
+          pending: pending.map((p) => ({ scale: 1, ...(p as Record<string, unknown>) })),
+        },
+        treasury: { sweep: true, ...((state.treasury ?? {}) as Record<string, unknown>) },
+        schemaVersion: 28,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

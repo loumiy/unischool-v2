@@ -206,6 +206,13 @@
     },
     "campaignClosed": {
       "text": "{line}"
+    },
+    "reservesInvested": {
+      "text": "{amount} of operating funds goes into the endowment, to be spent a little at a time for ever.",
+      "tone": "good"
+    },
+    "reservesSwept": {
+      "text": "The board moves {amount} of the year's surplus into the endowment."
     }
   }
 }

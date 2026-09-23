@@ -1,7 +1,7 @@
 import { AMBITIONS, ambitionById, type AmbitionDef } from '../content/ambitions.ts';
 import { AMBITION_CAP, AMBITION_DEAL_ODDS } from '../tuning.ts';
 import { emit } from './bus.ts';
-import { applyChoiceEffects, conditionsOf } from './events.ts';
+import { applyChoiceEffects, conditionsOf, priceScale, scaledEffects } from './events.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 
@@ -109,7 +109,7 @@ function settleDue(state: GameState): GameState {
     if (active.dueYear > s.clock.year) continue;
     const def = ambitionById(active.ambitionId);
     const kept = goalMet(s, def);
-    s = applyChoiceEffects(s, kept ? def.reward : def.penalty);
+    s = applyChoiceEffects(s, scaledEffects(kept ? def.reward : def.penalty, priceScale(s)));
     s = emit(
       {
         ...s,

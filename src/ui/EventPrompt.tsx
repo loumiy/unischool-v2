@@ -1,5 +1,5 @@
 import { EVENT_WORDS, eventById } from '../content/events.ts';
-import { pendingText, type GameState, type PendingEvent } from '../sim/index.ts';
+import { pendingText, scaledWords, type GameState, type PendingEvent } from '../sim/index.ts';
 
 // AN EVENT, INLINE (DD §10.1): the ticker strip grows a panel rather than
 // stopping the world. The clock keeps running underneath it, the choices
@@ -36,7 +36,11 @@ export default function EventPrompt({
             onClick={() => onChoose(pending.instanceId, choice.id)}
           >
             <span className="event-choice-label">{choice.label}</span>
-            {choice.note !== undefined && <span className="event-choice-note">{choice.note}</span>}
+            {choice.note !== undefined && (
+              <span className="event-choice-note">
+                {scaledWords(choice.note, pending.scale ?? 1)}
+              </span>
+            )}
           </button>
         ))}
       </div>

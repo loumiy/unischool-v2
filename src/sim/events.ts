@@ -15,6 +15,9 @@ import {
   EVENT_DISTRESS_ODDS,
   EVENT_QUIET_WEEKS,
   EVENT_WEEKLY_ODDS,
+  EVENT_PRICE_FIXED_BELOW,
+  EVENT_PRICE_REFERENCE_BUDGET,
+  EVENT_PRICE_SCALE_MAX,
   MOOD_CAP,
   SEISMIC_MIN_YEAR,
   SEISMIC_ODDS_SHARE,
@@ -38,7 +41,7 @@ import { placementCapacity } from './lateGame.ts';
 import { leagueSchoolById } from '../content/league.ts';
 import { sportById } from '../content/athletics.ts';
 import { policyChoice } from './seats.ts';
-import { adminShareOfPayroll, sumExpenses, sumRevenue } from './treasury.ts';
+import { adminShareOfPayroll, formatMoney, sumExpenses, sumRevenue } from './treasury.ts';
 
 // THE EVENT ENGINE (DD §10.1). The world keeps punching, and almost all
 // of it resolves inline in the ticker: an event fires, offers two or
@@ -61,6 +64,9 @@ export interface PendingEvent {
   // The subjects the text names, resolved when it fired so the sentence
   // reads the same in week four as in week one.
   vars: Record<string, string>;
+  // What the college's size does to the prices, fixed when it fired
+  // (Phase 36): the letter quotes the same sums in week four as in week one.
+  scale: number;
 }
 
 export interface ResolvedEvent {
@@ -320,7 +326,63 @@ export function fillEventText(text: string, vars: Record<string, string>): strin
 // An event's sentence as it was when it fired: the subjects were
 // resolved then, so the wording does not drift while it waits.
 export function pendingText(pending: PendingEvent): string {
-  return fillEventText(eventById(pending.eventId).text, pending.vars);
+  return scaledWords(
+    fillEventText(eventById(pending.eventId).text, pending.vars),
+    pending.scale ?? 1,
+  );
+}
+
+// ---------- prices that grow with the college (Phase 36, DD §10.1) ----------
+
+// An event's sums are written for a founding college. A bigger college's
+// roof costs more, its donors give more and its settlements are larger, so
+// every sum a choice moves is multiplied by how much bigger than a founding
+// college this one is — measured by its budget, never below one, and never
+// above a ceiling. Sums under a floor price a thing, not a size (a vet's
+// bill, a collar), and stay as written.
+export function priceScale(state: GameState): number {
+  const budget = sumExpenses(state.treasury.budget.expenses);
+  const scale = budget / EVENT_PRICE_REFERENCE_BUDGET;
+  return Number(Math.min(EVENT_PRICE_SCALE_MAX, Math.max(1, scale)).toFixed(2));
+}
+
+const SCALED_LEVERS: readonly EventEffect[] = ['cash', 'endowment', 'debt', 'backlog'];
+
+// Two significant figures: a letter asks for $1.8M, never $1,812,345.
+function roundNice(x: number): number {
+  if (x === 0) return 0;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(x))) - 1);
+  return Math.round(x / magnitude) * magnitude;
+}
+
+export function scaledAmount(amount: number, scale: number): number {
+  if (scale === 1 || Math.abs(amount) < EVENT_PRICE_FIXED_BELOW) return amount;
+  return roundNice(amount * scale);
+}
+
+export function scaledEffects(
+  effects: Partial<Record<EventEffect, number>>,
+  scale: number,
+): Partial<Record<EventEffect, number>> {
+  const out: Partial<Record<EventEffect, number>> = { ...effects };
+  for (const lever of SCALED_LEVERS) {
+    const amount = effects[lever];
+    if (amount !== undefined) out[lever] = scaledAmount(amount, scale);
+  }
+  return out;
+}
+
+// The sums in a sentence, at this college's size: "$250k to raise $3M"
+// reads "$1M to raise $12M" at a college four times the founding one. The
+// same rounding as the effects, so the note and the ledger agree.
+export function scaledWords(text: string, scale: number): string {
+  if (scale === 1) return text;
+  return text.replace(/\$(\d+(?:\.\d+)?)([kKmMbB]?)/g, (whole, n: string, unit: string) => {
+    const mult = { k: 1e3, m: 1e6, b: 1e9 }[unit.toLowerCase() as 'k' | 'm' | 'b'] ?? 1;
+    const amount = Number(n) * mult;
+    if (!Number.isFinite(amount) || amount < EVENT_PRICE_FIXED_BELOW) return whole;
+    return formatMoney(scaledAmount(amount, scale));
+  });
 }
 
 // ---------- applying a choice ----------
@@ -517,9 +579,10 @@ export function applyChoice(
   def: EventDef,
   choiceId: string,
   vars: Record<string, string> = {},
+  scale = 1,
 ): GameState {
   const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
-  return applyChoiceEffects(state, choice.effects, vars);
+  return applyChoiceEffects(state, scaledEffects(choice.effects, scale), vars);
 }
 
 // ---------- the week ----------
@@ -542,7 +605,7 @@ export function resolveEvent(
   if (!pending) return state;
   const def = eventById(pending.eventId);
   const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
-  const applied = applyChoice(state, def, choice.id, pending.vars);
+  const applied = applyChoice(state, def, choice.id, pending.vars, pending.scale ?? 1);
   return emit(
     {
       ...applied,
@@ -582,6 +645,7 @@ export function fireEvent(
     expiresWeek: week + def.timeoutWeeks,
     // A system that puts an event on the docket names its own subjects.
     vars: { ...subjectsFor(state, rng, def), ...given },
+    scale: priceScale(state),
   };
   return emit(
     {
@@ -624,7 +688,13 @@ export function eventsWeek(state: GameState): GameState {
   // come through as they always did.
   const delegated = policyChoice(s, def);
   if (delegated) {
-    const applied = applyChoice({ ...s, rng: rng.snapshot() }, def, delegated.choiceId);
+    const applied = applyChoice(
+      { ...s, rng: rng.snapshot() },
+      def,
+      delegated.choiceId,
+      vars,
+      priceScale(s),
+    );
     return emit(
       {
         ...applied,
@@ -644,6 +714,7 @@ export function eventsWeek(state: GameState): GameState {
     firedWeek: week,
     expiresWeek: week + def.timeoutWeeks,
     vars,
+    scale: priceScale(s),
   };
   return emit(
     {

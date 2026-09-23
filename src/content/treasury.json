@@ -119,5 +119,12 @@
     },
     "historic": "Historic since Year {year}",
     "historicWarning": "This building is Historic. The alumni, the board and the students will all feel it come down."
+  },
+  "reserves": {
+    "title": "Idle money",
+    "body": "The bank can spare {spare} beyond a term of expenses. Money in the endowment earns the markets' return and pays out through the draw every year; money in the bank earns nothing.",
+    "half": "Invest {amount}",
+    "all": "Invest all {amount}",
+    "sweep": "Let the board move each year's surplus into the endowment at the turn of the year, once the bank holds {years} of a year's expenses. Turn this off while saving for a building."
   }
 }

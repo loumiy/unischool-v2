@@ -47,6 +47,11 @@ export const ADMIN_PER_STUDENT = 1_500;
 // a third of its revenue every year and money stopped mattering by Year
 // 10; with it the margin is the thin one colleges actually run on.
 export const STUDENT_LIFE_PER_STUDENT = 7_500;
+// Idle money (Phase 36): at the turn of each year the board sweeps
+// operating cash beyond this many years of the new year's expenses into
+// the endowment, as a quasi-endowment, unless the college has asked it not
+// to.
+export const RESERVES_SWEEP_YEARS = 0.75;
 
 // Tuition dependence above this share of revenue is flagged as fragility
 // (DD §5.1).
@@ -470,6 +475,13 @@ export const REUNION_WARMTH_CAP = 12;
 // college is in trouble and never while something is already waiting.
 // Phase 31 measured one every three to four weeks all told.
 export const EVENT_WEEKLY_ODDS = 1 / 3;
+// Prices that grow with the college (Phase 36, DD §10.1): an event's sums
+// are written for a college of this budget, and multiplied by how much
+// bigger this one is, up to the ceiling; sums below the floor price a
+// thing, not a size, and stay as written.
+export const EVENT_PRICE_REFERENCE_BUDGET = 15_000_000;
+export const EVENT_PRICE_SCALE_MAX = 12;
+export const EVENT_PRICE_FIXED_BELOW = 25_000;
 export const EVENT_DISTRESS_ODDS = 0.02; // added per rung on the ladder
 export const EVENT_QUIET_WEEKS = 1; // after one resolves, before another can fire
 
