@@ -58,3 +58,24 @@ Event prices scale with the college, and idle cash sweeps into the endowment abo
 - **Cash cover** is in band for the steward on every seed; the growth college still dips to near zero, and on seed 11 into the red, which is what growth-at-any-cost is supposed to cost. The frugal college, which held thirty years of cash at 1.0, now holds under a year and a half; it drifts above a year late in the run because its surpluses are small enough that some years sweep nothing.
 - **Sting** is in band from the second decade for the steward and growth colleges. The first decade stays under 1%: the catalogue is priced for a founding college, and the scale never goes below 1×. The frugal college spends almost nothing, so its sting stays low by design.
 - Saturation, titles, demand, idle beats and tag overlap are unchanged; they are Phases 37–43.
+
+## After Phase 37 (demand)
+
+The college has a reputation, which moves the applicant pool and the yield. Phase 36 enrolment is given for comparison.
+
+| Archetype | Seed | Reputation, Y10/20/30/40/50 | Cash cover, Y10/20/30/40/50 (years) | Demand, −20 teaching | Students (Phase 36) | Mark · rank |
+| --------- | ---- | --------------------------- | ----------------------------------- | -------------------- | ------------------- | ----------- |
+| steward   | 4    | 47 / 61 / 68 / 73 / 71      | 0.76 / 0.34 / 0.99 / 0.79 / 1       | -15.8%               | 3116 (1797)         | A · 1       |
+| steward   | 11   | 44 / 70 / 74 / 69 / 75      | 0.68 / 0.52 / 0.78 / 0.78 / 0.94    | -10.7%               | 3419 (1670)         | B · 3       |
+| steward   | 21   | 48 / 61 / 68 / 76 / 76      | 0.76 / 0.37 / 0.77 / 0.77 / 0.77    | -17.0%               | 3105 (1757)         | A · 1       |
+| growth    | 4    | 46 / 51 / 60 / 63 / 63      | 0.3 / 0.33 / 0.81 / 0.75 / 0.76     | -5.5%                | 2119 (1550)         | B · 7       |
+| growth    | 11   | 50 / 54 / 58 / 64 / 56      | 0.29 / 0.09 / 0.74 / 0.64 / 0.75    | -10.9%               | 2198 (609)          | C · 15      |
+| growth    | 21   | 44 / 51 / 57 / 60 / 62      | 0.47 / 0.11 / 0.3 / 0.75 / 0.77     | -15.1%               | 2212 (1580)         | B · 9       |
+| frugal    | 4    | 48 / 44 / 22 / 16 / 15      | 0.78 / 1.16 / 1.86 / 2.22 / 2.38    | -0.1%                | 390 (1036)          | D · 25      |
+| frugal    | 11   | 54 / 47 / 37 / 16 / 15      | 0.78 / 1.13 / 1.45 / 2.38 / 2.22    | -12.1%               | 379 (1014)          | D · 25      |
+| frugal    | 21   | 54 / 50 / 40 / 17 / 14      | 0.78 / 1.14 / 1.69 / 2.8 / 2.93     | -11.3%               | 387 (1008)          | D · 25      |
+
+- **Demand** now answers to teaching: a 20-point teaching drop at Year 25 costs 11–17% of the pool four years later on seven of nine runs. Two runs fall short. On frugal seed 4 the reputation is already at the floor, so the pool has nothing left to lose. On growth seed 4 the drop is 5.5%; the cause was not investigated.
+- **The steward** is rewarded: its reputation settles in the 70s, its pool grows by about half, and it keeps rank 1–3 with a larger college. Its cash cover stays in band because the sweep takes the extra surplus.
+- **The frugal college** is punished within a decade of its first graduates: its reputation falls to the floor and its enrolment falls to about 380.
+- The three open Phase 21 audit findings (A1 teaching, A2 estate ×2) are promoted from `it.fails` to `it`.

@@ -296,6 +296,8 @@ seed 21: Y31 fund $0.11M vs control $0.15M (−23.6%), classes marked overcrowde
 
 ### A1. Teaching is nearly free to abandon
 
+**Closed in Phase 37.** Teaching is now the largest part of the college's reputation (`src/sim/reputation.ts`), which moves the applicant pool and the yield; the test is promoted to `it`.
+
 `src/sim/audit.phase-21.test.ts > closing every classroom for 25 years is not
 a way to get richer` (`it.fails`).
 
@@ -319,6 +321,8 @@ because the students it loses cost more than they brought. The direction is the
 finding, not the size.
 
 ### A2. The estate is profitable to abandon
+
+**Closed in Phase 37.** The state of the buildings is a sixth of the college's reputation, and beauty counts a landmark and a quad for their condition, so a ruin keeps only its trees; both tests are promoted to `it`.
 
 `src/sim/audit.phase-21.test.ts > letting the campus fall down costs the
 college its money or its students` and `> a campus of ruins is not still

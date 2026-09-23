@@ -29,7 +29,9 @@ describe('what the guidebooks say', () => {
     expect(a.perception.tags).not.toEqual(b.perception.tags);
     const pa = a.people.lastAdmissions!;
     const pb = b.people.lastAdmissions!;
-    expect(pb.applicants).toBeGreaterThan(pa.applicants * 2);
+    // A third more, not twice (Phase 37): the pool now also answers to the
+    // teaching, and the dear college teaches better than the bargain.
+    expect(pb.applicants).toBeGreaterThan(pa.applicants * 1.2);
     expect(pa.quality).toBeGreaterThan(pb.quality);
   });
 

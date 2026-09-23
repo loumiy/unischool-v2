@@ -136,7 +136,15 @@ describe('the offer is made at Convocation and answered there (DD §3.3)', () =>
     const declined = tickRunWeeks(run, 1, defaultResolution);
     expect(declined.state.ambitions.offered).toBeNull();
     expect(declined.state.ambitions.active).toEqual([]);
-    expect(declined.state.distress.confidence).toBe(before);
+    // Against a control, not against last week: the same week moves the
+    // board's confidence for its own reasons.
+    const control = tickRunWeeks(
+      { ...run, state: { ...run.state, ambitions: { ...run.state.ambitions, offered: null } } },
+      1,
+      defaultResolution,
+    );
+    expect(declined.state.distress.confidence).toBe(control.state.distress.confidence);
+    expect(before).toBeGreaterThan(0);
     expect(entriesOfKind(declined.state, 'ambitionDeclined')).toHaveLength(1);
   });
 
@@ -307,6 +315,9 @@ describe('nothing in the pool is unreachable (the Phase 18 discipline)', () => {
     played(21, 50, watch, { maintenanceFunding: 0, drawRate: 0.08, selectivity: 0.3, hireCap: 3 });
     played(13, 50, watch, { tuition: 8_000, drawRate: 0.02 });
     played(31, 50, watch, { selectivity: 0.85, tuition: 70_000 });
+    // One that hires to open everything (Phase 37: the scripted colleges
+    // open no more programmes than their rosters can staff).
+    played(8, 50, watch, { hireCap: 100 });
 
     const why = (def: (typeof AMBITIONS)[number], clauses: Record<string, number | undefined>) =>
       Object.entries(clauses)

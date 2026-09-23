@@ -72,8 +72,10 @@ describe('audit A1 — what teaching is worth (DD §7.2, guardrail §17.1)', () 
   // true; so the claim is now the one that would mean it had been fixed:
   // closing every classroom costs at least a tenth of what the college has.
   // Phase 31's to make true.
-  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
-  it.fails('closing every classroom for 25 years costs the college dearly', () => {
+  // Promoted in Phase 37: teaching is the largest part of what families
+  // say about a college (reputation.ts), and a college with no classes
+  // soon has few applicants and the tuition to match.
+  it('closing every classroom for 25 years costs the college dearly', () => {
     for (const seed of SEEDS) {
       const staffed = reading(played(seed, 25).state);
       const idle = reading(played(seed, 25, empty).state);
@@ -113,8 +115,9 @@ describe('audit A2 — what the estate is worth (DD §6.3, guardrail §17.1)', (
     }
   });
 
-  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
-  it.fails('a campus of ruins is not still prettier than the average campus', () => {
+  // Promoted in Phase 37: a landmark counts for its condition and a quad
+  // for the estate's, so a ruin keeps only its trees.
+  it('a campus of ruins is not still prettier than the average campus', () => {
     // Upkeep is a quarter of beauty (tuning.ts BEAUTY_WEIGHTS), so a campus
     // where every building stands at condition zero still scores above the
     // neutral 50 that the applicant pool is measured against — and the
@@ -125,8 +128,10 @@ describe('audit A2 — what the estate is worth (DD §6.3, guardrail §17.1)', (
     }
   });
 
-  // Owned by Phase 31 (balance): a number, not a rule (Phase 21L re-aim).
-  it.fails('letting the campus fall down costs the college its money or its students', () => {
+  // Promoted in Phase 37: the buildings the students lived in are a sixth
+  // of what their families say about the place (reputation.ts), and the
+  // talk reaches the applicant pool.
+  it('letting the campus fall down costs the college its money or its students', () => {
     for (const seed of SEEDS) {
       const kept = reading(played(seed, 30, undefined, KEPT).state);
       const ruins = reading(played(seed, 30, undefined, NEGLECTED).state);

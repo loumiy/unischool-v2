@@ -1,9 +1,9 @@
 {
   "readings": {
     "enrolled": "Everyone on the books this year, across the four class years.",
-    "applicants": "Who applied: the market's interest, scaled by prestige, beauty and the sticker against the market's.",
+    "applicants": "Who applied: the market's interest, scaled by prestige, reputation, beauty and the sticker against the market's.",
     "admitted": "How many the office let in: the pool times the admit rate the selectivity sets.",
-    "yield": "The share of the admitted who come; it falls as the sticker rises.",
+    "yield": "The share of the admitted who come. It falls as the sticker rises and rises with the reputation.",
     "classSize": "The class that results, capped by the beds and the triples allowance.",
     "quality": "Mean applicant quality of the admitted, 0–100; a selective office skims the top of the pool.",
     "tuition": "The sticker: what every enrolled student is billed, before aid.",
@@ -37,7 +37,14 @@
     "landmarks": "The buildings that are something to look at, by their marks in the catalogue, against a full set.",
     "upkeep": "The open buildings' mean condition: backlog is ugly.",
     "lifeTerm": "What the student centre, the health centre, the recreation centre and the fields are worth to the students: full when between them they reach everyone, a share when they reach a share.",
-    "eventsTerm": "What the last few events left the students feeling. It fades over a couple of years."
+    "eventsTerm": "What the last few events left the students feeling. It fades over a couple of years.",
+    "reputation": "What families say about the place, 0–100. Once a year, at Commencement, it moves part of the way towards what the college's students are getting. Above 50 it grows the applicant pool and the yield; below 50 it shrinks them.",
+    "reputationReading": "What this year gives them to say: the four causes below, weighted. The reputation moves towards it at the next Commencement.",
+    "reputationPool": "How much the reputation is moving the applicant pool, before price, prestige and the layout.",
+    "repTeaching": "The teaching the students are getting now. It counts most.",
+    "repSatisfaction": "How the enrolled classes rate the place.",
+    "repOutcomes": "How the last four classes turned out: distinguished graduates count in full, placed graduates count for three fifths.",
+    "repCondition": "The state of the buildings the students live and learn in."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",
@@ -49,6 +56,8 @@
     "outcomesTitle": "How the classes turned out",
     "nextClass": "The {label} would graduate today with {distinguished} distinguished, {placed} placed and {adrift} adrift.",
     "housingAhead": "Next spring's admissions file will close at about {cap}: the {beds} beds that will stand when that class arrives, with triples, less the classes still here. This year's class is {size}.",
-    "housingShort": "That is fewer than this year. A residence hall takes {weeks} weeks and sleeps {hallBeds}; ground broken before Admissions Day is counted."
+    "housingShort": "That is fewer than this year. A residence hall takes {weeks} weeks and sleeps {hallBeds}; ground broken before Admissions Day is counted.",
+    "reputationTitle": "Reputation",
+    "reputationQuiet": "Nobody has graduated yet, so there is nobody to talk. A new college is taken at its word."
   }
 }

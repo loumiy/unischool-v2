@@ -703,6 +703,21 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v28 → v29 (Phase 37): what families say about the place. An older
+  // college starts at the neutral line and finds its level within a few
+  // Commencements.
+  28: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 29,
+      state: {
+        ...state,
+        people: { reputation: 50, ...((state.people ?? {}) as Record<string, unknown>) },
+        schemaVersion: 29,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

@@ -197,7 +197,10 @@ describe('the drive, and what it leaves behind', () => {
   it('cools the classes it asks, which is what stops it being free', () => {
     const run = withLedger();
     const staffed = { ...run, state: withVp(run.state) };
-    const def = launchable(staffed.state)[0]!;
+    // A case some class remembers: the first on the list need not be one.
+    const def = launchable(staffed.state).find((d) =>
+      staffed.state.people.alumni.some((a) => resonanceOf(a, d) > 1),
+    )!;
     const asked = new Set(
       staffed.state.people.alumni.filter((a) => resonanceOf(a, def) > 1).map((a) => a.classYear),
     );

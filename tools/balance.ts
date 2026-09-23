@@ -328,6 +328,7 @@ interface Middle {
   titleRate: number; // titles per varsity season
   demandResponse: number | null; // applicant-pool change after a 20-point teaching drop at Year 25
   idleBeats: number; // clock-stopping beats with nothing to decide
+  reputation: number[]; // the talk at the gate (Phase 37), at Years 10, 20, 30, 40 and 50
   tagsEver: string[];
 }
 
@@ -404,6 +405,7 @@ export function measure(a: Archetype, seed: number): Report {
   const spans = [0, 0, 0, 0];
   const money: Report['money'] = [];
   const cashCover: number[] = [];
+  const reputation: number[] = [];
   const stings: number[][] = [[], [], [], [], []];
   let saturatedYears = 0;
   let idleBeats = 0;
@@ -443,6 +445,7 @@ export function measure(a: Archetype, seed: number): Report {
       const t = run.state.treasury;
       const spend = Object.values(t.budget.expenses).reduce((x, v) => x + v, 0);
       cashCover.push(spend > 0 ? t.cash / spend : 0);
+      reputation.push(Math.round(run.state.people.reputation));
     }
     if (week % (10 * WEEKS_PER_YEAR) === 40) {
       const t = run.state.treasury;
@@ -470,6 +473,7 @@ export function measure(a: Archetype, seed: number): Report {
   {
     const spend = Object.values(s.treasury.budget.expenses).reduce((x, v) => x + v, 0);
     cashCover.push(spend > 0 ? s.treasury.cash / spend : 0);
+    reputation.push(Math.round(s.people.reputation));
   }
   const inWindow = (w: number) => w >= 15 * WEEKS_PER_YEAR && w < 35 * WEEKS_PER_YEAR;
   const asked = entriesOfKind(s, 'eventFired').filter((e) => inWindow(e.week)).length;
@@ -494,6 +498,7 @@ export function measure(a: Archetype, seed: number): Report {
     titleRate: seasons.length ? seasons.filter((e) => e.title).length / seasons.length : 0,
     demandResponse: response === null ? null : Number((response as number).toFixed(3)),
     idleBeats,
+    reputation,
     tagsEver: [...new Set(entriesOfKind(s, 'tagEarned').map((e) => e.tag))],
   };
   return {
@@ -553,6 +558,7 @@ function middleLine(r: Report): string {
     `titles ${(m.titleRate * 100).toFixed(0)}% of seasons ${flag(m.titleRate === 0 || inside(m.titleRate, B.titleRate))}`,
     `demand ${pct(m.demandResponse)} for −20 teaching ${flag(m.demandResponse !== null && inside(m.demandResponse, B.demandResponse))}`,
     `idle beats ${m.idleBeats} ${flag(inside(m.idleBeats, B.idleBeats))}`,
+    `reputation ${m.reputation.join('/')}`,
   ].join(' · ');
 }
 

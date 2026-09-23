@@ -45,6 +45,13 @@ const fileSchema = obj({
     upkeep: str,
     lifeTerm: str,
     eventsTerm: str,
+    reputation: str,
+    reputationReading: str,
+    reputationPool: str,
+    repTeaching: str,
+    repSatisfaction: str,
+    repOutcomes: str,
+    repCondition: str,
   }),
   words: obj({
     noClass: str,
@@ -57,6 +64,8 @@ const fileSchema = obj({
     nextClass: str,
     housingAhead: str,
     housingShort: str,
+    reputationTitle: str,
+    reputationQuiet: str,
   }),
 });
 
