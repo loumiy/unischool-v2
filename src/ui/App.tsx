@@ -1,6 +1,6 @@
 import { buildingById } from '../content/buildings.ts';
 import type { CharterId } from '../content/charters.ts';
-import { useEffect, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { describeEntry } from '../content/busLines.ts';
 import type { PaletteChoice } from '../content/palettes.ts';
 import {
@@ -103,6 +103,11 @@ export default function App() {
   }, []);
 
   const state = run?.state ?? null;
+  // The map draws a week behind when it must (Phase 52): at 8× a week lands
+  // every few frames, and drawing each one in full dropped a frame in four.
+  // Deferred, React draws the newest week it has time for and skips the
+  // rest; the chrome, the clock and the questions stay current.
+  const mapState = useDeferredValue(state);
   const identity = state?.identity ?? null;
   const started = state !== null && state.phase !== 'founding';
   const siting = state?.phase === 'siting';
@@ -352,7 +357,7 @@ export default function App() {
   return (
     <div className={dulled ? 'austerity' : undefined}>
       <CampusMap
-        state={state}
+        state={mapState ?? state}
         placingId={effectivePlacingId}
         onArmPlacement={setPlacingId}
         tool={effectiveTool}

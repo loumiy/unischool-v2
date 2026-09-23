@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react';
 import { buildingById } from '../../content/buildings.ts';
 import { GRID_WIDTH, TERRAIN, type Campus, type Placement } from '../../sim/index.ts';
 import { boxFaces, project, type Camera, type Pt } from './iso.ts';
+import { layoutKey } from './layout.ts';
 import { doors, walkGrid } from './routes.ts';
 import { up } from './scale.ts';
 
@@ -95,13 +96,15 @@ function LifeLayer({
   cars: number;
   camera: Camera;
 }) {
+  // What stands where, not how worn it is (Phase 52).
+  const layout = layoutKey(campus.placements);
   const stands = useMemo(
     () =>
       campus.placements.filter(
         (p) => p.status === 'open' && buildingById(p.buildingId).features?.includes('stands'),
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [campus.placements, camera],
+    [layout, camera],
   );
   const queues = useMemo(() => {
     const grid = walkGrid(campus);
@@ -109,7 +112,7 @@ function LifeLayer({
       .filter((s) => buildingById(s.door.buildingId).category === 'dining')
       .map((s) => s.door);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [campus.placements, campus.paths, camera]);
+  }, [layout, campus.paths, camera]);
   return (
     <g className="campus-life" aria-hidden="true">
       {gameWeek && stands.map((p) => <Crowd key={p.id} p={p} />)}

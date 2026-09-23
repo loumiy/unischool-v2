@@ -29,6 +29,9 @@ export function groundGeometry(): { plate: string; grid: string } {
   return { plate, grid: seg.join('') };
 }
 
+// Stream tiles to a glint path.
+const GLINT_RUN = 6;
+
 // THE FRAME (DD §6.1): the stream and the road, as two filled paths of tile
 // subpaths, plus the road's centre line and the stream's lighter bank.
 export function TerrainLayer({ camera }: { camera: Camera }) {
@@ -43,14 +46,28 @@ export function TerrainLayer({ camera }: { camera: Camera }) {
     const line = rows.length
       ? `M${a.x.toFixed(1)},${a.y.toFixed(1)}L${b.x.toFixed(1)},${b.y.toFixed(1)}`
       : '';
-    return { water, road, line };
+    // The glint in short runs of the stream (Phase 52): one path over the
+    // whole stream is one rectangle over most of the map, and an animated
+    // stroke repaints its rectangle every frame.
+    const glint: string[] = [];
+    for (let i = 0; i < TERRAIN.stream.length; i += GLINT_RUN) {
+      glint.push(
+        TERRAIN.stream
+          .slice(i, i + GLINT_RUN)
+          .map((t) => sub(boxFaces(t.col, t.row, 1, 1, 0, 0).top))
+          .join(''),
+      );
+    }
+    return { water, road, line, glint };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera]);
   return (
     <g className="campus-terrain" aria-hidden="true">
       {d.water && <path className="terrain-water" d={d.water} />}
       {/* The light on the water (Phase 45): a slow glint along the stream. */}
-      {d.water && <path className="terrain-water-glint" d={d.water} />}
+      {d.glint.map((g, i) => (
+        <path key={i} className="terrain-water-glint" d={g} />
+      ))}
       {d.road && <path className="terrain-road" d={d.road} />}
       {d.line && <path className="terrain-road-line" d={d.line} />}
     </g>

@@ -565,7 +565,7 @@ export const SATISFACTION_TOP_RETURN = 0.4;
 // (ATHLETICS_BUDGET_SCHEDULE of the budget's own edge). The rival raises
 // its game: it closes RIVAL_MATCH of any gap to the college.
 export const ATHLETICS_CLIMB_FROM = 30;
-export const ATHLETICS_CLIMB = 0.35;
+export const ATHLETICS_CLIMB = 0.42;
 export const ATHLETICS_BUDGET_SCHEDULE = 0.6;
 export const RIVAL_MATCH = 0.6;
 

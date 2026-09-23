@@ -18,6 +18,10 @@ export interface Series {
 const W = 520;
 const H = 150;
 const PAD = { top: 12, right: 64, bottom: 22, left: 36 };
+// The end labels (Phase 52): about this wide a character at 10px, and
+// never closer together than a line.
+const CHAR_W = 5.6;
+const LABEL_GAP = 11;
 const DEFAULT_COLOURS = [
   'var(--school-primary)',
   'var(--ink-muted)',
@@ -53,12 +57,18 @@ export default function HistoryChart({
   const lo = yMin ?? Math.min(...ys);
   const hi = yMax ?? Math.max(...ys);
   const span = hi - lo || 1;
-  const sx = (x: number) => PAD.left + ((x - x0) / (x1 - x0 || 1)) * (W - PAD.left - PAD.right);
+  const sx = (x: number) => PAD.left + ((x - x0) / (x1 - x0 || 1)) * (W - PAD.left - right);
   const sy = (y: number) => {
     const t = (y - lo) / span;
     return PAD.top + (invert ? t : 1 - t) * (H - PAD.top - PAD.bottom);
   };
   const fmt = (s: Series, y: number) => (s.format ? s.format(y) : String(Math.round(y)));
+  // Room on the right for the longest end label, so none runs off the edge.
+  const labelOf = (s: Series) => `${s.name} ${fmt(s, s.points[s.points.length - 1]!.y)}`;
+  const right = Math.max(
+    PAD.right,
+    ...series.filter((s) => s.points.length).map((s) => labelOf(s).length * CHAR_W + 10),
+  );
   const summary = series
     .map((s) => {
       const first = s.points[0];
@@ -68,6 +78,18 @@ export default function HistoryChart({
         : s.name;
     })
     .join('; ');
+  // The end labels, spread so no two share a line: sorted by where their
+  // lines end, and each pushed below the one above it if they would touch.
+  const ends = series
+    .map((s, i) => ({ i, y: s.points.length ? sy(s.points[s.points.length - 1]!.y) : 0 }))
+    .sort((a, b) => a.y - b.y);
+  const labelY = new Map<number, number>();
+  let floor = -Infinity;
+  for (const e of ends) {
+    const y = Math.max(e.y, floor + LABEL_GAP);
+    labelY.set(e.i, y);
+    floor = y;
+  }
   return (
     <figure className="history-chart">
       <figcaption id={`${id}-t`}>{title}</figcaption>
@@ -82,7 +104,7 @@ export default function HistoryChart({
           className="chart-axis"
           x1={PAD.left}
           y1={H - PAD.bottom}
-          x2={W - PAD.right}
+          x2={W - right}
           y2={H - PAD.bottom}
         />
         <line className="chart-axis" x1={PAD.left} y1={PAD.top} x2={PAD.left} y2={H - PAD.bottom} />
@@ -95,7 +117,7 @@ export default function HistoryChart({
         <text className="chart-tick" x={PAD.left} y={H - 6}>
           {xLabel} {x0}
         </text>
-        <text className="chart-tick" x={W - PAD.right} y={H - 6} textAnchor="end">
+        <text className="chart-tick" x={W - right} y={H - 6} textAnchor="end">
           {x1}
         </text>
         {series.map((s, i) => {
@@ -107,8 +129,13 @@ export default function HistoryChart({
           return (
             <g key={s.name}>
               <path className="chart-line" d={d} stroke={colour} />
-              <text className="chart-end" x={sx(last.x) + 5} y={sy(last.y) + 4} fill={colour}>
-                {s.name} {fmt(s, last.y)}
+              <text
+                className="chart-end"
+                x={sx(last.x) + 5}
+                y={(labelY.get(i) ?? sy(last.y)) + 4}
+                fill={colour}
+              >
+                {labelOf(s)}
               </text>
             </g>
           );
