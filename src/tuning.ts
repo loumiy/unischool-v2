@@ -169,6 +169,8 @@ export const ERA_MIN_YEARS = 4;
 export const ERA_MAX = 9;
 // A stretch longer than this is split where something happened in it.
 export const ERA_MAX_YEARS = 12;
+// The run formally ends at the turn of this year (DD §2.3).
+export const ENDING_YEAR = 50;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.

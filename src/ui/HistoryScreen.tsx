@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CHRONICLE_WORDS } from '../content/chronicle.ts';
+import { REPORT_WORDS } from '../content/report.ts';
 import { describeEntry } from '../content/busLines.ts';
 import { leagueSchoolById } from '../content/league.ts';
 import { fillWords } from '../content/people.ts';
@@ -85,6 +86,12 @@ export default function HistoryScreen({ state }: { state: GameState }) {
           </button>
         </div>
         <p className="treasury-note">{w.draft}</p>
+        {state.ending.epilogue && (
+          <p className="treasury-note">
+            <span className="epilogue-chip">{REPORT_WORDS.epilogue}</span>{' '}
+            {REPORT_WORDS.epilogueNote}
+          </p>
+        )}
         <ol className="eras">
           {c.eras.map((e) => (
             <li key={`${e.from}-${e.kind}`} className={`era era-${e.kind}`}>
@@ -95,6 +102,16 @@ export default function HistoryScreen({ state }: { state: GameState }) {
                 </span>
               </div>
               <p className="era-body">{e.lines.slice(1).join(' ')}</p>
+            </li>
+          ))}
+          {state.ending.addenda.map((a) => (
+            <li key={`add-${a.from}`} className="era era-addendum">
+              <div className="era-head">
+                <span className="era-name">
+                  {fillWords(REPORT_WORDS.addendum, { from: a.from, to: a.to })}
+                </span>
+              </div>
+              <p className="era-body">{a.lines.slice(1).join(' ')}</p>
             </li>
           ))}
         </ol>

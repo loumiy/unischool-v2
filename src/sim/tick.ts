@@ -14,6 +14,7 @@ import { peopleWeek } from './people.ts';
 import { treasuryWeek } from './treasury.ts';
 import { leagueWeek } from './league.ts';
 import { athleticsWeek } from './athletics.ts';
+import { endingWeek } from './ending.ts';
 
 // One week of the world (DD §15): `tick(state) → state`, pure, no I/O, no
 // timers. The driver decides WHEN a tick happens; nothing in here knows about
@@ -43,6 +44,7 @@ export function tick(state: GameState): GameState {
     next = eventsWeek(next);
     next = leagueWeek(next);
     next = athleticsWeek(next);
+    next = endingWeek(next);
     next = fireBeat(next);
   }
   return next;

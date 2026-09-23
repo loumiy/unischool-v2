@@ -238,6 +238,7 @@ export default function Toolbar({
             className={`toolbar-clock ${heldFor ? 'held' : ''}`}
             title={heldFor ? `The clock holds for ${heldFor}` : undefined}
           >
+            {state.ending.epilogue && <span className="epilogue-chip">Epilogue</span>}{' '}
             {formatClock(state.clock)}
           </span>
           <DayTicker weekProgress={weekProgress} held={heldFor !== null} />

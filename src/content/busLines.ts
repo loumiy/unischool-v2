@@ -240,6 +240,10 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       );
       break;
     }
+    case 'runEnded':
+      vars.year = String(entry.year);
+      vars.label = `${/^[AEF]/.test(entry.mark) ? 'an' : 'a'} ${entry.mark}`;
+      break;
     case 'facultyPoached':
       vars.name = entry.name;
       vars.label = leagueSchoolById(entry.schoolId).name;

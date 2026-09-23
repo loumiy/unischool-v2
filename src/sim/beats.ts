@@ -28,7 +28,8 @@ export function clockHeld(state: GameState): boolean {
   return (
     state.pendingBeat !== null ||
     state.distress.pendingLetter !== null ||
-    pendingSeismic(state) !== null
+    pendingSeismic(state) !== null ||
+    state.ending.pending
   );
 }
 
@@ -55,6 +56,8 @@ export function defaultResolution(state: GameState): Action | null {
     };
   }
   if (state.distress.pendingLetter !== null) return { type: 'readLetter' };
-  if (state.pendingBeat === null) return null;
-  return { type: 'resolveBeat', beatId: state.pendingBeat };
+  if (state.pendingBeat !== null) return { type: 'resolveBeat', beatId: state.pendingBeat };
+  // The Final Report, read; the college goes on (DD §2.3).
+  if (state.ending.pending) return { type: 'enterEpilogue' };
+  return null;
 }
