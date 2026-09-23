@@ -330,3 +330,70 @@ describe('student life (DD §8.3, §8.5; Phase 21I)', () => {
     expect(studentLifeTerm(withCentre, total)).toBeCloseTo(STUDENT_LIFE_POINTS * reach, 6);
   });
 });
+
+describe('buildings that show the college off (Phase 21J)', () => {
+  const open = (id: string, buildingId: string) => ({
+    id,
+    buildingId,
+    col: 50,
+    row: 50,
+    w: 1,
+    h: 1,
+    status: 'open' as const,
+    completesWeek: null,
+    openedWeek: 0,
+    backlog: 0,
+    condition: 1,
+  });
+
+  it('draws applicants through the admissions office, capped', async () => {
+    const { buildingDrawFactor } = await import('./people.ts');
+    const { BUILDING_DRAW_CAP } = await import('../tuning.ts');
+    const s = opened().state;
+    const before = runAdmissions(s, s.people.terms).applicants;
+    expect(buildingDrawFactor(s)).toBe(1);
+    const withOffice = {
+      ...s,
+      campus: {
+        ...s.campus,
+        placements: [...s.campus.placements, open('ao', 'admissions-office')],
+      },
+    };
+    expect(buildingDrawFactor(withOffice)).toBeCloseTo(1.06, 6);
+    expect(runAdmissions(withOffice, s.people.terms).applicants).toBeGreaterThan(before);
+    // Every drawing building at once still stops at the cap.
+    const drawing = [
+      'admissions-office',
+      'visitor-center',
+      'museum',
+      'stadium',
+      'research-institute',
+    ];
+    const all = {
+      ...s,
+      campus: {
+        ...s.campus,
+        placements: [
+          ...s.campus.placements,
+          ...drawing.map((b, i) => open(`d${i}`, b)),
+          open('d9', 'research-institute'),
+        ],
+      },
+    };
+    expect(buildingDrawFactor(all)).toBe(1 + BUILDING_DRAW_CAP);
+  });
+
+  it('lifts alumni giving through the alumni house', async () => {
+    const { annualGiving, buildingGivingFactor } = await import('./alumni.ts');
+    const run = tickRunWeeks(opened(), WEEKS_PER_YEAR * 6, defaultResolution);
+    const s = run.state;
+    const base = annualGiving(s);
+    expect(base).toBeGreaterThan(0);
+    const withHouse = {
+      ...s,
+      campus: { ...s.campus, placements: [...s.campus.placements, open('ah', 'alumni-house')] },
+    };
+    expect(buildingGivingFactor(withHouse)).toBeCloseTo(1.08, 6);
+    expect(annualGiving(withHouse)).toBe(Math.round(base * 1.08));
+  });
+});

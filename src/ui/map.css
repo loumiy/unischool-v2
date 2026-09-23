@@ -331,6 +331,47 @@
   vector-effect: non-scaling-stroke;
 }
 
+/* Courts, the track and the garden (Phase 21J). */
+.ground-court-apron {
+  fill: #7d8a78;
+}
+.ground-court {
+  fill: #4f7d6a;
+}
+.ground-fence {
+  fill: none;
+  stroke: rgba(40, 48, 44, 0.55);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+}
+.ground-track {
+  fill: #b0573f;
+}
+.ground-lane {
+  fill: none;
+  stroke: rgba(255, 253, 246, 0.5);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+}
+.ground-stand {
+  fill: #c9c2b2;
+}
+.ground-stand-riser {
+  fill: #9a927f;
+}
+.ground-gravel {
+  fill: #d8ccb0;
+}
+.ground-hedge {
+  fill: #4c6b3c;
+}
+.ground-bed {
+  fill: #b86a7a;
+}
+.ground-basin {
+  fill: #6ba3bd;
+}
+
 /* Trees. */
 .campus-tree-shadow {
   fill: rgba(42, 56, 28, 0.2);
@@ -870,4 +911,22 @@
   background: var(--school-secondary);
   border-color: var(--school-primary);
   color: var(--school-on-secondary);
+}
+
+/* Campus furniture (Phase 21J). */
+.fountain-jet {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.observatory-slit {
+  fill: none;
+  stroke: rgba(40, 46, 56, 0.7);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.season-winter .ground-gravel,
+.season-winter .ground-court-apron {
+  fill: color-mix(in srgb, #d8ccb0, #eef2f5 calc(20% + var(--snow, 0) * 70%));
 }

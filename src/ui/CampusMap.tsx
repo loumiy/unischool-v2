@@ -279,7 +279,13 @@ function CastShadows({
       // A sign's plot is two tiles so it can be turned to face the road, but
       // the sign in the middle of it is five metres of board: the footprint
       // would cast the shadow of a wall (Phase 21D).
-      if (def.form === 'sign' && p.status !== 'building') continue;
+      // The same for the statue and the fountain (Phase 21J): a figure on a
+      // plinth does not shade a nine-metre square of lawn.
+      if (
+        (def.form === 'sign' || def.form === 'statue' || def.form === 'fountain') &&
+        p.status !== 'building'
+      )
+        continue;
       const f = drawnFootprint(p);
       buildings.push(sub(castShadow(f.col, f.row, f.w, f.h, height)));
     }

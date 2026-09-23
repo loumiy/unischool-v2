@@ -5,6 +5,7 @@ import {
   type MemoryCondition,
 } from '../content/alumni.ts';
 import {
+  BUILDING_GIVING_CAP,
   GIVING_MATURITY_YEARS,
   MEMORY_BEDS_LOST,
   GIVING_PER_ALUM,
@@ -212,8 +213,20 @@ export function givingOf(alumni: AlumniClass, year: number): number {
   return Math.round(alumni.size * GIVING_PER_ALUM * warmth * means * maturityOf(yearsOut));
 }
 
+// Somewhere to come back to (Phase 21J): the alumni house's share on top
+// of what the classes give, capped.
+export function buildingGivingFactor(state: GameState): number {
+  let points = 0;
+  for (const p of state.campus.placements) {
+    if (p.status !== 'open') continue;
+    points += buildingById(p.buildingId).capacity?.giving ?? 0;
+  }
+  return 1 + Math.min(BUILDING_GIVING_CAP, points / 100);
+}
+
 export function annualGiving(state: GameState): number {
-  return state.people.alumni.reduce((t, a) => t + givingOf(a, state.clock.year), 0);
+  const base = state.people.alumni.reduce((t, a) => t + givingOf(a, state.clock.year), 0);
+  return Math.round(base * buildingGivingFactor(state));
 }
 
 // ---------- reunions (DD §8.4) ----------

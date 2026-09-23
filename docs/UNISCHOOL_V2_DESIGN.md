@@ -452,6 +452,8 @@ A small, state-aware music system: a founding theme, a growth theme, a distress 
 | League schools     | 24 (named, crested, persistent within a run)                                                                 |
 | Era name templates | ~30                                                                                                          |
 
+**The catalogue at 1.0 (Phase 21J).** Forty-three types, at least three in every category. Where the DD was silent the phase decided: (1) a building gives what its row says and nothing else — beds, dining seats, teaching seats, student life (§8.3), and two new kinds: **draw**, percentage points on the applicant pool from the buildings a college shows itself off from (the admissions office, the visitor centre, the museum, the stadium, a research institute), summed and capped at 15% beside the layout's own capped factor; and **giving**, percentage points on the year's alumni giving from the alumni house, capped at 15%. (2) Schools are founded in the academic buildings the catalogue marks — Founders Hall, the Academic Hall, and now the arts building, the science centre and the engineering building — so a school can have the building its subject wants. (3) Landmarks are campus furniture — a statue, a fountain, a memorial gate walkers pass through, a freestanding bell tower dressed in the campus's motif, a formal garden — and have their own tab in the build menu again. (4) Open ground is marked as what it is: a pitch, courts, a track with stands, a garden. The footbridge the stream wants is deferred to Phase 21L, which owns reachability.
+
 ---
 
 ## §15. Technical Architecture

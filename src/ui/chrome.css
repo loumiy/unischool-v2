@@ -770,6 +770,18 @@ button.build-tile {
   color: var(--ink-muted);
   line-height: 1.2;
 }
+.build-tile-gives {
+  font-size: var(--text-xs);
+  line-height: 1.2;
+  color: var(--ink);
+}
+.build-tile.done .build-tile-gives {
+  color: var(--ink-muted);
+}
+.build-tile.available:hover:not(:disabled) .build-tile-gives,
+.build-tile.placing .build-tile-gives {
+  color: var(--school-on-secondary);
+}
 .build-tile-foot {
   margin-top: auto;
   font-family: var(--display);

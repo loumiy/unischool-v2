@@ -1,4 +1,4 @@
-import { buildingById } from '../content/buildings.ts';
+import { buildingById, BUILDINGS } from '../content/buildings.ts';
 import { RANKS, type RankId } from '../content/faculty.ts';
 import { programById, schoolById, tierById, TIERS, type TierId } from '../content/schools.ts';
 import {
@@ -64,8 +64,12 @@ export function foundingAcademics(): Academics {
 }
 
 // Buildings that can house a school: Founders Hall, the multi-purpose
-// hall (DD §2.4), and every Academic Hall.
-export const HALL_BUILDINGS: readonly string[] = ['founders-hall', 'academic-hall'];
+// hall (DD §2.4), every Academic Hall, and since Phase 21J the arts
+// building, the science centre and the engineering building — the rows
+// the catalogue marks housesSchool.
+export const HALL_BUILDINGS: readonly string[] = BUILDINGS.filter((b) => b.housesSchool).map(
+  (b) => b.id,
+);
 
 export function isHall(p: Placement): boolean {
   return HALL_BUILDINGS.includes(p.buildingId);

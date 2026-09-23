@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BUILDINGS, buildingById } from '../content/buildings.ts';
+import {
+  BUILDING_CATEGORIES,
+  BUILDINGS,
+  buildingById,
+  FURNITURE_FORMS,
+} from '../content/buildings.ts';
+import { HALL_BUILDINGS } from './academics.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import { applyAction, canApply } from './actions.ts';
 import { footprintIsClear, hasFoundersHall, orientedFootprint, placementAt } from './campus.ts';
@@ -58,11 +64,26 @@ describe('terrain (DD §6.1)', () => {
 });
 
 describe('catalogue', () => {
-  it('seeds every DD §14 category but landmarks', () => {
-    const cats = new Set(BUILDINGS.map((b) => b.category));
-    for (const c of ['academic', 'residential', 'dining', 'life', 'athletics', 'admin'])
-      expect(cats.has(c as never)).toBe(true);
-    expect(BUILDINGS.length).toBeGreaterThanOrEqual(10);
+  it("fills DD §14's budget of about forty types, several in every category", () => {
+    expect(BUILDINGS.length).toBeGreaterThanOrEqual(40);
+    for (const c of BUILDING_CATEGORIES) {
+      expect(BUILDINGS.filter((b) => b.category === c).length, c).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('founds schools in the academic buildings the catalogue marks (Phase 21J)', () => {
+    expect(HALL_BUILDINGS).toEqual(
+      expect.arrayContaining(['founders-hall', 'academic-hall', 'science-center', 'arts-building']),
+    );
+    expect(HALL_BUILDINGS).not.toContain('library');
+  });
+
+  it('keeps campus furniture doorless and floorless (Phase 21J)', () => {
+    for (const b of BUILDINGS.filter((x) => FURNITURE_FORMS.includes(x.form))) {
+      expect(b.door, b.id).toBeNull();
+      expect(b.storeys, b.id).toBe(0);
+      expect(b.category, b.id).toBe('landmark');
+    }
   });
 
   it('marks exactly one landmark, Founders Hall', () => {

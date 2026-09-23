@@ -1,4 +1,10 @@
-import type { BuildingDef, DoorFamily, Form, MaterialKey } from '../../content/buildings.ts';
+import {
+  FURNITURE_FORMS,
+  type BuildingDef,
+  type DoorFamily,
+  type Form,
+  type MaterialKey,
+} from '../../content/buildings.ts';
 import type { Motif } from '../../sim/index.ts';
 import { across, METRES_PER_TILE, STOREY, up } from './scale.ts';
 
@@ -21,6 +27,9 @@ export const MOTIF_INVARIANT_FORMS: readonly Form[] = [
   'works',
   'block',
   'sign',
+  'statue',
+  'fountain',
+  'observatory',
 ];
 
 export function variesByMotif(form: Form): boolean {
@@ -38,7 +47,24 @@ export function variesByMotif(form: Form): boolean {
 // billboard.
 export const SIGN_POST_METRES = 3.4;
 
-const CLEAR_SPAN_METRES: Partial<Record<Form, number>> = { hangar: 10, sign: SIGN_POST_METRES };
+// Campus furniture (Phase 21J), by the height it stands: a figure on its
+// plinth, a fountain's jet, a gate's arch, a bell tower's shaft (its cap
+// rises above, by motif).
+export const STATUE_METRES = 7;
+export const FOUNTAIN_METRES = 4.6;
+export const GATE_METRES = 8.2;
+export const BELL_TOWER_METRES = 21;
+export const BELL_TOWER_CAP_METRES = 6;
+const CLEAR_SPAN_METRES: Partial<Record<Form, number>> = {
+  hangar: 10,
+  sign: SIGN_POST_METRES,
+  statue: STATUE_METRES,
+  fountain: FOUNTAIN_METRES,
+  gate: GATE_METRES,
+  tower: BELL_TOWER_METRES,
+};
+// The observatory's dome, above its one storey.
+export const OBSERVATORY_DOME_METRES = 8.5;
 export const SIGN_BOARD_RISE = up(1.7);
 export const SIGN_BOARD_WIDTH = across(5.4);
 export const SIGN_BOARD_DEPTH = across(0.3);
@@ -48,7 +74,15 @@ export const SIGN_PLINTH_DEEP = across(1.1);
 export const SIGN_PLINTH = up(0.3);
 
 export function storeysOf(def: BuildingDef): number {
-  return def.form === 'grounds' || def.form === 'hangar' || def.form === 'sign' ? 0 : def.storeys;
+  return def.form === 'grounds' || def.form === 'hangar' || FURNITURE_FORMS.includes(def.form)
+    ? 0
+    : def.storeys;
+}
+
+// Is this campus furniture rather than a building: drawn by its own
+// renderer, with no windows, floors or door?
+export function isFurniture(def: BuildingDef): boolean {
+  return FURNITURE_FORMS.includes(def.form);
 }
 
 export function wallHeightOf(def: BuildingDef): number {
