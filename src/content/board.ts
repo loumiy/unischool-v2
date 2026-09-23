@@ -35,6 +35,7 @@ const fileSchema = obj({
     'enter-3': letterSchema,
     'enter-4': letterSchema,
     'enter-5': letterSchema,
+    'exit-4': letterSchema,
     'exit-5': letterSchema,
     recovered: letterSchema,
   }),
@@ -51,6 +52,7 @@ const fileSchema = obj({
     cutsRequired: str,
     cutsNone: str,
     letterPrompt: str,
+    maintenanceRestored: str,
   }),
 });
 

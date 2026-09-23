@@ -5,6 +5,7 @@ import { FOUNDERS_HALL_ID } from './campus.ts';
 import { MOTIFS } from './identity.ts';
 import { replay, type LoggedAction, type Run } from './run.ts';
 import { SCHEMA_VERSION, type GameState } from './state.ts';
+import { MAINTENANCE_FUNDING_DEFAULT } from '../tuning.ts';
 import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
@@ -576,6 +577,32 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v20 → v21 (Phase 21L): the maintenance latch. A college that deferred
+  // maintenance or sat under the interim CFO has lost the level it had set;
+  // the best we can hand back is the default, and a college in neither
+  // holds nothing.
+  20: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const treasury = (state.treasury ?? {}) as Record<string, unknown>;
+    const distress = (state.distress ?? {}) as Record<string, unknown>;
+    const cuts = Array.isArray(distress.cutsTaken) ? distress.cutsTaken : [];
+    const latched =
+      (cuts.includes('deferMaintenance') || distress.rung === 5) &&
+      treasury.maintenanceFunding !== MAINTENANCE_FUNDING_DEFAULT;
+    return {
+      ...raw,
+      version: 21,
+      state: {
+        ...state,
+        treasury: {
+          ownMaintenance: latched ? MAINTENANCE_FUNDING_DEFAULT : null,
+          ...treasury,
+        },
+        distress: { maintenanceRestored: false, ...distress },
+        schemaVersion: 21,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -790,6 +817,10 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     return 'state.distress lists are invalid';
   if (distress.pendingLetter !== null && typeof distress.pendingLetter !== 'string')
     return 'state.distress.pendingLetter is invalid';
+  if (typeof distress.maintenanceRestored !== 'boolean')
+    return 'state.distress.maintenanceRestored is invalid';
+  if (treasury.ownMaintenance !== null && typeof treasury.ownMaintenance !== 'number')
+    return 'state.treasury.ownMaintenance is invalid';
   const academics = s.academics as Record<string, unknown> | undefined;
   if (typeof academics !== 'object' || academics === null) return 'state.academics is invalid';
   if (!Array.isArray(academics.schools) || !Array.isArray(academics.programs))

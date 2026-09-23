@@ -314,7 +314,6 @@ function SchoolGroup({
                       <option key={h.id} value={h.id}>
                         {fillWords(ACADEMIC_WORDS.lines.hallOption, {
                           building: hallName(state, h.id),
-                          id: h.id,
                         })}
                       </option>
                     ))}

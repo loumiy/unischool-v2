@@ -30,6 +30,7 @@ export const MOTIF_INVARIANT_FORMS: readonly Form[] = [
   'statue',
   'fountain',
   'observatory',
+  'bridge',
 ];
 
 export function variesByMotif(form: Form): boolean {
@@ -62,6 +63,7 @@ const CLEAR_SPAN_METRES: Partial<Record<Form, number>> = {
   fountain: FOUNTAIN_METRES,
   gate: GATE_METRES,
   tower: BELL_TOWER_METRES,
+  bridge: 1.9,
 };
 // The observatory's dome, above its one storey.
 export const OBSERVATORY_DOME_METRES = 8.5;

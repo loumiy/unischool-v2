@@ -10,5 +10,6 @@ existing decision that moved can be reviewed in one place.
 Additive DD edits (a new section, a decision where the DD was silent) are not
 listed; they are flagged in their PR bodies as before.
 
-| Phase | DD section | Was | Now | Why |
-| ----- | ---------- | --- | --- | --- |
+| Phase | DD section | Was                                                                                                         | Now                                                                                                                                                   | Why                                                                                                                                                                                 |
+| ----- | ---------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21L   | §6.5       | Founders Hall is a historic candidate like any building, and historic buildings may be demolished at a cost | Founders Hall cannot be demolished at all until the historic-status phase revisits it; a hall that houses a school cannot be demolished while it does | The sim sold the founding hall for its demolition fee, against its own catalogue line and the chronicle it anchors; and demolishing a housed hall left a school pointing at nothing |

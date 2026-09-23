@@ -89,6 +89,7 @@ const fileSchema = obj({
       noSchool: str,
       notAHall: str,
       hallOption: str,
+      hallGone: str,
       unfoundedNote: str,
       advance: str,
       advancing: str,

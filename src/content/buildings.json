@@ -945,6 +945,25 @@
       "ground": "garden",
       "icon": "garden",
       "blurb": "Clipped hedges, gravel walks and a bench with a donor's name on it."
+    },
+    {
+      "id": "footbridge",
+      "name": "Footbridge",
+      "category": "landmark",
+      "footprint": {
+        "w": 4,
+        "h": 1
+      },
+      "cost": 900000,
+      "upkeep": 15000,
+      "buildWeeks": 12,
+      "beauty": 1,
+      "form": "bridge",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "bridge",
+      "blurb": "Four tiles of stone across the stream, landing on dry ground at both ends. The far bank is a two-minute walk instead of a trip round by the road."
     }
   ]
 }

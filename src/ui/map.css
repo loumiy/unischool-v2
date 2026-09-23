@@ -930,3 +930,18 @@
 .season-winter .ground-court-apron {
   fill: color-mix(in srgb, #d8ccb0, #eef2f5 calc(20% + var(--snow, 0) * 70%));
 }
+
+.bridge-arch {
+  fill: rgba(30, 50, 60, 0.35);
+}
+
+/* Why a ghost is red (Phase 21L). */
+.campus-refusal rect {
+  fill: rgba(40, 24, 20, 0.82);
+}
+.campus-refusal text {
+  fill: #fbeee6;
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+}

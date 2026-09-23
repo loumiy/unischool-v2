@@ -3380,3 +3380,10 @@ th.figure > .figure-hint {
 .build-popup .build-tile-row {
   overflow-y: auto;
 }
+
+/* Why a building cannot come down (Phase 21L). */
+.building-panel-refusal {
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--ink-muted);
+}
