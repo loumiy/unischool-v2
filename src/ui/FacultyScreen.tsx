@@ -2,9 +2,13 @@ import JumpBar from './JumpBar.tsx';
 import { FACULTY_READINGS, FACULTY_WORDS } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
 import { SCHOOLS } from '../content/schools.ts';
+import { SEAT_WORDS } from '../content/seats.ts';
+import { DEANS_FOR_FASTEST } from '../tuning.ts';
 import {
   adminShareOfPayroll,
   annualFacultyPayroll,
+  deansAppointed,
+  provostAppointed,
   formatMoney,
   formatPercent,
   frozen,
@@ -86,6 +90,35 @@ export default function FacultyScreen({
           hint={FACULTY_READINGS.market}
           tone={marketOpen ? 'good' : 'muted'}
         />
+      </div>
+      {/* The org chart, summarised where the screen opens (Phase 21K): the
+          seats are what buys the clock speed, and they sat below the whole
+          roster. */}
+      <div className="orgchart-strip">
+        <span className="orgchart-strip-summary">
+          {fillWords(SEAT_WORDS.orgChartSummary, {
+            speed: provostAppointed(state)
+              ? deansAppointed(state) >= DEANS_FOR_FASTEST
+                ? '8×'
+                : '4×'
+              : '2×',
+            provost: provostAppointed(state) ? SEAT_WORDS.provostFilled : SEAT_WORDS.provostVacant,
+            deans: deansAppointed(state),
+            wanted: DEANS_FOR_FASTEST,
+          })}
+        </span>
+        <button
+          type="button"
+          className="jump-bar-link"
+          data-target="faculty-seats"
+          onClick={() =>
+            document
+              .getElementById('faculty-seats')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        >
+          {SEAT_WORDS.orgChartLink}
+        </button>
       </div>
       {marketOpen && (
         <section className="faculty-market" id="faculty-market">

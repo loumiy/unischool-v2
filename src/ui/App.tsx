@@ -368,6 +368,18 @@ export default function App() {
           }
           onChangeTab={openTab}
           onSetSpeed={(s) => store.setSpeed(s)}
+          onOpenOrgChart={() => {
+            openTab('faculty');
+            // The screen mounts on this render; bring the seats into view
+            // once it has.
+            window.setTimeout(
+              () =>
+                document
+                  .getElementById('faculty-seats')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+              120,
+            );
+          }}
           queuedSpeed={queuedSpeed}
           buildOpen={effectiveBuildOpen}
           onToggleBuild={() => {

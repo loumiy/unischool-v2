@@ -87,6 +87,19 @@ export function seniorFaculty(state: GameState) {
   );
 }
 
+// WHO COULD TAKE THIS SEAT (Phase 21K). The seniors free to take it, and
+// for a Dean only those from the Dean's own school: a professor of Health
+// is not made Dean of Science. Best first — the strongest record of
+// teaching and research together — so the list reads as a shortlist.
+export function seatCandidates(state: GameState, seatId: string, schoolId: string | null) {
+  const perSchool = seatById(seatId).perSchool === true;
+  return seniorFaculty(state)
+    .filter((f) => !perSchool || f.schoolId === schoolId)
+    .sort(
+      (a, b) => b.teaching + b.research - (a.teaching + a.research) || a.id.localeCompare(b.id),
+    );
+}
+
 export function isSeated(state: GameState, facultyId: string): boolean {
   return state.delegation.seats.some(
     (s) => s.filledBy.kind === 'internal' && s.filledBy.facultyId === facultyId,

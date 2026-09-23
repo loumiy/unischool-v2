@@ -71,6 +71,17 @@ const fileSchema = obj({
     noSenior: str,
     internal: str,
     outside: str,
+    candidateTeaches: str,
+    candidateIdle: str,
+    candidateRecord: str,
+    noSchoolSenior: str,
+    moreCandidates: str,
+    moreAppoint: str,
+    orgChartTitle: str,
+    orgChartLink: str,
+    orgChartSummary: str,
+    provostFilled: str,
+    provostVacant: str,
   }),
 });
 

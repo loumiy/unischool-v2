@@ -27,6 +27,14 @@ describe('the development plan stays out of the game', () => {
     expect(offenders).toEqual([]);
   });
 
+  it('cites no section of the design document in any content a player can read', () => {
+    const offenders: string[] = [];
+    for (const [file, json] of Object.entries(content)) {
+      for (const s of strings(json)) if (/\bDD §/.test(s)) offenders.push(`${file}: ${s}`);
+    }
+    expect(offenders).toEqual([]);
+  });
+
   it('names no phase on any screen', () => {
     const offenders: string[] = [];
     for (const [file, src] of Object.entries(screens)) {

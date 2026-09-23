@@ -8,7 +8,6 @@ import {
   SPEEDS,
   speedGate,
   type SpeedGate,
-  speedAllowed,
   type GameState,
   type Speed,
 } from '../sim/index.ts';
@@ -71,7 +70,7 @@ function gateHint(speed: Speed, gate: SpeedGate): string {
   if (gate.deans > 0) wants.push(gate.deans === 1 ? 'one more Dean' : `${gate.deans} more Deans`);
   const need =
     wants.length === 2 ? `${wants[0]} and ${wants[1]}` : (wants[0] ?? 'more of a college');
-  return `${SPEED_LABELS[speed]} wants ${need} — appoint from the Faculty screen`;
+  return `${SPEED_LABELS[speed]} wants ${need} — click to open the org chart`;
 }
 
 const SPEED_LABELS: Record<Speed, string> = {
@@ -90,6 +89,7 @@ export default function Toolbar({
   active,
   onChangeTab,
   onSetSpeed,
+  onOpenOrgChart,
   queuedSpeed,
   buildOpen,
   onToggleBuild,
@@ -103,6 +103,8 @@ export default function Toolbar({
   active: TabId | null;
   onChangeTab: (tab: TabId | null) => void;
   onSetSpeed: (speed: Speed) => void;
+  // A locked speed opens the seats that would unlock it (Phase 21K).
+  onOpenOrgChart: () => void;
   // What the clock comes back at when the hold lifts; null when nothing
   // holds it.
   queuedSpeed: Speed | null;
@@ -239,7 +241,7 @@ export default function Toolbar({
                 <button
                   key={sp}
                   type="button"
-                  className={speed === sp ? 'active' : queued ? 'queued' : ''}
+                  className={speed === sp ? 'active' : queued ? 'queued' : gate ? 'gated' : ''}
                   aria-pressed={speed === sp}
                   aria-label={SPEED_LABELS[sp]}
                   title={
@@ -255,8 +257,9 @@ export default function Toolbar({
                               : `${SPEED_HINTS[sp]} — the speed to come back at once ${heldFor} is decided`
                           : SPEED_HINTS[sp]
                   }
-                  disabled={!running || !speedAllowed(state, sp)}
-                  onClick={() => onSetSpeed(sp)}
+                  disabled={!running}
+                  aria-disabled={gate ? true : undefined}
+                  onClick={() => (gate ? onOpenOrgChart() : onSetSpeed(sp))}
                 >
                   <Icon />
                 </button>

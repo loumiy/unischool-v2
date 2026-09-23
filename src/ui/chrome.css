@@ -503,6 +503,87 @@
   opacity: 0.4;
   cursor: default;
 }
+/* A locked speed is dim but live: it opens the org chart that would
+   unlock it (Phase 21K). */
+.speeds button.gated {
+  opacity: 0.45;
+  cursor: help;
+}
+.speeds button.gated:hover {
+  opacity: 0.8;
+}
+
+/* The org chart, summarised at the head of the Faculty screen. */
+.orgchart-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 14px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--parchment-line);
+  border-radius: 10px;
+  background: var(--cream-hi);
+  font-size: var(--text-sm);
+}
+.orgchart-strip-summary {
+  font-family: var(--display);
+  font-weight: 700;
+}
+.seat-choices:has(.seat-candidates, .seat-none) {
+  flex-direction: column;
+}
+.seat-choices:has(.seat-candidates, .seat-none) > .event-choice {
+  flex: 0 0 auto;
+}
+.seat-candidates {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.seat-candidates .event-choice {
+  flex: 0 0 auto;
+}
+.seat-candidates-head {
+  font-family: var(--display);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+}
+.seat-candidate-record {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+.seat-more {
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.seat-more .save-btn {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 5px 14px;
+  font-size: var(--text-sm);
+}
+.seat-more select {
+  /* A select is as wide as its longest option; the card is not. */
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  font: inherit;
+  font-size: var(--text-sm);
+  padding: 4px 6px;
+}
+.seat-none {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  margin: 0;
+}
 
 /* ---------- tab overlays: every other view, on top of the map ---------- */
 .tab-overlay {
