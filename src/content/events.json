@@ -2584,6 +2584,260 @@
         }
       ],
       "default": "cover"
+    },
+    {
+      "id": "the-boiler",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "winterAtLeast": 0.5,
+        "oldestBuildingOver": 6
+      },
+      "text": "The central boiler, installed in the college's first decade, has begun to make a noise the facilities director describes in writing as 'a sort of cough'. It is still producing heat. The facilities director would like it noted that he said so first.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Replace the boiler",
+          "note": "$1.2M now; one less cough",
+          "effects": {
+            "cash": -1200000,
+            "backlog": -400000
+          }
+        },
+        {
+          "id": "nurse",
+          "label": "Nurse it through the winter",
+          "note": "$250k a winter, and it will cough again",
+          "effects": {
+            "cash": -250000
+          }
+        },
+        {
+          "id": "defer",
+          "label": "Defer it to the summer works",
+          "note": "Free now; the backlog carries it",
+          "effects": {
+            "backlog": 700000
+          }
+        }
+      ],
+      "default": "nurse"
+    },
+    {
+      "id": "the-ice-walk",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "winterAtLeast": 0.6,
+        "enrolledOver": 100
+      },
+      "text": "The walk from the residence halls to the dining hall froze overnight into a single continuous sheet, and was crossed at breakfast by most of the first year in a manner facilities describes as 'improvised'. Nobody is badly hurt. One wrist.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "grit",
+          "label": "Hire a second gritting crew",
+          "note": "$80k; the walk is a walk again",
+          "effects": {
+            "cash": -80000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "signs",
+          "label": "Put up warning signs",
+          "note": "Free; the wrist remembers",
+          "effects": {
+            "mood": -1
+          }
+        }
+      ],
+      "default": "signs"
+    },
+    {
+      "id": "the-heating-bill",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "winterAtLeast": 0.7,
+        "buildingsOver": 5
+      },
+      "text": "The heating bill for December has arrived. It is larger than November's by a figure the bursar has circled, and then, in a different pen, circled again.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay it",
+          "note": "$350k",
+          "effects": {
+            "cash": -350000
+          }
+        },
+        {
+          "id": "thermostats",
+          "label": "Turn every thermostat down two degrees",
+          "note": "$150k; the library wears its coats",
+          "effects": {
+            "cash": -150000,
+            "mood": -3
+          }
+        }
+      ],
+      "default": "pay"
+    },
+    {
+      "id": "the-snow-day",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 2,
+      "cooldownYears": 3,
+      "when": {
+        "winterAtLeast": 0.9,
+        "enrolledOver": 200
+      },
+      "text": "It snowed eleven inches overnight. The registrar would like a decision on whether today's classes are cancelled. The students, on the evidence of the main lawn, have already made one.",
+      "timeoutWeeks": 1,
+      "choices": [
+        {
+          "id": "cancel",
+          "label": "Declare a snow day",
+          "note": "The lawn is a battlefield by ten",
+          "effects": {
+            "mood": 3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "Hold classes",
+          "note": "The teaching goes on; so does the grumbling",
+          "effects": {
+            "mood": -2,
+            "quality": 1
+          }
+        }
+      ],
+      "default": "cancel"
+    },
+    {
+      "id": "the-dark-term",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 6,
+      "when": {
+        "winterAtLeast": 0.95,
+        "enrolledOver": 150
+      },
+      "text": "The spring term has started in the dark: sunrise after the first lecture, sunset before the last. The counselling service has asked, in a memo with a sun drawn on it, for a daylight lamp in every common room.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "lamps",
+          "label": "Buy the lamps",
+          "note": "$60k; the common rooms glow",
+          "effects": {
+            "cash": -60000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "advice",
+          "label": "Circulate advice on vitamin D",
+          "note": "Free, and read by nobody",
+          "effects": {
+            "mood": -1
+          }
+        }
+      ],
+      "default": "advice"
+    },
+    {
+      "id": "the-snow-load",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 2,
+      "cooldownYears": 6,
+      "when": {
+        "winterAtLeast": 0.8,
+        "buildingsOver": 3
+      },
+      "text": "The snow on the flat roofs is now deep enough that the structural engineer has asked, politely and in writing, for it to be somewhere else. He has attached a diagram with arrows on it.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "clear",
+          "label": "Clear the roofs",
+          "note": "$90k and a great many shovels",
+          "effects": {
+            "cash": -90000
+          }
+        },
+        {
+          "id": "thaw",
+          "label": "Wait for the thaw",
+          "note": "Free now; the membranes will not forget",
+          "effects": {
+            "backlog": 500000
+          }
+        }
+      ],
+      "default": "clear"
+    },
+    {
+      "id": "the-freeze",
+      "kind": "seismic",
+      "domain": "estate",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "winterAtLeast": 0.9,
+        "yearAtLeast": 5,
+        "buildingsOver": 4
+      },
+      "title": "The freeze",
+      "text": "The coldest night in forty years came on the Sunday before term, and on the Monday the pipes gave way in three buildings at once. Water came through the ceiling of a lecture theatre in the kind of steady, reasonable way that suggests it has been planning this. The porters worked through the night and saved the rare books by carrying them, one trolley at a time, to the only room in the college that was still dry, which was the chaplain's.\n\nThe insurers have sent a man. He has a clipboard and a very good coat.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "replumb",
+          "label": "Replumb properly",
+          "note": "$2.2M; lagged, alarmed, done",
+          "effects": {
+            "cash": -2200000,
+            "backlog": -800000,
+            "mood": 2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "patch",
+          "label": "Make safe and dry out",
+          "note": "$900k; the old pipes stay old",
+          "effects": {
+            "cash": -900000,
+            "mood": -2
+          }
+        },
+        {
+          "id": "home",
+          "label": "Start the term a week late",
+          "note": "Cheap; everyone notices",
+          "effects": {
+            "cash": -150000,
+            "backlog": 900000,
+            "mood": -4,
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "patch"
     }
   ],
   "readings": {

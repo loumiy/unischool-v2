@@ -1,3 +1,4 @@
+import { winterDepth } from './weather.ts';
 import { buildingById } from '../content/buildings.ts';
 import {
   EVENTS,
@@ -81,6 +82,7 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
   // The calendar
   yearAtLeast: (s) => s.clock.year,
   yearAtMost: (s) => -s.clock.year,
+  winterAtLeast: (s) => winterDepth(s.clock),
 
   // Money
   cashUnder: (s) => -s.treasury.cash,

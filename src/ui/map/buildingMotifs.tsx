@@ -123,7 +123,7 @@ import {
 } from './iso.ts';
 import { WALL_LIGHT, faceTone, shadowOffset } from './light.ts';
 import { METRES_PER_TILE, STOREY, across, up } from './scale.ts';
-import { shade } from './tint.ts';
+import { mix, shade } from './tint.ts';
 
 // Architectural motifs (ported from v1's buildingMotifs.tsx): what makes a
 // placed building read as a BUILDING rather than as a coloured shape with a
@@ -3421,6 +3421,16 @@ function EntranceSign({
   );
 }
 
+// Snow lying on a roof is the roof going white, not a white roof: the
+// slopes keep their light and shade, so a hipped roof under snow still
+// reads as hipped (Phase 21E). A flat deck holds more than a pitch sheds,
+// but at this scale one mix reads right for both.
+const SNOW = '#eef2f5';
+function underSnow(material: Material, snow: number): Material {
+  if (snow <= 0) return material;
+  return { ...material, roof: mix(material.roof, SNOW, 0.3 + 0.6 * snow) };
+}
+
 function BuildingMotif({
   def,
   p,
@@ -3428,6 +3438,7 @@ function BuildingMotif({
   motif,
   shadeSeed,
   schoolName,
+  snow,
 }: {
   def: BuildingDef;
   p: { row: number; col: number; w: number; h: number };
@@ -3436,6 +3447,8 @@ function BuildingMotif({
   shadeSeed: string;
   // Only the entrance sign reads it: the school's name, to write on it.
   schoolName: string;
+  // How deep the winter is, 0–1 (sim/weather.ts).
+  snow: number;
   // Compared by the memo below so an unchanged motif still redraws when the
   // view turns; the geometry reads the camera from the projection itself.
   camera: Camera;
@@ -3444,7 +3457,7 @@ function BuildingMotif({
     <BuildingMass
       def={def}
       p={p}
-      material={material}
+      material={underSnow(material, snow)}
       motif={motif}
       shadeSeed={shadeSeed}
       schoolName={schoolName}
@@ -3462,6 +3475,7 @@ export default memo(
     a.material === b.material &&
     a.motif === b.motif &&
     a.schoolName === b.schoolName &&
+    a.snow === b.snow &&
     a.shadeSeed === b.shadeSeed &&
     a.p.col === b.p.col &&
     a.p.row === b.p.row &&

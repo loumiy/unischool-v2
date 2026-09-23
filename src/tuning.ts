@@ -266,6 +266,10 @@ export const BEAUTY_POOL_SWING = 0.12;
 // Ambient life is presentational (DD §6.3): how many students walk the map
 // at most, one walker per this many enrolled, and the crowd by term.
 export const MAX_WALKERS = 60;
+// The most snowflakes on screen at once in the heaviest snowfall (Phase
+// 21E). Presentational, budgeted like the walkers: each is one element the
+// compositor moves.
+export const SNOWFLAKES = 110;
 export const STUDENTS_PER_WALKER = 6;
 export const AMBIENT_DENSITY = { fall: 1, spring: 1, summer: 0.15 } as const;
 

@@ -8,3 +8,18 @@ export function shade(hex: string, factor: number): string {
   );
   return `#${ch.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
+
+// Mix two hex colours: 0 is all `a`, 1 is all `b`. Snow on a roof is the
+// roof's own colour, going white (Phase 21E).
+export function mix(a: string, b: string, t: number): string {
+  const pa = parseInt(a.slice(1), 16);
+  const pb = parseInt(b.slice(1), 16);
+  if (Number.isNaN(pa) || Number.isNaN(pb) || a.length !== 7 || b.length !== 7) return a;
+  const k = Math.max(0, Math.min(1, t));
+  const ch = [16, 8, 0].map((sh) => {
+    const x = (pa >> sh) & 255;
+    const y = (pb >> sh) & 255;
+    return Math.round(x + (y - x) * k);
+  });
+  return `#${ch.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+}
