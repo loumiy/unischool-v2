@@ -756,6 +756,12 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v32 → v33 (Phase 51): a delegated event is kept in the history, marked
+  // as such. Every event in an older save was the President's.
+  32: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return { ...raw, version: 33, state: { ...state, schemaVersion: 33 } };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

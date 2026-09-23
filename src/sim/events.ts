@@ -7,6 +7,7 @@ import {
   type EventCondition,
   type EventDef,
   type EventEffect,
+  type ChoiceDef,
 } from '../content/events.ts';
 import { programById } from '../content/schools.ts';
 import {
@@ -75,6 +76,10 @@ export interface ResolvedEvent {
   choiceId: string;
   week: number;
   timedOut: boolean;
+  // Handled by a seat without the President (Phase 51). Kept, so a
+  // delegated event keeps its cooldown like any other: before, the same
+  // routine question could be settled by the same office every week.
+  delegated?: boolean;
 }
 
 export interface Events {
@@ -89,6 +94,10 @@ export function foundingEvents(): Events {
 }
 
 // ---------- reading the state ----------
+
+// What "never" reads as, in years, for a reading about the last time
+// something happened.
+const NEVER_YEARS = 999;
 
 // Every condition, as a reading. A condition is a threshold on one of
 // these; the name says which way it points.
@@ -154,6 +163,23 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
   varsityAtLeast: (s) => s.athletics.varsity.length,
   titlesAtLeast: (s) => titlesIn(s, s.clock.year) + titlesIn(s, s.clock.year - 1),
   rivalAtLeast: (s) => (s.athletics.rivalId ? 1 : 0),
+
+  // The 1.1 systems (Phase 51)
+  adjunctsOver: (s) => s.faculty.roster.filter((f) => f.adjunct).length,
+  reputationOver: (s) => s.people.reputation,
+  reputationUnder: (s) => -s.people.reputation,
+  projectsOver: (s) => openPlacements(s).filter((p) => buildingById(p.buildingId).project).length,
+  projectsBuildingOver: (s) =>
+    s.campus.placements.filter((p) => p.status === 'building' && buildingById(p.buildingId).project)
+      .length,
+  // No project yet reads as a very long time ago.
+  projectNewUnder: (s) => {
+    const opened = openPlacements(s)
+      .filter((p) => buildingById(p.buildingId).project)
+      .map((p) => p.openedWeek ?? 0);
+    if (opened.length === 0) return -NEVER_YEARS;
+    return -(s.clock.absoluteWeek - Math.max(...opened)) / WEEKS_PER_YEAR;
+  },
 
   // Schools, programs and the roster
   schoolsOver: (s) => s.academics.schools.length,
@@ -228,6 +254,10 @@ export function conditionsOf(
 }
 
 export function conditionsHold(state: GameState, def: EventDef): boolean {
+  if (def.charters.length > 0) {
+    const charter = state.identity?.charter;
+    if (!charter || !def.charters.includes(charter)) return false;
+  }
   if (def.needs.length > 0) {
     const open = new Set(openPlacements(state).map((p) => p.buildingId));
     if (!def.needs.every((id) => open.has(id))) return false;
@@ -373,7 +403,22 @@ export function scaledEffects(
     const amount = effects[lever];
     if (amount !== undefined) out[lever] = scaledAmount(amount, scale);
   }
+  // Students gained or lost are a share of the college too (Phase 51):
+  // thirty students is a fright at a founding college and a rounding
+  // error at a big one.
+  if (effects.enrollment !== undefined) out.enrollment = Math.round(effects.enrollment * scale);
   return out;
+}
+
+// A choice's note at this college's size. A standing cost is not scaled
+// (a post is one salary, an office one office, at any size), so neither is
+// the note that quotes it (Phase 51): the note used to say $1.4M a year
+// while the payroll was charged $120k.
+export function choiceNote(choice: ChoiceDef, scale: number): string {
+  const note = choice.note ?? '';
+  const standing =
+    choice.effects.adminPayroll !== undefined || choice.effects.facultyPayroll !== undefined;
+  return standing ? note : scaledWords(note, scale);
 }
 
 // The sums in a sentence, at this college's size: "$250k to raise $3M"
@@ -702,7 +747,20 @@ export function eventsWeek(state: GameState): GameState {
     return emit(
       {
         ...applied,
-        events: { ...applied.events, lastResolvedWeek: week },
+        events: {
+          ...applied.events,
+          history: [
+            ...applied.events.history,
+            {
+              eventId: def.id,
+              choiceId: delegated.choiceId,
+              week,
+              timedOut: false,
+              delegated: true,
+            },
+          ],
+          lastResolvedWeek: week,
+        },
       },
       {
         kind: 'eventDelegated',

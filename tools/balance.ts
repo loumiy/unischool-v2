@@ -411,6 +411,9 @@ interface Report {
   adminShare: number;
   askedPer: number; // weeks per player-decided event, years 15–35
   delegatedPer: number;
+  uniqueEvents: number; // distinct events the college met in the run, delegated or not (Phase 51)
+  uniqueAsked: number; // of which the President answered, the 1.0 review's measure
+  askedIds: string[]; // the events the President answered, by id
   placementShare: number;
   spans: number[]; // minutes per §2.2 span
   mark: string;
@@ -650,6 +653,9 @@ export function measure(a: Archetype, seed: number, charter: CharterId = a.chart
     adminShare: adminShareOfPayroll(s.treasury.budget),
     askedPer: asked ? (20 * WEEKS_PER_YEAR) / asked : Infinity,
     delegatedPer: delegated ? (20 * WEEKS_PER_YEAR) / delegated : Infinity,
+    uniqueEvents: new Set(s.events.history.map((h) => h.eventId)).size,
+    uniqueAsked: new Set(s.events.history.filter((h) => !h.delegated).map((h) => h.eventId)).size,
+    askedIds: [...new Set(s.events.history.filter((h) => !h.delegated).map((h) => h.eventId))],
     placementShare: Math.abs(placementSatisfaction(s).applied) / (PLACEMENT_CAP * 100),
     spans: spans.map((m) => Number(m.toFixed(0))),
     mark: s.ending.report?.mark ?? '—',
@@ -731,7 +737,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const cadence = everyWeeks >= 2 && everyWeeks <= 4;
       const spans = r.spans.map((m, i) => `${m}/${BUDGET[i]![0]}–${BUDGET[i]![1]}`).join(' ');
       console.log(
-        `${r.archetype.padEnd(8)} seed ${String(r.seed).padStart(2)}  admin ${(r.adminShare * 100).toFixed(0)}% ${inBand ? 'ok' : 'OUT'} · events 1/${everyWeeks.toFixed(1)}wk ${cadence ? 'ok' : 'OUT'} (asked 1/${r.askedPer.toFixed(1)}, delegated 1/${r.delegatedPer.toFixed(1)}) · placement ${(r.placementShare * 100).toFixed(0)}% of cap · minutes ${spans} · mark ${r.mark} rank ${r.rank} · ${r.enrolled} students ${r.faculty} faculty ${r.seats} seats · ${r.distressYears}y distress · ${r.tags.join(',') || 'no tags'}`,
+        `${r.archetype.padEnd(8)} seed ${String(r.seed).padStart(2)}  admin ${(r.adminShare * 100).toFixed(0)}% ${inBand ? 'ok' : 'OUT'} · events 1/${everyWeeks.toFixed(1)}wk ${cadence ? 'ok' : 'OUT'} (asked 1/${r.askedPer.toFixed(1)}, delegated 1/${r.delegatedPer.toFixed(1)}, ${r.uniqueEvents} unique, ${r.uniqueAsked} asked) · placement ${(r.placementShare * 100).toFixed(0)}% of cap · minutes ${spans} · mark ${r.mark} rank ${r.rank} · ${r.enrolled} students ${r.faculty} faculty ${r.seats} seats · ${r.distressYears}y distress · ${r.tags.join(',') || 'no tags'}`,
       );
       console.log(`         middle  ${middleLine(r)}`);
     }

@@ -1,5 +1,6 @@
 import { BUILDINGS } from './buildings.ts';
 import { TAG_IDS, type TagId } from './identityTags.ts';
+import { CHARTER_IDS, type CharterId } from './charters.ts';
 import raw from './events.json' with { type: 'json' };
 import { arr, ContentError, num, obj, oneOf, optional, str, uniqueBy, validate } from './schema.ts';
 
@@ -75,6 +76,13 @@ export const EVENT_CONDITIONS = [
   'varsityAtLeast', // varsity teams fielded
   'titlesAtLeast', // championships won this year and last
   'rivalAtLeast', // 1 once the college has a rival
+  // The 1.1 systems (Phase 51)
+  'adjunctsOver', // adjuncts on the roster (Phase 39)
+  'reputationOver', // the talk at the gate (Phase 37)
+  'reputationUnder',
+  'projectsOver', // capital projects standing (Phase 42)
+  'projectsBuildingOver', // capital projects going up
+  'projectNewUnder', // years since the newest capital project opened
 ] as const;
 export type EventCondition = (typeof EVENT_CONDITIONS)[number];
 
@@ -150,6 +158,10 @@ export interface EventDef {
   // the docket by a system (the league's poaching), not by the dice.
   favours: TagId[];
   scripted: boolean;
+  // Charters (Phase 51): the founding charters this can happen to; empty
+  // for any college. A land-grant college hears from the extension
+  // farms, and nobody else does.
+  charters: CharterId[];
 }
 
 const PLACEHOLDERS = [
@@ -187,6 +199,7 @@ const fileSchema = obj({
       default: str,
       needs: optional(arr(str)),
       favours: optional(arr(oneOf(TAG_IDS))),
+      charters: optional(arr(oneOf(CHARTER_IDS))),
       scripted: optional((v: unknown, p: string) => {
         if (typeof v !== 'boolean') throw new ContentError(p, 'expected a boolean');
         return v;
@@ -211,6 +224,7 @@ function load() {
       needs: e.needs ?? [],
       favours: e.favours ?? [],
       scripted: e.scripted ?? false,
+      charters: e.charters ?? [],
     })),
     (e) => e.id,
     'content/events.json.events',

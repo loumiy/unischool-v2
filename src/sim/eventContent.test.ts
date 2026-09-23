@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { AMBITIONS } from '../content/ambitions.ts';
 import { BUILDINGS } from '../content/buildings.ts';
+import { CHARTER_IDS } from '../content/charters.ts';
 import { EVENTS, EVENT_CONDITIONS, EVENT_EFFECTS, type EventCondition } from '../content/events.ts';
 import { neglected, opened, played } from './colleges.ts';
 
@@ -69,6 +70,36 @@ describe('the catalogue is the size the phase promised (DD §14)', () => {
     expect(
       clauses(['beautyOver', 'beautyUnder', 'quadsOver', 'treesUnder']),
     ).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('the 1.1 systems have something said about them (Phase 51)', () => {
+  const about = (test: (e: (typeof EVENTS)[number]) => boolean) => EVENTS.filter(test).length;
+  const names = (e: (typeof EVENTS)[number], ...clauses: EventCondition[]) =>
+    clauses.some((c) => c in e.when);
+
+  it('writes at least eight events or letters for each', () => {
+    expect(about((e) => names(e, 'adjunctsOver') || /contract/.test(e.id))).toBeGreaterThanOrEqual(
+      8,
+    );
+    expect(
+      about(
+        (e) =>
+          names(e, 'projectsOver', 'projectsBuildingOver', 'projectNewUnder') ||
+          e.needs.some((id) => BUILDINGS.find((b) => b.id === id)?.category === 'project'),
+      ),
+    ).toBeGreaterThanOrEqual(8);
+    expect(about((e) => e.charters.length > 0)).toBeGreaterThanOrEqual(8);
+    expect(about((e) => names(e, 'reputationOver', 'reputationUnder'))).toBeGreaterThanOrEqual(8);
+    // The late decades read differently from the middle ones.
+    expect(about((e) => (e.when.yearAtLeast ?? 0) >= 38)).toBeGreaterThanOrEqual(8);
+  });
+
+  it('gives every charter something of its own', () => {
+    for (const id of CHARTER_IDS) {
+      expect({ id, n: about((e) => e.charters.includes(id)) }).toMatchObject({ id });
+      expect(about((e) => e.charters.includes(id))).toBeGreaterThanOrEqual(2);
+    }
   });
 });
 
@@ -147,7 +178,7 @@ describe('the file reads like the style guide says (content/STYLE.md)', () => {
 });
 
 describe('nothing in the file is unreachable', () => {
-  it('every event can happen to some college', { timeout: 60_000 }, () => {
+  it('every event can happen to some college', { timeout: 120_000 }, () => {
     // The threshold bug this phase found by measuring: a number written
     // above the ceiling of its own reading is an event that never fires,
     // and nothing but a run will say which ones those are.
@@ -218,6 +249,48 @@ describe('nothing in the file is unreachable', () => {
       }).state,
     );
     sample(played(13, 50, watch, { tuition: 8_000, drawRate: 0.02 }).state);
+    // The 1.1 systems (Phase 51): a college of each charter, some raising
+    // capital projects and some covering their gaps with adjuncts, because
+    // an event written for a land-grant college can only be reached by one.
+    sample(
+      played(4, 50, watch, {
+        charter: 'research-university',
+        projects: ['great-lawn', 'research-park', 'arts-centre'],
+        adjuncts: true,
+        drawRate: 0.06,
+        tuition: 62_000,
+        selectivity: 0.7,
+      }).state,
+    );
+    sample(
+      played(9, 50, watch, {
+        charter: 'land-grant',
+        projects: ['great-lawn', 'championship-stadium', 'arts-centre'],
+        tuition: 46_000,
+        varsity: ['rowing', 'soccer'],
+        athleticsBudget: 'ambitious',
+        extraSites: [['playing-field', 36, 8, false]],
+      }).state,
+    );
+    sample(
+      played(21, 50, watch, {
+        charter: 'liberal-arts',
+        maintenanceFunding: 0,
+        drawRate: 0.08,
+        selectivity: 0.3,
+        hireCap: 3,
+        adjuncts: true,
+      }).state,
+    );
+    sample(
+      played(13, 50, watch, {
+        charter: 'polytechnic',
+        tuition: 8_000,
+        drawRate: 0.02,
+        adjuncts: true,
+        projects: ['great-lawn'],
+      }).state,
+    );
     // When this fails it should say WHY, because the answer is always a
     // number written outside the range its own reading can take, and only
     // a run knows that range (content/STYLE.md).

@@ -399,7 +399,7 @@ describe('events over a long run', () => {
   it('asks a few questions a decade, and never leaves one hanging', () => {
     const run = years(30, 9);
     const fired = entriesOfKind(run.state, 'eventFired').length;
-    const resolved = run.state.events.history.length;
+    const resolved = run.state.events.history.filter((h) => !h.delegated).length;
     expect(fired).toBeGreaterThan(5);
     expect(resolved).toBe(fired - run.state.events.pending.length);
     // Nothing waits past its own deadline.

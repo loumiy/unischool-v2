@@ -8,7 +8,7 @@ import { defaultResolution } from './beats.ts';
 import { entriesOfKind } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { opened } from './colleges.ts';
-import { priceScale, scaledAmount, scaledEffects, scaledWords } from './events.ts';
+import { choiceNote, priceScale, scaledAmount, scaledEffects, scaledWords } from './events.ts';
 import { dispatch, tickRunWeeks } from './run.ts';
 import type { GameState } from './state.ts';
 import { investable, sumExpenses } from './treasury.ts';
@@ -51,6 +51,24 @@ describe('prices that grow with the college', () => {
       '$1M to raise $12M; $2k in collars',
     );
     expect(scaledWords('$250k', 1)).toBe('$250k');
+  });
+
+  it('counts students gained or lost as a share of the college (Phase 51)', () => {
+    expect(scaledEffects({ enrollment: -30, mood: 1 }, 4)).toEqual({ enrollment: -120, mood: 1 });
+    expect(scaledEffects({ enrollment: 12 }, 1.5)).toEqual({ enrollment: 18 });
+  });
+
+  it('quotes a standing cost as it charges it: once, unscaled (Phase 51)', () => {
+    // The note used to be rewritten at the college's size while the payroll
+    // was charged the sum as written.
+    const post = { id: 'fill', label: 'Fill the post', note: '$140k a year', effects: {} };
+    expect(choiceNote({ ...post, effects: { facultyPayroll: 140_000 } }, 4)).toBe('$140k a year');
+    expect(choiceNote({ ...post, effects: { adminPayroll: 140_000 } }, 4)).toBe('$140k a year');
+    expect(choiceNote({ ...post, note: '$250k', effects: { cash: -250_000 } }, 4)).toBe('$1M');
+    expect(scaledEffects({ adminPayroll: 140_000, facultyPayroll: 90_000 }, 4)).toEqual({
+      adminPayroll: 140_000,
+      facultyPayroll: 90_000,
+    });
   });
 });
 
