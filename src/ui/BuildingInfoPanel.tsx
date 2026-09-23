@@ -8,6 +8,9 @@ import {
   ageYearsOf,
   canApply,
   canPay,
+  extensionCost,
+  placementCapacity,
+  storeysAdded,
   demolitionCost,
   formatMoney,
   formatPercent,
@@ -54,6 +57,7 @@ export default function BuildingInfoPanel({
   financing,
   onClose,
   onRenovate,
+  onExtend,
   onDemolish,
 }: {
   placement: Placement;
@@ -61,6 +65,7 @@ export default function BuildingInfoPanel({
   financing: Financing;
   onClose: () => void;
   onRenovate: (financing: Financing) => void;
+  onExtend: (financing: Financing) => void;
   onDemolish: () => void;
 }) {
   const def = buildingById(placement.buildingId);
@@ -82,6 +87,15 @@ export default function BuildingInfoPanel({
   const renoPayWith = canPay(state, renoCost, financing)
     ? financing
     : affordableFinancing(state, renoCost);
+  // Up instead of out (Phase 25): the financing chosen if it can pay.
+  const extendPayWith = canPay(state, extensionCost(placement), financing)
+    ? financing
+    : (affordableFinancing(state, extensionCost(placement)) ?? financing);
+  const extendCheck = canApply(state, {
+    type: 'extend',
+    placementId: placement.id,
+    financing: extendPayWith,
+  });
   const demoCost = demolitionCost(def);
   const demoPayable = canPay(state, demoCost, 'cash');
   // What the sim would say (Phase 21L): Founders Hall and a housed hall
@@ -102,6 +116,11 @@ export default function BuildingInfoPanel({
         </button>
       </div>
       <p className={`building-panel-status ${placement.status}`}>{status}</p>
+      {placement.historic && (
+        <p className="building-panel-historic" title={ESTATE_WORDS.hints.historic}>
+          {fill(ESTATE_WORDS.historic, { year: placement.historicSince ?? '' })}
+        </p>
+      )}
       <p className="building-panel-blurb">{def.blurb}</p>
       {isHall(placement) && open && (
         <p className="building-panel-school">
@@ -112,7 +131,18 @@ export default function BuildingInfoPanel({
       )}
       <dl className="building-panel-facts">
         <Fact label="Footprint" value={`${placement.w} × ${placement.h} tiles`} />
-        <Fact label="Gives" value={providesLine(def)} hint={ESTATE_WORDS.hints.provides} />
+        <Fact
+          label="Gives"
+          value={providesLine({ ...def, capacity: placementCapacity(placement) })}
+          hint={ESTATE_WORDS.hints.provides}
+        />
+        {storeysAdded(placement) > 0 && (
+          <Fact
+            label="Storeys"
+            value={`${def.storeys + storeysAdded(placement)} (${storeysAdded(placement)} added)`}
+            hint={ESTATE_WORDS.hints.extend}
+          />
+        )}
         {open && (
           <>
             <Fact label="Age" value={`${Math.floor(ageYearsOf(placement, week))} years`} />
@@ -151,8 +181,21 @@ export default function BuildingInfoPanel({
             Renovate · {formatMoney(renoCost)}
           </button>
         )}
+        {open && extendCheck.ok && (
+          <button
+            type="button"
+            className="save-btn"
+            title={ESTATE_WORDS.hints.extend}
+            onClick={() => onExtend(extendPayWith)}
+          >
+            Add a storey · {formatMoney(extensionCost(placement))}
+          </button>
+        )}
         {armed ? (
           <>
+            {placement.historic && (
+              <span className="building-panel-refusal">{ESTATE_WORDS.historicWarning}</span>
+            )}
             <span className="newgame-confirm-label">Demolish {def.name}?</span>
             <button
               type="button"

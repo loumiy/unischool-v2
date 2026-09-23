@@ -34,6 +34,7 @@ import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { latestTable, rankOf } from './league.ts';
 import { addRivalry, titlesIn } from './athletics.ts';
+import { placementCapacity } from './lateGame.ts';
 import { leagueSchoolById } from '../content/league.ts';
 import { sportById } from '../content/athletics.ts';
 import { policyChoice } from './seats.ts';
@@ -162,10 +163,7 @@ const READINGS: Record<EventCondition, (s: GameState) => number> = {
   enrolledOver: (s) => enrolled(s),
   enrolledUnder: (s) => -enrolled(s),
   triplesOver: (s) => {
-    const beds = openPlacements(s).reduce(
-      (t, p) => t + (buildingById(p.buildingId).capacity?.beds ?? 0),
-      0,
-    );
+    const beds = openPlacements(s).reduce((t, p) => t + (placementCapacity(p).beds ?? 0), 0);
     return Math.max(0, enrolled(s) - beds);
   },
   satisfactionOver: (s) => satisfactionFor(s, enrolled(s)),

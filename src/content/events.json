@@ -3225,6 +3225,49 @@
         }
       ],
       "default": "decline"
+    },
+    {
+      "id": "the-protest",
+      "kind": "seismic",
+      "domain": "board",
+      "weight": 1,
+      "cooldownYears": 1,
+      "scripted": true,
+      "when": {},
+      "title": "The protest",
+      "text": "They came back for it: three generations of alumni, a string quartet, and a banner with {building} painted on it the way it looked the year they arrived. They stood on the rubble in their reunion scarves and read the names of everyone who ever taught in it. The student paper's front page is a photograph of the last wall coming down.\n\nThe board would like a statement. The alumni would like more than that.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "memorial",
+          "label": "Promise a memorial where it stood",
+          "note": "$300k, and a plaque the alumni can visit",
+          "effects": {
+            "cash": -300000,
+            "warmth": 3,
+            "mood": 1
+          }
+        },
+        {
+          "id": "name",
+          "label": "Give its name to what replaces it",
+          "note": "The board approves; the alumni are half-mollified",
+          "effects": {
+            "confidence": 2,
+            "warmth": 1
+          }
+        },
+        {
+          "id": "hold",
+          "label": "Stand by the decision",
+          "note": "Correct, and remembered",
+          "effects": {
+            "confidence": 1,
+            "warmth": -2
+          }
+        }
+      ],
+      "default": "name"
     }
   ],
   "readings": {

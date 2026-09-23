@@ -3623,3 +3623,65 @@ th.figure > .figure-hint {
   color: #8a6d00;
   font-weight: 700;
 }
+
+/* Historic (Phase 25). */
+.building-panel-historic {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  color: #8a6d00;
+}
+
+/* The Rebuild tray (Phase 25). */
+.rebuild-tray {
+  max-height: 220px;
+  overflow-y: auto;
+}
+.rebuild-note {
+  margin: 0 0 8px;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+.rebuild-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rebuild-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(160px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 10px;
+  border: 1.5px solid var(--parchment-line);
+  border-radius: 8px;
+  background: var(--cream-hi);
+}
+.rebuild-row.historic {
+  border-color: #c9a227;
+}
+.rebuild-name {
+  font-family: var(--display);
+  font-weight: 800;
+}
+.rebuild-historic {
+  margin-left: 8px;
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a6d00;
+}
+.rebuild-state {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+.rebuild-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}

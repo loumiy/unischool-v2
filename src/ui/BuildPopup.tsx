@@ -23,6 +23,7 @@ import {
   hasFoundersHall,
   detectQuads,
   placementSatisfaction,
+  landScarce,
   type Species,
 } from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
@@ -57,6 +58,7 @@ import {
   TreeIcon,
 } from './icons.tsx';
 import ToolbarPopup from './ToolbarPopup.tsx';
+import RebuildTray from './RebuildTray.tsx';
 import type { CampusTool } from './tools.ts';
 
 // THE BUILD MENU (DD §6.6 says it reorients under scarcity; that is Phase
@@ -114,6 +116,7 @@ const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
 };
 
 const TOOLS_ID = 'campus-tools';
+const REBUILD_ID = 'rebuild';
 
 // What the plant tool puts down. "Whatever grows" is the founding
 // behaviour — a seed straight off the run's dice — and the three named
@@ -256,6 +259,8 @@ export default function BuildPopup({
   onSetSpecies,
   financing,
   onSetFinancing,
+  onRenovate,
+  onExtend,
   onClose,
 }: {
   state: GameState;
@@ -267,14 +272,20 @@ export default function BuildPopup({
   onSetSpecies: (s: Species | null) => void;
   financing: Financing;
   onSetFinancing: (f: Financing) => void;
+  onRenovate: (placementId: string) => void;
+  onExtend: (placementId: string) => void;
   onClose: () => void;
 }) {
   // Landmarks sat with Campus Tools while there was one of them (Phase
   // 21D); with six they are a category of their own again (Phase 21J).
   const categories = BUILDING_CATEGORIES.filter((c) => BUILDINGS.some((b) => b.category === c));
-  const [activeId, setActiveId] = useState<string>(categories[0] ?? TOOLS_ID);
+  // When the land is nearly full the menu opens on the estate, not the
+  // catalogue (DD §6.6, Phase 25).
+  const [activeId, setActiveId] = useState<string>(
+    landScarce(state.campus) ? REBUILD_ID : (categories[0] ?? TOOLS_ID),
+  );
   const active =
-    activeId === TOOLS_ID
+    activeId === TOOLS_ID || activeId === REBUILD_ID
       ? null
       : (categories.find((c) => c === activeId) ?? categories[0] ?? null);
   return (
@@ -308,6 +319,17 @@ export default function BuildPopup({
     >
       <div className="build-mode">
         <nav className="build-mode-tabs" aria-label="Build categories">
+          {landScarce(state.campus) && (
+            <button
+              type="button"
+              className={`build-cat-tab ${activeId === REBUILD_ID ? 'active' : ''}`}
+              aria-pressed={activeId === REBUILD_ID}
+              onClick={() => setActiveId(REBUILD_ID)}
+            >
+              <DemolishIcon />
+              <span className="build-cat-label">Rebuild</span>
+            </button>
+          )}
           {categories.map((c) => {
             const Icon = CATEGORY_ICONS[c];
             return (
@@ -370,37 +392,46 @@ export default function BuildPopup({
           </span>
         </div>
         <div className="build-mode-tray">
-          <div className="build-tile-row">
-            {activeId === TOOLS_ID
-              ? [
-                  ...TOOL_TILES.map(({ tool: t, label, foot, title, Icon }) => (
-                    <button
-                      key={t}
-                      type="button"
-                      className={`build-tile tool ${tool === t ? 'placing' : ''}`}
-                      aria-pressed={tool === t}
-                      onClick={() => onSetTool(t)}
-                      title={title}
-                    >
-                      <span className="build-tile-icon">
-                        <Icon />
-                      </span>
-                      <span className="build-tile-name">{label}</span>
-                      <span className="build-tile-foot">{foot}</span>
-                    </button>
-                  )),
-                ]
-              : BUILDINGS.filter((b) => b.category === active).map((def) => (
-                  <BuildTile
-                    key={def.id}
-                    def={def}
-                    state={state}
-                    financing={financing}
-                    armed={placingId === def.id}
-                    onArm={() => onArmPlacement(placingId === def.id ? null : def.id)}
-                  />
-                ))}
-          </div>
+          {activeId === REBUILD_ID ? (
+            <RebuildTray
+              state={state}
+              financing={financing}
+              onRenovate={onRenovate}
+              onExtend={onExtend}
+            />
+          ) : (
+            <div className="build-tile-row">
+              {activeId === TOOLS_ID
+                ? [
+                    ...TOOL_TILES.map(({ tool: t, label, foot, title, Icon }) => (
+                      <button
+                        key={t}
+                        type="button"
+                        className={`build-tile tool ${tool === t ? 'placing' : ''}`}
+                        aria-pressed={tool === t}
+                        onClick={() => onSetTool(t)}
+                        title={title}
+                      >
+                        <span className="build-tile-icon">
+                          <Icon />
+                        </span>
+                        <span className="build-tile-name">{label}</span>
+                        <span className="build-tile-foot">{foot}</span>
+                      </button>
+                    )),
+                  ]
+                : BUILDINGS.filter((b) => b.category === active).map((def) => (
+                    <BuildTile
+                      key={def.id}
+                      def={def}
+                      state={state}
+                      financing={financing}
+                      armed={placingId === def.id}
+                      onArm={() => onArmPlacement(placingId === def.id ? null : def.id)}
+                    />
+                  ))}
+            </div>
+          )}
           {activeId === TOOLS_ID && tool === 'plant' && (
             <div className="tool-species" role="group" aria-label="What to plant">
               {SPECIES_TILES.map(({ id, label }) => (
