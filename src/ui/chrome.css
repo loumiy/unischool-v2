@@ -4286,3 +4286,95 @@ th.figure > .figure-hint {
 .decade-list .decade-item h3 {
   margin: 0 0 4px;
 }
+
+/* History charts (Phase 48): one style, from the tokens. */
+.history-chart {
+  margin: 8px 0 12px;
+}
+.history-chart figcaption {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.history-chart svg {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  overflow: visible;
+}
+.chart-axis {
+  stroke: var(--outline);
+  stroke-width: 1;
+  opacity: 0.5;
+}
+.chart-line {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.chart-tick {
+  font-size: 10px;
+  fill: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.chart-end {
+  font-size: 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* An event's domain, as a stripe and a word (Phase 48). */
+.event-prompt[class*='domain-'],
+.event-letter[class*='domain-'] {
+  border-left: 6px solid var(--domain, var(--outline));
+}
+.domain-estate {
+  --domain: #8a6a44;
+}
+.domain-academic {
+  --domain: #2f5f8a;
+}
+.domain-students {
+  --domain: #c07a2c;
+}
+.domain-advancement {
+  --domain: #5b8a5b;
+}
+.domain-money {
+  --domain: #7b6a1e;
+}
+.domain-board {
+  --domain: #7b1e2b;
+}
+.event-domain {
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--domain, var(--ink-muted));
+}
+.letter-domain {
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* The Final Report's top (Phase 48): the mark, and the campus beside it. */
+.report-top {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.report-portrait {
+  flex: 1 1 220px;
+  max-width: 320px;
+  aspect-ratio: 16 / 10;
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-md, 10px);
+  overflow: hidden;
+}
+.report-portrait svg {
+  width: 100%;
+  height: 100%;
+}

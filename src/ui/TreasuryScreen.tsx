@@ -37,6 +37,7 @@ import {
 } from '../tuning.ts';
 import { BOARD_WORDS, rungWords } from '../content/board.ts';
 import Figure from './Figure.tsx';
+import HistoryChart from './HistoryChart.tsx';
 
 // THE TREASURY SCREEN (DD §5.3): one screen — the cashflow strip, the year
 // budget, the gauges (tuition dependence, endowment, backlog, administrative
@@ -380,6 +381,28 @@ export default function TreasuryScreen({
           </ul>
         )}
       </section>
+
+      {t.history.length > 1 && (
+        <section className="treasury-panel">
+          <h3>Over the years</h3>
+          {/* History, not just today's number (Phase 48). */}
+          <HistoryChart
+            title="The endowment and the year's net, $M"
+            series={[
+              {
+                name: 'Endowment',
+                points: t.history.map((y) => ({ x: y.year, y: y.endowmentEnd / 1e6 })),
+                format: (v) => `$${v.toFixed(0)}M`,
+              },
+              {
+                name: 'Net',
+                points: t.history.map((y) => ({ x: y.year, y: y.net / 1e6 })),
+                format: (v) => `$${v.toFixed(1)}M`,
+              },
+            ]}
+          />
+        </section>
+      )}
 
       {t.history.length > 0 && (
         <section className="treasury-panel">

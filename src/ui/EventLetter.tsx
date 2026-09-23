@@ -1,3 +1,4 @@
+import { DOMAIN_LABELS } from './domains.ts';
 import { eventById } from '../content/events.ts';
 import {
   formatClock,
@@ -25,7 +26,10 @@ export default function EventLetter({
   const school = state.identity ? institutionName(state.identity) : 'the College';
   return (
     <div className="letter-backdrop" role="dialog" aria-modal="true" aria-label={def.title ?? ''}>
-      <article className="letter">
+      <article className={`letter event-letter domain-${def.domain}`}>
+        <span className="event-domain letter-domain">
+          {DOMAIN_LABELS[def.domain] ?? def.domain}
+        </span>
         <header className="letter-head">
           <div className="letter-letterhead">The Office of the President</div>
           <div className="letter-school">{school}</div>
