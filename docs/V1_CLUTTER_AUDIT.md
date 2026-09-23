@@ -20,20 +20,20 @@ This audits `loumiy/unischool` at `76a65e7` (the V1 base chosen in `MIGRATION_PL
 
 ## What's clean
 
-| Check | Result |
-| --- | --- |
-| Typecheck (`tsc -b`) | Clean. |
-| Typecheck under `--strict` (not enabled in the config) | Also clean, with zero errors in `src/`, `sim/` and `tools/`. |
-| Unused locals and parameters | Enforced by `noUnusedLocals` and `noUnusedParameters`. No unreferenced private function or variable can exist in any file. |
-| Lint (`oxlint`) | Zero warnings. |
-| Unused files (`knip`) | None. |
-| Commented-out code | None found. Every `// const …` style match is prose. |
-| `TODO` / `FIXME` / `HACK` | Zero. |
-| CSS classes never referenced in code | None found among 898. |
-| Test wiring | All 55 test files are in `npm test`, and every script points at a file that exists. |
-| Test suite | All 55 suites pass. |
-| Retired features | Removed, not disabled. There's no private/public fork, no Pace, no development slots, no gen-ed core. Nothing is behind a dead flag. |
-| Plan documents | Plans 10–13 sit beside 15–17 with the same names, but `docs/plans/README.md` marks each as "Superseded by Plan N". It's an archive, not confusion. |
+| Check                                                  | Result                                                                                                                                             |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Typecheck (`tsc -b`)                                   | Clean.                                                                                                                                             |
+| Typecheck under `--strict` (not enabled in the config) | Also clean, with zero errors in `src/`, `sim/` and `tools/`.                                                                                       |
+| Unused locals and parameters                           | Enforced by `noUnusedLocals` and `noUnusedParameters`. No unreferenced private function or variable can exist in any file.                         |
+| Lint (`oxlint`)                                        | Zero warnings.                                                                                                                                     |
+| Unused files (`knip`)                                  | None.                                                                                                                                              |
+| Commented-out code                                     | None found. Every `// const …` style match is prose.                                                                                               |
+| `TODO` / `FIXME` / `HACK`                              | Zero.                                                                                                                                              |
+| CSS classes never referenced in code                   | None found among 898.                                                                                                                              |
+| Test wiring                                            | All 55 test files are in `npm test`, and every script points at a file that exists.                                                                |
+| Test suite                                             | All 55 suites pass.                                                                                                                                |
+| Retired features                                       | Removed, not disabled. There's no private/public fork, no Pace, no development slots, no gen-ed core. Nothing is behind a dead flag.               |
+| Plan documents                                         | Plans 10–13 sit beside 15–17 with the same names, but `docs/plans/README.md` marks each as "Superseded by Plan N". It's an archive, not confusion. |
 
 **Unused exports.** `knip` flags 79 exported values and 40 exported types that nothing outside their own file imports. All but 11 values are used inside their own file, so they're only needlessly `export`ed. The 11 genuinely dead values are:
 
@@ -51,21 +51,21 @@ That is about 11 dead symbols in 51,000 lines of source.
 
 ### 1. Comments that tell the history instead of the code
 
-| | V1 | V2 |
-| --- | --- | --- |
-| Source lines (`src`, `sim`, `tools`) | 51,361 | 45,296 (`src`) |
-| Comment lines | 19,651 (38%) | 3,863 (9%) |
+|                                      | V1           | V2             |
+| ------------------------------------ | ------------ | -------------- |
+| Source lines (`src`, `sim`, `tools`) | 51,361       | 45,296 (`src`) |
+| Comment lines                        | 19,651 (38%) | 3,863 (9%)     |
 
 The heaviest files by comment share:
 
-| File | Lines | Comments |
-| --- | --- | --- |
-| `src/state/types.ts` | 1,721 | 66% |
-| `src/state/actions.ts` | 877 | 61% |
-| `sim/balanceSim.ts` | 2,376 | 50% |
-| `src/components/buildingSpec.ts` | 1,751 | 50% |
-| `src/systems/prestige/prestigeSystem.ts` | 1,063 | 49% |
-| `src/data/studentLifeData.ts` | 1,646 | 47% |
+| File                                     | Lines | Comments |
+| ---------------------------------------- | ----- | -------- |
+| `src/state/types.ts`                     | 1,721 | 66%      |
+| `src/state/actions.ts`                   | 877   | 61%      |
+| `sim/balanceSim.ts`                      | 2,376 | 50%      |
+| `src/components/buildingSpec.ts`         | 1,751 | 50%      |
+| `src/systems/prestige/prestigeSystem.ts` | 1,063 | 49%      |
+| `src/data/studentLifeData.ts`            | 1,646 | 47%      |
 
 What fills them:
 
@@ -78,6 +78,7 @@ Comments like these rot. `types.ts:1612` introduces the badge state as "Three in
 This is almost certainly where the "rewritten and overwritten" feel comes from. The rewrites were clean, but each one left an account of itself in the files.
 
 **The fix:**
+
 - Move the history into git and the plan documents, where it already lives.
 - Cut each comment to what the code does now and why.
 - Aim for roughly V2's density.
@@ -101,6 +102,7 @@ This is almost certainly where the "rewritten and overwritten" feel comes from. 
 The tests still pass, but some of them are exercising a shape the game no longer has. They may be checking less than they appear to.
 
 **The fix:**
+
 - Add `test/` to the sim `tsconfig`.
 - Fix the 22 errors, each one by asking what the test meant.
 - Move the runner to Vitest, as V2 uses. Today each suite bundles separately, 55 suites are chained with `&&`, and the first failure hides every later result. The full run takes **26 minutes 40 seconds**, most of it in the balance suites, each of which runs the whole 40-year simulation. Nobody will run that before every commit. Split them into a fast suite and a slow balance suite, as V2 does.
@@ -145,6 +147,7 @@ Saves are discarded until release (V1-38), so both can simply go.
 - **It `structuredClone`s the whole state on every action** (`:237`).
 
 **The fix:**
+
 - Move the long cases into their systems, so the reducer only dispatches.
 - Move saving out. This is already in Phase A.
 - Leave the clone until profiling says otherwise.
@@ -168,13 +171,13 @@ This was already Phase A's first item. The audit only confirms the count.
 
 ### 8. Large files
 
-| File | Lines | Comments | Code |
-| --- | --- | --- | --- |
-| `buildingMotifs.tsx` | 3,703 | 24% | Real drawing code, one function per building look. Phase D replaces much of it with V2's catalogue art. |
-| `balanceSim.ts` | 2,376 | 50% | Half comment. It becomes the merged harness in Phase A. |
-| `types.ts` | 1,721 | 66% | Under 600 lines of actual types. |
-| `CurriculumTab.tsx` | 1,689 | | |
-| `InterruptModal.tsx` | 1,597 | | Holds every beat and every event body in one component. It shrinks when events move to V2's panel (V1-16, Phase K) and the Standing beat goes (V1-1). |
+| File                 | Lines | Comments | Code                                                                                                                                                  |
+| -------------------- | ----- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildingMotifs.tsx` | 3,703 | 24%      | Real drawing code, one function per building look. Phase D replaces much of it with V2's catalogue art.                                               |
+| `balanceSim.ts`      | 2,376 | 50%      | Half comment. It becomes the merged harness in Phase A.                                                                                               |
+| `types.ts`           | 1,721 | 66%      | Under 600 lines of actual types.                                                                                                                      |
+| `CurriculumTab.tsx`  | 1,689 |          |                                                                                                                                                       |
+| `InterruptModal.tsx` | 1,597 |          | Holds every beat and every event body in one component. It shrinks when events move to V2's panel (V1-16, Phase K) and the Standing beat goes (V1-1). |
 
 After the comment trim, most of these are ordinary sizes. Don't split them for their own sake. The phases that touch them will split them where they change.
 
