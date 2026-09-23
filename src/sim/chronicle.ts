@@ -408,6 +408,12 @@ function summarise(span: Span, recs: YearRecord[]): string[] {
   return lines;
 }
 
+// One stretch of years in the chronicle's sentences: an Epilogue decade's
+// addendum (Phase 27).
+export function summariseYears(state: GameState, from: number, to: number): string[] {
+  return summarise({ kind: 'quiet', from, to }, yearRecords(state));
+}
+
 // ---------- the whole of it ----------
 
 export function chronicleOf(state: GameState): Chronicle {

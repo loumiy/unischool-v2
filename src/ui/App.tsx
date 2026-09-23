@@ -18,6 +18,7 @@ import {
 } from '../sim/index.ts';
 import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
+import FinalReport from './FinalReport.tsx';
 import EventLetter from './EventLetter.tsx';
 import EventPrompt, { eventPrompt } from './EventPrompt.tsx';
 import { eventById } from '../content/events.ts';
@@ -348,7 +349,7 @@ export default function App() {
         {/* Inline means inline: the panel belongs to the strip and the map
             under it, and steps aside for a screen rather than floating over
             that screen's own buttons. */}
-        {inlineEvent && !effectiveOverlay && (
+        {inlineEvent && !effectiveOverlay && !state.ending.pending && (
           <EventPrompt state={state} pending={inlineEvent} onChoose={chooseEvent} />
         )}
         <LogTicker
@@ -396,7 +397,7 @@ export default function App() {
               ? (eventById(seismic.eventId).title ?? 'a letter')
               : letter
                 ? 'a letter from the board'
-                : (beat?.name ?? null)
+                : (beat?.name ?? (state.ending.pending ? 'the Final Report' : null))
           }
         />
         {effectiveBuildOpen && (
@@ -425,6 +426,16 @@ export default function App() {
         )}
         {effectiveOverlay === 'letter' && letter && (
           <BoardLetter state={state} letterId={letter} onRead={readLetter} />
+        )}
+        {/* Year 50 (DD §2.3): the report, once nothing else is waiting. */}
+        {state.ending.pending && !seismic && !letter && !beat && (
+          <FinalReport
+            state={state}
+            onContinue={() => {
+              if (store.dispatch({ type: 'enterEpilogue' }))
+                void autosave(store.getSnapshot().run!);
+            }}
+          />
         )}
         {effectiveOverlay === 'beat' && beat && (
           <BeatScreen

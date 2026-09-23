@@ -23,12 +23,15 @@ export interface Prestige {
   // Athletics results carry into the reading (Phase 23); a record of the
   // last season's, 0–1, lives here so the reading stays a pure function.
   athleticsForm: number;
+  // Every year's standings, as they stood at its turn (Phase 27): the
+  // Final Report grades the arc, not the last snapshot.
+  history: { year: number; axes: Axes }[];
 }
 
 export function foundingPrestige(): Prestige {
   const axes = {} as Axes;
   for (const a of AXES) axes[a] = PRESTIGE_START;
-  return { axes, athleticsForm: 0 };
+  return { axes, athleticsForm: 0, history: [] };
 }
 
 const clamp = (n: number) => Math.max(0, Math.min(100, n));
@@ -93,7 +96,8 @@ export function trailPrestige(state: GameState): GameState {
   for (const a of AXES) {
     axes[a] = Number((axes[a] + (reading[a] - axes[a]) * PRESTIGE_TRAIL).toFixed(2));
   }
-  return { ...state, prestige: { ...state.prestige, axes } };
+  const history = [...state.prestige.history, { year: state.clock.year - 1, axes }];
+  return { ...state, prestige: { ...state.prestige, axes, history } };
 }
 
 export function prestigeOf(axes: Axes): number {

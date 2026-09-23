@@ -1,0 +1,83 @@
+{
+  "grades": [
+    {
+      "at": 75,
+      "letter": "A"
+    },
+    {
+      "at": 62,
+      "letter": "B"
+    },
+    {
+      "at": 48,
+      "letter": "C"
+    },
+    {
+      "at": 34,
+      "letter": "D"
+    },
+    {
+      "at": 0,
+      "letter": "F"
+    }
+  ],
+  "tagPhrases": {
+    "research-powerhouse": "a research powerhouse",
+    "teaching-college": "a teaching college",
+    "party-school": "a party school",
+    "jock-school": "a jock school",
+    "artsy": "an artists' college",
+    "commuter": "a commuter school",
+    "country-club": "a country club",
+    "pressure-cooker": "a pressure cooker",
+    "the-bargain": "the bargain of its region",
+    "old-money": "an old-money college"
+  },
+  "axisPhrases": {
+    "academics": "a serious academic college",
+    "research": "a research college",
+    "experience": "a college its students loved",
+    "athletics": "a sporting college",
+    "access": "a college that opened its doors",
+    "finance": "a well-endowed college"
+  },
+  "weaknesses": {
+    "academics": "never quite learned to teach",
+    "research": "never wrote a paper anyone read",
+    "experience": "never learned to make its students happy",
+    "athletics": "never won a game that mattered",
+    "access": "never opened its doors very wide",
+    "finance": "never balanced its books"
+  },
+  "strengthTail": "and was very good at it",
+  "titleShape": "{school}: {phrase} that {tail}",
+  "verdicts": {
+    "rich": "It left its successors far richer than it found itself: the endowment grew from {from} to {to}.",
+    "steady": "It kept its money: the endowment went from {from} to {to}, and the books mostly balanced.",
+    "poorer": "It spent what it was given: the endowment went from {from} to {to}.",
+    "distress": "It spent {years} years in distress{scars}.",
+    "scars": ", {count} of them under the interim CFO",
+    "debt": "It ends owing {debt}.",
+    "clean": "It ends owing nothing."
+  },
+  "words": {
+    "title": "The Final Report",
+    "eyebrow": "Year 50 · the run formally ends",
+    "mark": "Final mark",
+    "markHint": "The whole arc, not the last snapshot: where each axis stood across fifty years, how far it came from the first decade to the last, where the guide put the college at the end, and how many promises it kept.",
+    "axes": "The six axes, graded over the arc",
+    "axisLine": "Averaged {mean} over the run; {first} in the first decade, {last} in the last.",
+    "ambitions": "The promises",
+    "ambitionsLine": "{kept} kept, {missed} missed, {declined} declined.",
+    "ambitionsNone": "The college made no promises in public.",
+    "finances": "The money",
+    "chronicle": "The eras",
+    "rank": "The guide's last word: {rank} of {total}.",
+    "continue": "Continue in Epilogue",
+    "copy": "Copy the report",
+    "copied": "Copied.",
+    "epilogue": "Epilogue",
+    "epilogueNote": "The run is over; the college is not. The clock runs on, and every ten years the chronicle gets an addendum. Nothing new unlocks.",
+    "addendum": "Addendum, Years {from}–{to}"
+  }
+}

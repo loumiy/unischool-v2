@@ -12,6 +12,7 @@ import { foundingDistress } from './distress.ts';
 import { foundingLeague } from './league.ts';
 import { foundingAthletics } from './athletics.ts';
 import { foundingPerception } from './tags.ts';
+import { foundingEnding } from './ending.ts';
 import { foundingPrestige } from './prestige.ts';
 import { AXES } from '../content/league.ts';
 import { foundingAmbitions } from './ambitions.ts';
@@ -653,6 +654,22 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     const state = (raw.state ?? {}) as Record<string, unknown>;
     return { ...raw, version: 25, state: { ...state, schemaVersion: 25 } };
   },
+  // v25 → v26 (Phase 27): the ending, and the yearly standings it grades.
+  // An older college's history starts where its save does.
+  25: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const prestige = (state.prestige ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 26,
+      state: {
+        ending: foundingEnding(),
+        ...state,
+        prestige: { history: [], ...prestige },
+        schemaVersion: 26,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -882,6 +899,9 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     typeof athletics.rivalry !== 'object'
   )
     return 'state.athletics is invalid';
+  const ending = s.ending as Record<string, unknown> | undefined;
+  if (typeof ending !== 'object' || ending === null || typeof ending.pending !== 'boolean')
+    return 'state.ending is invalid';
   const perception = s.perception as Record<string, unknown> | undefined;
   if (typeof perception !== 'object' || perception === null || !Array.isArray(perception.tags))
     return 'state.perception is invalid';

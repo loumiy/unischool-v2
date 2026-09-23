@@ -3754,3 +3754,84 @@ th.figure > .figure-hint {
   font-weight: 800;
   color: var(--ink-muted);
 }
+
+/* ---------- the Final Report (Phase 27) ---------- */
+.final-report {
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+.report-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 8px 0 4px;
+}
+.report-mark-letter {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--school-primary);
+}
+.report-mark-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+}
+.report-title {
+  text-align: center;
+  font-style: italic;
+  margin: 8px 0 12px;
+}
+.report-rank {
+  text-align: center;
+}
+.report-h {
+  margin: 14px 0 6px;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.report-axes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.report-axis {
+  display: grid;
+  grid-template-columns: 32px 150px 1fr;
+  align-items: baseline;
+  gap: 8px;
+}
+.report-axis-grade {
+  font-family: var(--display);
+  font-weight: 900;
+  font-size: var(--text-lg, 1.1rem);
+  text-align: center;
+}
+.report-axis.grade-A .report-axis-grade,
+.report-axis.grade-B .report-axis-grade {
+  color: #2e7d32;
+}
+.report-axis.grade-D .report-axis-grade,
+.report-axis.grade-F .report-axis-grade {
+  color: #b3261e;
+}
+.report-axis-line {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+.epilogue-chip {
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--school-secondary);
+  color: var(--school-on-secondary);
+  font-weight: 800;
+}

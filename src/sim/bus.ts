@@ -112,6 +112,8 @@ export type BusEvent =
   | { kind: 'tagShed'; tag: string }
   // Poaching (DD §7.3): a star gone to another college.
   | { kind: 'facultyPoached'; name: string; schoolId: string }
+  // The ending (DD §2.3).
+  | { kind: 'runEnded'; year: number; mark: string }
   | {
       kind: 'rivalTaunt';
       schoolId: string;
@@ -183,6 +185,7 @@ export const BUS_KINDS: readonly BusKind[] = [
   'tagEarned',
   'tagShed',
   'facultyPoached',
+  'runEnded',
   'mark',
 ];
 

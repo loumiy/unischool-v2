@@ -176,6 +176,10 @@
       "text": "{name} leaves for {label}.",
       "tone": "bad"
     },
+    "runEnded": {
+      "text": "Year {year}: the run formally ends. The Final Report gives {school} {label}.",
+      "tone": "good"
+    },
     "mark": {
       "text": "{label}"
     },
