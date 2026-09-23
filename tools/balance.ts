@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// PHASE 31: THE BALANCE DASHBOARD. Three archetype colleges, fifty years
+// PHASE 31 (AND 35): THE BALANCE DASHBOARD. Three archetype colleges, fifty years
 // each, headless on Node, measured against DD §2.2's pacing budget and
 // DD §17's guardrails. It reports; `tuning.ts` is where the answers go.
 //
@@ -317,6 +317,78 @@ interface Report {
   axes: Record<string, number>;
   money: { cash: number; endowment: number; debt: number; revenue: number; expenses: number }[];
   admin: { founding: number; seats: number; ratchet: number; faculty: number };
+  // The middle years, measured (Phase 35, DD §17's 1.1 guardrails).
+  middle: Middle;
+}
+
+interface Middle {
+  cashCover: number[]; // operating cash as years of expenses, at Years 10, 20, 30, 40 and 50
+  sting: (number | null)[]; // median priced choice as a share of the budget, per decade
+  saturatedYears: number; // years with any class above 95 satisfaction
+  titleRate: number; // titles per varsity season
+  demandResponse: number | null; // applicant-pool change after a 20-point teaching drop at Year 25
+  idleBeats: number; // clock-stopping beats with nothing to decide
+  tagsEver: string[];
+}
+
+// A beat with nothing to decide: the Board Meeting of a sound college with
+// no cuts on its list, and a Convocation with no promise to accept. The
+// other two beats set terms and budgets, which is always a decision.
+function idleBeat(s: GameState, beatId: string): boolean {
+  if (beatId === 'board-meeting') return s.distress.rung < 2 && s.ambitions.offered === null;
+  if (beatId === 'convocation') return s.ambitions.offered === null;
+  return false;
+}
+
+// The costliest priced choice an event offers, as a share of the year's
+// budgeted expenses; null when no choice costs cash.
+function stingOf(s: GameState, eventId: string): number | null {
+  const costs = eventById(eventId)
+    .choices.map((c) => -(c.effects.cash ?? 0))
+    .filter((c) => c > 0);
+  if (costs.length === 0) return null;
+  const budget = Object.values(s.treasury.budget.expenses).reduce((t, v) => t + v, 0);
+  return budget > 0 ? Math.max(...costs) / budget : null;
+}
+
+const median = (xs: number[]) => {
+  if (xs.length === 0) return null;
+  const sorted = [...xs].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)]!;
+};
+
+// What four years of teaching twenty points worse does to the pool: the
+// same college from Year 25, twice, once with every teacher weaker.
+function demandResponse(
+  run: Run,
+  play: Play,
+  resolve: (s: GameState) => Action | null,
+  week0: number,
+): number | null {
+  const weaker: Run = {
+    ...run,
+    state: {
+      ...run.state,
+      faculty: {
+        ...run.state.faculty,
+        roster: run.state.faculty.roster.map((f) => ({
+          ...f,
+          teaching: Math.max(0, f.teaching - 20),
+        })),
+      },
+    },
+  };
+  let a = run;
+  let b = weaker;
+  for (let w = 0; w < 4 * WEEKS_PER_YEAR; w++) {
+    a = play(tickRunWeeks(a, 1, resolve), week0 + w);
+    b = tickRunWeeks(b, 1, resolve);
+    // The weaker college keeps its roster weak: no hiring around the test.
+    b = { ...b, state: { ...b.state, faculty: { ...b.state.faculty, market: [] } } };
+  }
+  const pa = a.state.people.lastAdmissions?.applicants ?? 0;
+  const pb = b.state.people.lastAdmissions?.applicants ?? 0;
+  return pa > 0 ? (pb - pa) / pa : null;
 }
 
 export function measure(a: Archetype, seed: number): Report {
@@ -329,6 +401,12 @@ export function measure(a: Archetype, seed: number): Report {
   });
   const spans = [0, 0, 0, 0];
   const money: Report['money'] = [];
+  const cashCover: number[] = [];
+  const stings: number[][] = [[], [], [], [], []];
+  let saturatedYears = 0;
+  let idleBeats = 0;
+  let response: number | null = null;
+  let heard = 0;
   // A player answers the question on the strip when it arrives, as the
   // stated default unless they have a reason not to.
   const resolve =
@@ -345,8 +423,25 @@ export function measure(a: Archetype, seed: number): Report {
     });
   for (let week = 0; week < 50 * WEEKS_PER_YEAR; week++) {
     const before = run.state;
+    if (week === 25 * WEEKS_PER_YEAR) response = demandResponse(run, a.play, resolve, week);
     run = tickRunWeeks(run, 1, resolve);
     run = a.play(run, week);
+    for (const e of run.state.bus.slice(heard)) {
+      const decade = Math.min(4, Math.floor(e.week / (10 * WEEKS_PER_YEAR)));
+      if (e.kind === 'eventFired') {
+        const sting = stingOf(run.state, e.eventId);
+        if (sting !== null) stings[decade]!.push(sting);
+      }
+      if (e.kind === 'beatFired' && idleBeat(run.state, e.beatId)) idleBeats++;
+    }
+    heard = run.state.bus.length;
+    if (week % WEEKS_PER_YEAR === 0 && run.state.people.cohorts.some((c) => c.satisfaction > 95))
+      saturatedYears++;
+    if (week > 0 && week % (10 * WEEKS_PER_YEAR) === 0) {
+      const t = run.state.treasury;
+      const spend = Object.values(t.budget.expenses).reduce((x, v) => x + v, 0);
+      cashCover.push(spend > 0 ? t.cash / spend : 0);
+    }
     if (week % (10 * WEEKS_PER_YEAR) === 40) {
       const t = run.state.treasury;
       const sum = (o: object) => Object.values(o).reduce((x: number, v) => x + (v as number), 0);
@@ -370,6 +465,10 @@ export function measure(a: Archetype, seed: number): Report {
     }
   }
   const s = run.state;
+  {
+    const spend = Object.values(s.treasury.budget.expenses).reduce((x, v) => x + v, 0);
+    cashCover.push(spend > 0 ? s.treasury.cash / spend : 0);
+  }
   const inWindow = (w: number) => w >= 15 * WEEKS_PER_YEAR && w < 35 * WEEKS_PER_YEAR;
   const asked = entriesOfKind(s, 'eventFired').filter((e) => inWindow(e.week)).length;
   const delegated = entriesOfKind(s, 'eventDelegated').filter((e) => inWindow(e.week)).length;
@@ -382,6 +481,19 @@ export function measure(a: Archetype, seed: number): Report {
     if (e.kind === 'eventFired' || e.kind === 'boardLetter') spans[span]! += EVENT_SECONDS / 60;
   }
   const table = latestTable(s);
+  const seasons = entriesOfKind(s, 'seasonClosed');
+  const middle: Middle = {
+    cashCover: cashCover.map((c) => Number(c.toFixed(2))),
+    sting: stings.map((xs) => {
+      const m = median(xs);
+      return m === null ? null : Number(m.toFixed(4));
+    }),
+    saturatedYears,
+    titleRate: seasons.length ? seasons.filter((e) => e.title).length / seasons.length : 0,
+    demandResponse: response === null ? null : Number((response as number).toFixed(3)),
+    idleBeats,
+    tagsEver: [...new Set(entriesOfKind(s, 'tagEarned').map((e) => e.tag))],
+  };
   return {
     archetype: a.id,
     seed,
@@ -409,7 +521,37 @@ export function measure(a: Archetype, seed: number): Report {
       ratchet: s.treasury.standing.admin,
       faculty: s.treasury.budget.expenses.facultyPayroll,
     },
+    middle,
   };
+}
+
+// DD §17's 1.1 guardrails (Phase 35): the bands the middle years are held
+// to. Cash cover from Year 10; sting in every decade; the rest per run.
+export const MIDDLE_BANDS = {
+  cashCover: [0.25, 1.0],
+  sting: [0.01, 0.05],
+  saturatedYears: [0, 0],
+  titleRate: [0.1, 0.25],
+  demandResponse: [-1, -0.1],
+  idleBeats: [0, 25],
+} as const;
+
+const inside = (v: number, [lo, hi]: readonly [number, number]) => v >= lo && v <= hi;
+
+function middleLine(r: Report): string {
+  const m = r.middle;
+  const B = MIDDLE_BANDS;
+  const flag = (ok: boolean) => (ok ? 'ok' : 'OUT');
+  const cover = m.cashCover.slice(1);
+  const pct = (x: number | null) => (x === null ? '—' : `${(x * 100).toFixed(1)}%`);
+  return [
+    `cash cover ${m.cashCover.join('/')}y ${flag(cover.every((c) => inside(c, B.cashCover)))}`,
+    `sting ${m.sting.map(pct).join('/')} ${flag(m.sting.every((x) => x === null || inside(x, B.sting)))}`,
+    `saturated ${m.saturatedYears}y ${flag(inside(m.saturatedYears, B.saturatedYears))}`,
+    `titles ${(m.titleRate * 100).toFixed(0)}% of seasons ${flag(m.titleRate === 0 || inside(m.titleRate, B.titleRate))}`,
+    `demand ${pct(m.demandResponse)} for −20 teaching ${flag(m.demandResponse !== null && inside(m.demandResponse, B.demandResponse))}`,
+    `idle beats ${m.idleBeats} ${flag(inside(m.idleBeats, B.idleBeats))}`,
+  ].join(' · ');
 }
 
 const BUDGET = [
@@ -436,6 +578,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const spans = r.spans.map((m, i) => `${m}/${BUDGET[i]![0]}–${BUDGET[i]![1]}`).join(' ');
       console.log(
         `${r.archetype.padEnd(8)} seed ${String(r.seed).padStart(2)}  admin ${(r.adminShare * 100).toFixed(0)}% ${inBand ? 'ok' : 'OUT'} · events 1/${everyWeeks.toFixed(1)}wk ${cadence ? 'ok' : 'OUT'} (asked 1/${r.askedPer.toFixed(1)}, delegated 1/${r.delegatedPer.toFixed(1)}) · placement ${(r.placementShare * 100).toFixed(0)}% of cap · minutes ${spans} · mark ${r.mark} rank ${r.rank} · ${r.enrolled} students ${r.faculty} faculty ${r.seats} seats · ${r.distressYears}y distress · ${r.tags.join(',') || 'no tags'}`,
+      );
+      console.log(`         middle  ${middleLine(r)}`);
+    }
+    // Tags every archetype earned, seed by seed (0 is the band).
+    for (const seed of [4, 11, 21]) {
+      const sets = reports.filter((r) => r.seed === seed).map((r) => new Set(r.middle.tagsEver));
+      const shared = [...sets[0]!].filter((t) => sets.every((x) => x.has(t)));
+      console.log(
+        `seed ${seed}: tags every archetype earned: ${shared.join(', ') || 'none'} ${shared.length === 0 ? 'ok' : 'OUT'}`,
       );
     }
   }
