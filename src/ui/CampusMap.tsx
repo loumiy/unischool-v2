@@ -147,7 +147,12 @@ function progressOf(p: Placement, week: number): number {
   return total <= 0 ? 1 : 1 - (p.completesWeek - week) / total;
 }
 
-function PlacedBuilding({
+// Memoised (Phase 33): a week's tick used to redraw every building on the
+// campus, and at 8× that was the map's whole cost. A building whose
+// placement did not change, under the same season, draws nothing new: the
+// week reaches only the ones with works on, and the inspect handler takes
+// the id so it can be one function for all of them.
+const PlacedBuilding = memo(function PlacedBuilding({
   p,
   motif,
   week,
@@ -160,7 +165,7 @@ function PlacedBuilding({
   p: Placement;
   motif: Motif;
   week: number;
-  onInspect: () => void;
+  onInspect: (id: string) => void;
   inspected: boolean;
   camera: Camera;
   // Only the entrance sign uses it, and only to write it on the board.
@@ -183,7 +188,7 @@ function PlacedBuilding({
       aria-label={def.name}
       data-status={p.status}
       role="button"
-      onClick={onInspect}
+      onClick={() => onInspect(p.id)}
     >
       {site ? (
         <ConstructionSite def={def} motif={motif} col={d.col} row={d.row} w={d.w} h={d.h} />
@@ -216,7 +221,7 @@ function PlacedBuilding({
       {(def.form !== 'grounds' || works) && <title>{title}</title>}
     </g>
   );
-}
+});
 
 // SNOWFALL (Phase 21E): a fixed budget of flakes over the map, each an
 // absolutely positioned dot on a CSS animation the compositor runs, so the
@@ -426,6 +431,11 @@ const CampusScene = memo(function CampusScene({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const ground = useMemo(() => groundGeometry(), [camera]);
   const week = state.clock.absoluteWeek;
+  // What a building needs of the calendar: the week only while it has
+  // works on, and the snow in tenths, so a winter's slow drift redraws the
+  // roofs a handful of times rather than every week.
+  const weekFor = (p: Placement) => (p.status === 'open' ? 0 : week);
+  const roofSnow = Math.round(snow * 10) / 10;
   return (
     <>
       <defs>
@@ -448,12 +458,12 @@ const CampusScene = memo(function CampusScene({
           key={p.id}
           p={p}
           motif={motif}
-          week={week}
-          onInspect={() => onInspect(p.id)}
+          week={weekFor(p)}
+          onInspect={onInspect}
           inspected={p.id === inspectedId}
           camera={camera}
           schoolName={schoolName}
-          snow={snow}
+          snow={roofSnow}
         />
       ))}
       {scene.map((entry) =>
@@ -464,12 +474,12 @@ const CampusScene = memo(function CampusScene({
             <PlacedBuilding
               p={entry.placement}
               motif={motif}
-              week={week}
-              onInspect={() => onInspect(entry.placement.id)}
+              week={weekFor(entry.placement)}
+              onInspect={onInspect}
               inspected={entry.placement.id === inspectedId}
               camera={camera}
               schoolName={schoolName}
-              snow={snow}
+              snow={roofSnow}
             />
           </g>
         ),

@@ -15,9 +15,12 @@ import './ui/startup.css';
 import './ui/map.css';
 import './ui/debug.css';
 import App from './ui/App.tsx';
+import { CrashBoundary } from './ui/Crash.tsx';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <CrashBoundary>
+      <App />
+    </CrashBoundary>
   </StrictMode>,
 );

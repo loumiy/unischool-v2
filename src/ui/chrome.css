@@ -3988,3 +3988,49 @@ th.figure > .figure-hint {
   font-size: var(--text-sm);
   line-height: 1.45;
 }
+
+/* When something breaks (Phase 33): over everything, plainly. */
+.crash-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.crash-card {
+  max-width: 460px;
+  width: 100%;
+  background: var(--cream);
+  border: 3px solid var(--outline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  padding: 18px 20px;
+  color: var(--ink);
+}
+.crash-card h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  margin: 0 0 8px;
+}
+.crash-card p {
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
+.crash-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.crash-detail {
+  margin-top: 12px;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+.crash-detail pre {
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow: auto;
+  font-family: var(--mono);
+}

@@ -113,3 +113,35 @@ describe('the speed control while the clock is held', () => {
     expect(store.getSnapshot().speed).toBe('x1');
   });
 });
+
+describe('a fault stops the clock rather than the game (Phase 33)', () => {
+  it('keeps the last whole run, stops, and refuses speed until the player has seen it', () => {
+    const store = new GameStore();
+    store.newGame(7);
+    store.dispatch(FOUND);
+    store.dispatch(PLACE_HALL);
+    const before = store.getSnapshot().run!;
+    // A state the sim cannot tick: the treasury gone from under it.
+    const broken = { ...before, state: { ...before.state, treasury: undefined } } as never;
+    store.loadRun(broken);
+    store.stepWeeks(1);
+    const snap = store.getSnapshot();
+    expect(snap.fault).toBeTruthy();
+    expect(snap.speed).toBe('paused');
+    expect(snap.run).toBe(broken);
+    store.setSpeed('x1');
+    expect(store.getSnapshot().speed).toBe('paused');
+    store.clearFault();
+    expect(store.getSnapshot().fault).toBeNull();
+  });
+
+  it('catches an action that throws, and says so', () => {
+    const store = new GameStore();
+    store.newGame(7);
+    store.dispatch(FOUND);
+    const run = store.getSnapshot().run!;
+    store.loadRun({ ...run, state: { ...run.state, campus: undefined } } as never);
+    expect(store.dispatch(PLACE_HALL)).toBe(false);
+    expect(store.getSnapshot().fault).toBeTruthy();
+  });
+});

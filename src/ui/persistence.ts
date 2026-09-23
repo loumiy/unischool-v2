@@ -5,7 +5,9 @@ import { loadSaveFile, type LoadResult, type SaveFile } from '../sim/index.ts';
 // and three manual slots; export/import as a JSON file. The FORMAT is the
 // sim's (sim/save.ts); this module only moves bytes.
 
-export type SlotId = 'autosave' | 'slot-1' | 'slot-2' | 'slot-3';
+// 'autosave-prev' is the autosave before the last one (Phase 33): a write
+// torn by a crash or a closed tab costs a year, not the run.
+export type SlotId = 'autosave' | 'autosave-prev' | 'slot-1' | 'slot-2' | 'slot-3';
 export const SLOTS: readonly SlotId[] = ['autosave', 'slot-1', 'slot-2', 'slot-3'];
 export const MANUAL_SLOTS: readonly SlotId[] = ['slot-1', 'slot-2', 'slot-3'];
 
@@ -57,6 +59,17 @@ export async function readHall(): Promise<HallEntry[]> {
 
 export async function writeSave(slot: SlotId, file: SaveFile): Promise<void> {
   await (await db()).put('saves', file, slot);
+}
+
+// The autosave, rotated: the one being replaced becomes the backup in the
+// same transaction as the new one is written, so there is never a moment
+// with neither.
+export async function writeAutosave(file: SaveFile): Promise<void> {
+  const tx = (await db()).transaction('saves', 'readwrite');
+  const previous = await tx.store.get('autosave');
+  if (previous) await tx.store.put(previous, 'autosave-prev');
+  await tx.store.put(file, 'autosave');
+  await tx.done;
 }
 
 // null when the slot is empty; otherwise the sim's verdict on what was there.
