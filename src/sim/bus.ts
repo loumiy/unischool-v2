@@ -102,6 +102,11 @@ export type BusEvent =
   // Athletics and the rival (DD §8.5, §11.3).
   | { kind: 'seasonClosed'; sportId: string; wins: number; losses: number; title: boolean }
   | { kind: 'rivalNamed'; schoolId: string }
+  // Identity (DD §11.2): a tag the guidebooks start or stop using.
+  | { kind: 'tagEarned'; tag: string }
+  | { kind: 'tagShed'; tag: string }
+  // Poaching (DD §7.3): a star gone to another college.
+  | { kind: 'facultyPoached'; name: string; schoolId: string }
   | {
       kind: 'rivalTaunt';
       schoolId: string;
@@ -167,6 +172,9 @@ export const BUS_KINDS: readonly BusKind[] = [
   'seasonClosed',
   'rivalNamed',
   'rivalTaunt',
+  'tagEarned',
+  'tagShed',
+  'facultyPoached',
   'mark',
 ];
 

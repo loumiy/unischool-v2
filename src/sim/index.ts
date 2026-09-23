@@ -34,3 +34,4 @@ export * from './reach.ts';
 export * from './league.ts';
 export * from './prestige.ts';
 export * from './athletics.ts';
+export * from './tags.ts';

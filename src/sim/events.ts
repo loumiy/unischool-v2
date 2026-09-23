@@ -18,6 +18,8 @@ import {
   MOOD_CAP,
   SEISMIC_MIN_YEAR,
   SEISMIC_ODDS_SHARE,
+  EVENT_TAG_WEIGHT,
+  POACH_COUNTER_SHARE,
 } from '../tuning.ts';
 import { campusBeauty } from './beauty.ts';
 import { emit } from './bus.ts';
@@ -31,7 +33,7 @@ import { teachingQuality } from './faculty.ts';
 import { Rng } from './rng.ts';
 import type { GameState } from './state.ts';
 import { latestTable, rankOf } from './league.ts';
-import { titlesIn } from './athletics.ts';
+import { addRivalry, titlesIn } from './athletics.ts';
 import { leagueSchoolById } from '../content/league.ts';
 import { sportById } from '../content/athletics.ts';
 import { policyChoice } from './seats.ts';
@@ -241,6 +243,7 @@ export function eligible(state: GameState, kind: EventDef['kind']): EventDef[] {
   return EVENTS.filter(
     (e) =>
       e.kind === kind &&
+      !e.scripted &&
       !state.events.pending.some((p) => p.eventId === e.id) &&
       !firedRecently(state, e) &&
       conditionsHold(state, e),
@@ -249,16 +252,20 @@ export function eligible(state: GameState, kind: EventDef['kind']): EventDef[] {
 
 // An event the college has earned outranks one that could happen to
 // anybody: every condition it names multiplies its weight (DD §10.1).
-export function weightOf(def: EventDef): number {
-  return def.weight * Math.pow(EVENT_CONSEQUENCE_WEIGHT, Object.keys(def.when).length);
+// And what the guidebooks say colours what happens (DD §11.2, Phase 24):
+// an event favouring a tag the college holds is that much likelier.
+export function weightOf(def: EventDef, state?: GameState): number {
+  const earned = def.weight * Math.pow(EVENT_CONSEQUENCE_WEIGHT, Object.keys(def.when).length);
+  const known = state && def.favours.some((t) => state.perception.tags.includes(t));
+  return known ? earned * EVENT_TAG_WEIGHT : earned;
 }
 
-export function pickEvent(rng: Rng, pool: EventDef[]): EventDef | null {
+export function pickEvent(rng: Rng, pool: EventDef[], state?: GameState): EventDef | null {
   if (pool.length === 0) return null;
-  const total = pool.reduce((t, e) => t + weightOf(e), 0);
+  const total = pool.reduce((t, e) => t + weightOf(e, state), 0);
   let pick = rng.next() * total;
   for (const e of pool) {
-    pick -= weightOf(e);
+    pick -= weightOf(e, state);
     if (pick <= 0) return e;
   }
   return pool[pool.length - 1]!;
@@ -320,7 +327,10 @@ export function pendingText(pending: PendingEvent): string {
 
 // ---------- applying a choice ----------
 
-const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> = {
+const LEVERS: Record<
+  EventEffect,
+  (s: GameState, amount: number, vars: Record<string, string>) => GameState
+> = {
   cash: (s, amount) => ({ ...s, treasury: { ...s.treasury, cash: s.treasury.cash + amount } }),
   endowment: (s, amount) => ({
     ...s,
@@ -432,6 +442,29 @@ const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> =
     });
     return { ...s, people: { ...s.people, cohorts } };
   },
+  // The named subject (Phase 24): the offer taken, the star gone.
+  departs: (s, _amount, vars) => {
+    const f = s.faculty.roster.find((x) => x.id === vars.facultyId);
+    if (!f) return s;
+    const gone = {
+      ...s,
+      faculty: { ...s.faculty, roster: s.faculty.roster.filter((x) => x.id !== f.id) },
+    };
+    return emit(gone, { kind: 'facultyPoached', name: f.name, schoolId: vars.schoolId ?? '' });
+  },
+  // Kept, at a raise that is theirs for good.
+  counter: (s, _amount, vars) => ({
+    ...s,
+    faculty: {
+      ...s.faculty,
+      roster: s.faculty.roster.map((x) =>
+        x.id === vars.facultyId
+          ? { ...x, salary: Math.round(x.salary * (1 + POACH_COUNTER_SHARE)) }
+          : x,
+      ),
+    },
+  }),
+  rivalry: (s, amount, vars) => (vars.schoolId ? addRivalry(s, vars.schoolId, amount) : s),
   // On the map itself: a stand planted, or a stand taken. Planting fills
   // the bare tiles the campus has; taking starts with what is standing.
   trees: (s, amount) => {
@@ -467,17 +500,23 @@ const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> =
 export function applyChoiceEffects(
   state: GameState,
   effects: Partial<Record<EventEffect, number>>,
+  vars: Record<string, string> = {},
 ): GameState {
   let s = state;
   for (const [lever, amount] of Object.entries(effects) as [EventEffect, number][]) {
-    s = LEVERS[lever](s, amount);
+    s = LEVERS[lever](s, amount, vars);
   }
   return s;
 }
 
-export function applyChoice(state: GameState, def: EventDef, choiceId: string): GameState {
+export function applyChoice(
+  state: GameState,
+  def: EventDef,
+  choiceId: string,
+  vars: Record<string, string> = {},
+): GameState {
   const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
-  return applyChoiceEffects(state, choice.effects);
+  return applyChoiceEffects(state, choice.effects, vars);
 }
 
 // ---------- the week ----------
@@ -500,7 +539,7 @@ export function resolveEvent(
   if (!pending) return state;
   const def = eventById(pending.eventId);
   const choice = def.choices.find((c) => c.id === choiceId) ?? def.choices[0]!;
-  const applied = applyChoice(state, def, choice.id);
+  const applied = applyChoice(state, def, choice.id, pending.vars);
   return emit(
     {
       ...applied,
@@ -524,7 +563,11 @@ export function resolveEvent(
 // tool for a content file that will hold a hundred and forty of these
 // (DD §14) — write one, fire it, read it in the ticker. Subjects resolve
 // from the run's own stream, exactly as a fired event's would.
-export function fireEvent(state: GameState, eventId: string): GameState {
+export function fireEvent(
+  state: GameState,
+  eventId: string,
+  given: Record<string, string> = {},
+): GameState {
   const def = findEvent(eventId);
   if (!def) return state;
   const rng = Rng.fromState(state.rng);
@@ -534,7 +577,8 @@ export function fireEvent(state: GameState, eventId: string): GameState {
     eventId: def.id,
     firedWeek: week,
     expiresWeek: week + def.timeoutWeeks,
-    vars: subjectsFor(state, rng, def),
+    // A system that puts an event on the docket names its own subjects.
+    vars: { ...subjectsFor(state, rng, def), ...given },
   };
   return emit(
     {
@@ -566,8 +610,8 @@ export function eventsWeek(state: GameState): GameState {
   // Seismic events are rare, and the run needs some history to shake.
   const seismic = s.clock.year >= SEISMIC_MIN_YEAR && rng.chance(SEISMIC_ODDS_SHARE);
   const def =
-    pickEvent(rng, eligible(s, seismic ? 'seismic' : 'inline')) ??
-    pickEvent(rng, eligible(s, 'inline'));
+    pickEvent(rng, eligible(s, seismic ? 'seismic' : 'inline'), s) ??
+    pickEvent(rng, eligible(s, 'inline'), s);
   if (!def) return { ...s, rng: rng.snapshot() };
   const vars = subjectsFor(s, rng, def);
   // A filled seat handles its domain's routine without the player ever

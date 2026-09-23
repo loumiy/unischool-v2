@@ -2,6 +2,7 @@ import { AXES, type Axes, type AxisId } from '../content/league.ts';
 import { buildingById } from '../content/buildings.ts';
 import {
   AID_DISCOUNT_RATE,
+  PRESTIGE_POOL_SWING,
   PRESTIGE_START,
   PRESTIGE_TRAIL,
   RESEARCH_FULL_ROSTER,
@@ -101,6 +102,12 @@ export function prestigeOf(axes: Axes): number {
 
 export function collegePrestige(state: GameState): number {
   return prestigeOf(state.prestige.axes);
+}
+
+// Prestige on the applicant pool (DD §8.2, Phase 24): neutral at a
+// founding college's standing, and a share more for every point above it.
+export function prestigePoolFactor(state: GameState): number {
+  return Math.max(0.5, 1 + ((collegePrestige(state) - PRESTIGE_START) / 100) * PRESTIGE_POOL_SWING);
 }
 
 export function weightedScore(axes: Axes, weights: Axes): number {

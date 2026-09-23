@@ -114,9 +114,16 @@ describe('the file reads like the style guide says (content/STYLE.md)', () => {
     const placeholders = /\{(\w+)\}/g;
     for (const def of EVENTS) {
       for (const match of def.text.matchAll(placeholders)) {
-        expect(['building', 'faculty', 'program', 'class', 'school', 'rival', 'sport']).toContain(
-          match[1],
-        );
+        expect([
+          'building',
+          'faculty',
+          'program',
+          'class',
+          'school',
+          'rival',
+          'sport',
+          'suitor',
+        ]).toContain(match[1]);
       }
       // Anything that moves real money says so where the player is choosing.
       for (const choice of def.choices) {
@@ -289,7 +296,11 @@ describe('nothing the file says is untrue of the college (Phase 21H, content/STY
     for (const e of EVENTS) {
       for (const c of e.choices) {
         if (!recurring.test(c.note ?? '')) continue;
-        if (c.effects.adminPayroll === undefined && c.effects.facultyPayroll === undefined) {
+        if (
+          c.effects.adminPayroll === undefined &&
+          c.effects.facultyPayroll === undefined &&
+          c.effects.counter === undefined
+        ) {
           lies.push(`${e.id}/${c.id}: "${c.note}" is charged once`);
         }
       }

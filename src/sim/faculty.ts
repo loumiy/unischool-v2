@@ -24,9 +24,11 @@ import {
   SKILL_SD,
   TEACHING_NEUTRAL,
   TEACHING_WEIGHT,
+  SHED_CANDIDATES,
 } from '../tuning.ts';
 import { crowdingFactor, openProgram, type OpenProgram } from './academics.ts';
 import { emit } from './bus.ts';
+import { mover } from './league.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { pay } from './estate.ts';
 import { Rng } from './rng.ts';
@@ -54,6 +56,8 @@ export interface Faculty {
   schoolId: string; // their field
   programId: string | null; // what they teach; null on the market or between programs
   hiredWeek: number | null; // null while a candidate
+  // A candidate a falling college let go (Phase 24): its id, or absent.
+  fromSchool?: string;
 }
 
 export interface FacultyState {
@@ -158,6 +162,30 @@ export function listMarket(state: GameState, year: number): Faculty[] {
     const field =
       founded.length > 0 && rng.chance(MARKET_FOUNDED_SHARE) ? rng.pick(founded) : rng.pick(all);
     out.push(generateCandidate(rng, `f${state.faculty.nextId + i}`, field));
+  }
+  // A falling school sheds faculty the college can grab (DD §11.3): its
+  // seniors, better than the summer's usual, in the college's own fields.
+  const tables = state.league.tables;
+  const faller =
+    tables.length >= 2
+      ? mover(tables[tables.length - 2]!, tables[tables.length - 1]!, false)
+      : null;
+  if (faller) {
+    const fields = founded.length > 0 ? founded : all;
+    for (let i = 0; i < SHED_CANDIDATES; i++) {
+      const c = generateCandidate(rng, `f${state.faculty.nextId + out.length}`, rng.pick(fields));
+      const rank: RankId = i === 0 ? 'full' : 'associate';
+      const teaching = Math.min(SKILL_MAX, c.teaching + 12);
+      const research = Math.min(SKILL_MAX, c.research + 12);
+      out.push({
+        ...c,
+        rank,
+        teaching,
+        research,
+        salary: askingSalary(rank, teaching, research, c.quirkId),
+        fromSchool: faller,
+      });
+    }
   }
   return out;
 }

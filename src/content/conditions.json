@@ -225,7 +225,10 @@
     "enrollment": "enrolment",
     "trees": "trees",
     "adminPayroll": "the administration's payroll",
-    "facultyPayroll": "the faculty payroll"
+    "facultyPayroll": "the faculty payroll",
+    "departs": "a star, gone",
+    "counter": "a star, kept at a raise",
+    "rivalry": "the rivalry"
   },
   "lines": {
     "reaching": "{label} {now} of {target}",

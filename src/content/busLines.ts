@@ -13,6 +13,7 @@ import { findProgram, findSchool, tierById } from './schools.ts';
 import { SEAT_WORDS, seatById } from './seats.ts';
 import { findArc, STUDENT_WORDS } from './students.ts';
 import { leagueSchoolById, methodologyById } from './league.ts';
+import { tagById, type TagId } from './identityTags.ts';
 import { ATHLETICS_LINES, sportById, TAUNTS } from './athletics.ts';
 import { memoryLine } from '../sim/alumni.ts';
 import { EVENT_WORDS, findEvent } from './events.ts';
@@ -227,6 +228,19 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
         tone: entry.title ? 'good' : entry.wins < entry.losses ? 'bad' : undefined,
       };
     }
+    case 'tagEarned':
+    case 'tagShed': {
+      const name = tagById(entry.tag as TagId).name;
+      vars.label = `${/^[aeiou]/i.test(name) || name.startsWith('The') ? '' : 'a '}${name}`.replace(
+        /^The /,
+        'the ',
+      );
+      break;
+    }
+    case 'facultyPoached':
+      vars.name = entry.name;
+      vars.label = leagueSchoolById(entry.schoolId).name;
+      break;
     case 'rivalNamed':
       vars.line = fillArc(ATHLETICS_LINES.rivalNamed, {
         rival: leagueSchoolById(entry.schoolId).name,

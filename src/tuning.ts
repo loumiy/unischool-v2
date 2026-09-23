@@ -126,6 +126,25 @@ export const RIVAL_NEAR_YEARLY = 1;
 export const RIVAL_THRESHOLD = 10;
 export const RIVAL_FIRST_YEAR = 5;
 export const TAUNT_CHANCE = 0.6;
+// Identity (DD §11.2, Phase 24): a tag is earned after this many years
+// over the upper line, shed after as many under the lower; a college is
+// at most so many things.
+export const TAG_EARN_AT = 0.6;
+export const TAG_SHED_AT = 0.4;
+export const TAG_YEARS = 2;
+export const TAG_LIMIT = 3;
+// Prestige's swing on the applicant pool (DD §8.2, Phase 24): neutral at
+// a founding college's prestige, this share more for every hundred
+// points above it.
+export const PRESTIGE_POOL_SWING = 0.8;
+// Poaching and shedding (DD §7.3, §11.3): a rising school's offer to a
+// star; a falling school's faculty on the summer market.
+export const POACH_CHANCE = 0.5;
+export const POACH_STAR_SKILL = 72;
+export const POACH_COUNTER_SHARE = 0.25;
+export const SHED_CANDIDATES = 2;
+// An event favouring a tag the college holds is this much likelier.
+export const EVENT_TAG_WEIGHT = 2.5;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.

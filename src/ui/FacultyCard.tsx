@@ -1,3 +1,4 @@
+import { leagueSchoolById } from '../content/league.ts';
 import { useState } from 'react';
 import { FACULTY_READINGS, FACULTY_WORDS, quirkById, rankById } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
@@ -76,6 +77,12 @@ export default function FacultyCard({
         <div className="faculty-card-body">
           <div className="faculty-card-head">
             <span className="faculty-name">{f.name}</span>
+            {/* Let go by a college falling down the table (Phase 24). */}
+            {f.fromSchool && (
+              <span className="faculty-from" title="A falling college shed its faculty">
+                lately of {leagueSchoolById(f.fromSchool).short}
+              </span>
+            )}
           </div>
           <span className="faculty-card-field">
             {fillWords(FACULTY_WORDS.rankAndField, { rank: rank.name, school: school.name })}

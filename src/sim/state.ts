@@ -15,6 +15,7 @@ import { foundingPeople, type People } from './people.ts';
 import { foundingTreasury, type Treasury } from './treasury.ts';
 import { foundingLeague, type League } from './league.ts';
 import { foundingAthletics, type Athletics } from './athletics.ts';
+import { foundingPerception, type Perception } from './tags.ts';
 import { foundingPrestige, type Prestige } from './prestige.ts';
 
 // The one serialisable state tree (DD §15). Everything the sim knows lives
@@ -22,7 +23,7 @@ import { foundingPrestige, type Prestige } from './prestige.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 23;
+export const SCHEMA_VERSION = 24;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first
@@ -69,6 +70,8 @@ export interface GameState {
   league: League;
   // Varsity teams, their seasons, and the rival (athletics.ts).
   athletics: Athletics;
+  // What the guidebooks say (tags.ts).
+  perception: Perception;
 }
 
 export function createNewGame(seed: number): GameState {
@@ -103,6 +106,7 @@ export function createNewGame(seed: number): GameState {
     prestige: foundingPrestige(),
     league: foundingLeague(seed),
     athletics: foundingAthletics(seed),
+    perception: foundingPerception(),
   };
 }
 
