@@ -51,6 +51,8 @@ import type { Species } from '../sim/index.ts';
 import type { CampusTool } from './tools.ts';
 import { useCssHeightVar } from './useCssHeightVar.ts';
 import { useGame } from './useGame.ts';
+import { audio } from './audio/engine.ts';
+import { useAudioDirector } from './audio/useAudio.ts';
 
 // THE SHELL (DD §13.2, ported from v1's layout grammar): the campus map is a
 // full-viewport background, always present; every piece of chrome floats
@@ -99,6 +101,10 @@ export default function App() {
   useEffect(() => {
     if (identity) applySchoolColors(identity.colors);
   }, [identity]);
+
+  // The sound of the place (DD §13.4): music on the college's fortunes,
+  // the campus's own ambience, and the journal's cues.
+  useAudioDirector(state);
 
   // What Space comes back to. While a beat holds the clock the speed is
   // Paused and the player's choice lives in queuedSpeed, so that is the
@@ -194,6 +200,10 @@ export default function App() {
 
   useHotkeys((e) => {
     if (!state) return;
+    if (e.key.toLowerCase() === 'm') {
+      audio.toggleMute();
+      return;
+    }
     if (e.key === '`') {
       setDebugOpen((v) => !v);
       return;

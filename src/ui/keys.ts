@@ -66,7 +66,18 @@ export const TAB_HOTKEYS: Record<string, TabId> = {
 };
 
 // The rest of the shell's keys, declared so the test can see them all.
-export const SHELL_KEYS: readonly string[] = ['b', 'l', '`', '1', '2', '3', '4', ' ', 'escape'];
+export const SHELL_KEYS: readonly string[] = [
+  'b',
+  'l',
+  'm',
+  '`',
+  '1',
+  '2',
+  '3',
+  '4',
+  ' ',
+  'escape',
+];
 
 export const KEY_GROUPS: readonly KeyGroup[] = [
   {
@@ -107,6 +118,10 @@ export const KEY_GROUPS: readonly KeyGroup[] = [
       { keys: ['Space'], does: 'pause, and start again at the speed you left' },
       { keys: ['1', '2', '3', '4'], does: '1×, 2×, 4×, 8× — the top two want a Provost and Deans' },
     ],
+  },
+  {
+    title: 'Sound',
+    bindings: [{ keys: ['M'], does: 'mute and unmute; the levels are in the menu' }],
   },
   {
     title: 'Under the bonnet',

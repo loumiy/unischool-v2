@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useHotkeys } from './hotkeys.ts';
 import { MenuIcon } from './icons.tsx';
+import SoundControls from './audio/SoundControls.tsx';
 
-// The top-right hamburger: Save, New Game, credits. New Game's confirm is an
+// The top-right hamburger: Save, the hall, New Game, sound, credits. New Game's confirm is an
 // inline second click that turns the same button red, never a browser
 // confirm() that would look nothing like the rest of the chrome.
 export default function MainMenu({
@@ -86,6 +87,7 @@ export default function MainMenu({
               >
                 New Game
               </button>
+              <SoundControls />
               <p className="main-menu-credits">
                 <strong>UniSchool</strong>
                 <br />
