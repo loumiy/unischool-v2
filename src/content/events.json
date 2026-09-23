@@ -3735,7 +3735,7 @@
       "weight": 2,
       "cooldownYears": 8,
       "when": {
-        "satisfactionOver": 60,
+        "satisfactionOver": 56,
         "yearAtLeast": 10
       },
       "text": "The median grade has risen for the ninth year running and now sits a short way below the top of the scale. A graduate school has written to ask what an A from {school} is meant to signify, in a tone that suggests it has already formed a view.",

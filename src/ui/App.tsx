@@ -513,7 +513,16 @@ export default function App() {
           effectiveOverlay !== 'event' && (
             <TabOverlay title={tabById(effectiveOverlay).label} onClose={() => openTab(null)}>
               {effectiveOverlay === 'treasury' ? (
-                <TreasuryScreen state={state} />
+                <TreasuryScreen
+                  state={state}
+                  onInvest={(amount) => {
+                    const applied = store.dispatch({ type: 'investReserves', amount });
+                    if (applied) void autosave(store.getSnapshot().run!);
+                  }}
+                  onSetSweep={(on) => {
+                    store.dispatch({ type: 'setSweep', on });
+                  }}
+                />
               ) : effectiveOverlay === 'students' ? (
                 <StudentsScreen
                   state={state}

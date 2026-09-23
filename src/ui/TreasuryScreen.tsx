@@ -2,8 +2,10 @@ import {
   EXPENSE_WORDS,
   READING_WORDS,
   REVENUE_WORDS,
+  TREASURY_WORDS,
   type LineWords,
 } from '../content/treasury.ts';
+import { fillWords } from '../content/people.ts';
 import {
   adminShareOfPayroll,
   borrowingRoom,
@@ -16,6 +18,7 @@ import {
   EXPENSE_CATEGORIES,
   formatMoney,
   formatPercent,
+  investable,
   netOf,
   REVENUE_CATEGORIES,
   sumExpenses,
@@ -28,6 +31,7 @@ import {
 import {
   DEFICIT_TERMS,
   ENDOWMENT_DRAW_PRUDENT,
+  RESERVES_SWEEP_YEARS,
   SURPLUS_TERMS_TO_EXIT,
   TUITION_DEPENDENCE_FLAG,
 } from '../tuning.ts';
@@ -90,7 +94,71 @@ function Statement({ flows, title }: { flows: Flows; title: string }) {
   );
 }
 
-export default function TreasuryScreen({ state }: { state: GameState }) {
+// IDLE MONEY (Phase 36): what the bank holds beyond a term of expenses can
+// go into the endowment now; the board sweeps anything beyond
+// RESERVES_SWEEP_YEARS of expenses in at the turn of the year anyway.
+function Reserves({
+  state,
+  onInvest,
+  onSetSweep,
+}: {
+  state: GameState;
+  onInvest: (amount: number) => void;
+  onSetSweep: (on: boolean) => void;
+}) {
+  const spare = investable(state);
+  const half = Math.round(spare / 2);
+  return (
+    <section className="treasury-panel reserves-panel">
+      <h3>{TREASURY_WORDS.reserves.title}</h3>
+      <p className="treasury-note">
+        {fillWords(TREASURY_WORDS.reserves.body, {
+          spare: formatMoney(spare),
+          years: formatPercent(RESERVES_SWEEP_YEARS, 0),
+        })}
+      </p>
+      <div className="reserves-actions">
+        <button
+          type="button"
+          className="species-chip"
+          disabled={half < 100_000}
+          onClick={() => onInvest(half)}
+        >
+          {fillWords(TREASURY_WORDS.reserves.half, { amount: formatMoney(half) })}
+        </button>
+        <button
+          type="button"
+          className="species-chip"
+          disabled={spare < 100_000}
+          onClick={() => onInvest(spare)}
+        >
+          {fillWords(TREASURY_WORDS.reserves.all, { amount: formatMoney(spare) })}
+        </button>
+      </div>
+      <label className="reserves-sweep">
+        <input
+          id="reserves-sweep"
+          type="checkbox"
+          checked={state.treasury.sweep}
+          onChange={(e) => onSetSweep(e.target.checked)}
+        />
+        {fillWords(TREASURY_WORDS.reserves.sweep, {
+          years: formatPercent(RESERVES_SWEEP_YEARS, 0),
+        })}
+      </label>
+    </section>
+  );
+}
+
+export default function TreasuryScreen({
+  state,
+  onInvest,
+  onSetSweep,
+}: {
+  state: GameState;
+  onInvest: (amount: number) => void;
+  onSetSweep: (on: boolean) => void;
+}) {
   const t = state.treasury;
   const weekNet = netOf(t.lastWeek);
   const dependence = tuitionDependence(t.actual);
@@ -131,6 +199,10 @@ export default function TreasuryScreen({ state }: { state: GameState }) {
       </div>
 
       <Statement flows={t.lastWeek} title="This week" />
+
+      {state.phase === 'running' && (
+        <Reserves state={state} onInvest={onInvest} onSetSweep={onSetSweep} />
+      )}
 
       <section className="treasury-panel">
         <h3>Year {t.budget.year} budget</h3>

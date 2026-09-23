@@ -51,6 +51,10 @@ export type Policy = {
   varsity?: string[];
   athleticsBudget?: 'lean' | 'standard' | 'ambitious';
   extraSites?: [string, number, number, boolean][];
+  // The board's sweep of idle reserves (Phase 36). Off unless asked for:
+  // a scripted college with twenty sites queued is saving for buildings,
+  // which is exactly when the game tells a player to turn it off.
+  sweep?: boolean;
 };
 
 export function resolveWith(policy: Policy) {
@@ -84,6 +88,7 @@ export function played(
   policy: Policy = {},
 ): Run {
   let run = opened(seed);
+  run = dispatch(run, { type: 'setSweep', on: policy.sweep ?? false });
   // Four of them enclose a court, because a third of the campus's own
   // readings — quads, beauty — only exist once the buildings make a shape.
   const sites: [string, number, number, boolean][] = [

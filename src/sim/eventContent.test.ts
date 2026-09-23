@@ -199,6 +199,9 @@ describe('nothing in the file is unreachable', () => {
     // the field for soccer goes up after everything else.
     sample(
       played(9, 50, watch, {
+        // Priced a little above the market, so the teams' college can
+        // afford the field and the season (prices grow with it, Phase 36).
+        tuition: 46_000,
         varsity: ['rowing', 'soccer'],
         athleticsBudget: 'ambitious',
         extraSites: [['playing-field', 36, 8, false]],

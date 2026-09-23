@@ -70,6 +70,7 @@ const fileSchema = obj({
       nothing: str,
     }),
   }),
+  reserves: obj({ title: str, body: str, half: str, all: str, sweep: str }),
 });
 
 const file = validate(fileSchema, raw, 'content/treasury.json');
@@ -78,6 +79,7 @@ export const REVENUE_WORDS = file.revenue as Record<RevenueCategory, LineWords>;
 export const EXPENSE_WORDS = file.expenses as Record<ExpenseCategory, LineWords>;
 export const READING_WORDS = file.readings;
 export const ESTATE_WORDS = file.estate;
+export const TREASURY_WORDS = { reserves: file.reserves };
 
 // The word for a condition, from the first band it clears.
 export function conditionWord(condition: number): string {

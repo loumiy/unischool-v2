@@ -60,6 +60,7 @@ const PLACEHOLDERS = [
   'rank',
   'embarrassment',
   'outcomes',
+  'amount',
 ] as const;
 type Placeholder = (typeof PLACEHOLDERS)[number];
 
@@ -309,6 +310,10 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
       });
       break;
     }
+    case 'reservesInvested':
+    case 'reservesSwept':
+      vars.amount = formatMoney(entry.amount);
+      break;
     case 'campaignClosed': {
       const def = campaignById(entry.campaignId);
       vars.line = entry.met ? def.kept : def.missed;

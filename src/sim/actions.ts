@@ -78,7 +78,7 @@ import { quadAt } from './quads.ts';
 import { eventById, findEvent } from '../content/events.ts';
 import { applyChoiceEffects, fireEvent, resolveEvent } from './events.ts';
 import { holdReunion, reunionCost, reunionRoom } from './alumni.ts';
-import { approveBudget } from './treasury.ts';
+import { approveBudget, investable, investReserves } from './treasury.ts';
 
 // Player (and debug) intent, as data. Actions are what the action log
 // records; the sim replays a run from its seed and this log alone (DD §15),
@@ -162,6 +162,11 @@ export type Action =
   // Advancement (DD §9.3): a campaign launched against the ledger. It
   // needs a VP, and the Development Office runs one at a time.
   | { type: 'launchCampaign'; campaignId: string }
+  // Surplus operating cash into the endowment (Phase 36): a quasi-endowment
+  // the draw spends a little of each year, for ever.
+  | { type: 'investReserves'; amount: number }
+  // Whether the board sweeps idle reserves at the turn of the year.
+  | { type: 'setSweep'; on: boolean }
   // Athletics-lite (DD §8.5): a varsity team fielded or stood down, and the
   // budget the teams run on.
   | { type: 'setVarsity'; sportId: string; on: boolean }
@@ -465,6 +470,15 @@ export function canApply(state: GameState, action: Action): Verdict {
     case 'setAthleticsBudget':
       if (state.phase !== 'running') return no('the college is not open yet');
       return BUDGET_IDS.includes(action.budget) ? YES : no('no such budget');
+    case 'investReserves': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      if (!Number.isFinite(action.amount) || action.amount <= 0) return no('nothing to invest');
+      if (action.amount > investable(state))
+        return no('the bank keeps a term of expenses; that is all it can spare');
+      return YES;
+    }
+    case 'setSweep':
+      return YES;
     case 'launchCampaign': {
       if (state.phase !== 'running') return no('the college is not open yet');
       if (!findCampaign(action.campaignId)) return no('no such campaign');
@@ -694,6 +708,10 @@ export function applyAction(state: GameState, action: Action): GameState {
       return setSeatPolicy(state, action.seatId, action.schoolId ?? null, action.policy);
     case 'launchCampaign':
       return launchCampaign(state, action.campaignId);
+    case 'investReserves':
+      return investReserves(state, action.amount);
+    case 'setSweep':
+      return { ...state, treasury: { ...state.treasury, sweep: action.on } };
     case 'setVarsity':
       return setVarsity(state, action.sportId, action.on);
     case 'enterEpilogue':

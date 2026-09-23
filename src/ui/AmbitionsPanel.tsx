@@ -1,5 +1,12 @@
 import { AMBITION_WORDS, ambitionById } from '../content/ambitions.ts';
-import { activeAmbitions, goalMet, yearsLeft, type GameState } from '../sim/index.ts';
+import {
+  activeAmbitions,
+  goalMet,
+  priceScale,
+  scaledEffects,
+  yearsLeft,
+  type GameState,
+} from '../sim/index.ts';
 import { costLine, measureAll, worthLine, type Measure } from './measure.ts';
 
 // The goal as a measurement (Phase 21F): where the college is against what
@@ -68,7 +75,9 @@ export default function AmbitionsPanel({
                     as whether it will be true on the day it is read out. */}
                 <span className="ambition-state">{met ? 'true today' : 'not yet'}</span>
                 <Goal measures={measureAll(state, def.goal)} />
-                <span className="ambition-stakes">{costLine(def.penalty)}</span>
+                <span className="ambition-stakes">
+                  {costLine(scaledEffects(def.penalty, priceScale(state)))}
+                </span>
               </li>
             );
           })}
@@ -121,7 +130,8 @@ export function AmbitionOffer({
           : `${def.years} years from this Convocation. ${AMBITION_WORDS.note}`}
       </p>
       <p className="ambition-stakes">
-        {worthLine(def.reward)} {costLine(def.penalty)}
+        {worthLine(scaledEffects(def.reward, priceScale(state)))}{' '}
+        {costLine(scaledEffects(def.penalty, priceScale(state)))}
       </p>
       <div className="ambition-choices">
         <button

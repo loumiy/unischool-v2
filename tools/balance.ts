@@ -12,7 +12,7 @@ import { findProgram, PROGRAMS, SCHOOLS } from '../src/content/schools.ts';
 import { CAMPAIGNS } from '../src/content/campaigns.ts';
 import { canApply, type Action } from '../src/sim/actions.ts';
 import { defaultResolution } from '../src/sim/beats.ts';
-import { pendingInline } from '../src/sim/events.ts';
+import { pendingInline, priceScale, scaledAmount } from '../src/sim/events.ts';
 import { eventById } from '../src/content/events.ts';
 import { entriesOfKind } from '../src/sim/bus.ts';
 import { WEEKS_PER_YEAR } from '../src/sim/calendar.ts';
@@ -343,8 +343,10 @@ function idleBeat(s: GameState, beatId: string): boolean {
 // The costliest priced choice an event offers, as a share of the year's
 // budgeted expenses; null when no choice costs cash.
 function stingOf(s: GameState, eventId: string): number | null {
+  // At the price the letter quoted: the college's size applied (Phase 36).
+  const scale = priceScale(s);
   const costs = eventById(eventId)
-    .choices.map((c) => -(c.effects.cash ?? 0))
+    .choices.map((c) => -scaledAmount(c.effects.cash ?? 0, scale))
     .filter((c) => c > 0);
   if (costs.length === 0) return null;
   const budget = Object.values(s.treasury.budget.expenses).reduce((t, v) => t + v, 0);

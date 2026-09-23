@@ -69,6 +69,10 @@ export type BusEvent =
   // Advancement (DD §9.3): a campaign launched, and what the ledger gave.
   | { kind: 'campaignLaunched'; campaignId: string }
   | { kind: 'campaignClosed'; campaignId: string; raised: number; met: boolean }
+  // Surplus cash moved into the endowment (Phase 36): by the player, or by
+  // the board's sweep at the turn of the year.
+  | { kind: 'reservesInvested'; amount: number }
+  | { kind: 'reservesSwept'; amount: number }
   | { kind: 'studentBeat'; studentId: string; arcId: string }
   | {
       kind: 'classGraduated';
@@ -157,6 +161,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'eventDelegated',
   'campaignLaunched',
   'campaignClosed',
+  'reservesInvested',
+  'reservesSwept',
   'studentBeat',
   'classGraduated',
   'schoolFounded',

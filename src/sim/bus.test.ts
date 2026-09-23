@@ -199,6 +199,9 @@ describe('calendar beats (DD §3.3)', () => {
       'Fall Term begins.',
       'Year 2.',
       `Year 1 closes ${formatMoney(run.state.treasury.history[0]!.net)} in the black.`,
+      // The founding college holds far more than a year's expenses, so the
+      // year's surplus goes into the endowment (Phase 36).
+      `The board moves ${formatMoney(entriesOfKind(run.state, 'reservesSwept')[0]!.amount)} of the year's surplus into the endowment.`,
       termLine(2),
       line('classArrived'),
       // The class arrives with the handful the game will follow, and the

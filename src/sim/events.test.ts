@@ -73,6 +73,7 @@ function pend(state: GameState, id: string, expiresIn = 3): GameState {
     firedWeek: state.clock.absoluteWeek,
     expiresWeek: state.clock.absoluteWeek + expiresIn,
     vars: {},
+    scale: 1,
   };
   return { ...state, events: { ...state.events, pending: [pending] } };
 }
@@ -370,6 +371,7 @@ describe('an event keeps the sentence it fired with', () => {
       firedWeek: 1,
       expiresWeek: 4,
       vars: { building: 'Founders Hall' },
+      scale: 1,
     });
     expect(named).toContain('Founders Hall');
     expect(named).not.toContain('{building}');

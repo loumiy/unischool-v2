@@ -159,10 +159,14 @@ describe('treasury (DD §5)', () => {
     const t = run.state.treasury;
     expect(t.history).toHaveLength(20);
     expect(Number.isFinite(t.cash) && Number.isFinite(t.endowment)).toBe(true);
-    // Every year the draw beat the office, so cash climbed; the endowment
+    // Every year the draw beat the office, so cash climbed — into the bank,
+    // and past a year's expenses into the endowment, where the board's
+    // policy on idle money puts the surplus (Phase 36); the endowment
     // earned its mean minus its draw, so it climbed too, unevenly.
     for (const y of t.history) expect(y.net).toBeGreaterThan(0);
-    expect(t.cash).toBeGreaterThan(STARTING_CASH);
+    const swept = entriesOfKind(run.state, 'reservesSwept').reduce((n, e) => n + e.amount, 0);
+    expect(swept).toBeGreaterThan(0);
+    expect(t.cash + swept).toBeGreaterThan(STARTING_CASH);
     expect(t.endowment).toBeGreaterThan(STARTING_ENDOWMENT);
     const returns = t.history.map((y) => y.marketReturn);
     expect(new Set(returns).size).toBeGreaterThan(10);
