@@ -54,7 +54,7 @@ npm run balance    # the Phase 31 dashboard: three archetype colleges, fifty yea
 In the dev build, the backtick key toggles the debug panel.
 
 - Design document: [`docs/UNISCHOOL_V2_DESIGN.md`](docs/UNISCHOOL_V2_DESIGN.md)
-- Development plan: [`docs/UNISCHOOL_V2_DEV_PLAN.md`](docs/UNISCHOOL_V2_DEV_PLAN.md)
+- Development plan: [`docs/UNISCHOOL_V2_DEV_PLAN.md`](docs/UNISCHOOL_V2_DEV_PLAN.md), and the plan for 1.1: [`docs/UNISCHOOL_V2_DEV_PLAN_1_1.md`](docs/UNISCHOOL_V2_DEV_PLAN_1_1.md)
 - Changes to existing design decisions: [`docs/DD_DECISIONS_LOG.md`](docs/DD_DECISIONS_LOG.md)
 - Contributor rules: [`CLAUDE.md`](CLAUDE.md)
 
