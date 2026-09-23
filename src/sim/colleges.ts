@@ -104,6 +104,9 @@ export function played(
     ['residence-hall', 50, 52, false],
     ['residence-hall', 40, 28, false],
     ['academic-hall', 34, 4, false],
+    // Last, so every earlier site keeps its week: a college this size has a
+    // health centre, and the events that name one need it to (Phase 21H).
+    ['health-center', 6, 18, false],
   ];
   let next = 0;
   // Week by week, because the things a player does have windows: the

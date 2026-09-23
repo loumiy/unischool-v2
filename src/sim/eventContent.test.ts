@@ -241,3 +241,48 @@ describe('a test decade feels inhabited (the phase’s done-when)', () => {
     expect(BUILDINGS.length).toBeGreaterThan(8);
   });
 });
+
+describe('nothing the file says is untrue of the college (Phase 21H, content/STYLE.md)', () => {
+  // A building named in an event's words, and the catalogue id it is.
+  const NAMED: [RegExp, string][] = [
+    [/health cent(re|er)/i, 'health-center'],
+    [/\blibrary\b/i, 'library'],
+    [/dining hall/i, 'dining-hall'],
+    [/residence hall/i, 'residence-hall'],
+    [/student cent(re|er)/i, 'student-center'],
+    [/recreation cent(re|er)/i, 'recreation-center'],
+    [/playing field/i, 'playing-field'],
+  ];
+  // Named, but not claimed of this college — with why.
+  const NOT_CLAIMS: Record<string, string> = {
+    'star-poached': 'the worse library is the other college’s',
+  };
+
+  it('names only buildings the event needs the college to have', () => {
+    const untrue: string[] = [];
+    for (const e of EVENTS) {
+      if (NOT_CLAIMS[e.id]) continue;
+      const words = [e.title ?? '', e.text, ...e.choices.flatMap((c) => [c.label, c.note ?? ''])];
+      for (const [pattern, id] of NAMED) {
+        if (words.some((w) => pattern.test(w)) && !e.needs.includes(id)) {
+          untrue.push(`${e.id} names a ${id} it does not need`);
+        }
+      }
+    }
+    expect(untrue).toEqual([]);
+  });
+
+  it('charges a recurring price as a recurring cost', () => {
+    const recurring = /\$[\d.]+[kKmM]? (a|per|each) year|for good|salary line/;
+    const lies: string[] = [];
+    for (const e of EVENTS) {
+      for (const c of e.choices) {
+        if (!recurring.test(c.note ?? '')) continue;
+        if (c.effects.adminPayroll === undefined && c.effects.facultyPayroll === undefined) {
+          lies.push(`${e.id}/${c.id}: "${c.note}" is charged once`);
+        }
+      }
+    }
+    expect(lies).toEqual([]);
+  });
+});

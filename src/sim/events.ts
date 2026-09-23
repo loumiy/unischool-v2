@@ -208,6 +208,10 @@ export function conditionsOf(
 }
 
 export function conditionsHold(state: GameState, def: EventDef): boolean {
+  if (def.needs.length > 0) {
+    const open = new Set(openPlacements(state).map((p) => p.buildingId));
+    if (!def.needs.every((id) => open.has(id))) return false;
+  }
   return conditionsOf(state, def.when);
 }
 
@@ -338,6 +342,37 @@ const LEVERS: Record<EventEffect, (s: GameState, amount: number) => GameState> =
         ...a,
         warmth: Number(Math.min(100, Math.max(0, a.warmth + amount)).toFixed(1)),
       })),
+    },
+  }),
+  // A standing cost, a year, forever (Phase 21H). The administration's is
+  // entered on this year's budget line at once, and on next year's if it
+  // is already approved, because that line is charged weekly as budgeted;
+  // the faculty's is read live from the roster's payroll, so the standing
+  // figure is enough.
+  adminPayroll: (s, amount) => {
+    const t = s.treasury;
+    const addTo = (b: typeof t.budget) => ({
+      ...b,
+      expenses: { ...b.expenses, adminPayroll: b.expenses.adminPayroll + Math.round(amount) },
+    });
+    return {
+      ...s,
+      treasury: {
+        ...t,
+        standing: { ...t.standing, admin: Math.max(0, t.standing.admin + Math.round(amount)) },
+        budget: addTo(t.budget),
+        pendingBudget: t.pendingBudget ? addTo(t.pendingBudget) : null,
+      },
+    };
+  },
+  facultyPayroll: (s, amount) => ({
+    ...s,
+    treasury: {
+      ...s.treasury,
+      standing: {
+        ...s.treasury.standing,
+        faculty: Math.max(0, s.treasury.standing.faculty + Math.round(amount)),
+      },
     },
   }),
   // Borrowed, or forgiven. Repayment is left where it stands: a gift that

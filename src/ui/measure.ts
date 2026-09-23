@@ -78,9 +78,11 @@ export function leverLine(effects: Partial<Record<EventEffect, number>>): string
     .filter(([, v]) => v !== 0)
     .map(([k, v]) => {
       const amount =
-        k === 'cash' || k === 'endowment' || k === 'debt' || k === 'backlog'
-          ? formatMoney(v, { sign: true })
-          : `${v > 0 ? '+' : '−'}${Math.abs(v)}`;
+        k === 'adminPayroll' || k === 'facultyPayroll'
+          ? `${formatMoney(v, { sign: true })} a year`
+          : k === 'cash' || k === 'endowment' || k === 'debt' || k === 'backlog'
+            ? formatMoney(v, { sign: true })
+            : `${v > 0 ? '+' : '−'}${Math.abs(v)}`;
       return `${LEVER_NAMES[k]} ${amount}`;
     })
     .join(', ');

@@ -158,3 +158,22 @@ they were minuted rather than written. "The Committee on Committee Reform",
   just as good as a line in the ledger, it belongs in the ledger.
 - No cruelty played for laughs — not at students, not at staff, not at the
   people austerity lands on.
+
+## Two rules the engine enforces (Phase 21H)
+
+**An event may not assert a fact about the college its conditions do not
+require.** "The Health Centre has seen ninety students in four days" is a
+claim about this college, and at a college with no health centre it is
+untrue. If the prose names a building the college has, the event lists it in
+`needs` — the building ids that must be open for it to fire. The `when`
+clauses are numbers; `needs` is the standing clause they cannot express. A
+building named as somewhere else's ("a college with a worse library") or as
+history ("in the founder's time the same wind took the chapel") is not a
+claim, and the catalogue test keeps a short, reasoned list of those.
+
+**A price note may not name a cost the levers cannot charge.** "$120k a year,
+forever" pulled `cash: -120000` once, which is a lie about the price. A cost
+that recurs is charged with `adminPayroll` or `facultyPayroll` — dollars a
+year, forever, on that payroll line — and a note that says "a year" or "for
+good" must come with one of them. The administration's share climbs from the
+events that deserve it, which is the ratchet DD §5.4 describes.
