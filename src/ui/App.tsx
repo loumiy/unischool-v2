@@ -20,6 +20,7 @@ import BeatScreen, { type BeatDecision } from './BeatScreen.tsx';
 import BoardLetter from './BoardLetter.tsx';
 import FinalReport from './FinalReport.tsx';
 import HallOfFame from './HallOfFame.tsx';
+import NoteCard from './NoteCard.tsx';
 import EventLetter from './EventLetter.tsx';
 import EventPrompt, { eventPrompt } from './EventPrompt.tsx';
 import { eventById } from '../content/events.ts';
@@ -442,6 +443,10 @@ export default function App() {
           />
         )}
         {hallOpen && <HallOfFame onClose={() => setHallOpen(false)} />}
+        {/* Onboarding by consequence (Phase 29): a note, when one is due. */}
+        {!state.ending.pending && (
+          <NoteCard state={state} onDismiss={(id) => store.dispatch({ type: 'dismissNote', id })} />
+        )}
         {effectiveOverlay === 'beat' && beat && (
           <BeatScreen
             beat={beat}

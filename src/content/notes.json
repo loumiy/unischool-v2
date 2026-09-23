@@ -1,0 +1,131 @@
+{
+  "notes": [
+    {
+      "id": "welcome",
+      "from": "The Chair of the Board",
+      "title": "The land is yours",
+      "afterWeek": 0,
+      "when": {},
+      "text": "The first class arrives at Convocation, the first week of the fall. Before then they need beds, somewhere to eat, and something to study: build from the Build menu (B), and found a school in Founders Hall from the Curriculum screen. The clock is yours too — Space pauses it."
+    },
+    {
+      "id": "no-school",
+      "from": "The Registrar",
+      "title": "Nothing to teach",
+      "afterWeek": 4,
+      "when": {
+        "programsUnder": 1
+      },
+      "text": "I have a timetable and no subjects to put on it. Found a school from the Curriculum screen — Founders Hall will house one — and open its programmes. A class that arrives with nothing to study is a class that leaves."
+    },
+    {
+      "id": "no-beds",
+      "from": "The Dean of Students",
+      "title": "Where will they sleep?",
+      "afterWeek": 10,
+      "when": {
+        "yearAtMost": 1
+      },
+      "special": "noBeds",
+      "text": "Admissions closes the file at the beds we will have at Convocation. Founders Hall sleeps a hundred and twenty; a Residence Hall sleeps three hundred more. Whatever is not built by the fall is a smaller class."
+    },
+    {
+      "id": "first-budget",
+      "from": "The Bursar",
+      "title": "Budget & Hiring",
+      "beat": "budget-and-hiring",
+      "text": "Once a year the board approves the budget: how much of the endowment we spend (the draw) and how much of the maintenance the buildings ask for we fund. The hiring market opens at the same time; a hire should be assigned to a programme in their field, or they teach nothing."
+    },
+    {
+      "id": "first-admissions",
+      "from": "The Director of Admissions",
+      "title": "Admissions Day",
+      "beat": "admissions-day",
+      "text": "You set the sticker price and how many applicants we turn away. A dearer sticker means fewer applicants and more money each; turning more away means a better class and a smaller one. The beds decide the rest."
+    },
+    {
+      "id": "first-convocation",
+      "from": "The Provost",
+      "title": "Convocation",
+      "beat": "convocation",
+      "text": "The class arrives. How they feel — the Students screen breaks it down — decides how many stay and what they become. Now and then the board will ask the college to promise something in public; a promise kept pays, and one missed costs."
+    },
+    {
+      "id": "first-board",
+      "from": "The Chair of the Board",
+      "title": "The board meeting",
+      "beat": "board-meeting",
+      "text": "Every spring the board reads the books. Run a surplus and reserves, and it leaves you alone; run deficits, and it climbs a ladder of demands, from a warning to austerity to an interim CFO. Nothing is fatal. Everything is remembered."
+    },
+    {
+      "id": "first-event",
+      "from": "The President's Office",
+      "title": "Questions on the strip",
+      "special": "eventPending",
+      "text": "The day's questions arrive on the strip above the toolbar. Each has two or three answers and a stated default: leave it alone and it settles into that. Letters that stop the clock are the serious ones."
+    },
+    {
+      "id": "first-deficit",
+      "from": "The Bursar",
+      "title": "Red ink",
+      "when": {
+        "cashUnder": 2000000,
+        "yearAtLeast": 2
+      },
+      "text": "Operating funds are running low. Tuition, the endowment's draw and the annual fund come in; payroll, maintenance and aid go out. The Treasury screen shows which line is doing it. The board can lend against the endowment, for construction only."
+    },
+    {
+      "id": "unassigned",
+      "from": "The Provost",
+      "title": "Faculty with nothing to teach",
+      "special": "unassigned",
+      "text": "Some of the faculty on the payroll are not assigned to any programme. They are paid all the same. The Faculty screen lists them under their school: give each one a programme in their field, or open one for them."
+    },
+    {
+      "id": "speed",
+      "from": "The Chief of Staff",
+      "title": "Time, and who buys it",
+      "when": {
+        "yearAtLeast": 3
+      },
+      "special": "noProvost",
+      "text": "The faster clock speeds are bought with administration: a Provost opens 4×, a Provost and four Deans 8×. Every seat is a salary forever. The org chart is on the Faculty screen; the locked speed buttons open it."
+    },
+    {
+      "id": "first-table",
+      "from": "The Director of Communications",
+      "title": "The guide",
+      "when": {
+        "rankAtLeast": 1
+      },
+      "text": "The guide has published its table, and we are in it. It ranks every college on six axes — the League screen shows ours, and the weights it uses this year. It changes its methodology now and then, to everyone's outrage."
+    },
+    {
+      "id": "rival",
+      "from": "The Director of Athletics",
+      "title": "A rival",
+      "when": {
+        "rivalAtLeast": 1
+      },
+      "text": "One of our neighbours has decided we are its rival, and so, apparently, have our students. Expect it in the ticker, at board meetings and on the League screen. Fielding teams (Students → Athletics) gives the rivalry somewhere to happen."
+    },
+    {
+      "id": "tags",
+      "from": "The Director of Admissions",
+      "title": "What the guidebooks say",
+      "special": "hasTag",
+      "text": "The guidebooks have decided what we are. Identity is earned from how the college is run, two years at a time, and it shapes who applies: how many, and how good. The League screen shows ours and why."
+    },
+    {
+      "id": "land",
+      "from": "The Director of Facilities",
+      "title": "The land is filling",
+      "special": "landScarce",
+      "text": "There is not much ground left to break. The Build menu now opens on Rebuild: renovate what is falling down, or add a storey to what stands. Buildings twenty-five years old may be declared Historic, and taking one down is an argument with our own past."
+    }
+  ],
+  "words": {
+    "dismiss": "Noted",
+    "from": "From {from}"
+  }
+}
