@@ -309,6 +309,24 @@ describe('what a seat buys: the routine (DD §9.2)', () => {
       expect(asked).not.toContain(entry.eventId);
     }
   });
+
+  it('keeps a handled event to its cooldown, like an asked one (Phase 51)', () => {
+    const run = played(4, 20);
+    const staffed = { ...run, state: withSeats(run.state, [seatOf('dean-of-students')]) };
+    const later = tickRunWeeks(staffed, WEEKS_PER_YEAR * 15, defaultResolution);
+    const handled = later.state.events.history.filter((h) => h.delegated);
+    expect(handled.length).toBeGreaterThan(0);
+    const last = new Map<string, number>();
+    for (const h of handled) {
+      const before = last.get(h.eventId);
+      if (before !== undefined) {
+        const gap = h.week - before;
+        expect({ id: h.eventId, gap }).toMatchObject({ id: h.eventId });
+        expect(gap).toBeGreaterThanOrEqual(eventById(h.eventId).cooldownYears * WEEKS_PER_YEAR);
+      }
+      last.set(h.eventId, h.week);
+    }
+  });
 });
 
 describe('what a seat buys: the clock (DD §3.2)', () => {

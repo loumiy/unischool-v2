@@ -25,7 +25,7 @@ import { foundingPrestige, type Prestige } from './prestige.ts';
 //
 // Bump SCHEMA_VERSION whenever the shape changes, and add a migration in
 // save.ts (CLAUDE.md, definition of done).
-export const SCHEMA_VERSION = 32;
+export const SCHEMA_VERSION = 33;
 
 // Where the run is in its opening (DD §2.4). The clock runs only in
 // 'running': founding is the startup screen, siting is the player's first

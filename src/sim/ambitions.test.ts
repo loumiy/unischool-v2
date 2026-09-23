@@ -282,7 +282,7 @@ describe('the docket is part of the run', () => {
 });
 
 describe('nothing in the pool is unreachable (the Phase 18 discipline)', () => {
-  it('every ambition can be offered, and every goal can be met', { timeout: 60_000 }, () => {
+  it('every ambition can be offered, and every goal can be met', { timeout: 120_000 }, () => {
     // An ambition whose terms never hold is never dealt; one whose goal is
     // out of reach is not a temptation but a trap. Neither is malformed
     // data, so only a run can tell — the same guard the catalogue has, on
@@ -318,6 +318,8 @@ describe('nothing in the pool is unreachable (the Phase 18 discipline)', () => {
     // One that hires to open everything (Phase 37: the scripted colleges
     // open no more programmes than their rosters can staff).
     played(8, 50, watch, { hireCap: 100 });
+    // One that raises a capital project (Phase 51).
+    played(9, 50, watch, { charter: 'land-grant', projects: ['great-lawn'], tuition: 46_000 });
 
     const why = (def: (typeof AMBITIONS)[number], clauses: Record<string, number | undefined>) =>
       Object.entries(clauses)

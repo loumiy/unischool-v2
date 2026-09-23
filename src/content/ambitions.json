@@ -580,6 +580,53 @@
       },
       "kept": "Five hundred students, and the Registrar no longer knows all of them by sight.",
       "missed": "The college stayed smaller than its buildings, past the year it had named."
+    },
+    {
+      "id": "the-word-at-the-gate",
+      "title": "A college people recommend",
+      "weight": 3,
+      "deal": {
+        "yearAtLeast": 8,
+        "reputationUnder": 55
+      },
+      "goal": {
+        "reputationOver": 58
+      },
+      "years": 10,
+      "text": "Admissions has surveyed the families who applied and did not come, and most of them had heard of {school} from somebody who did not recommend it. The Dean of Admissions proposes a public promise: in ten years, the college people recommend.",
+      "reward": {
+        "confidence": 6,
+        "warmth": 3
+      },
+      "penalty": {
+        "confidence": -6
+      },
+      "kept": "The families at the gate say they heard good things, and some of them can say from whom.",
+      "missed": "The talk at the gate is what it was, and the regional paper has quoted the promise back."
+    },
+    {
+      "id": "a-great-project",
+      "title": "A great project raised",
+      "weight": 3,
+      "deal": {
+        "yearAtLeast": 10,
+        "buildingsOver": 8
+      },
+      "goal": {
+        "projectsOver": 1
+      },
+      "years": 12,
+      "text": "The board would like the college to raise one great building, the kind a campus is photographed by, and to say so in public so the donors can hold it to the promise. The chair has brought a model to the meeting and will not say who paid for it.",
+      "reward": {
+        "confidence": 8,
+        "warmth": 4
+      },
+      "penalty": {
+        "confidence": -6,
+        "warmth": -2
+      },
+      "kept": "The great project stands, and the photographers have found the angle the chair's model was built from.",
+      "missed": "The model is still in the boardroom, and the donors have stopped asking when."
     }
   ],
   "lines": {

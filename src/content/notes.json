@@ -138,6 +138,34 @@
       "title": "The land is filling",
       "special": "landScarce",
       "text": "There is not much ground left to break. The Build menu now opens on Rebuild: renovate what is falling down, or add a storey to what stands. Buildings twenty-five years old may be declared Historic, and taking one down is an argument with our own past."
+    },
+    {
+      "id": "first-adjunct",
+      "from": "The Provost",
+      "title": "Teaching by the course",
+      "when": {
+        "adjunctsOver": 1
+      },
+      "text": "We have our first adjunct. An adjunct is hired any week of the year for one year, at a fraction of a professor's salary, and teaches less well than a professor would. Cover a gap with one while the summer market is shut; a college taught mostly by adjuncts is talked about at the gate."
+    },
+    {
+      "id": "projects",
+      "from": "The Chair of the Board",
+      "title": "A great project",
+      "when": {
+        "yearAtLeast": 10,
+        "buildingsOver": 6
+      },
+      "text": "The college is old enough to build something grand. The Build menu has a Projects section: a lawn, an arts centre, a research park, a stadium or a medical school, each costing as much as a small college and each lifting an axis of the guide for good. A project may be paid half from the endowment."
+    },
+    {
+      "id": "reputation",
+      "from": "The Director of Admissions",
+      "title": "The talk at the gate",
+      "when": {
+        "alumniOver": 1
+      },
+      "text": "Our first graduates are out, and families have begun to talk about us. Reputation follows teaching, satisfaction, what graduates go on to do and the state of the buildings, and it moves slowly. It sets how many apply and how many who are admitted come. The Students screen shows it and why."
     }
   ],
   "words": {

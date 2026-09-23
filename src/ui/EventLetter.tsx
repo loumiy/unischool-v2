@@ -4,7 +4,7 @@ import {
   formatClock,
   institutionName,
   pendingText,
-  scaledWords,
+  choiceNote,
   type GameState,
   type PendingEvent,
 } from '../sim/index.ts';
@@ -47,9 +47,7 @@ export default function EventLetter({
             >
               <span className="event-choice-label">{choice.label}</span>
               {choice.note !== undefined && (
-                <span className="event-choice-note">
-                  {scaledWords(choice.note, pending.scale ?? 1)}
-                </span>
+                <span className="event-choice-note">{choiceNote(choice, pending.scale ?? 1)}</span>
               )}
             </button>
           ))}

@@ -1,3 +1,5 @@
+import { buildingById } from '../content/buildings.ts';
+import type { CharterId } from '../content/charters.ts';
 import { DEFAULT_PALETTE } from '../content/palettes.ts';
 import { findProgram, PROGRAMS, SCHOOLS } from '../content/schools.ts';
 import { canApply, type Action } from './actions.ts';
@@ -5,6 +7,7 @@ import { defaultResolution } from './beats.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { dispatch, newRun, tickRunWeeks, type Run } from './run.ts';
 import { facultyOf, staffingNeed } from './faculty.ts';
+import { siteRefusal } from './reach.ts';
 import type { GameState } from './state.ts';
 
 // SCRIPTED COLLEGES — the test harness Phase 18 built to prove no content
@@ -22,8 +25,9 @@ const FOUND = {
   colors: { primary: DEFAULT_PALETTE.primary, secondary: DEFAULT_PALETTE.secondary },
 } as const;
 
-export function opened(seed: number): Run {
-  return dispatch(dispatch(newRun(seed), FOUND), {
+export function opened(seed: number, charter?: CharterId): Run {
+  const found = charter ? { ...FOUND, charter } : FOUND;
+  return dispatch(dispatch(newRun(seed), found), {
     type: 'placeBuilding',
     buildingId: 'founders-hall',
     col: 28,
@@ -60,7 +64,47 @@ export type Policy = {
   // allows (Phase 37: a hall that has fallen down teaches nobody, and the
   // families notice). On unless the college funds no maintenance at all.
   renovate?: boolean;
+  // The 1.1 systems (Phase 51): the charter it was founded under, the
+  // capital projects it raises one at a time as they come within reach,
+  // and whether it covers an understaffed programme with an adjunct.
+  charter?: CharterId;
+  projects?: string[];
+  adjuncts?: boolean;
 };
+
+// The first site, spiralling out from the middle of the campus, where the
+// sim will let the building go, on whatever financing will pay for it.
+function placeNear(run: Run, buildingId: string): Run {
+  const def = buildingById(buildingId);
+  const { w, h } = def.footprint;
+  for (let r = 0; r < 32; r++) {
+    for (let d = -r; d <= r; d++) {
+      for (const [c, rr] of [
+        [30 + d, 30 - r],
+        [30 + d, 30 + r],
+        [30 - r, 30 + d],
+        [30 + r, 30 + d],
+      ] as const) {
+        // A lane between buildings: every site steps by two.
+        if (c % 2 !== 0 || rr % 2 !== 0) continue;
+        if (siteRefusal(run.state.campus, def, c, rr, w, h) !== null) continue;
+        for (const financing of ['gift', 'cash', 'debt', 'endowment'] as const) {
+          const action = {
+            type: 'placeBuilding',
+            buildingId,
+            col: c,
+            row: rr,
+            rotated: false,
+            financing,
+          } as const;
+          if (canApply(run.state, action).ok) return dispatch(run, action);
+        }
+        return run;
+      }
+    }
+  }
+  return run;
+}
 
 export function resolveWith(policy: Policy) {
   return (state: GameState): Action | null => {
@@ -92,7 +136,7 @@ export function played(
   onWeek?: (run: Run) => Run,
   policy: Policy = {},
 ): Run {
-  let run = opened(seed);
+  let run = opened(seed, policy.charter);
   run = dispatch(run, { type: 'setSweep', on: policy.sweep ?? false });
   // Four of them enclose a court, because a third of the campus's own
   // readings — quads, beauty — only exist once the buildings make a shape.
@@ -216,12 +260,31 @@ export function played(
         const action = { type: 'openProgram', programId: program.id } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }
+      // One capital project at a time, the next on the list whose year
+      // has come, once the one going up has opened.
+      const underway = run.state.campus.placements.some(
+        (p) => p.status === 'building' && buildingById(p.buildingId).project,
+      );
+      const project = (policy.projects ?? []).find(
+        (id) =>
+          !run.state.campus.placements.some((p) => p.buildingId === id) &&
+          (buildingById(id).project?.fromYear ?? 99) <= run.state.clock.year,
+      );
+      if (!underway && project) run = placeNear(run, project);
       if (policy.athleticsBudget && run.state.athletics.budget !== policy.athleticsBudget) {
         const action = { type: 'setAthleticsBudget', budget: policy.athleticsBudget } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }
       for (const sportId of policy.varsity ?? []) {
         const action = { type: 'setVarsity', sportId, on: true } as const;
+        if (canApply(run.state, action).ok) run = dispatch(run, action);
+      }
+    }
+    // An adjunct for a programme the market left short, once a term.
+    if (policy.adjuncts && week % (WEEKS_PER_YEAR / 2) === 2) {
+      for (const open of run.state.academics.programs) {
+        if (facultyOf(run.state, open.programId).length >= staffingNeed(open)) continue;
+        const action = { type: 'hireAdjunct', programId: open.programId } as const;
         if (canApply(run.state, action).ok) run = dispatch(run, action);
       }
     }

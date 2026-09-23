@@ -211,6 +211,30 @@
     "rivalAtLeast": {
       "label": "A rival",
       "unit": "count"
+    },
+    "adjunctsOver": {
+      "label": "Adjuncts",
+      "unit": "count"
+    },
+    "reputationOver": {
+      "label": "Reputation",
+      "unit": "score"
+    },
+    "reputationUnder": {
+      "label": "Reputation",
+      "unit": "score"
+    },
+    "projectsOver": {
+      "label": "Great projects standing",
+      "unit": "count"
+    },
+    "projectsBuildingOver": {
+      "label": "Great projects going up",
+      "unit": "count"
+    },
+    "projectNewUnder": {
+      "label": "Years since a great project opened",
+      "unit": "years"
     }
   },
   "levers": {
