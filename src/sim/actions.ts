@@ -196,7 +196,10 @@ export type Action =
   | { type: 'setAthleticsBudget'; budget: AthleticsBudget }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
-  | { type: 'debug/fireEvent'; eventId: string };
+  | { type: 'debug/fireEvent'; eventId: string }
+  // Money from nowhere, for looking at a rich college without playing to
+  // one. Logged like any action, so a replay is the same run.
+  | { type: 'debug/grant'; amount: number };
 
 export type ActionType = Action['type'];
 
@@ -548,6 +551,9 @@ export function canApply(state: GameState, action: Action): Verdict {
     }
     case 'debug/mark':
       return YES;
+    case 'debug/grant':
+      if (!Number.isFinite(action.amount)) return no('not an amount');
+      return YES;
     case 'debug/fireEvent':
       if (state.phase !== 'running') return no('the college is not open yet');
       if (findEvent(action.eventId) === undefined) return no('no such event');
@@ -791,5 +797,10 @@ export function applyAction(state: GameState, action: Action): GameState {
       return emit(state, { kind: 'mark', label: action.label });
     case 'debug/fireEvent':
       return fireEvent(state, action.eventId);
+    case 'debug/grant':
+      return {
+        ...state,
+        treasury: { ...state.treasury, cash: state.treasury.cash + action.amount },
+      };
   }
 }

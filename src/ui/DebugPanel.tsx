@@ -272,6 +272,18 @@ export default function DebugPanel({ onClose }: { onClose: () => void }) {
       </section>
 
       <section>
+        <h3>Money</h3>
+        <div className="row">
+          <button
+            disabled={!running}
+            onClick={() => store.dispatch({ type: 'debug/grant', amount: 1_000_000_000 })}
+          >
+            +$1B
+          </button>
+        </div>
+      </section>
+
+      <section>
         <h3>Events</h3>
         {/* The authoring loop for a content file that grows to ~140
             events (DD §14): write one, fire it, read it in the ticker. */}

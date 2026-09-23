@@ -494,3 +494,12 @@ describe('save migration v15 → v16', () => {
     expect(entriesOfKind(newRun(1).state, 'eventFired')).toEqual([]);
   });
 });
+
+describe('money from nowhere (debug)', () => {
+  it('adds to the cash, and replays as the same run', () => {
+    const run = years(2);
+    const rich = dispatch(run, { type: 'debug/grant', amount: 1_000_000_000 });
+    expect(rich.state.treasury.cash).toBe(run.state.treasury.cash + 1_000_000_000);
+    expect(rich.log.at(-1)?.action).toEqual({ type: 'debug/grant', amount: 1_000_000_000 });
+  });
+});
