@@ -1,3 +1,4 @@
+import { HISTORIC_CONFIDENCE, HISTORIC_MOOD, HISTORIC_WARMTH } from '../tuning.ts';
 import { buildingById, findBuilding } from '../content/buildings.ts';
 import { RENOVATION_WEEKS } from '../tuning.ts';
 import { emit } from './bus.ts';
@@ -67,12 +68,13 @@ import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts
 import { SEAT_SENIOR_RANKS } from '../tuning.ts';
 import { accessRefusal, groundRefusal } from './reach.ts';
 import { setAthleticsBudget, setVarsity, sportHasVenue, SPORTS } from './athletics.ts';
+import { extend, extensionCost, extensionRefusal } from './lateGame.ts';
 import { BUDGET_IDS, type AthleticsBudget } from '../content/athletics.ts';
 import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
 import { eventById, findEvent } from '../content/events.ts';
-import { fireEvent, resolveEvent } from './events.ts';
+import { applyChoiceEffects, fireEvent, resolveEvent } from './events.ts';
 import { holdReunion, reunionCost, reunionRoom } from './alumni.ts';
 import { approveBudget } from './treasury.ts';
 
@@ -161,6 +163,8 @@ export type Action =
   // Athletics-lite (DD §8.5): a varsity team fielded or stood down, and the
   // budget the teams run on.
   | { type: 'setVarsity'; sportId: string; on: boolean }
+  // The late game (DD §6.6): another storey on a standing building.
+  | { type: 'extend'; placementId: string; financing?: Financing }
   | { type: 'setAthleticsBudget'; budget: AthleticsBudget }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
@@ -432,6 +436,22 @@ export function canApply(state: GameState, action: Action): Verdict {
       }
       return YES;
     }
+    case 'extend': {
+      if (state.phase !== 'running') return no('nothing to build on yet');
+      const p = state.campus.placements.find((q) => q.id === action.placementId);
+      if (!p) return no('no such building');
+      const refusal = extensionRefusal(p);
+      if (refusal) return no(refusal);
+      const allowed = constructionAllowed(state);
+      if (!allowed.ok) return no(allowed.reason);
+      const financing = action.financing ?? 'cash';
+      if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
+      if (!canPay(state, extensionCost(p), financing)) {
+        return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
+      }
+      return YES;
+    }
     case 'setAthleticsBudget':
       if (state.phase !== 'running') return no('the college is not open yet');
       return BUDGET_IDS.includes(action.budget) ? YES : no('no such budget');
@@ -525,7 +545,7 @@ export function applyAction(state: GameState, action: Action): GameState {
     case 'demolish': {
       const gone = state.campus.placements.find((p) => p.id === action.placementId)!;
       const paid = pay(state, demolitionCost(buildingById(gone.buildingId)), 'cash');
-      return emit(
+      const down = emit(
         {
           ...paid,
           campus: {
@@ -535,6 +555,21 @@ export function applyAction(state: GameState, action: Action): GameState {
         },
         { kind: 'buildingDemolished', placementId: gone.id, buildingId: gone.buildingId },
       );
+      // A Historic building comes down against everyone's memory of it
+      // (DD §6.5): the alumni, the board and the students all feel it, the
+      // chronicle marks it, and there will be a protest.
+      if (!gone.historic) return down;
+      const felt = applyChoiceEffects(down, {
+        warmth: -HISTORIC_WARMTH,
+        confidence: -HISTORIC_CONFIDENCE,
+        mood: -HISTORIC_MOOD,
+      });
+      const marked = emit(felt, {
+        kind: 'historicDemolished',
+        placementId: gone.id,
+        buildingId: gone.buildingId,
+      });
+      return fireEvent(marked, 'the-protest', { building: buildingById(gone.buildingId).name });
     }
     case 'renovate': {
       const target = state.campus.placements.find((p) => p.id === action.placementId)!;
@@ -651,6 +686,11 @@ export function applyAction(state: GameState, action: Action): GameState {
       return launchCampaign(state, action.campaignId);
     case 'setVarsity':
       return setVarsity(state, action.sportId, action.on);
+    case 'extend': {
+      const target = state.campus.placements.find((p) => p.id === action.placementId)!;
+      const paid = pay(state, extensionCost(target), action.financing ?? 'cash');
+      return extend(paid, action.placementId);
+    }
     case 'setAthleticsBudget':
       return setAthleticsBudget(state, action.budget);
     case 'debug/mark':

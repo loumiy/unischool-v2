@@ -22,6 +22,11 @@ export type BusEvent =
   | { kind: 'buildingCompleted'; placementId: string; buildingId: string }
   | { kind: 'renovationBegun'; placementId: string; buildingId: string }
   | { kind: 'renovated'; placementId: string; buildingId: string }
+  // The late game (DD §6.5–§6.6): up a storey, declared Historic, and a
+  // Historic building taken down.
+  | { kind: 'storeyAdded'; placementId: string; buildingId: string }
+  | { kind: 'becameHistoric'; placementId: string; buildingId: string }
+  | { kind: 'historicDemolished'; placementId: string; buildingId: string }
   | { kind: 'termBegan'; year: number; term: Term }
   | { kind: 'yearTurned'; year: number }
   | { kind: 'beatFired'; beatId: string }
@@ -126,6 +131,9 @@ export const BUS_KINDS: readonly BusKind[] = [
   'buildingCompleted',
   'renovationBegun',
   'renovated',
+  'storeyAdded',
+  'becameHistoric',
+  'historicDemolished',
   'termBegan',
   'yearTurned',
   'beatFired',

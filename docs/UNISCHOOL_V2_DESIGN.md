@@ -213,6 +213,8 @@ At age 25, buildings may gain **Historic** status (higher odds for the founding 
 
 Around years 25–35 a healthy school fills the land. Building shifts to rebuilding: renovation, vertical growth, demolition politics, and beautification. The Build menu reorients to reflect this (renovation tab surfaces first when land is scarce). There is no land expansion purchase — the boundary is the point.
 
+**The late game, as built (Phase 25).** A building of 25 years or more may be declared Historic once a year at the turn: 6% a year, with better odds for Founders Hall (+30%), for a building on the edge of a quad the player has named (+10%), and for one that opened while a class that remembers its buildings was there (+8%). Demolishing a Historic building costs every alumni class 4 warmth, the board 3 confidence and the students 3 mood, marks the journal (and so the chronicle), and brings a protest letter with three answers; Founders Hall stays undemolishable (§6.5). Any building with floors can go up a storey, twice at most, for 45% of its price, closed for sixteen weeks; beds, meals, seats and upkeep scale with its floors, and the map draws it taller. When less than 55% of the parcel's buildable ground is free, the Build menu opens on a **Rebuild** tab — every standing building that wants renovating or could go up, worst first, the Historic ones marked, each with its price.
+
 ---
 
 ## §7. Academics (System 3)

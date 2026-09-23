@@ -52,8 +52,12 @@ const fileSchema = obj({
       renovate: str,
       demolish: str,
       provides: str,
+      extend: str,
+      historic: str,
     }),
     pay: obj({ cash: str, debt: str, gift: str }),
+    historic: str,
+    historicWarning: str,
     provides: obj({
       beds: str,
       meals: str,

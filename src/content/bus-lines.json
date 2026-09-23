@@ -26,6 +26,17 @@
       "text": "{building} reopens, renovated.",
       "tone": "good"
     },
+    "storeyAdded": {
+      "text": "Scaffolding goes up on {building}: another storey."
+    },
+    "becameHistoric": {
+      "text": "{building} is declared Historic.",
+      "tone": "good"
+    },
+    "historicDemolished": {
+      "text": "Historic {building} comes down, over the protests of everyone who ever studied in it.",
+      "tone": "bad"
+    },
     "termBegan": {
       "text": "{term} begins."
     },

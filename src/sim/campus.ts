@@ -29,6 +29,11 @@ export interface Placement {
   openedWeek: number | null; // absolute week the doors first opened; age counts from it
   backlog: number; // deferred maintenance, dollars
   condition: number; // 0–1, derived from the backlog (estate.ts)
+  // The late game (Phase 25): storeys added on top of the catalogue's, and
+  // whether — and since when — it is Historic.
+  storeysAdded?: number;
+  historic?: boolean;
+  historicSince?: number;
 }
 
 export interface Campus {

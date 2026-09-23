@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
-import { buildingById } from '../../content/buildings.ts';
-import { enrolled, SPEED_MULTIPLIER, type GameState, type Placement } from '../../sim/index.ts';
+import {
+  effectiveDef,
+  enrolled,
+  SPEED_MULTIPLIER,
+  type GameState,
+  type Placement,
+} from '../../sim/index.ts';
 import { MAX_WALKERS, STUDENTS_PER_WALKER } from '../../tuning.ts';
 import { wallHeightOf } from './buildingSpec.ts';
 import { boxFaces, cameraAxes, heightScale, project, type Camera, type Pt } from './iso.ts';
@@ -95,7 +100,7 @@ export function hullOf(pts: Pt[]): Pt[] {
 function silhouettes(placements: readonly Placement[]): Silhouette[] {
   const out: Silhouette[] = [];
   for (const p of placements) {
-    const def = buildingById(p.buildingId);
+    const def = effectiveDef(p);
     if (def.form === 'grounds') continue;
     const height = p.status === 'open' ? wallHeightOf(def) : Math.max(4, wallHeightOf(def) * 0.16);
     const f = boxFaces(p.col, p.row, p.w, p.h, 0, height);

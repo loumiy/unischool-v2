@@ -309,6 +309,9 @@ export default function App() {
         onRenovate={(placementId, payWith) => {
           store.dispatch({ type: 'renovate', placementId, financing: payWith });
         }}
+        onExtend={(placementId, payWith) => {
+          store.dispatch({ type: 'extend', placementId, financing: payWith });
+        }}
         financing={financing}
         onPaint={(t, col, row) => {
           store.dispatch({
@@ -407,6 +410,12 @@ export default function App() {
             onSetSpecies={setSpecies}
             financing={financing}
             onSetFinancing={setFinancing}
+            onRenovate={(placementId) => {
+              store.dispatch({ type: 'renovate', placementId, financing });
+            }}
+            onExtend={(placementId) => {
+              store.dispatch({ type: 'extend', placementId, financing });
+            }}
             onClose={closeBuild}
           />
         )}

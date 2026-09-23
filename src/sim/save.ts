@@ -647,6 +647,12 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { perception: foundingPerception(), ...state, schemaVersion: 24 },
     };
   },
+  // v24 → v25 (Phase 25): a placement may carry storeys added and Historic
+  // status. Both are optional, and an older campus has neither.
+  24: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return { ...raw, version: 25, state: { ...state, schemaVersion: 25 } };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

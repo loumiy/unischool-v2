@@ -1,4 +1,3 @@
-import { buildingById } from '../content/buildings.ts';
 import {
   ADMIT_RATE_MAX,
   ADMIT_RATE_MIN,
@@ -48,6 +47,7 @@ import { memoryFor, warmthFor } from './alumni.ts';
 import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import { varsityLife } from './athletics.ts';
+import { placementCapacity } from './lateGame.ts';
 import { prestigePoolFactor } from './prestige.ts';
 import { tagPoolFactor, tagQualityShift } from './tags.ts';
 import {
@@ -191,8 +191,8 @@ export function capacityAt(state: GameState, week: number): CampusCapacity {
 function capacityOf(placements: readonly Placement[]): CampusCapacity {
   const cap = { beds: 0, meals: 0, seats: 0, life: 0, draw: 0, giving: 0 };
   for (const p of placements) {
-    const c = buildingById(p.buildingId).capacity;
-    if (!c) continue;
+    // Storeys added in the late game hold more (Phase 25).
+    const c = placementCapacity(p);
     cap.beds += c.beds ?? 0;
     cap.meals += c.meals ?? 0;
     cap.seats += c.seats ?? 0;

@@ -14,6 +14,7 @@ import type { Placement } from './campus.ts';
 import type { GameState } from './state.ts';
 import { restrictedFor, spendRestricted } from './campaigns.ts';
 import { repaymentFor } from './treasury.ts';
+import { storeyFactor } from './lateGame.ts';
 
 // BUILDINGS AS ECONOMIC OBJECTS (DD §6.4). A building costs money to put
 // up and takes weeks to build; once open it wants maintenance every week,
@@ -38,7 +39,10 @@ export function annualUpkeep(def: BuildingDef, ageYears: number): number {
 }
 
 export function upkeepOf(p: Placement, absoluteWeek: number): number {
-  return annualUpkeep(buildingById(p.buildingId), ageYearsOf(p, absoluteWeek));
+  // A taller building costs as much more to keep as it holds (Phase 25).
+  return Math.round(
+    annualUpkeep(buildingById(p.buildingId), ageYearsOf(p, absoluteWeek)) * storeyFactor(p),
+  );
 }
 
 // Condition is how much of the building the backlog has eaten: 1 with no

@@ -1,4 +1,3 @@
-import { buildingById } from '../content/buildings.ts';
 import { NAME_POOLS, type Gender } from '../content/faculty.ts';
 import { programById, schoolById } from '../content/schools.ts';
 import {
@@ -25,6 +24,7 @@ import { inAusterity, inReceivership, frozen } from './distress.ts';
 import { facultyOf, staffingNeed, teachingQuality } from './faculty.ts';
 import { detectQuads } from './quads.ts';
 import { Rng } from './rng.ts';
+import { placementCapacity } from './lateGame.ts';
 import type { GameState } from './state.ts';
 import type { Cohort, Outcomes } from './people.ts';
 
@@ -182,7 +182,7 @@ function campusCapacityOf(state: GameState): { beds: number; meals: number; seat
   const cap = { beds: 0, meals: 0, seats: 0 };
   for (const p of state.campus.placements) {
     if (p.status !== 'open') continue;
-    const c = buildingById(p.buildingId).capacity;
+    const c = placementCapacity(p);
     cap.beds += c?.beds ?? 0;
     cap.meals += c?.meals ?? 0;
     cap.seats += c?.seats ?? 0;

@@ -131,6 +131,9 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'buildingCompleted':
     case 'renovationBegun':
     case 'renovated':
+    case 'storeyAdded':
+    case 'becameHistoric':
+    case 'historicDemolished':
       vars.building = findBuilding(entry.buildingId)?.name ?? entry.buildingId;
       break;
     case 'termBegan':

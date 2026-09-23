@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import { buildingById } from '../content/buildings.ts';
 import {
   siteRefusal,
+  effectiveDef,
   formatMoney,
   FOUNDERS_HALL_ID,
   orientedFootprint,
@@ -114,7 +115,7 @@ function drawnFootprint(p: Placement) {
 }
 
 function labelLayout(label: string, p: Placement, motif: Motif) {
-  const def = buildingById(p.buildingId);
+  const def = effectiveDef(p);
   const size = Math.max(
     LABEL_MIN_FONT_SIZE,
     Math.min(LABEL_MAX_FONT_SIZE, (p.w + p.h) * LABEL_SIZE_PER_TILE),
@@ -166,7 +167,8 @@ function PlacedBuilding({
   schoolName: string;
   snow: number;
 }) {
-  const def = buildingById(p.buildingId);
+  // As it stands: the storeys the late game added are drawn (Phase 25).
+  const def = effectiveDef(p);
   const d = drawnFootprint(p);
   const site = p.status === 'building';
   const works = p.status !== 'open';
@@ -273,7 +275,7 @@ function CastShadows({
     const sub = (pts: { x: number; y: number }[]) => `M${polyPoints(pts).replace(/ /g, 'L')}Z`;
     const buildings: string[] = [];
     for (const p of placements) {
-      const def = buildingById(p.buildingId);
+      const def = effectiveDef(p);
       const height = p.status === 'building' ? siteHeightOf(def) : drawnHeightOf(def, motif);
       if (height <= 0) continue;
       // A sign's plot is two tiles so it can be turned to face the road, but
@@ -491,7 +493,11 @@ const CampusScene = memo(function CampusScene({
             <BuildingLabel
               key={`label-${p.id}`}
               p={p}
-              label={buildingById(p.buildingId).name}
+              label={
+                p.historic
+                  ? `${buildingById(p.buildingId).name} · Historic`
+                  : buildingById(p.buildingId).name
+              }
               pinned={p.id === inspectedId}
               motif={motif}
             />
@@ -533,6 +539,7 @@ export default function CampusMap({
   onSetTool,
   onPlace,
   onRenovate,
+  onExtend,
   financing,
   onPaint,
   onDemolish,
@@ -548,6 +555,7 @@ export default function CampusMap({
   // Returns whether the sim accepted the placement.
   onPlace: (buildingId: string, col: number, row: number, rotated: boolean) => boolean;
   onRenovate: (placementId: string, financing: Financing) => void;
+  onExtend: (placementId: string, financing: Financing) => void;
   // How construction is being paid for, chosen in the build menu.
   financing: Financing;
   onPaint: (tool: Exclude<CampusTool, 'demolish'>, col: number, row: number) => void;
@@ -1171,6 +1179,7 @@ export default function CampusMap({
             financing={financing}
             onClose={() => setInspectedId(null)}
             onRenovate={(f) => onRenovate(inspected.id, f)}
+            onExtend={(f) => onExtend(inspected.id, f)}
             onDemolish={() => {
               onDemolish(inspected.id);
               setInspectedId(null);

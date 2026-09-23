@@ -145,6 +145,24 @@ export const POACH_COUNTER_SHARE = 0.25;
 export const SHED_CANDIDATES = 2;
 // An event favouring a tag the college holds is this much likelier.
 export const EVENT_TAG_WEIGHT = 2.5;
+// The full-canvas late game (DD §6.5–§6.6, Phase 25). Another storey
+// costs this share of the building's price, closes it this many weeks,
+// and a building takes at most this many. At this age a building may be
+// declared Historic each year, at these odds; taking a Historic building
+// down costs this much goodwill. The Build menu turns to the estate below
+// this share of free ground.
+export const EXTEND_COST_SHARE = 0.45;
+export const EXTEND_WEEKS = 16;
+export const EXTEND_MAX_STOREYS = 2;
+export const HISTORIC_AGE = 25;
+export const HISTORIC_CHANCE = 0.06;
+export const HISTORIC_FOUNDERS_CHANCE = 0.3;
+export const HISTORIC_QUAD_CHANCE = 0.1;
+export const HISTORIC_MEMORY_CHANCE = 0.08;
+export const HISTORIC_WARMTH = 4;
+export const HISTORIC_CONFIDENCE = 3;
+export const HISTORIC_MOOD = 3;
+export const LAND_SCARCE_SHARE = 0.55;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.

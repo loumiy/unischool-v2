@@ -97,7 +97,9 @@
       "backlog": "Maintenance this building was owed and never got, compounding while it waits.",
       "renovate": "Pays the backlog and a contractor's fee, and closes the building for eight weeks.",
       "demolish": "Taking it down costs a share of what it cost to put up.",
-      "provides": "What the building gives the college once it is open: the beds, seats and student life it holds, what it draws, and the landmark mark it adds to campus beauty."
+      "provides": "What the building gives the college once it is open: the beds, seats and student life it holds, what it draws, and the landmark mark it adds to campus beauty.",
+      "extend": "Another storey on top: more of whatever the building holds, and more upkeep, with the building closed while it goes up.",
+      "historic": "Historic buildings are the college's past made visible. Taking one down costs the alumni's goodwill, the board's confidence and the students' patience, and there will be a protest."
     },
     "pay": {
       "cash": "Pay cash",
@@ -114,6 +116,8 @@
       "beauty": "beauty +{n}",
       "school": "a school can be founded in it",
       "nothing": "its place in the layout"
-    }
+    },
+    "historic": "Historic since Year {year}",
+    "historicWarning": "This building is Historic. The alumni, the board and the students will all feel it come down."
   }
 }
