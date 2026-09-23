@@ -52,7 +52,7 @@ import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import { BOARD_WORDS, CUT_WORDS, rungWords } from '../content/board.ts';
 import { FACULTY_WORDS } from '../content/faculty.ts';
 import FacultyCard from './FacultyCard.tsx';
-import AmbitionsPanel, { AmbitionOffer } from './AmbitionsPanel.tsx';
+import AmbitionsPanel, { AmbitionOffer, DecadeList } from './AmbitionsPanel.tsx';
 import Figure from './Figure.tsx';
 import TabOverlay from './TabOverlay.tsx';
 
@@ -70,6 +70,7 @@ export interface BeatDecision {
   selectivity?: number;
   cuts?: AusterityCut[];
   acceptAmbition?: boolean;
+  pickAmbitions?: string[];
 }
 
 export default function BeatScreen({
@@ -518,6 +519,12 @@ function BoardBody({
   return (
     <div className="budget-body board-body">
       <h3>The board's view</h3>
+      {/* The decade's list, when a decade turns (Phase 42). */}
+      <DecadeList
+        state={state}
+        picked={decision.pickAmbitions ?? []}
+        onChange={(picks) => onChange({ ...decision, pickAmbitions: picks })}
+      />
       {/* Head to head with the rival, where the board reads it (Phase 23). */}
       {/* "No rival yet" is said at the first board meeting, not every
           autumn after it (Phase 40). */}

@@ -964,6 +964,157 @@
       "door": null,
       "icon": "bridge",
       "blurb": "Four tiles of stone across the stream, landing on dry ground at both ends. The far bank is a two-minute walk instead of a trip round by the road."
+    },
+    {
+      "id": "research-park",
+      "name": "Research Park",
+      "category": "project",
+      "footprint": {
+        "w": 13,
+        "h": 9
+      },
+      "cost": 45000000,
+      "upkeep": 900000,
+      "buildWeeks": 144,
+      "capacity": {
+        "draw": 4
+      },
+      "beauty": 1,
+      "form": "block",
+      "material": "curtain",
+      "storeys": 3,
+      "door": "canopy",
+      "icon": "lab",
+      "limit": 1,
+      "project": {
+        "fromYear": 12,
+        "boosts": {
+          "research": 18
+        }
+      },
+      "blurb": "Four years of works and a business plan that uses the word 'ecosystem' eleven times. When it opens it adds a good deal to the research standing and draws applicants."
+    },
+    {
+      "id": "medical-school",
+      "name": "Medical School",
+      "category": "project",
+      "footprint": {
+        "w": 11,
+        "h": 7
+      },
+      "cost": 70000000,
+      "upkeep": 1200000,
+      "buildWeeks": 180,
+      "capacity": {
+        "seats": 600
+      },
+      "beauty": 2,
+      "form": "hall",
+      "material": "limestone",
+      "storeys": 4,
+      "door": "formal",
+      "icon": "academic",
+      "limit": 1,
+      "housesSchool": true,
+      "project": {
+        "fromYear": 15,
+        "boosts": {
+          "academics": 6,
+          "research": 8
+        }
+      },
+      "blurb": "Five years of works. When it opens, the School of Medicine can be founded in it, the only place it can be, and it adds to the academic and research standings."
+    },
+    {
+      "id": "great-lawn",
+      "name": "The Great Lawn",
+      "category": "project",
+      "footprint": {
+        "w": 15,
+        "h": 11
+      },
+      "cost": 18000000,
+      "upkeep": 400000,
+      "buildWeeks": 108,
+      "capacity": {
+        "life": 800
+      },
+      "beauty": 8,
+      "form": "grounds",
+      "ground": "garden",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "garden",
+      "limit": 1,
+      "project": {
+        "fromYear": 10,
+        "boosts": {
+          "experience": 5
+        }
+      },
+      "blurb": "A second quad, laid out to a masterplan: three years of earthworks, avenues and a great deal of turf. It is the campus's largest landmark, and students spend their afternoons on it."
+    },
+    {
+      "id": "championship-stadium",
+      "name": "Championship Stadium",
+      "category": "project",
+      "footprint": {
+        "w": 15,
+        "h": 9
+      },
+      "cost": 55000000,
+      "upkeep": 1100000,
+      "buildWeeks": 144,
+      "capacity": {
+        "life": 2000,
+        "draw": 6
+      },
+      "beauty": 2,
+      "form": "grounds",
+      "ground": "track",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "athletics",
+      "limit": 1,
+      "project": {
+        "fromYear": 12,
+        "boosts": {
+          "athletics": 18
+        }
+      },
+      "blurb": "Four years of works for forty thousand seats and a press box. It lifts the athletics standing, draws applicants, and gets the college booked against bigger opponents."
+    },
+    {
+      "id": "arts-centre",
+      "name": "Arts Centre",
+      "category": "project",
+      "footprint": {
+        "w": 13,
+        "h": 9
+      },
+      "cost": 35000000,
+      "upkeep": 800000,
+      "buildWeeks": 144,
+      "capacity": {
+        "life": 1500,
+        "draw": 5
+      },
+      "beauty": 4,
+      "form": "portico",
+      "material": "limestone",
+      "storeys": 3,
+      "door": "civic",
+      "icon": "arts",
+      "limit": 1,
+      "project": {
+        "fromYear": 10,
+        "boosts": {
+          "experience": 6
+        }
+      },
+      "blurb": "A concert hall, two theatres and a foyer with opinions about acoustics: four years of works. Student life, applicants and the experience standing all gain."
     }
   ]
 }

@@ -104,7 +104,8 @@
     "pay": {
       "cash": "Pay cash",
       "debt": "Borrow",
-      "gift": "From restricted funds"
+      "gift": "From restricted funds",
+      "endowment": "From the endowment"
     },
     "holding": "Placing: {building} · {cost} · {pay}",
     "holdingKeys": "Click open ground to break ground · R turns it · Esc puts it down",

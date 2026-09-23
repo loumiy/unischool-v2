@@ -68,7 +68,10 @@ describe('what the guidebooks say', () => {
 describe('poaching and shedding, wired to the league (DD §7.3, §11.3)', () => {
   it('puts a rising school’s offer to a star on the docket, and a falling school’s faculty on the market', () => {
     let shedSeen = 0;
-    const run = played(4, 35, (r) => {
+    // Seed 21: which colleges rise and fall is the world's dice, and since
+    // the decade's ambitions (Phase 42) draw on the run's stream too, seed
+    // 4's scripted college no longer meets a suitor inside 35 years.
+    const run = played(21, 35, (r) => {
       if (r.state.faculty.marketOpen)
         shedSeen = Math.max(shedSeen, r.state.faculty.market.filter((f) => f.fromSchool).length);
       return r;

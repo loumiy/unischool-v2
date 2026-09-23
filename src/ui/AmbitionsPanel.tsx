@@ -1,5 +1,6 @@
 import { AMBITION_WORDS, ambitionById } from '../content/ambitions.ts';
 import {
+  decadeRoom,
   activeAmbitions,
   goalMet,
   priceScale,
@@ -152,6 +153,58 @@ export function AmbitionOffer({
           <span className="event-choice-note">Free, and nobody hears about it</span>
         </button>
       </div>
+    </section>
+  );
+}
+
+// THE DECADE AHEAD (Phase 42): at the first Board Meeting of a decade, a
+// short list the college chooses from, instead of only taking what it is
+// offered. The same card as an offer, with a toggle instead of two answers.
+export function DecadeList({
+  state,
+  picked,
+  onChange,
+}: {
+  state: GameState;
+  picked: string[];
+  onChange: (picks: string[]) => void;
+}) {
+  const list = state.ambitions.decadeOffer;
+  if (!list) return null;
+  const room = decadeRoom(state);
+  return (
+    <section className="ambition-offer decade-list">
+      <div className="eyebrow">{AMBITION_WORDS.decadeTitle}</div>
+      <p className="ambition-terms">{AMBITION_WORDS.decadeBody.replace('{picks}', String(room))}</p>
+      {list.map((id) => {
+        const def = ambitionById(id);
+        const on = picked.includes(id);
+        const full = !on && picked.length >= room;
+        return (
+          <div key={id} className="decade-item">
+            <h3>{def.title}</h3>
+            <p className="ambition-text">
+              {def.text.replace('{school}', state.identity?.name ?? 'the college')}
+            </p>
+            <Goal measures={measureAll(state, def.goal)} />
+            <p className="ambition-stakes">
+              {def.years} years. {worthLine(scaledEffects(def.reward, priceScale(state)))}{' '}
+              {costLine(scaledEffects(def.penalty, priceScale(state)))}
+            </p>
+            <button
+              type="button"
+              className={`event-choice ${on ? 'chosen' : ''}`}
+              aria-pressed={on}
+              disabled={full}
+              onClick={() => onChange(on ? picked.filter((p) => p !== id) : [...picked, id])}
+            >
+              <span className="event-choice-label">
+                {on ? AMBITION_WORDS.decadeTaken : AMBITION_WORDS.decadeTake}
+              </span>
+            </button>
+          </div>
+        );
+      })}
     </section>
   );
 }

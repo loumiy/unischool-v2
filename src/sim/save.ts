@@ -724,6 +724,23 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
     const state = (raw.state ?? {}) as Record<string, unknown>;
     return { ...raw, version: 30, state: { ...state, schemaVersion: 30 } };
   },
+  // v30 → v31 (Phase 42): the decade's list of ambitions, which an older
+  // college has not been dealt.
+  30: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 31,
+      state: {
+        ...state,
+        ambitions: {
+          decadeOffer: null,
+          ...((state.ambitions ?? {}) as Record<string, unknown>),
+        },
+        schemaVersion: 31,
+      },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the

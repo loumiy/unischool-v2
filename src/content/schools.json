@@ -502,11 +502,63 @@
           ]
         }
       ]
+    },
+    {
+      "id": "medicine",
+      "name": "Medicine",
+      "hue": "#a0414b",
+      "mark": "✚",
+      "blurb": "Anatomy, patients and the long hours. It can only be founded in a medical school, and a medical school is a capital project.",
+      "hall": "medical-school",
+      "programs": [
+        {
+          "id": "medicine",
+          "name": "Medicine",
+          "code": "MEDI",
+          "blurb": "Seven years of training, compressed by the timetable into four and a great deal of coffee.",
+          "courses": [
+            "Human Anatomy",
+            "Physiology",
+            "Pathology",
+            "Pharmacology",
+            "Clinical Medicine",
+            "Senior Clerkship"
+          ]
+        },
+        {
+          "id": "surgery",
+          "name": "Surgery",
+          "code": "SURG",
+          "blurb": "Steady hands, early mornings, and a vocabulary of knots.",
+          "courses": [
+            "Surgical Anatomy",
+            "Principles of Surgery",
+            "Anaesthesia",
+            "Trauma Care",
+            "Operative Technique",
+            "Senior Surgical Rotation"
+          ]
+        },
+        {
+          "id": "clinical-research",
+          "name": "Clinical Research",
+          "code": "CLIN",
+          "blurb": "Trials, cohorts and the patience to wait for the numbers.",
+          "courses": [
+            "Research Methods in Medicine",
+            "Biostatistics for Clinicians",
+            "Trial Design",
+            "Medical Ethics",
+            "Translational Research",
+            "Senior Thesis in Clinical Research"
+          ]
+        }
+      ]
     }
   ],
   "words": {
     "readings": {
-      "schools": "Schools founded of the six; each needs its own hall, a founding cost and, one day, a dean.",
+      "schools": "Schools founded. Six can be founded in any hall, and Medicine only in a medical school. Each needs its own hall, a founding cost and, one day, a dean.",
       "programs": "Programs open of the thirty; each costs money every year at its tier.",
       "programCosts": "What the open programs cost to run this year: the programs line in the Treasury.",
       "halls": "Open halls with no school in them yet: Founders Hall counts, and every Academic Hall.",

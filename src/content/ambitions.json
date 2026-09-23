@@ -591,6 +591,10 @@
     "dueIn": "{years} years left",
     "dueNext": "Due next year",
     "dueNow": "Due this Convocation",
+    "decadeTitle": "The decade ahead",
+    "decadeBody": "A new decade, and the board wants the college to say what it is aiming at. Choose up to {picks} to make public. Choosing none costs nothing.",
+    "decadeTake": "Aim for this",
+    "decadeTaken": "Chosen",
     "none": "Nothing promised, and nothing owed.",
     "capReached": "Three is as many promises as the college will make at once.",
     "note": "A public commitment with a date on it. Declining costs nothing; keeping it is worth more than that."

@@ -16,6 +16,7 @@ import {
   canPay,
   type Financing,
   FINANCINGS,
+  PROJECT_FINANCINGS,
   formatMoney,
   formatPercent,
   builtCount,
@@ -28,6 +29,7 @@ import {
   type Species,
 } from '../sim/index.ts';
 import HelpHint from './HelpHint.tsx';
+import { ENDOWMENT_PROJECT_SHARE } from '../tuning.ts';
 import {
   AcademicIcon,
   ArtsIcon,
@@ -78,6 +80,7 @@ const CATEGORY_LABELS: Record<BuildingCategory, string> = {
   athletics: 'Athletics',
   admin: 'Admin',
   landmark: 'Landmarks',
+  project: 'Projects',
 };
 
 const CATEGORY_ICONS: Record<BuildingCategory, () => React.JSX.Element> = {
@@ -88,6 +91,7 @@ const CATEGORY_ICONS: Record<BuildingCategory, () => React.JSX.Element> = {
   athletics: AthleticsIcon,
   admin: BuildIcon,
   landmark: StatueIcon,
+  project: LibraryIcon,
 };
 
 const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
@@ -196,7 +200,11 @@ function BuildTile({
   const placed =
     (isFounders && hasFoundersHall(state.campus)) ||
     (def.limit !== undefined && count >= def.limit);
-  const affordable = canPay(state, def.cost, financing);
+  // The endowment pays for capital projects only, and a project waits for
+  // its year (Phase 42).
+  const payWith = financing === 'endowment' && !def.project ? 'cash' : financing;
+  const early = def.project !== undefined && state.clock.year < def.project.fromYear;
+  const affordable = !early && canPay(state, def.cost, payWith);
   if (placed) {
     return (
       <div
@@ -218,9 +226,15 @@ function BuildTile({
   const ringed = isFounders && state.phase === 'siting' && !armed;
   const why = affordable
     ? null
-    : financing === 'cash'
-      ? `Not enough cash: ${formatMoney(def.cost)} to build.`
-      : `The board will not lend ${formatMoney(def.cost)} more.`;
+    : early
+      ? `A capital project for later: not before Year ${def.project!.fromYear}.`
+      : payWith === 'endowment'
+        ? `The board will release at most ${formatMoney(state.treasury.endowment * ENDOWMENT_PROJECT_SHARE)} of the endowment.`
+        : payWith === 'gift'
+          ? `Not enough restricted building money for ${formatMoney(def.cost)}.`
+          : payWith === 'cash'
+            ? `Not enough cash: ${formatMoney(def.cost)} to build.`
+            : `The board will not lend ${formatMoney(def.cost)} more.`;
   return (
     <button
       type="button"
@@ -244,7 +258,13 @@ function BuildTile({
       <span className="build-tile-gives">{providesLine(def)}</span>
       <span className="build-tile-price">{formatMoney(def.cost)}</span>
       <span className="build-tile-foot">
-        {armed ? 'placing…' : affordable ? 'place' : "can't afford"}
+        {armed
+          ? 'placing…'
+          : affordable
+            ? 'place'
+            : early
+              ? `from Year ${def.project!.fromYear}`
+              : "can't afford"}
       </span>
     </button>
   );
@@ -320,7 +340,7 @@ export default function BuildPopup({
         <>
           <HelpHint text="Pick a category, then a building: click a tile to pick it up, then click empty ground on the map to break ground. R turns it a quarter turn. Construction is paid in cash or borrowed against the board's line; the toggle here decides which. The stream and the road are never buildable; trees under a new building are felled. Campus Tools lays walkways, plants and fells trees, and demolishes." />
           <span className="pay-toggle" role="group" aria-label="Pay for construction with">
-            {FINANCINGS.map((f) => (
+            {(activeId === 'project' ? PROJECT_FINANCINGS : FINANCINGS).map((f) => (
               <button
                 key={f}
                 type="button"
@@ -329,7 +349,9 @@ export default function BuildPopup({
                 title={
                   f === 'cash'
                     ? `Operating funds: ${formatMoney(state.treasury.cash)}`
-                    : `Borrowing room: ${formatMoney(borrowingRoom(state))}`
+                    : f === 'endowment'
+                      ? `Up to ${formatMoney(state.treasury.endowment * ENDOWMENT_PROJECT_SHARE)} of the endowment, for a capital project`
+                      : `Borrowing room: ${formatMoney(borrowingRoom(state))}`
                 }
                 onClick={() => onSetFinancing(f)}
               >

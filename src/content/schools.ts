@@ -1,8 +1,9 @@
 import raw from './schools.json' with { type: 'json' };
-import { arr, int, num, obj, oneOf, str, uniqueBy, validate } from './schema.ts';
+import { arr, int, num, obj, oneOf, optional, str, uniqueBy, validate } from './schema.ts';
 import type { RankId } from './faculty.ts';
 
-// THE ACADEMIC CATALOGUE (DD §7.2, §14): six schools, thirty programs,
+// THE ACADEMIC CATALOGUE (DD §7.2, §14): six schools, thirty programs, and
+// a seventh school that a capital project opens (Phase 42),
 // three tiers. A program's courses are generated flavour (DD §7.1): six
 // titles, two a level, numbered from the code, revealed a level at a
 // time as the program's tier rises.
@@ -38,6 +39,9 @@ export interface SchoolDef {
   mark: string;
   blurb: string;
   programs: ProgramDef[];
+  // The one building the school can be founded in, when it is not any hall
+  // (Phase 42: Medicine needs its medical school).
+  hall?: string;
 }
 
 const fileSchema = obj({
@@ -60,6 +64,7 @@ const fileSchema = obj({
       mark: str,
       blurb: str,
       programs: arr(obj({ id: str, name: str, code: str, blurb: str, courses: arr(str) })),
+      hall: optional(str),
     }),
   ),
   words: obj({
@@ -131,8 +136,11 @@ function load() {
       throw new Error(`content/schools.json: ${p.id} needs ${COURSES_PER_LEVEL * 3} courses`);
     }
   }
-  if (schools.length !== 6) throw new Error('content/schools.json: six schools (DD §7.2)');
-  if (programs.length !== 30) throw new Error('content/schools.json: thirty programs (DD §14)');
+  // Six open to every college, and one a capital project opens (Phase 42).
+  const open = schools.filter((s) => s.hall === undefined);
+  if (open.length !== 6) throw new Error('content/schools.json: six schools (DD §7.2)');
+  if (open.flatMap((s) => s.programs).length !== 30)
+    throw new Error('content/schools.json: thirty programs (DD §14)');
   return { tiers, schools, programs, words: file.words };
 }
 

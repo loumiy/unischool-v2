@@ -1,3 +1,4 @@
+import { buildingById } from '../content/buildings.ts';
 import { useEffect, useRef, useState } from 'react';
 import { describeEntry } from '../content/busLines.ts';
 import type { PaletteChoice } from '../content/palettes.ts';
@@ -361,7 +362,9 @@ export default function App() {
             col,
             row,
             rotated,
-            financing,
+            // The endowment pays for capital projects only (Phase 42).
+            financing:
+              financing === 'endowment' && !buildingById(buildingId).project ? 'cash' : financing,
           });
           if (applied && buildingId === FOUNDERS_HALL_ID) void autosave(store.getSnapshot().run!);
           return applied;

@@ -1,5 +1,11 @@
 import { AMBITIONS, ambitionById, type AmbitionDef } from '../content/ambitions.ts';
-import { AMBITION_CAP, AMBITION_DEAL_ODDS } from '../tuning.ts';
+import {
+  AMBITION_CAP,
+  AMBITION_DEAL_ODDS,
+  DECADE_LIST,
+  DECADE_PICKS,
+  DECADE_YEARS,
+} from '../tuning.ts';
 import { emit } from './bus.ts';
 import { applyChoiceEffects, conditionsOf, priceScale, scaledEffects } from './events.ts';
 import { Rng } from './rng.ts';
@@ -32,10 +38,14 @@ export interface Ambitions {
   active: ActiveAmbition[];
   settled: SettledAmbition[];
   lastDealtYear: number;
+  // The decade's list (Phase 42): at the first Board Meeting of each
+  // decade the board deals a short list, and the college chooses one or two
+  // to make public. Null when nothing is on it.
+  decadeOffer: string[] | null;
 }
 
 export function foundingAmbitions(): Ambitions {
-  return { offered: null, active: [], settled: [], lastDealtYear: 0 };
+  return { offered: null, active: [], settled: [], lastDealtYear: 0, decadeOffer: null };
 }
 
 // ---------- reading the docket ----------
@@ -120,6 +130,69 @@ function settleDue(state: GameState): GameState {
         },
       },
       { kind: 'ambitionSettled', ambitionId: def.id, kept },
+    );
+  }
+  return s;
+}
+
+// ---------- the decade's list (Phase 42) ----------
+
+// The first Board Meeting of each decade after the first: Years 11, 21, 31
+// and 41.
+export function decadeTurn(year: number): boolean {
+  return year > 1 && (year - 1) % DECADE_YEARS === 0;
+}
+
+// How many of the list the college may take: up to two, within the cap.
+export function decadeRoom(state: GameState): number {
+  return Math.max(0, Math.min(DECADE_PICKS, AMBITION_CAP - state.ambitions.active.length));
+}
+
+// Called when the Board Meeting fires: at a decade's turn, with room on the
+// docket, the board deals its list — distinct, from the same pool as
+// Convocation's offers, off the run's own dice.
+export function dealDecade(state: GameState): GameState {
+  if (!decadeTurn(state.clock.year) || decadeRoom(state) === 0) return state;
+  const rng = Rng.fromState(state.rng);
+  const pool = [...dealable(state)];
+  const list: string[] = [];
+  while (list.length < DECADE_LIST && pool.length > 0) {
+    const def = pickAmbition(rng, pool)!;
+    list.push(def.id);
+    pool.splice(pool.indexOf(def), 1);
+  }
+  const next = { ...state, rng: rng.snapshot() };
+  if (list.length === 0) return next;
+  return { ...next, ambitions: { ...next.ambitions, decadeOffer: list } };
+}
+
+// The Board Meeting's answer: the ones the college takes go on the record
+// with their dates; the rest, and the list, are put away. Taking none is
+// free, like declining an offer.
+export function answerDecade(state: GameState, picks: string[] | undefined): GameState {
+  const list = state.ambitions.decadeOffer;
+  if (!list) return state;
+  let s: GameState = { ...state, ambitions: { ...state.ambitions, decadeOffer: null } };
+  const chosen = [...new Set(picks ?? [])]
+    .filter((id) => list.includes(id))
+    .slice(0, decadeRoom(state));
+  for (const id of chosen) {
+    const def = ambitionById(id);
+    const active: ActiveAmbition = {
+      ambitionId: id,
+      acceptedYear: s.clock.year,
+      dueYear: s.clock.year + def.years,
+    };
+    s = emit(
+      {
+        ...s,
+        ambitions: {
+          ...s.ambitions,
+          active: [...s.ambitions.active, active],
+          lastDealtYear: s.clock.year,
+        },
+      },
+      { kind: 'ambitionAccepted', ambitionId: id, dueYear: active.dueYear },
     );
   }
   return s;

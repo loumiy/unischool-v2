@@ -28,6 +28,7 @@ import {
   frozen,
   hallName,
   hallsAvailable,
+  hallsFor,
   neglected,
   nextTier,
   openProgram,
@@ -287,7 +288,7 @@ function SchoolGroup({
   onAdjunct: (programId: string) => void;
 }) {
   const founded = foundedSchool(state, school.id);
-  const halls = hallsAvailable(state);
+  const halls = hallsFor(state, school.id);
   // A hall still going up is a hall on its way, not a hall to go and build
   // (the playtest: Founders Hall's first month read "build one first").
   const rising = state.campus.placements.find(

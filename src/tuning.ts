@@ -586,3 +586,12 @@ export const FACULTY_CAREER_YEARS = { assistant: 34, associate: 26, full: 18 } a
 export const FACULTY_CAREER_SPREAD = 6;
 export const FACULTY_LEAVE_CHANCE = 0.1;
 export const FACULTY_LEAVE_HALL_BELOW = 0.3;
+
+// CAPITAL PROJECTS (Phase 42). A project may be paid for out of the
+// endowment, up to this share of the fund at once.
+export const ENDOWMENT_PROJECT_SHARE = 0.5;
+// Decade ambitions (Phase 42): every DECADE_YEARS, at the Board Meeting,
+// a list of DECADE_LIST from which the college may take DECADE_PICKS.
+export const DECADE_YEARS = 10;
+export const DECADE_LIST = 3;
+export const DECADE_PICKS = 2;
