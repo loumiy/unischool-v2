@@ -61,6 +61,7 @@ import {
 import { castShadow } from './map/light.ts';
 import PathwayLayer from './map/pathways.tsx';
 import DressingLayer from './map/dressing.tsx';
+import AgeMarks, { type AgeStage } from './map/age.tsx';
 import Tree, { woodlandShadow } from './map/trees.tsx';
 import { otherTool, type CampusTool } from './tools.ts';
 
@@ -135,12 +136,25 @@ type SceneEntry = DepthBox &
   );
 
 // The weathering class a condition earns (DD §6.4).
-function conditionClass(p: Placement): string {
-  if (p.status !== 'open') return '';
+function ageStage(p: Placement): AgeStage {
+  if (p.status !== 'open') return null;
   if (p.condition < DERELICT_CONDITION) return 'derelict';
   if (p.condition < WEATHERED_CONDITION) return 'weathered';
   if (p.condition < WORN_CONDITION) return 'worn';
-  return '';
+  return null;
+}
+
+function conditionClass(p: Placement): string {
+  return ageStage(p) ?? '';
+}
+
+// How far the ivy has climbed a historic building (Phase 46): from the
+// year it was declared, over twenty years. The year arrives in fives, so a
+// building redraws a handful of times a run, not every week.
+function ivyOf(p: Placement, year: number): number {
+  if (!p.historic || p.status !== 'open') return 0;
+  const since = p.historicSince ?? year;
+  return Math.max(0.15, Math.min(1, (year - since) / 20));
 }
 
 // How far along a site or a renovation is, 0–1.
@@ -164,10 +178,13 @@ const PlacedBuilding = memo(function PlacedBuilding({
   camera,
   schoolName,
   snow,
+  era,
 }: {
   p: Placement;
   motif: Motif;
   week: number;
+  // The year, in fives (Phase 46): enough for the ivy to climb.
+  era: number;
   onInspect: (id: string) => void;
   inspected: boolean;
   camera: Camera;
@@ -206,6 +223,15 @@ const PlacedBuilding = memo(function PlacedBuilding({
             camera={camera}
             schoolName={schoolName}
             snow={snow}
+          />
+          {/* Age, drawn (Phase 46): the same stage the filter reads. */}
+          <AgeMarks
+            id={p.id}
+            def={def}
+            p={d}
+            motif={motif}
+            stage={ageStage(p)}
+            ivy={ivyOf(p, era)}
           />
         </g>
       )}
@@ -439,6 +465,7 @@ const CampusScene = memo(function CampusScene({
   // roofs a handful of times rather than every week.
   const weekFor = (p: Placement) => (p.status === 'open' ? 0 : week);
   const roofSnow = Math.round(snow * 10) / 10;
+  const era = Math.floor(state.clock.year / 5) * 5;
   return (
     <>
       <defs>
@@ -483,6 +510,7 @@ const CampusScene = memo(function CampusScene({
           camera={camera}
           schoolName={schoolName}
           snow={roofSnow}
+          era={era}
         />
       ))}
       {scene.map((entry) =>
@@ -499,6 +527,7 @@ const CampusScene = memo(function CampusScene({
               camera={camera}
               schoolName={schoolName}
               snow={roofSnow}
+              era={era}
             />
           </g>
         ),

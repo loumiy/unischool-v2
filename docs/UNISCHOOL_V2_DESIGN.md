@@ -480,6 +480,14 @@ Every part stays inside its footprint, so placement, shadows, depth and labels a
 
 It is all derived from the campus, drawn once per campus change under the buildings, and deaf to the pointer, so a click on a lamp is a click on its tile.
 
+**Age you can see (Phase 46).** Condition was only a colour filter. It is now also drawn (ui/map/age.tsx), at the same thresholds the filter reads, so the two never disagree:
+
+- a worn building is streaked;
+- a weathered one is stained, has lost slates and has boarded a window;
+- a derelict one is boarded up, its glass broken, with hoarding along its walls and weeds at their foot.
+
+At the other end, a historic building gathers ivy, climbing over the twenty years after it is declared. The marks are placed from the building's id, the same on every reload. The renovation flash the plan named is not built yet.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.
