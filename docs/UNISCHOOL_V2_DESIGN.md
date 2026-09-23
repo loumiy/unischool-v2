@@ -547,6 +547,16 @@ A small, state-aware music system: a founding theme, a growth theme, a distress 
 
 ---
 
+**Variations, and a bench to hear them on (Phase 50).** Each theme now has a B section (its own progression, played every fourth phrase) and a second arpeggio pattern (every other phrase), so four hours of one theme never plays the same eight bars more than twice running (a test holds it). The debug panel (the backtick key) has a listening bench:
+
+- solo and loop each theme;
+- solo the music, the ambience or the effects;
+- set the ambience to summer, term, winter or game day;
+- fire each effect;
+- take a scripted tour of the four themes against the four seasons.
+
+The levels in content/audio.json are still first guesses. Setting them is a person's job, with headphones, on this bench.
+
 ## §14. Content Budgets ("finished for now")
 
 | Content            | 1.0 target                                                                                                   |

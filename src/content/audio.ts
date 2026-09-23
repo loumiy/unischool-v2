@@ -37,6 +37,28 @@ export interface ThemeDef {
   arp: { wave: Wave; gain: number; octave: number; decay: number };
   pattern: number[]; // eight eighths: a chord tone (0–3), or −1 for a rest
   bass: boolean;
+  // Variations (Phase 50), so fifty years of one theme do not wear: a B
+  // section's progression, played every fourth phrase, and a second
+  // arpeggio pattern, played every other phrase.
+  progressionB?: number[];
+  patternB?: number[];
+}
+
+// What plays at a given eighth of a theme (Phase 50): the phrase is one
+// pass through the progression; the third of every four phrases is the B
+// section, and every other phrase takes the second arpeggio pattern.
+export function sectionAt(
+  theme: ThemeDef,
+  step: number,
+): { degree: number; tone: number; phrase: number; b: boolean } {
+  const bar = Math.floor(step / 8);
+  const chords = Math.floor(bar / 2);
+  const phrase = Math.floor(chords / theme.progression.length);
+  const b = theme.progressionB !== undefined && phrase % 4 === 2;
+  const progression = b ? theme.progressionB! : theme.progression;
+  const degree = progression[chords % progression.length]!;
+  const pattern = theme.patternB && phrase % 2 === 1 ? theme.patternB : theme.pattern;
+  return { degree, tone: pattern[step % 8]!, phrase, b };
 }
 
 export interface VoiceDef {
@@ -73,6 +95,8 @@ const schema = obj({
       pad: obj({ wave, gain: num, cutoff: num, attack: num }),
       arp: obj({ wave, gain: num, octave: int, decay: num }),
       pattern: arr(int),
+      progressionB: optional(arr(int)),
+      patternB: optional(arr(int)),
       bass: (v: unknown, p: string) => {
         if (typeof v !== 'boolean') throw new ContentError(p, 'expected a boolean');
         return v;

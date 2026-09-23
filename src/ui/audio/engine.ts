@@ -1,4 +1,5 @@
 import {
+  sectionAt,
   AMBIENCE,
   chordNotes,
   midiToHz,
@@ -165,17 +166,15 @@ export class AudioEngine {
   }
 
   private playStep(theme: ThemeDef, step: number, at: number, eighth: number): void {
-    const bar = Math.floor(step / 8);
-    const chord = chordNotes(
-      theme,
-      theme.progression[Math.floor(bar / 2) % theme.progression.length]!,
-    );
+    // The A and B sections and the second pattern (Phase 50).
+    const now = sectionAt(theme, step);
+    const chord = chordNotes(theme, now.degree);
     if (step % 16 === 0) {
       const length = eighth * 16;
       for (const note of chord.slice(0, 3)) this.pad(theme, midiToHz(note), at, length);
       if (theme.bass) this.pad(theme, midiToHz(chord[0]! - 12), at, length, 1.3);
     }
-    const tone = theme.pattern[step % 8]!;
+    const tone = now.tone;
     if (tone >= 0) {
       const note = chord[tone]! + 12 * theme.arp.octave;
       this.pluck(theme.arp.wave, midiToHz(note), at, theme.arp.decay, theme.arp.gain);
