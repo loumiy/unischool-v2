@@ -73,3 +73,16 @@ describe('a promise, as a measurement', () => {
     expect(leverLine({ cash: -120000 })).toMatch(/^operating funds -?−?\$120k$/);
   });
 });
+
+describe('the ticker under a question (Phase 21G)', () => {
+  it('prints a dateline, not the question again', async () => {
+    const { dateline } = await import('../content/busLines.ts');
+    const body =
+      'The student newspaper has asked for funding, an office, and an undertaking that the college will not read it before it is printed. The editor is nineteen.';
+    const line = dateline(body);
+    expect(line.length).toBeLessThanOrEqual(65);
+    expect(line.endsWith('…')).toBe(true);
+    expect(body.startsWith(line.slice(0, -1))).toBe(true);
+    expect(dateline('A short one.')).toBe('A short one.');
+  });
+});

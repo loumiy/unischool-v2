@@ -83,7 +83,7 @@ export default function BeatScreen({
   const [decision, setDecision] = useState<BeatDecision>({});
   return (
     <TabOverlay title={beat.name} onClose={onClose}>
-      <div className="beat-screen">
+      <div className={`beat-screen ${beat.id === 'budget-and-hiring' ? 'wide' : ''}`}>
         <div className="eyebrow">{formatClock(state.clock)}</div>
         <p className="beat-lede">{beat.blurb}</p>
         {beat.id === 'budget-and-hiring' && (
@@ -98,6 +98,8 @@ export default function BeatScreen({
         {beat.id === 'board-meeting' && (
           <BoardBody state={state} decision={decision} onChange={setDecision} />
         )}
+        {/* The decision's own button is pinned to the foot of the screen,
+            so a mandatory beat can never hide the only way out of it. */}
         <div className="beat-actions">
           <button type="button" className="beat-resolve" onClick={() => onResolve(decision)}>
             {beat.id === 'board-meeting' && inAusterity(state) && availableCuts(state).length > 0
@@ -158,99 +160,108 @@ function BudgetBody({
   const net = netOf(budget);
   return (
     <div className="budget-body">
-      <h3>Year {budget.year} budget</h3>
-      <label className="draw-slider">
-        <span className="draw-slider-label">
-          Endowment draw <strong>{formatPercent(rate, 2)}</strong>
-          <span className="draw-slider-note">
-            {rate > ENDOWMENT_DRAW_PRUDENT
-              ? 'above the prudent line: an overdraw'
-              : `of ${formatMoney(t.endowment)} · ${formatMoney(budget.revenue.endowmentDraw)} next year`}
+      {/* Two columns on a screen wide enough for them: the plan, and the
+          market it is paying for. One narrow column put the decision's own
+          button two screens down (Phase 21G). */}
+      <div className="budget-plan">
+        <h3>Year {budget.year} budget</h3>
+        <label className="draw-slider">
+          <span className="draw-slider-label">
+            Endowment draw <strong>{formatPercent(rate, 2)}</strong>
+            <span className="draw-slider-note">
+              {rate > ENDOWMENT_DRAW_PRUDENT
+                ? 'above the prudent line: an overdraw'
+                : `of ${formatMoney(t.endowment)} · ${formatMoney(budget.revenue.endowmentDraw)} next year`}
+            </span>
           </span>
-        </span>
-        <input
-          type="range"
-          min={ENDOWMENT_DRAW_MIN}
-          max={ENDOWMENT_DRAW_MAX}
-          step={ENDOWMENT_DRAW_STEP}
-          value={rate}
-          aria-label="Endowment draw rate"
-          onChange={(e) => onChange({ ...decision, drawRate: Number(e.target.value) })}
-        />
-      </label>
-      <label className="draw-slider">
-        <span className="draw-slider-label">
-          Maintenance funded <strong>{formatPercent(funding, 0)}</strong>
-          <span className="draw-slider-note">
-            {funding >= 1 ? (
-              `${formatMoney(budget.expenses.maintenance)} holds every building's condition`
-            ) : (
-              <>
-                {formatMoney(budget.expenses.maintenance)} funded; the rest becomes{' '}
-                {/* Where the word is first made, it is defined (Phase 21F). */}
-                <span className="figure defined-term" tabIndex={0}>
-                  Backlog
-                  <span className="figure-hint" role="tooltip">
-                    {READING_WORDS.backlogDefined}
+          <input
+            type="range"
+            min={ENDOWMENT_DRAW_MIN}
+            max={ENDOWMENT_DRAW_MAX}
+            step={ENDOWMENT_DRAW_STEP}
+            value={rate}
+            aria-label="Endowment draw rate"
+            onChange={(e) => onChange({ ...decision, drawRate: Number(e.target.value) })}
+          />
+        </label>
+        <label className="draw-slider">
+          <span className="draw-slider-label">
+            Maintenance funded <strong>{formatPercent(funding, 0)}</strong>
+            <span className="draw-slider-note">
+              {funding >= 1 ? (
+                `${formatMoney(budget.expenses.maintenance)} holds every building's condition`
+              ) : (
+                <>
+                  {formatMoney(budget.expenses.maintenance)} funded; the rest becomes{' '}
+                  {/* Where the word is first made, it is defined (Phase 21F). */}
+                  <span className="figure defined-term" tabIndex={0}>
+                    Backlog
+                    <span className="figure-hint" role="tooltip">
+                      {READING_WORDS.backlogDefined}
+                    </span>
                   </span>
-                </span>
-              </>
-            )}
+                </>
+              )}
+            </span>
           </span>
-        </span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={MAINTENANCE_FUNDING_STEP}
-          value={funding}
-          aria-label="Maintenance funding"
-          onChange={(e) => onChange({ ...decision, maintenanceFunding: Number(e.target.value) })}
-        />
-      </label>
-      <HousingAhead state={state} />
-      <div className="income-statement compact">
-        <div className="statement-col">
-          <h4>Income</h4>
-          {REVENUE_CATEGORIES.filter((k) => budget.revenue[k] !== 0).map((k) => (
-            <div key={k} className="statement-line" tabIndex={0}>
-              <span className="statement-line-label">{REVENUE_WORDS[k].label}</span>
-              <span className="statement-line-amount">{formatMoney(budget.revenue[k])}</span>
-              <span className="figure-hint" role="tooltip">
-                {REVENUE_WORDS[k].hint}
-              </span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={MAINTENANCE_FUNDING_STEP}
+            value={funding}
+            aria-label="Maintenance funding"
+            onChange={(e) => onChange({ ...decision, maintenanceFunding: Number(e.target.value) })}
+          />
+        </label>
+        <HousingAhead state={state} />
+        <div className="income-statement compact">
+          <div className="statement-col">
+            <h4>Income</h4>
+            {REVENUE_CATEGORIES.filter((k) => budget.revenue[k] !== 0).map((k) => (
+              <div key={k} className="statement-line" tabIndex={0}>
+                <span className="statement-line-label">{REVENUE_WORDS[k].label}</span>
+                <span className="statement-line-amount">{formatMoney(budget.revenue[k])}</span>
+                <span className="figure-hint" role="tooltip">
+                  {REVENUE_WORDS[k].hint}
+                </span>
+              </div>
+            ))}
+            <div className="statement-total">
+              <span>Total</span>
+              <span>{formatMoney(sumRevenue(budget.revenue))}</span>
             </div>
-          ))}
-          <div className="statement-total">
-            <span>Total</span>
-            <span>{formatMoney(sumRevenue(budget.revenue))}</span>
+          </div>
+          <div className="statement-col">
+            <h4>Expenses</h4>
+            {EXPENSE_CATEGORIES.filter((k) => budget.expenses[k] !== 0).map((k) => (
+              <div key={k} className="statement-line" tabIndex={0}>
+                <span className="statement-line-label">{EXPENSE_WORDS[k].label}</span>
+                <span className="statement-line-amount">{formatMoney(budget.expenses[k])}</span>
+                <span className="figure-hint" role="tooltip">
+                  {EXPENSE_WORDS[k].hint}
+                </span>
+              </div>
+            ))}
+            <div className="statement-total">
+              <span>Total</span>
+              <span>{formatMoney(sumExpenses(budget.expenses))}</span>
+            </div>
           </div>
         </div>
-        <div className="statement-col">
-          <h4>Expenses</h4>
-          {EXPENSE_CATEGORIES.filter((k) => budget.expenses[k] !== 0).map((k) => (
-            <div key={k} className="statement-line" tabIndex={0}>
-              <span className="statement-line-label">{EXPENSE_WORDS[k].label}</span>
-              <span className="statement-line-amount">{formatMoney(budget.expenses[k])}</span>
-              <span className="figure-hint" role="tooltip">
-                {EXPENSE_WORDS[k].hint}
-              </span>
-            </div>
-          ))}
-          <div className="statement-total">
-            <span>Total</span>
-            <span>{formatMoney(sumExpenses(budget.expenses))}</span>
-          </div>
+        <div className="figure-row">
+          <Figure
+            label="Planned net"
+            value={formatMoney(net, { sign: true })}
+            hint={READING_WORDS.yearNet}
+            tone={net < 0 ? 'bad' : 'good'}
+          />
+          <Figure
+            label="Operating funds now"
+            value={formatMoney(t.cash)}
+            hint={READING_WORDS.cash}
+          />
         </div>
-      </div>
-      <div className="figure-row">
-        <Figure
-          label="Planned net"
-          value={formatMoney(net, { sign: true })}
-          hint={READING_WORDS.yearNet}
-          tone={net < 0 ? 'bad' : 'good'}
-        />
-        <Figure label="Operating funds now" value={formatMoney(t.cash)} hint={READING_WORDS.cash} />
       </div>
       {state.faculty.marketOpen && (
         <section className="faculty-market beat-market">

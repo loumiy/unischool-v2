@@ -23,7 +23,7 @@ const SCREENS = [
   ['mature-year-32', 'f', '.faculty', 'Faculty', [['Seats panel', '.seats']]],
   [
     'mature-year-32',
-    's',
+    'u',
     '.students',
     'Students',
     [
@@ -146,6 +146,16 @@ for (const vp of VIEWPORTS) {
         };
         for (const [name, csel] of ctrls) {
           const c = document.querySelector(csel);
+          if (c && getComputedStyle(c.closest('.beat-actions') ?? c).position === 'sticky') {
+            const r = c.getBoundingClientRect();
+            out.controls[name] = r.bottom <= vh ? Math.round(r.top) : Math.round(r.top);
+            continue;
+          }
+          // Reachable from the top of the screen by a jump link (21G)?
+          const anchored = c && c.closest('[id]');
+          if (anchored && document.querySelector(`.jump-bar-link[data-target="${anchored.id}"]`)) {
+            out.jumps = { ...(out.jumps ?? {}), [name]: true };
+          }
           out.controls[name] = c
             ? Math.round(
                 c.getBoundingClientRect().top +
@@ -191,7 +201,7 @@ for (const r of rows) {
       v === null
         ? `${k}: absent`
         : v > r.clientHeight
-          ? `${k}: y=${v} (${(v / r.clientHeight).toFixed(1)} screens down)`
+          ? `${k}: y=${v} (${(v / r.clientHeight).toFixed(1)} screens down${r.jumps?.[k] ? ', one jump from the top' : ''})`
           : `${k}: visible`,
     )
     .join('; ');

@@ -494,10 +494,20 @@ export default function StartupScreen({
         <button
           className="startup-begin-btn"
           disabled={!isValidName(name)}
+          aria-describedby={isValidName(name) ? undefined : 'startup-needs-name'}
           onClick={() => onStart(name.trim(), motif, palette)}
         >
           Open the Doors
         </button>
+        {/* A dead button that never says why is the only signal a new
+            player has on this screen, so it says (Phase 21G). */}
+        {!isValidName(name) && (
+          <p className="startup-needs" id="startup-needs-name">
+            {name.trim()
+              ? 'That name will not fit over the door.'
+              : 'Name the school to open its doors.'}
+          </p>
+        )}
       </div>
     </div>
   );

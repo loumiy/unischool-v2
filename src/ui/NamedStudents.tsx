@@ -74,7 +74,7 @@ export default function NamedStudents({ state }: { state: GameState }) {
     .slice(-6)
     .reverse();
   return (
-    <section className="treasury-panel">
+    <section className="treasury-panel" id="students-named">
       <h3 className="figure" tabIndex={0}>
         Students we are following
         <span className="figure-hint" role="tooltip">

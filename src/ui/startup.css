@@ -146,8 +146,19 @@
   font-weight: 800;
   box-shadow: var(--shadow-2);
 }
+/* Disabled, the button goes to ink on cream rather than fading its own
+   colours: rose on pale gold at half opacity was 2.19:1. */
 .startup-begin-btn:disabled {
-  opacity: 0.5;
+  background: var(--cream);
+  color: var(--ink-muted);
+  border-style: dashed;
   cursor: not-allowed;
   box-shadow: none;
+}
+.startup-needs {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--ink);
 }

@@ -102,6 +102,15 @@ function fill(template: string, vars: Partial<Record<Placeholder, string>>): str
   return template.replace(/\{(\w+)\}/g, (whole, key: string) => vars[key as Placeholder] ?? whole);
 }
 
+// The opening of a question, to the last whole word that fits.
+const DATELINE_CHARS = 64;
+export function dateline(text: string): string {
+  const first = text.split(/(?<=[.!?])\s+/)[0] ?? text;
+  if (first.length <= DATELINE_CHARS) return first;
+  const cut = first.slice(0, DATELINE_CHARS);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), 24)).replace(/[,;:\s]+$/, '')}…`;
+}
+
 export function describeEntry(entry: BusEntry, state: GameState): BusLine {
   const line = BUS_LINES[entry.kind];
   const vars: Partial<Record<Placeholder, string>> = {
@@ -157,7 +166,16 @@ export function describeEntry(entry: BusEntry, state: GameState): BusLine {
     case 'eventFired': {
       const pending = state.events.pending.find((p) => p.instanceId === entry.instanceId);
       const def = findEvent(entry.eventId);
-      vars.line = def ? fillEventText(def.title ?? def.text, pending?.vars ?? {}) : entry.eventId;
+      // A dateline, not the event: the card on the strip is the event, and
+      // the strip under it printing the same two hundred characters again
+      // in ten-pixel type crowded out everything else it could say (Phase
+      // 21G). A letter has a title; an inline question gets its opening
+      // words.
+      vars.line = def
+        ? def.title
+          ? fillEventText(def.title, pending?.vars ?? {})
+          : dateline(fillEventText(def.text, pending?.vars ?? {}))
+        : entry.eventId;
       break;
     }
     case 'eventResolved': {

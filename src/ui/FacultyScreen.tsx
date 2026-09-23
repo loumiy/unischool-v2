@@ -1,3 +1,4 @@
+import JumpBar from './JumpBar.tsx';
 import { FACULTY_READINGS, FACULTY_WORDS } from '../content/faculty.ts';
 import { fillWords } from '../content/people.ts';
 import { SCHOOLS } from '../content/schools.ts';
@@ -42,6 +43,14 @@ export default function FacultyScreen({
   const iced = frozen(state);
   return (
     <div className="faculty">
+      <JumpBar
+        label="Sections of the Faculty screen"
+        jumps={[
+          { label: 'The roster', id: 'faculty-roster' },
+          ...(state.faculty.marketOpen ? [{ label: 'The market', id: 'faculty-market' }] : []),
+          { label: 'The org chart: seats and speed', id: 'faculty-seats' },
+        ]}
+      />
       <div className="figure-row">
         <Figure
           label="Faculty"
@@ -79,7 +88,7 @@ export default function FacultyScreen({
         />
       </div>
       {marketOpen && (
-        <section className="faculty-market">
+        <section className="faculty-market" id="faculty-market">
           <div className="faculty-section-head">
             <h3>The market</h3>
             <span className="faculty-section-note">
@@ -99,6 +108,7 @@ export default function FacultyScreen({
           )}
         </section>
       )}
+      <span id="faculty-roster" />
       {roster.length === 0 ? (
         <p className="treasury-note">{FACULTY_WORDS.noFaculty}</p>
       ) : (

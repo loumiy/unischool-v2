@@ -31,7 +31,7 @@ export default function AlumniLedger({
   const fund = annualGiving(state);
   const heads = alumni.reduce((t, a) => t + a.size, 0);
   return (
-    <section className="treasury-panel">
+    <section className="treasury-panel" id="students-alumni">
       <h3>Alumni</h3>
       {alumni.length === 0 ? (
         <p className="treasury-note">{ALUMNI_WORDS.noAlumni}</p>

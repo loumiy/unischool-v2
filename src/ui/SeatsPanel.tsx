@@ -35,7 +35,7 @@ export default function SeatsPanel({
   const senior = seniorFaculty(state);
   const deans = deansAppointed(state);
   return (
-    <section className="seats">
+    <section className="seats" id="faculty-seats">
       <h3>The administration</h3>
       <div className="figure-row">
         <Figure
