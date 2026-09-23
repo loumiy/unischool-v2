@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { chronicleText } from './HistoryScreen.tsx';
 import { hangInHall } from './persistence.ts';
 import { capturePortrait } from './portrait.ts';
+import HistoryChart from './HistoryChart.tsx';
+import { AXES } from '../content/league.ts';
 import { AXIS_WORDS } from '../content/league.ts';
 import { fillWords } from '../content/people.ts';
 import { REPORT_WORDS } from '../content/report.ts';
@@ -50,10 +52,13 @@ export default function FinalReport({
   const w = REPORT_WORDS;
   const [copied, setCopied] = useState(false);
   const [hung, setHung] = useState(false);
+  // The campus portrait beside the mark (Phase 48): the same one the hall
+  // hangs, taken once when the report opens.
+  const [portrait] = useState(() => capturePortrait());
   // The hall-of-fame entry is written with the report (DD §2.3): the
   // campus behind this card, as it stands, is the portrait.
   useEffect(() => {
-    const shot = capturePortrait();
+    const shot = portrait;
     const id = `${state.seed}-${r.school}-${r.year}`;
     void hangInHall({
       id,
@@ -80,9 +85,17 @@ export default function FinalReport({
           <div className="letter-school">{r.school}</div>
           <div className="letter-date">{w.eyebrow}</div>
         </header>
-        <div className="report-mark" title={w.markHint}>
-          <span className="report-mark-letter">{r.mark}</span>
-          <span className="report-mark-label">{w.mark}</span>
+        <div className="report-top">
+          <div className="report-mark" title={w.markHint}>
+            <span className="report-mark-letter">{r.mark}</span>
+            <span className="report-mark-label">{w.mark}</span>
+          </div>
+          {portrait && (
+            <div
+              className={`hall-portrait report-portrait ${portrait.season}`}
+              dangerouslySetInnerHTML={{ __html: portrait.svg }}
+            />
+          )}
         </div>
         <h2 className="report-title">{r.title}</h2>
         {r.rank !== null && r.total !== null && (
@@ -102,6 +115,16 @@ export default function FinalReport({
             </li>
           ))}
         </ul>
+        {/* The standings over the run (Phase 48). */}
+        <HistoryChart
+          title="The six standings, year by year"
+          yMin={0}
+          yMax={100}
+          series={AXES.map((axis) => ({
+            name: AXIS_WORDS[axis].label,
+            points: state.prestige.history.map((h) => ({ x: h.year, y: h.axes[axis] })),
+          }))}
+        />
         <h3 className="report-h">{w.ambitions}</h3>
         <p className="letter-para">
           {r.kept.length + r.missed.length === 0

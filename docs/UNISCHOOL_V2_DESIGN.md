@@ -490,6 +490,15 @@ At the other end, a historic building gathers ivy, climbing over the twenty year
 
 **Light, flags and a campus that is used (Phase 47).** The sun moves with the seasons. Shadows lie long in winter and short in summer, and a wash over the map, never over the chrome, turns warm and low in the dark half of the year and white at midsummer. The college's colours fly where a college puts them: a flag over Founders Hall and the administration, and a banner on every lamp post in the weeks of Convocation and Commencement, when most of the crowd on the paths wears gowns. A crowd fills the stands in the last weeks of each term when the college fields teams. The dining halls have a queue while term is on. Traffic runs along the road, heavier as the college grows, and stands still for anyone who prefers reduced motion. All of it is read from the calendar and the state, and none of it is in the sim.
 
+**The screens, refined (Phase 48).** Screens that showed only today's number now show the run as well, in one chart style drawn from the tokens (ui/HistoryChart.tsx). Every chart names its series, prints each series' last value at its end, and carries a text description:
+
+- the League screen charts the college's place in the guide by year;
+- the Treasury charts the endowment and the year's net;
+- the Students screen charts each class's size and satisfaction as it graduated;
+- the Final Report charts the six standings over the run, and hangs the campus portrait beside the mark.
+
+Every event and letter carries its domain (estate, academic, students, advancement, money, board) as a coloured stripe and a word, so the strip can be scanned. The ticking numbers, the yearbook chronicle and the full layout audit are not done yet.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.

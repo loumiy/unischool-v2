@@ -18,6 +18,7 @@ import {
 } from '../sim/index.ts';
 import { AID_DISCOUNT_RATE, REPUTATION_WEIGHTS } from '../tuning.ts';
 import Figure from './Figure.tsx';
+import HistoryChart from './HistoryChart.tsx';
 import NamedStudents from './NamedStudents.tsx';
 import AlumniLedger from './AlumniLedger.tsx';
 import CampaignPanel from './CampaignPanel.tsx';
@@ -350,6 +351,36 @@ export default function StudentsScreen({
           )}
         </div>
       </section>
+
+      {/* The classes over the run (Phase 48): how big, and how happy as
+          they left. */}
+      {state.people.alumni.length > 1 && (
+        <section className="treasury-panel">
+          <h3>The classes over the years</h3>
+          <HistoryChart
+            title="Each class as it graduated"
+            xLabel="Class of"
+            series={[
+              {
+                name: 'Graduates',
+                points: state.people.alumni.map((a) => ({ x: a.classYear, y: a.size })),
+              },
+            ]}
+          />
+          <HistoryChart
+            title="Satisfaction as they left"
+            xLabel="Class of"
+            yMin={0}
+            yMax={100}
+            series={[
+              {
+                name: 'Satisfaction',
+                points: state.people.alumni.map((a) => ({ x: a.classYear, y: a.satisfaction })),
+              },
+            ]}
+          />
+        </section>
+      )}
 
       <AlumniLedger state={state} onReunion={onReunion} />
       {/* Campaigns sit with the ledger they are answered by (DD §9.3). */}

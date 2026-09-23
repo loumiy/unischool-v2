@@ -19,6 +19,7 @@ import {
   type GameState,
 } from '../sim/index.ts';
 import Figure from './Figure.tsx';
+import HistoryChart from './HistoryChart.tsx';
 import RivalLine from './RivalLine.tsx';
 import IdentityPanel from './IdentityPanel.tsx';
 
@@ -74,6 +75,26 @@ export default function LeagueScreen({ state }: { state: GameState }) {
       </div>
 
       <IdentityPanel state={state} />
+
+      {/* Rank by year (Phase 48): one is the top. */}
+      {state.league.tables.length > 1 && (
+        <section className="treasury-panel">
+          <h3>The table over the years</h3>
+          <HistoryChart
+            title="Place in the guide, by year"
+            invert
+            yMin={1}
+            yMax={25}
+            series={[
+              {
+                name: 'Rank',
+                points: state.league.tables.map((t) => ({ x: t.year, y: rankOf(t) })),
+                format: (v) => `#${Math.round(v)}`,
+              },
+            ]}
+          />
+        </section>
+      )}
 
       <section className="treasury-panel">
         <h3>Where {you} stands</h3>

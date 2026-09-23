@@ -1,3 +1,4 @@
+import { DOMAIN_LABELS } from './domains.ts';
 import { EVENT_WORDS, eventById } from '../content/events.ts';
 import { pendingText, scaledWords, type GameState, type PendingEvent } from '../sim/index.ts';
 
@@ -21,9 +22,12 @@ export default function EventPrompt({
     weeks <= 1 ? EVENT_WORDS.expiresSoon : EVENT_WORDS.expiresIn.replace('{weeks}', String(weeks));
   const fallback = def.choices.find((c) => c.id === def.default) ?? def.choices[0]!;
   return (
-    <section className="event-prompt" aria-label="An event is waiting">
+    <section className={`event-prompt domain-${def.domain}`} aria-label="An event is waiting">
       <header className="event-prompt-head">
         <span className="event-prompt-tag">Now</span>
+        {/* Its domain, as a stripe and a word, so the strip can be scanned
+            (Phase 48). */}
+        <span className="event-domain">{DOMAIN_LABELS[def.domain] ?? def.domain}</span>
         <span className="event-prompt-clock">{clock}</span>
       </header>
       <p className="event-prompt-text">{pendingText(pending)}</p>
