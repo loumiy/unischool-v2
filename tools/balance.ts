@@ -20,7 +20,7 @@ import { msPerWeek, speedAllowed } from '../src/sim/clock.ts';
 import { staffingNeed, unassignedFaculty, facultyOf, canTeach } from '../src/sim/faculty.ts';
 import { campusCapacity, enrolled } from '../src/sim/people.ts';
 import { siteRefusal } from '../src/sim/reach.ts';
-import { renovationCost } from '../src/sim/estate.ts';
+import { canPay, renovationCost, type Financing } from '../src/sim/estate.ts';
 import { dispatch, newRun, tickRunWeeks, type Run } from '../src/sim/run.ts';
 import { placementSatisfaction } from '../src/sim/placement.ts';
 import type { GameState } from '../src/sim/state.ts';
@@ -52,7 +52,12 @@ function tryAction(run: Run, action: Action): Run {
 
 // The first site, spiralling out from the middle of the campus, where the
 // sim will let the building go.
-function placeNear(run: Run, buildingId: string, rotated = false): Run {
+function placeNear(
+  run: Run,
+  buildingId: string,
+  rotated = false,
+  financings: readonly Financing[] = ['gift', 'cash', 'debt'],
+): Run {
   const def = buildingById(buildingId);
   const w = rotated ? def.footprint.h : def.footprint.w;
   const h = rotated ? def.footprint.w : def.footprint.h;
@@ -68,7 +73,7 @@ function placeNear(run: Run, buildingId: string, rotated = false): Run {
           // Leave a lane between buildings: every site steps by two.
           if ((c - cx) % 2 !== 0 || (rr - cy) % 2 !== 0) continue;
           if (siteRefusal(run.state.campus, def, c, rr, w, h) !== null) continue;
-          for (const financing of ['gift', 'cash', 'debt'] as const) {
+          for (const financing of financings) {
             const action = {
               type: 'placeBuilding',
               buildingId,
@@ -85,6 +90,61 @@ function placeNear(run: Run, buildingId: string, rotated = false): Run {
     }
   }
   return run;
+}
+
+// CAPITAL PROJECTS (Phase 42): one at a time, the cheapest the college can
+// pay for without breaking its floor, in the order a college would want
+// them. The steward saves for them; the growth college borrows.
+const PROJECT_ORDER = [
+  'great-lawn',
+  'arts-centre',
+  'research-park',
+  'championship-stadium',
+  'medical-school',
+];
+
+function projectsOpenToBuild(state: GameState): string[] {
+  const y = state.clock.year;
+  return PROJECT_ORDER.filter(
+    (id) => has(state, id) === 0 && (buildingById(id).project?.fromYear ?? 99) <= y,
+  );
+}
+
+function buildProject(run: Run, financings: readonly Financing[], cashFloor: number): Run {
+  const s = run.state;
+  const underway = s.campus.placements.some(
+    (p) => p.status === 'building' && buildingById(p.buildingId).project,
+  );
+  if (underway) return run;
+  for (const id of projectsOpenToBuild(s)) {
+    const cost = buildingById(id).cost;
+    const usable = financings.filter(
+      (f) => canPay(s, cost, f) && (f !== 'cash' || s.treasury.cash - cost >= cashFloor),
+    );
+    if (usable.length === 0) continue;
+    const r = placeNear(run, id, false, usable);
+    if (r !== run) return r;
+  }
+  return run;
+}
+
+// Whether the college has a project in hand, or one it could begin this
+// year and pay for by any means.
+function projectAffordable(state: GameState): boolean {
+  const underway = state.campus.placements.some(
+    (p) => p.status === 'building' && buildingById(p.buildingId).project,
+  );
+  // A college with every project standing has nothing left to want.
+  const allBuilt = PROJECT_ORDER.every((id) => has(state, id) > 0);
+  return (
+    underway ||
+    allBuilt ||
+    projectsOpenToBuild(state).some((id) =>
+      (['gift', 'cash', 'debt', 'endowment'] as const).some((f) =>
+        canPay(state, buildingById(id).cost, f),
+      ),
+    )
+  );
 }
 
 function has(state: GameState, id: string): number {
@@ -211,6 +271,7 @@ const STEWARD: Archetype = {
     if (week % WEEKS_PER_YEAR === 2) {
       r = renovate(r, 0.8, 3_000_000);
       r = buildToNeed(r, true);
+      r = buildProject(r, ['gift', 'endowment', 'cash'], 10_000_000);
       r = academicYear(r, 14, 4_000_000, true);
       const y = r.state.clock.year;
       if (y >= 4)
@@ -252,6 +313,7 @@ const GROWTH: Archetype = {
     if (week % 12 === 2 && !stretched) r = buildToNeed(r, true);
     if (week % WEEKS_PER_YEAR === 2) {
       r = renovate(r, 0.6, 1_000_000);
+      if (!stretched) r = buildProject(r, ['gift', 'endowment', 'debt'], 2_000_000);
       r = academicYear(r, 24, 1_000_000, true);
       for (const seatId of ['provost', 'facilities', 'dean-of-students', 'advancement'])
         r = tryAction(r, { type: 'appointSeat', seatId, from: { kind: 'outside' } });
@@ -329,6 +391,9 @@ interface Middle {
   demandResponse: number | null; // applicant-pool change after a 20-point teaching drop at Year 25
   idleBeats: number; // clock-stopping beats with nothing to decide
   reputation: number[]; // the talk at the gate (Phase 37), at Years 10, 20, 30, 40 and 50
+  projectSpend: number[]; // capital projects begun, $M, per decade (Phase 42)
+  projectsDone: number; // capital projects open by Year 50
+  projectAffordable: boolean[]; // one within reach at Years 15, 25, 35 and 45
   tagsEver: string[];
 }
 
@@ -406,6 +471,7 @@ export function measure(a: Archetype, seed: number): Report {
   const money: Report['money'] = [];
   const cashCover: number[] = [];
   const reputation: number[] = [];
+  const projectAffordableAt: boolean[] = [];
   const stings: number[][] = [[], [], [], [], []];
   let saturatedYears = 0;
   let idleBeats = 0;
@@ -447,6 +513,12 @@ export function measure(a: Archetype, seed: number): Report {
       cashCover.push(spend > 0 ? t.cash / spend : 0);
       reputation.push(Math.round(run.state.people.reputation));
     }
+    if (
+      week > 0 &&
+      week % (10 * WEEKS_PER_YEAR) === 5 * WEEKS_PER_YEAR + 3 &&
+      week > 10 * WEEKS_PER_YEAR
+    )
+      projectAffordableAt.push(projectAffordable(run.state));
     if (week % (10 * WEEKS_PER_YEAR) === 40) {
       const t = run.state.treasury;
       const sum = (o: object) => Object.values(o).reduce((x: number, v) => x + (v as number), 0);
@@ -499,6 +571,21 @@ export function measure(a: Archetype, seed: number): Report {
     demandResponse: response === null ? null : Number((response as number).toFixed(3)),
     idleBeats,
     reputation,
+    projectSpend: [0, 1, 2, 3, 4].map((d) =>
+      Math.round(
+        entriesOfKind(s, 'buildingPlaced')
+          .filter(
+            (e) =>
+              buildingById(e.buildingId).project &&
+              Math.floor(e.week / (10 * WEEKS_PER_YEAR)) === d,
+          )
+          .reduce((t, e) => t + buildingById(e.buildingId).cost, 0) / 1e6,
+      ),
+    ),
+    projectsDone: s.campus.placements.filter(
+      (p) => p.status === 'open' && buildingById(p.buildingId).project,
+    ).length,
+    projectAffordable: projectAffordableAt,
     tagsEver: [...new Set(entriesOfKind(s, 'tagEarned').map((e) => e.tag))],
   };
   return {
@@ -559,6 +646,7 @@ function middleLine(r: Report): string {
     `demand ${pct(m.demandResponse)} for −20 teaching ${flag(m.demandResponse !== null && inside(m.demandResponse, B.demandResponse))}`,
     `idle beats ${m.idleBeats} ${flag(inside(m.idleBeats, B.idleBeats))}`,
     `reputation ${m.reputation.join('/')}`,
+    `projects $${m.projectSpend.join('/')}M, ${m.projectsDone} open, within reach ${m.projectAffordable.map((a) => (a ? 'y' : 'n')).join('')}`,
   ].join(' · ');
 }
 

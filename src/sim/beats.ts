@@ -49,7 +49,8 @@ export function beatStops(state: GameState, beatId: string): boolean {
     (e) => (e.kind === 'beatResolved' || e.kind === 'beatPassed') && e.beatId === beatId,
   );
   if (!met) return true;
-  if (beatId === 'board-meeting') return state.distress.rung > 0;
+  if (beatId === 'board-meeting')
+    return state.distress.rung > 0 || state.ambitions.decadeOffer !== null;
   if (beatId === 'convocation') return state.ambitions.offered !== null;
   return true;
 }

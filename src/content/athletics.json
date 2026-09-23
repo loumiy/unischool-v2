@@ -4,7 +4,7 @@
       "id": "football",
       "name": "Football",
       "season": "fall",
-      "requires": ["stadium", "playing-field"],
+      "requires": ["stadium", "playing-field", "championship-stadium"],
       "cost": 900000,
       "blurb": "Eleven a side, a marching band, and the one fixture the alumni drive in for."
     },
@@ -12,7 +12,7 @@
       "id": "soccer",
       "name": "Soccer",
       "season": "fall",
-      "requires": ["playing-field", "stadium"],
+      "requires": ["playing-field", "stadium", "championship-stadium"],
       "cost": 300000,
       "blurb": "Cheap to field, hard to win, and played in every weather."
     },
@@ -44,7 +44,7 @@
       "id": "track",
       "name": "Track and field",
       "season": "spring",
-      "requires": ["stadium"],
+      "requires": ["stadium", "championship-stadium"],
       "cost": 250000,
       "blurb": "Every event a different kind of fast."
     },

@@ -58,9 +58,11 @@ function withHalls(seed = 4): Run {
 }
 
 describe('the catalogue (DD §7.2, §14)', () => {
-  it('has six schools, thirty programs, three tiers', () => {
-    expect(SCHOOLS).toHaveLength(6);
-    expect(SCHOOLS.map((s) => s.name)).toEqual([
+  it('has six schools, thirty programs, three tiers, and Medicine behind a project', () => {
+    const open = SCHOOLS.filter((s) => s.hall === undefined);
+    expect(SCHOOLS.find((s) => s.id === 'medicine')?.hall).toBe('medical-school');
+    expect(open).toHaveLength(6);
+    expect(open.map((s) => s.name)).toEqual([
       'Arts & Letters',
       'Science',
       'Engineering',
@@ -68,9 +70,10 @@ describe('the catalogue (DD §7.2, §14)', () => {
       'Health',
       'Law',
     ]);
-    expect(PROGRAMS).toHaveLength(30);
+    expect(open.flatMap((s) => s.programs)).toHaveLength(30);
+    expect(PROGRAMS).toHaveLength(33);
     expect(TIERS.map((t) => t.id)).toEqual(['founded', 'established', 'renowned']);
-    for (const s of SCHOOLS) expect(s.programs).toHaveLength(5);
+    for (const s of open) expect(s.programs).toHaveLength(5);
   });
 
   it('generates a program’s courses from its code, two a level', () => {

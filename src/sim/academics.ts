@@ -4,6 +4,7 @@ import {
   ACADEMIC_WORDS,
   programById,
   schoolById,
+  SCHOOLS,
   tierById,
   TIERS,
   type TierId,
@@ -91,6 +92,18 @@ export function hallsAvailable(state: GameState): Placement[] {
   return state.campus.placements.filter(
     (p) => p.status === 'open' && isHall(p) && schoolInHall(state, p.id) === null,
   );
+}
+
+// The halls a given school can be founded in (Phase 42): a school with a
+// hall of its own (Medicine) only there, and that hall kept for it.
+export function hallsFor(state: GameState, schoolId: string): Placement[] {
+  return hallsAvailable(state).filter((p) => hallFits(schoolId, p.buildingId));
+}
+
+export function hallFits(schoolId: string, buildingId: string): boolean {
+  const own = schoolById(schoolId).hall;
+  if (own !== undefined) return buildingId === own;
+  return !SCHOOLS.some((s) => s.hall === buildingId);
 }
 
 export function foundedSchool(state: GameState, schoolId: string): FoundedSchool | null {

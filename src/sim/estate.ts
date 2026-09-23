@@ -7,6 +7,7 @@ import {
   MAINTENANCE_FUNDING_STEP,
   RENOVATION_FEE_SHARE,
   UPKEEP_AGE_RATE,
+  ENDOWMENT_PROJECT_SHARE,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
@@ -25,8 +26,12 @@ import { storeyFactor } from './lateGame.ts';
 
 // A third way to pay, from Phase 21: money a campaign raised for exactly
 // this and which can be spent on nothing else (DD §9.3, §5.1).
-export type Financing = 'cash' | 'debt' | 'gift';
+export type Financing = 'cash' | 'debt' | 'gift' | 'endowment';
 export const FINANCINGS: readonly Financing[] = ['cash', 'debt', 'gift'];
+// A capital project may also be paid for out of the endowment (Phase 42):
+// the board releases the money from the fund, which then draws less for
+// ever after. At most ENDOWMENT_PROJECT_SHARE of the fund, at once.
+export const PROJECT_FINANCINGS: readonly Financing[] = [...FINANCINGS, 'endowment'];
 
 export function ageYearsOf(p: Placement, absoluteWeek: number): number {
   if (p.openedWeek === null) return 0;
@@ -79,6 +84,8 @@ export function borrowingRoom(state: GameState): number {
 export function canPay(state: GameState, amount: number, financing: Financing): boolean {
   if (financing === 'cash') return state.treasury.cash >= amount;
   if (financing === 'gift') return restrictedFor(state, 'building') >= amount;
+  if (financing === 'endowment')
+    return state.treasury.endowment * ENDOWMENT_PROJECT_SHARE >= amount;
   return borrowingRoom(state) >= amount;
 }
 
@@ -108,6 +115,12 @@ export function pay(state: GameState, amount: number, financing: Financing): Gam
   }
   if (financing === 'cash') {
     return { ...state, treasury: { ...t, cash: t.cash - amount, capitalThisYear: capital } };
+  }
+  if (financing === 'endowment') {
+    return {
+      ...state,
+      treasury: { ...t, endowment: t.endowment - amount, capitalThisYear: capital },
+    };
   }
   return {
     ...state,

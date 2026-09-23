@@ -4,7 +4,7 @@ import { advanceClock } from './calendar.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
 import { academicsWeek } from './academics.ts';
-import { convocationAmbitions } from './ambitions.ts';
+import { convocationAmbitions, dealDecade } from './ambitions.ts';
 import { advancementWeek } from './campaigns.ts';
 import { estateWeek } from './estate.ts';
 import { historicYear } from './lateGame.ts';
@@ -75,7 +75,7 @@ function fireBeat(state: GameState): GameState {
   // when it has one to offer. The same dice decide both paths, so a beat
   // that stops sees the offer the quiet path would have found.
   if (beat.id === 'board-meeting' || beat.id === 'convocation') {
-    const quiet = beat.id === 'convocation' ? convocationAmbitions(state) : state;
+    const quiet = beat.id === 'convocation' ? convocationAmbitions(state) : dealDecade(state);
     if (!beatStops(quiet, beat.id)) return emit(quiet, { kind: 'beatPassed', beatId: beat.id });
   }
   let s = emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
@@ -84,6 +84,8 @@ function fireBeat(state: GameState): GameState {
   // Convocation reads out the promises that came due and may put one more
   // on the table (DD §10.2).
   if (beat.id === 'convocation') s = convocationAmbitions(s);
+  // The first Board Meeting of a decade deals the decade's list (Phase 42).
+  if (beat.id === 'board-meeting') s = dealDecade(s);
   return s;
 }
 

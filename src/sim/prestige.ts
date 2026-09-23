@@ -1,5 +1,5 @@
 import { AXES, type Axes, type AxisId } from '../content/league.ts';
-import { buildingById } from '../content/buildings.ts';
+import { buildingById, PROJECT_AXES, type ProjectAxis } from '../content/buildings.ts';
 import {
   AID_DISCOUNT_RATE,
   PRESTIGE_POOL_SWING,
@@ -81,14 +81,32 @@ export function axisReadings(state: GameState): Axes {
     Math.min(20, t.debt / 1e6 / 5) -
     8 * state.distress.rung;
 
+  const lift = projectBoosts(state);
   return {
-    academics: clamp(academics),
-    research: clamp(research),
-    experience: clamp(experience),
-    athletics: clamp(athletics),
+    academics: clamp(academics + lift.academics),
+    research: clamp(research + lift.research),
+    experience: clamp(experience + lift.experience),
+    athletics: clamp(athletics + lift.athletics),
     access: clamp(access),
     finance: clamp(finance),
   };
+}
+
+// What the open capital projects add to the year's readings (Phase 42): a
+// research park makes a research college, a stadium an athletic one.
+export function projectBoosts(state: GameState): Record<ProjectAxis, number> {
+  const lift: Record<ProjectAxis, number> = {
+    academics: 0,
+    research: 0,
+    experience: 0,
+    athletics: 0,
+  };
+  for (const p of openPlacements(state)) {
+    const terms = buildingById(p.buildingId).project;
+    if (!terms) continue;
+    for (const axis of PROJECT_AXES) lift[axis] += (terms.boosts[axis] ?? 0) * p.condition;
+  }
+  return lift;
 }
 
 // The year's move: each standing a share of the way to its reading.

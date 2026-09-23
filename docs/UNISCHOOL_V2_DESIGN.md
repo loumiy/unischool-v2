@@ -221,6 +221,10 @@ Around years 25–35 a healthy school fills the land. Building shifts to rebuild
 
 ---
 
+### §6.7 Capital projects (Phase 42)
+
+The review found the middle of a run plateauing: the campus built, the books sound, and nothing big to save for. Capital projects are that thing. There are five: **the Great Lawn** (a second quad laid out to a masterplan), **an Arts Centre**, **a Research Park**, **a Championship Stadium** and **a Medical School**. They are buildings in the catalogue's own Projects tab, one of each, with a year before which they cannot be begun (Year 10 to 15) and three to five years of works. The works show on the map as a fenced site, like any construction. Each costs between $18M and $70M. It can be paid in cash, from restricted building money raised by a campaign, on the board's line, or **out of the endowment**: the board releases up to half the fund for a capital project, which the fund then does not earn on for ever after. Nothing else can be paid for from the endowment. An open project changes what the college is. Each adds points to one or two of the six standings' yearly readings (research, athletics, experience, academics), scaled by its condition. Each also adds to student life, draws applicants and adds beauty, as its row says. The stadium is also a venue for the field sports and gets the college booked against bigger opponents. The Medical School is the only place the School of Medicine can be founded. The dashboard reports what each archetype spends on projects each decade and how many stand at Year 50. The steward completes all five.
+
 ## §7. Academics (System 3)
 
 ### §7.1 Reimagined granularity: programs, not courses
@@ -232,6 +236,8 @@ v1 managed 427 individual courses; at five minutes per year, that is the wrong u
 - **6 Schools:** Arts & Letters · Science · Engineering · Business · Health · Law. Each school is founded explicitly (a building + a founding cost + a dean seat), and founding order is a defining strategic choice.
 - **~30 Programs** distributed across schools. Each program has three tiers: **Founded → Established → Renowned.** Advancing a tier requires investment (money + a qualified senior hire + time) and raises capacity, quality ceiling, and prestige contribution.
 - **Signature Programs:** the player may designate up to 3 programs as signatures — cheaper to advance, weighted in identity (§11.2) and rankings, and expected: letting a signature decay is a public embarrassment (events fire).
+
+**A seventh school, behind a project (amended in Phase 42).** Medicine is a seventh school with three programmes: Medicine, Surgery and Clinical Research. It can be founded only in a Medical School, and a Medical School is a capital project (§6.7). The Medical School houses Medicine and nothing else. The six schools any college can found are unchanged, and so are their thirty programmes.
 
 **Founding and opening, for now.** A school is founded in an open hall of its own — Founders Hall may house the first, and every Academic Hall houses one — for a founding cost, and its dean seat stays vacant until delegation arrives. A program opens inside a founded school for an opening cost and then costs every year at its tier: the tier sets its teaching seats, how many course levels are on the catalogue, and its cost factor. Every program opens at Founded; advancement and signatures follow. A program's six courses are generated flavour: two a level, numbered from the program's code, revealed a level at a time as the tier rises. Closing a program is free and immediate; under austerity the board's "close a program" cut closes the newest. A freeze bans founding and opening alike.
 
@@ -382,6 +388,8 @@ A run's dealt pool (~24 ambitions at 1.0) is filtered by school identity and sta
 **Reachability is a content invariant, not a code one.** The Phase 18 lesson applies to ambitions with one extra edge: an ambition whose terms never hold is never dealt, and one whose goal is out of reach is not a temptation but a trap. Both are well-formed data, so the same guard covers them — the scripted colleges of `src/sim/colleges.ts` are walked and every ambition must be dealable to one of them and have its goal met by one of them, with the observed range of any failing reading printed. Building it found four: a campus ambition whose terms the college was never bleak enough to meet, a goal set above the enrolment ceiling, a goal that asked for selectivity and size together (which never happen together), and — worst — a title that promised six faculties over a goal that checked three. A promise the player reads and a promise the game checks have to be the same promise.
 
 ---
+
+**The decade ahead (Phase 42).** Offers at Convocation are temptations the college is handed. At the first Board Meeting of each decade after the first (Years 11, 21, 31 and 41) the board also deals a short list of three from the same pool, and the college chooses up to two to make public, within the cap of three. The Board Meeting stops the clock for it. Choosing none is free, as declining is. A chosen ambition is dated from that meeting and read out at the Convocation it falls due, like any other.
 
 ## §11. Reputation and the World (System 6)
 

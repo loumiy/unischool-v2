@@ -14,6 +14,8 @@ export const BUILDING_CATEGORIES = [
   'athletics',
   'admin',
   'landmark',
+  // Capital projects (Phase 42): years of works, saved for.
+  'project',
 ] as const;
 export type BuildingCategory = (typeof BUILDING_CATEGORIES)[number];
 
@@ -145,6 +147,18 @@ export interface BuildingDef {
   limit?: number;
   icon: BuildingIcon;
   blurb?: string;
+  // A capital project (Phase 42): the year from which it can be begun, and
+  // what it does to the college's standings once it opens, as points on
+  // the year's axis readings (prestige.ts).
+  project?: ProjectTerms;
+}
+
+export const PROJECT_AXES = ['academics', 'research', 'experience', 'athletics'] as const;
+export type ProjectAxis = (typeof PROJECT_AXES)[number];
+
+export interface ProjectTerms {
+  fromYear: number;
+  boosts: Partial<Record<ProjectAxis, number>>;
 }
 
 const nullable =
@@ -189,6 +203,17 @@ const schema = obj({
       ground: optional(oneOf(GROUNDS)),
       icon: oneOf(BUILDING_ICONS),
       blurb: optional(str),
+      project: optional(
+        obj({
+          fromYear: int,
+          boosts: obj({
+            academics: optional(int),
+            research: optional(int),
+            experience: optional(int),
+            athletics: optional(int),
+          }),
+        }),
+      ),
     }),
   ),
 });
@@ -228,8 +253,10 @@ function load(): BuildingDef[] {
     }
     if (b.ground !== undefined && b.form !== 'grounds')
       throw new ContentError(`${at}.ground`, 'only open ground is marked out');
-    if (b.housesSchool && b.category !== 'academic')
+    if (b.housesSchool && b.category !== 'academic' && b.category !== 'project')
       throw new ContentError(`${at}.housesSchool`, 'schools are founded in academic buildings');
+    if ((b.category === 'project') !== (b.project !== undefined))
+      throw new ContentError(`${at}.project`, 'a capital project, and only one, has project terms');
     if (b.blurb === undefined)
       throw new ContentError(`${at}.blurb`, 'every building says what it is');
     // A door on a tile, not on a seam: every footprint with a door is odd in

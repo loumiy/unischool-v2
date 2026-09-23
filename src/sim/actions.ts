@@ -21,6 +21,7 @@ import {
   canPay,
   demolitionCost,
   FINANCINGS,
+  PROJECT_FINANCINGS,
   pay,
   renovationCost,
   type Financing,
@@ -37,6 +38,7 @@ import {
   signatureRoom,
   foundSchool,
   isHall,
+  hallFits,
   openProgram,
   openProgramIn,
   programOpeningCost,
@@ -63,7 +65,7 @@ import {
   hireCandidate,
   severanceFor,
 } from './faculty.ts';
-import { answerAmbition } from './ambitions.ts';
+import { answerAmbition, answerDecade } from './ambitions.ts';
 import { findCampaign } from '../content/campaigns.ts';
 import { findSeat } from '../content/seats.ts';
 import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts';
@@ -132,6 +134,8 @@ export type Action =
       // Convocation with an ambition on the table (DD §10.2); absent, it
       // is declined, which is what costs nothing.
       acceptAmbition?: boolean;
+      // The decade's list, answered at its Board Meeting (Phase 42).
+      pickAmbitions?: string[];
     }
   // Acknowledges the board's letter (distress.ts) and lets the clock go.
   | { type: 'readLetter' }
@@ -224,15 +228,28 @@ export function canApply(state: GameState, action: Action): Verdict {
       const { w, h } = orientedFootprint(def.footprint, action.rotated);
       const ground = groundRefusal(state.campus, def, action.col, action.row, w, h);
       if (ground) return no(ground);
+      // A capital project waits for its year, and may be paid for out of
+      // the endowment (Phase 42).
+      if (def.project && state.clock.year < def.project.fromYear)
+        return no(`not before Year ${def.project.fromYear}`);
       const financing = action.financing ?? 'cash';
-      if (!FINANCINGS.includes(financing)) return no(`unknown financing ${financing}`);
+      if (!(def.project ? PROJECT_FINANCINGS : FINANCINGS).includes(financing))
+        return no(`unknown financing ${financing}`);
       // The freeze (DD §5.5): nothing new is built; the interim CFO does
       // not borrow.
       const allowed = constructionAllowed(state);
       if (!allowed.ok) return no(allowed.reason);
       if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
       if (!canPay(state, def.cost, financing)) {
-        return no(financing === 'cash' ? 'not enough cash' : 'the board will not borrow that much');
+        return no(
+          financing === 'cash'
+            ? 'not enough cash'
+            : financing === 'endowment'
+              ? 'the board will not release that much of the endowment'
+              : financing === 'gift'
+                ? 'not enough restricted building money'
+                : 'the board will not borrow that much',
+        );
       }
       // Last, because it floods the parcel twice (Phase 21L).
       const access = accessRefusal(state.campus, def, action.col, action.row, w, h);
@@ -334,6 +351,12 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!isHall(hall)) return no('a school needs a hall');
       if (hall.status !== 'open') return no('the hall is not open');
       if (schoolInHall(state, hall.id)) return no('the hall already houses a school');
+      if (!hallFits(action.schoolId, hall.buildingId))
+        return no(
+          findSchool(action.schoolId)!.hall
+            ? 'this school can only be founded in its own building'
+            : 'that building is kept for another school',
+        );
       const financing = action.financing ?? 'cash';
       if (financing === 'debt' && !borrowingAllowed(state)) return no('the board is not borrowing');
       if (!canPay(state, schoolFoundingCost(), financing)) return no('not enough cash');
@@ -669,7 +692,10 @@ export function applyAction(state: GameState, action: Action): GameState {
       }
       if (action.beatId === 'admissions-day')
         next = closeAdmissions(next, action.tuition, action.selectivity);
-      if (action.beatId === 'board-meeting') next = imposeCuts(next, action.cuts);
+      if (action.beatId === 'board-meeting') {
+        next = imposeCuts(next, action.cuts);
+        next = answerDecade(next, action.pickAmbitions);
+      }
       if (action.beatId === 'convocation' && next.ambitions.offered !== null)
         next = answerAmbition(next, action.acceptAmbition === true);
       return emit({ ...next, pendingBeat: null }, { kind: 'beatResolved', beatId: action.beatId });

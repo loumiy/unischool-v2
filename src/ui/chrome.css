@@ -4274,3 +4274,15 @@ th.figure > .figure-hint {
   color: var(--ink-muted);
   line-height: 1.45;
 }
+
+/* The decade's list at the Board Meeting (Phase 42). */
+.decade-list .decade-item {
+  padding: 10px 0;
+  border-top: 1px solid var(--rule, rgba(0, 0, 0, 0.12));
+}
+.decade-list .decade-item:first-of-type {
+  border-top: none;
+}
+.decade-list .decade-item h3 {
+  margin: 0 0 4px;
+}
