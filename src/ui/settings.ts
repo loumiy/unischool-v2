@@ -15,13 +15,20 @@ export interface GameSettings {
   textScale: TextScale;
   vision: ColourVision;
   autosave: AutosaveCadence;
+  // A cosmetic unlock (Phase 49, DD §12.3): winter lights on the lamp posts,
+  // once enough colleges hang in the hall. Changes nothing the sim reads.
+  winterLights: boolean;
 }
 
 export const DEFAULT_SETTINGS: GameSettings = {
   textScale: 1,
   vision: 'standard',
   autosave: 'year',
+  winterLights: false,
 };
+
+// How many finished colleges unlock the winter lights.
+export const WINTER_LIGHTS_AFTER = 2;
 
 const KEY = 'unischool.settings.v1';
 
@@ -33,6 +40,7 @@ export function normaliseSettings(raw: unknown): GameSettings {
       : DEFAULT_SETTINGS.textScale,
     vision: o.vision === 'safe' ? 'safe' : 'standard',
     autosave: o.autosave === 'term' ? 'term' : 'year',
+    winterLights: o.winterLights === true,
   };
 }
 

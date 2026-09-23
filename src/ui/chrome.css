@@ -4378,3 +4378,65 @@ th.figure > .figure-hint {
   width: 100%;
   height: 100%;
 }
+
+/* The hall as a gallery wall (Phase 49): frames in each college's colours,
+   a brass plaque under each. */
+.hall-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+  padding: 0;
+  list-style: none;
+}
+.hall-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hall-frame-border {
+  padding: 8px;
+  background: var(--frame);
+  border: 3px solid color-mix(in srgb, var(--frame) 70%, #000);
+  box-shadow:
+    inset 0 0 0 6px var(--mat),
+    0 6px 14px rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+}
+.hall-frame-border .hall-portrait {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 2px solid var(--mat);
+}
+.hall-frame-border .hall-portrait svg {
+  width: 100%;
+  height: 100%;
+}
+.hall-plaque {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px 10px;
+  margin: 0 auto;
+  padding: 6px 14px;
+  background: linear-gradient(180deg, #d9b56a, #b8913f);
+  color: #3a2a0c;
+  border-radius: 3px;
+  border: 1px solid #8f6d2a;
+  text-align: center;
+  font-size: var(--text-xs);
+}
+.hall-plaque-name {
+  font-weight: 700;
+  font-family: var(--display);
+}
+.hall-plaque-mark {
+  font-weight: 700;
+}
+.hall-plaque-years {
+  flex-basis: 100%;
+}
+/* Golden hour (Phase 49): whatever week the portrait was taken in. */
+.portrait-golden svg {
+  filter: sepia(0.18) saturate(1.12) brightness(1.03);
+}

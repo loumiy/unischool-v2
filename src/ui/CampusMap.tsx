@@ -61,6 +61,7 @@ import {
 import { castShadow } from './map/light.ts';
 import PathwayLayer from './map/pathways.tsx';
 import DressingLayer from './map/dressing.tsx';
+import { useSettings } from './settings.ts';
 import AgeMarks, { type AgeStage } from './map/age.tsx';
 import LifeLayer from './map/life.tsx';
 import type { Season } from './map/season.ts';
@@ -436,6 +437,8 @@ const CampusScene = memo(function CampusScene({
   const motif = state.identity?.motif ?? 'georgian';
   const schoolName = state.identity?.name ?? '';
   const snow = winterDepth(state.clock);
+  // A cosmetic unlock (Phase 49): read here, never by the sim.
+  const { winterLights } = useSettings();
   const placements = state.campus.placements;
   const groundPlaced = placements.filter((p) => buildingById(p.buildingId).form === 'grounds');
   const scene = useMemo(() => {
@@ -505,6 +508,7 @@ const CampusScene = memo(function CampusScene({
           enrolled(state) > campusCapacity(state).beds * 1.1
         }
         years={state.clock.year}
+        strung={winterLights && snow > 0}
         festive={
           (state.clock.term === 'fall' && state.clock.week <= 2) ||
           (state.clock.term === 'summer' && state.clock.week <= 2)
