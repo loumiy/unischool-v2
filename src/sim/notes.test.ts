@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { NOTES } from '../content/notes.ts';
 import { defaultResolution } from './beats.ts';
 import { opened, played } from './colleges.ts';
-import { dismissNote, dueNote } from './notes.ts';
+import { askedNote, dismissNote, dueNote } from './notes.ts';
 import { dispatch, tickRunWeeks, type Run } from './run.ts';
 
 // ONBOARDING BY CONSEQUENCE (DD §13.2, Phase 29): each note once, when its
@@ -51,5 +51,50 @@ describe('the notes', () => {
 
   it('keeps every note to a few sentences', () => {
     for (const n of NOTES) expect(n.text.split(/(?<=[.!?])\s+/).length).toBeLessThanOrEqual(4);
+  });
+});
+
+// THE FIRST HOUR, FINISHED (Phase 40).
+describe('the first hour', () => {
+  it('says what the founding gift covers in the first week', () => {
+    const run = dispatch(opened(4), { type: 'dismissNote', id: 'welcome' });
+    expect(dueNote(tickRunWeeks(run, 1, defaultResolution).state)?.id).toBe('founding-money');
+  });
+
+  it('keeps the note on speed for the player who reaches for one', () => {
+    const run = played(4, 6);
+    const seen = new Set(run.state.onboarding.seen);
+    expect(seen.has('speed')).toBe(false);
+    expect(askedNote(run.state, 'speed')?.title).toBe('Time, and who buys it');
+    const read = dismissNote(run.state, 'speed');
+    expect(askedNote(read, 'speed')).toBeNull();
+  });
+
+  it('asks where they will be taught when the beds outrun the seats', () => {
+    const run = opened(4);
+    const s = {
+      ...run.state,
+      clock: { ...run.state.clock, absoluteWeek: 12 },
+      onboarding: { seen: NOTES.filter((n) => n.id !== 'no-seats').map((n) => n.id) },
+      campus: {
+        ...run.state.campus,
+        placements: [
+          ...run.state.campus.placements.map((p) => ({ ...p, status: 'open' as const })),
+          {
+            ...run.state.campus.placements[0]!,
+            id: 'rh',
+            buildingId: 'residence-hall',
+            status: 'open' as const,
+          },
+          {
+            ...run.state.campus.placements[0]!,
+            id: 'rh2',
+            buildingId: 'residence-hall',
+            status: 'open' as const,
+          },
+        ],
+      },
+    };
+    expect(dueNote(s)?.id).toBe('no-seats');
   });
 });

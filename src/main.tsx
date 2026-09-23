@@ -17,9 +17,17 @@ import './ui/debug.css';
 import App from './ui/App.tsx';
 import { CrashBoundary } from './ui/Crash.tsx';
 import { applySettings } from './ui/settings.ts';
+import { store } from './ui/store.ts';
 
 // Text size and colour vision, before the first paint.
 applySettings();
+
+// For the dev tools that drive the real app (tools/newplayer.mjs): a
+// read-only look at the run, so a scripted player can check what it did.
+// Never in a production build.
+if (import.meta.env.DEV) {
+  Object.assign(globalThis, { __unischool: { snapshot: () => store.getSnapshot() } });
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

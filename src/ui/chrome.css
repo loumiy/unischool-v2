@@ -3427,6 +3427,24 @@ th.figure > .figure-hint {
 .build-popup .build-tile-row {
   overflow-y: auto;
 }
+/* A building in hand (Phase 40): the menu folds to one line. */
+.build-popup.holding {
+  max-height: none;
+}
+.build-holding {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.build-holding-name {
+  font-weight: 700;
+}
+.build-holding-keys {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  flex: 1;
+}
 
 /* Why a building cannot come down (Phase 21L). */
 .building-panel-refusal {
@@ -4056,7 +4074,10 @@ th.figure > .figure-hint {
   place-items: center;
   padding: 16px;
   overflow-y: auto;
-  background: color-mix(in srgb, var(--school-primary) 55%, rgba(27, 42, 74, 0.6));
+  background: color-mix(in srgb, var(--school-primary) 55%, rgba(27, 42, 74, 0.85));
+  /* Whatever is behind the title (the founding form, the campus) is a
+     blur, never a second page to read through it (Phase 40). */
+  backdrop-filter: blur(10px) saturate(0.7);
   animation: overlay-fade 180ms ease-out;
 }
 .title-card {

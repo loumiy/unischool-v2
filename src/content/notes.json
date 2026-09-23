@@ -9,6 +9,14 @@
       "text": "The first class arrives at Convocation, the first week of the fall. Before then they need beds, somewhere to eat, and something to study: build from the Build menu (B), and found a school in Founders Hall from the Curriculum screen. The clock is yours too — Space pauses it."
     },
     {
+      "id": "founding-money",
+      "from": "The Bursar",
+      "title": "What the gift covers",
+      "afterWeek": 1,
+      "when": {},
+      "text": "The founding gift of $30M covers Founders Hall, a Residence Hall, a Dining Hall and a first school with three programmes, with a little to spare. Anything more is borrowed. The Build menu's Borrow toggle puts construction on the board's line of credit, against the endowment, and the Treasury shows what that costs each year."
+    },
+    {
       "id": "no-school",
       "from": "The Registrar",
       "title": "Nothing to teach",
@@ -28,6 +36,17 @@
       },
       "special": "noBeds",
       "text": "Admissions closes the file at the beds we will have at Convocation. Founders Hall sleeps a hundred and twenty; a Residence Hall sleeps three hundred more. Whatever is not built by the fall is a smaller class."
+    },
+    {
+      "id": "no-seats",
+      "from": "The Registrar",
+      "title": "Where will they be taught?",
+      "afterWeek": 12,
+      "when": {
+        "yearAtMost": 2
+      },
+      "special": "noSeats",
+      "text": "We will have more beds than teaching seats. Every student needs a seat in a teaching hall: Founders Hall teaches four hundred, an Academic Hall five hundred and a Lecture Theatre four hundred and fifty. A class larger than its seats is taught in crowded rooms, and the teaching and the students' satisfaction both suffer."
     },
     {
       "id": "first-budget",
@@ -85,11 +104,8 @@
       "id": "speed",
       "from": "The Chief of Staff",
       "title": "Time, and who buys it",
-      "when": {
-        "yearAtLeast": 3
-      },
-      "special": "noProvost",
-      "text": "The faster clock speeds are bought with administration: a Provost opens 4×, a Provost and four Deans 8×. Every seat is a salary forever. The org chart is on the Faculty screen; the locked speed buttons open it."
+      "special": "askedFor",
+      "text": "The faster clock speeds are bought with administration: a Provost opens 4×, and a Provost with four Deans opens 8×. Every seat is a salary for ever. The org chart is open behind this note, on the Faculty screen."
     },
     {
       "id": "first-table",

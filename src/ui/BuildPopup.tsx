@@ -5,8 +5,9 @@ import {
   type BuildingCategory,
   type BuildingDef,
   type BuildingIcon,
+  buildingById,
 } from '../content/buildings.ts';
-import { PEOPLE_READINGS } from '../content/people.ts';
+import { fillWords, PEOPLE_READINGS } from '../content/people.ts';
 import { PLACEMENT_READINGS } from '../content/placement.ts';
 import { ESTATE_WORDS, providesLine } from '../content/treasury.ts';
 import {
@@ -288,6 +289,28 @@ export default function BuildPopup({
     activeId === TOOLS_ID || activeId === REBUILD_ID
       ? null
       : (categories.find((c) => c === activeId) ?? categories[0] ?? null);
+  // A building in hand (Phase 40): the menu folds to a strip along the
+  // toolbar, so the ghost and the ground it is going on are never under it.
+  if (placingId) {
+    const def = buildingById(placingId);
+    return (
+      <ToolbarPopup title="Build" onClose={onClose} className="build-popup holding">
+        <div className="build-holding">
+          <span className="build-holding-name">
+            {fillWords(ESTATE_WORDS.holding, {
+              building: def.name,
+              cost: formatMoney(def.cost),
+              pay: ESTATE_WORDS.pay[financing],
+            })}
+          </span>
+          <span className="build-holding-keys">{ESTATE_WORDS.holdingKeys}</span>
+          <button type="button" className="newgame-btn" onClick={() => onArmPlacement(null)}>
+            {ESTATE_WORDS.putDown}
+          </button>
+        </div>
+      </ToolbarPopup>
+    );
+  }
   return (
     <ToolbarPopup
       title="Build"

@@ -504,7 +504,9 @@ function BoardBody({
     <div className="budget-body board-body">
       <h3>The board's view</h3>
       {/* Head to head with the rival, where the board reads it (Phase 23). */}
-      <RivalLine state={state} />
+      {/* "No rival yet" is said at the first board meeting, not every
+          autumn after it (Phase 40). */}
+      {(state.athletics.rivalId || state.clock.year <= 1) && <RivalLine state={state} />}
       <div className="figure-row">
         <Figure
           label="Confidence"

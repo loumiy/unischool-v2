@@ -41,6 +41,13 @@ function momentHas(state: GameState, note: NoteDef): boolean {
     case 'landScarce':
       if (!landScarce(state.campus)) return false;
       break;
+    case 'noSeats': {
+      const cap = campusCapacity(state);
+      if (cap.seats >= cap.beds) return false;
+      break;
+    }
+    case 'askedFor':
+      return false;
   }
   return conditionsOf(state, note.when);
 }
@@ -49,6 +56,13 @@ export function dueNote(state: GameState): NoteDef | null {
   if (state.phase !== 'running') return null;
   const seen = new Set(state.onboarding.seen);
   return NOTES.find((n) => !seen.has(n.id) && momentHas(state, n)) ?? null;
+}
+
+// A note the player has asked for by reaching for what it explains (a
+// locked speed, Phase 40), if it has not been read.
+export function askedNote(state: GameState, id: string): NoteDef | null {
+  if (state.onboarding.seen.includes(id)) return null;
+  return NOTES.find((n) => n.id === id) ?? null;
 }
 
 export function dismissNote(state: GameState, id: string): GameState {

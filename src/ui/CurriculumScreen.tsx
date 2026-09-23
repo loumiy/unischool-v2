@@ -20,6 +20,7 @@ import {
   annualProgramCosts,
   canPay,
   adjunctFor,
+  campusCapacity,
   canApply,
   facultyOf,
   foundedSchool,
@@ -444,6 +445,7 @@ export default function CurriculumScreen({
   const founded = state.academics.schools.length;
   const open = state.academics.programs.length;
   const seats = programSeats(state);
+  const rooms = campusCapacity(state).seats;
   const students = enrolled(state);
   const crowded = programCrowding(state) > 1;
   return (
@@ -482,7 +484,16 @@ export default function CurriculumScreen({
           hint={ACADEMIC_WORDS.readings.crowding}
           tone={crowded ? 'bad' : undefined}
         />
+        <Figure
+          label="Classroom seats"
+          value={`${students} / ${rooms}`}
+          hint={ACADEMIC_WORDS.readings.classroomSeats}
+          tone={students > rooms ? 'bad' : undefined}
+        />
       </div>
+      {/* Where seats come from (Phase 40): the review's new player found
+          two seat counts and no word on how either grows. */}
+      <p className="treasury-note">{ACADEMIC_WORDS.lines.seatsFrom}</p>
       {crowded && (
         <p className="treasury-note bad">
           {fillWords(ACADEMIC_WORDS.lines.crowded, { enrolled: students, seats })}
