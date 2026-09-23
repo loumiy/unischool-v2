@@ -121,6 +121,9 @@ export const TRIPLES_PENALTY = 18;
 export const DINING_PENALTY = 10;
 export const SEATS_PENALTY = 12;
 export const CONDITION_WEIGHT = 20;
+// Student life (Phase 21I): satisfaction points when the campus's student
+// centre, health centre, recreation centre and fields reach every student.
+export const STUDENT_LIFE_POINTS = 6;
 // Attrition per year: a base, plus a share for every point of
 // satisfaction under the line.
 export const ATTRITION_BASE = 0.04;

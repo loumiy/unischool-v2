@@ -298,3 +298,35 @@ describe('save migration v6 → v7', () => {
     expect(result.save.state.campus.placements).toHaveLength(5);
   });
 });
+
+describe('student life (DD §8.3, §8.5; Phase 21I)', () => {
+  it('is worth its full term when it reaches everyone, and a share when it reaches a share', async () => {
+    const { studentLifeTerm } = await import('./people.ts');
+    const { STUDENT_LIFE_POINTS } = await import('../tuning.ts');
+    const run = tickRunWeeks(opened(), WEEKS_PER_YEAR * 3, defaultResolution);
+    const s = run.state;
+    const total = s.people.cohorts.reduce((t, c) => t + c.size, 0);
+    expect(total).toBeGreaterThan(0);
+    // No student-life building yet: nothing.
+    expect(studentLifeTerm(s, total)).toBe(0);
+    const centre = {
+      id: 'lifetest',
+      buildingId: 'student-center',
+      col: 50,
+      row: 50,
+      w: 5,
+      h: 4,
+      status: 'open' as const,
+      completesWeek: null,
+      openedWeek: 0,
+      backlog: 0,
+      condition: 1,
+    };
+    const withCentre = {
+      ...s,
+      campus: { ...s.campus, placements: [...s.campus.placements, centre] },
+    };
+    const reach = Math.min(1, 700 / total);
+    expect(studentLifeTerm(withCentre, total)).toBeCloseTo(STUDENT_LIFE_POINTS * reach, 6);
+  });
+});

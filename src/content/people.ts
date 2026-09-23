@@ -43,6 +43,8 @@ const fileSchema = obj({
     greenery: str,
     landmarks: str,
     upkeep: str,
+    lifeTerm: str,
+    eventsTerm: str,
   }),
   words: obj({
     noClass: str,

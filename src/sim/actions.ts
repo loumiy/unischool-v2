@@ -5,6 +5,7 @@ import {
   FOUNDERS_HALL_ID,
   footprintIsClear,
   apronTiles,
+  builtCount,
   footprintTiles,
   hasFoundersHall,
   orientedFootprint,
@@ -186,6 +187,15 @@ export function canApply(state: GameState, action: Action): Verdict {
       // the land, and there is only ever one.
       if (state.phase === 'siting' && !isFounders) return no('place Founders Hall first');
       if (isFounders && hasFoundersHall(state.campus)) return no('Founders Hall already stands');
+      // Enough of a thing (Phase 21I): the singular civic buildings are
+      // singular, and a site already broken ground on counts.
+      if (def.limit !== undefined && builtCount(state.campus, def.id) >= def.limit) {
+        return no(
+          def.limit === 1
+            ? `the college has its ${def.name.toLowerCase()}`
+            : `the college has ${def.limit} of these already`,
+        );
+      }
       const { w, h } = orientedFootprint(def.footprint, action.rotated);
       if (!footprintIsClear(state.campus, action.col, action.row, w, h)) {
         return no('footprint is off the parcel, on water or road, or occupied');

@@ -17,6 +17,7 @@ import {
   FINANCINGS,
   formatMoney,
   formatPercent,
+  builtCount,
   FOUNDERS_HALL_ID,
   type GameState,
   hasFoundersHall,
@@ -160,16 +161,29 @@ function BuildTile({
 }) {
   const Icon = TILE_ICONS[def.icon];
   const isFounders = def.id === FOUNDERS_HALL_ID;
-  const placed = isFounders && hasFoundersHall(state.campus);
+  // Enough of a thing (Phase 21I): a type at its limit says so, as Founders
+  // Hall always has, instead of offering a second of something no
+  // university has two of.
+  const count = builtCount(state.campus, def.id);
+  const placed =
+    (isFounders && hasFoundersHall(state.campus)) ||
+    (def.limit !== undefined && count >= def.limit);
   const affordable = canPay(state, def.cost, financing);
   if (placed) {
     return (
-      <div className="build-tile done" title={`${def.name} · standing`}>
+      <div
+        className="build-tile done"
+        title={
+          def.limit === 1 ? `${def.name} · the college has one` : `${def.name} · ${count} standing`
+        }
+      >
         <span className="build-tile-icon">
           <Icon />
         </span>
         <span className="build-tile-name">{def.name}</span>
-        <span className="build-tile-foot">✓ standing</span>
+        <span className="build-tile-foot">
+          {def.limit && def.limit > 1 ? `✓ ${count} standing` : '✓ standing'}
+        </span>
       </div>
     );
   }
