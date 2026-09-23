@@ -69,6 +69,8 @@ const fileSchema = obj({
     salary: str,
     programQuality: str,
     staffing: str,
+    adjunct: str,
+    contract: str,
   }),
   lines: obj({
     noFaculty: str,
@@ -85,6 +87,8 @@ const fileSchema = obj({
     unfoundedField: str,
     taughtBy: str,
     nobodyTeaches: str,
+    hireAdjunct: str,
+    adjunctUntil: str,
     unassignedNote: str,
     quirkLabel: str,
     rankAndField: str,

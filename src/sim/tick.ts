@@ -9,7 +9,7 @@ import { advancementWeek } from './campaigns.ts';
 import { estateWeek } from './estate.ts';
 import { historicYear } from './lateGame.ts';
 import { eventsWeek } from './events.ts';
-import { openMarket } from './faculty.ts';
+import { facultyWeek, openMarket } from './faculty.ts';
 import { peopleWeek } from './people.ts';
 import { treasuryWeek } from './treasury.ts';
 import { leagueWeek } from './league.ts';
@@ -39,6 +39,7 @@ export function tick(state: GameState): GameState {
     next = estateWeek(next);
     next = historicYear(next);
     next = academicsWeek(next);
+    next = facultyWeek(next);
     next = peopleWeek(next);
     next = advancementWeek(next);
     next = eventsWeek(next);

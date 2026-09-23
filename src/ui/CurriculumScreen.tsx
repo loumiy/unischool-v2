@@ -19,6 +19,8 @@ import {
   annualProgramCost,
   annualProgramCosts,
   canPay,
+  adjunctFor,
+  canApply,
   facultyOf,
   foundedSchool,
   formatMoney,
@@ -58,6 +60,7 @@ function ProgramRow({
   onClose,
   onAdvance,
   onSignature,
+  onAdjunct,
 }: {
   def: ProgramDef;
   program: OpenProgram;
@@ -66,6 +69,7 @@ function ProgramRow({
   onClose: () => void;
   onAdvance: (payWith: Financing) => void;
   onSignature: (signature: boolean) => void;
+  onAdjunct: () => void;
 }) {
   const [armed, setArmed] = useState(false);
   const tier = tierById(program.tier);
@@ -73,6 +77,8 @@ function ProgramRow({
   const staff = facultyOf(state, program.programId);
   const need = staffingNeed(program);
   const quality = programQuality(state, program);
+  const adjunct = adjunctFor(state, program.programId);
+  const adjunctVerdict = canApply(state, { type: 'hireAdjunct', programId: program.programId });
   const to = nextTier(program.tier);
   const toTier = to ? tierById(to) : null;
   const verdict = advanceVerdict(state, program.programId);
@@ -196,6 +202,21 @@ function ProgramRow({
           </span>
         </span>
         <span className="program-row-actions">
+          {/* Staffing without a trap (Phase 39): an adjunct any week of
+              the year, dearer and weaker than a summer hire. */}
+          {staff.length < need && adjunct && (
+            <button
+              type="button"
+              className="newgame-btn adjunct-btn figure"
+              disabled={!adjunctVerdict.ok}
+              onClick={onAdjunct}
+            >
+              {fillWords(FACULTY_WORDS.hireAdjunct, { salary: formatMoney(adjunct.salary) })}
+              <span className="figure-hint" role="tooltip">
+                {adjunctVerdict.ok ? FACULTY_READINGS.adjunct : adjunctVerdict.reason}
+              </span>
+            </button>
+          )}
           {!a && toTier && (
             <button
               type="button"
@@ -252,6 +273,7 @@ function SchoolGroup({
   onClose,
   onAdvance,
   onSignature,
+  onAdjunct,
 }: {
   school: SchoolDef;
   state: GameState;
@@ -261,6 +283,7 @@ function SchoolGroup({
   onClose: (programId: string) => void;
   onAdvance: (programId: string, payWith: Financing) => void;
   onSignature: (programId: string, signature: boolean) => void;
+  onAdjunct: (programId: string) => void;
 }) {
   const founded = foundedSchool(state, school.id);
   const halls = hallsAvailable(state);
@@ -367,6 +390,7 @@ function SchoolGroup({
                 onClose={() => onClose(def.id)}
                 onAdvance={(payWith) => onAdvance(def.id, payWith)}
                 onSignature={(signature) => onSignature(def.id, signature)}
+                onAdjunct={() => onAdjunct(def.id)}
               />
             ))}
           </div>
@@ -406,6 +430,7 @@ export default function CurriculumScreen({
   onClose,
   onAdvance,
   onSignature,
+  onAdjunct,
 }: {
   state: GameState;
   financing: Financing;
@@ -414,6 +439,7 @@ export default function CurriculumScreen({
   onClose: (programId: string) => void;
   onAdvance: (programId: string, payWith: Financing) => void;
   onSignature: (programId: string, signature: boolean) => void;
+  onAdjunct: (programId: string) => void;
 }) {
   const founded = state.academics.schools.length;
   const open = state.academics.programs.length;
@@ -473,6 +499,7 @@ export default function CurriculumScreen({
           onClose={onClose}
           onAdvance={onAdvance}
           onSignature={onSignature}
+          onAdjunct={onAdjunct}
         />
       ))}
     </div>
