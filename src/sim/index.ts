@@ -36,3 +36,4 @@ export * from './prestige.ts';
 export * from './athletics.ts';
 export * from './tags.ts';
 export * from './lateGame.ts';
+export * from './chronicle.ts';

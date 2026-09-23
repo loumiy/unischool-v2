@@ -163,6 +163,12 @@ export const HISTORIC_WARMTH = 4;
 export const HISTORIC_CONFIDENCE = 3;
 export const HISTORIC_MOOD = 3;
 export const LAND_SCARCE_SHARE = 0.55;
+// The chronicle (DD §12.1, Phase 26): an era is at least this many years,
+// and a run holds at most this many.
+export const ERA_MIN_YEARS = 4;
+export const ERA_MAX = 9;
+// A stretch longer than this is split where something happened in it.
+export const ERA_MAX_YEARS = 12;
 export const PRICE_ELASTICITY = 1.2;
 // Applicant quality (0–100) is normal about a mean set by prestige; a
 // selective school skims the top of it.
