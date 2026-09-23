@@ -55,7 +55,9 @@ export function axisReadings(state: GameState): Axes {
   const roster = state.faculty.roster;
   const researchers = mean(roster.map((f) => f.research));
   const labs = countOpen(state, (id) =>
-    ['research-institute', 'science-center', 'engineering-building', 'observatory'].includes(id),
+    ['research-institute', 'science-center', 'engineering-building', 'observatory', 'lab'].includes(
+      id,
+    ),
   );
   const research =
     researchers * Math.min(1, roster.length / RESEARCH_FULL_ROSTER) + Math.min(15, labs * 5);

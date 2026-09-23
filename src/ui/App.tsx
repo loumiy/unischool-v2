@@ -82,6 +82,9 @@ export default function App() {
   const [buildOpen, setBuildOpenState] = useState(false);
   const [journalOpen, setJournalOpen] = useState(false);
   const [placingId, setPlacingIdState] = useState<string | null>(null);
+  // A note the player reached for (Phase 40): the locked speed asks for
+  // the one that explains it.
+  const [askedNoteId, setAskedNoteId] = useState<string | null>(null);
   const [tool, setToolState] = useState<CampusTool | null>(null);
   // Which tree the plant tool puts down; null is whatever the dice say.
   const [species, setSpecies] = useState<Species | null>(null);
@@ -221,6 +224,8 @@ export default function App() {
     }
     if (e.key === 'Escape') {
       if (journalOpen) setJournalOpen(false);
+      // A building in hand goes back on the shelf first (Phase 40).
+      else if (effectiveBuildOpen && placingId) setPlacingId(null);
       else if (effectiveBuildOpen) closeBuild();
       else if (effectiveOverlay) openTab(null);
       return;
@@ -431,6 +436,7 @@ export default function App() {
           onSetSpeed={(s) => store.setSpeed(s)}
           onOpenOrgChart={() => {
             openTab('faculty');
+            setAskedNoteId('speed');
             // The screen mounts on this render; bring the seats into view
             // once it has.
             window.setTimeout(
@@ -496,7 +502,14 @@ export default function App() {
         )}
         {/* Onboarding by consequence (Phase 29): a note, when one is due. */}
         {!state.ending.pending && (
-          <NoteCard state={state} onDismiss={(id) => store.dispatch({ type: 'dismissNote', id })} />
+          <NoteCard
+            state={state}
+            asked={askedNoteId}
+            onDismiss={(id) => {
+              if (id === askedNoteId) setAskedNoteId(null);
+              store.dispatch({ type: 'dismissNote', id });
+            }}
+          />
         )}
         {effectiveOverlay === 'beat' && beat && (
           <BeatScreen

@@ -106,6 +106,9 @@
       "debt": "Borrow",
       "gift": "From restricted funds"
     },
+    "holding": "Placing: {building} · {cost} · {pay}",
+    "holdingKeys": "Click open ground to break ground · R turns it · Esc puts it down",
+    "putDown": "Back to the catalogue",
     "provides": {
       "beds": "{n} beds",
       "meals": "{n} dining seats",

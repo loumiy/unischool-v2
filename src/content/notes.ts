@@ -27,6 +27,10 @@ export const NOTE_SPECIALS = [
   'noProvost',
   'hasTag',
   'landScarce',
+  'noSeats',
+  // Never due by itself: the UI asks for it when the player reaches for
+  // the thing it explains (Phase 40).
+  'askedFor',
 ] as const;
 export type NoteSpecial = (typeof NOTE_SPECIALS)[number];
 

@@ -56,6 +56,9 @@ const fileSchema = obj({
       historic: str,
     }),
     pay: obj({ cash: str, debt: str, gift: str }),
+    holding: str,
+    holdingKeys: str,
+    putDown: str,
     historic: str,
     historicWarning: str,
     provides: obj({

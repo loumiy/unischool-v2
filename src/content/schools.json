@@ -512,6 +512,7 @@
       "halls": "Open halls with no school in them yet: Founders Hall counts, and every Academic Hall.",
       "tier": "Founded, Established or Renowned: the tier sets the seats, the courses on the catalogue, the cost and the quality ceiling.",
       "seats": "How many students the program can teach at this tier before the classes crowd.",
+      "classroomSeats": "Seats in the college's teaching halls, against everyone enrolled. A class larger than its rooms is taught crowded, and satisfaction pays for it.",
       "annualCost": "What this program costs to run each year at its tier.",
       "signatures": "Signature programs named of the three allowed: cheaper to advance, and expected to stay advanced.",
       "crowding": "Students enrolled against the seats every open program offers; over the seats, every program's quality is damped.",
@@ -545,6 +546,7 @@
       "signaturesFull": "Three signatures already named",
       "neglected": "Neglected {years} yr: without {rank} or under half its staff; the tier drops after {limit}",
       "crowded": "{enrolled} enrolled against {seats} program seats: every program is teaching over capacity",
+      "seatsFrom": "Program seats grow as programmes open and climb a tier. Classroom seats, the rooms the teaching happens in, come from Founders Hall (400), an Academic Hall (500), a Lecture Theatre (450), and the arts, science and engineering buildings.",
       "coursesOffered": "{offered} of {total} courses taught"
     }
   }
