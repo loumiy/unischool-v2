@@ -3685,3 +3685,72 @@ th.figure > .figure-hint {
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+
+/* ---------- the chronicle (Phase 26) ---------- */
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.eras {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.era {
+  border-left: 4px solid var(--school-primary);
+  padding: 6px 12px;
+  background: var(--cream-hi);
+  border-radius: 0 8px 8px 0;
+}
+.era-troubles,
+.era-receivership,
+.era-decline {
+  border-left-color: #b3261e;
+}
+.era-golden,
+.era-rise {
+  border-left-color: #c9a227;
+}
+.era-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.era-name {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-lg, 1.1rem);
+}
+.era-years {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.era-body {
+  margin: 4px 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.notable-alumni,
+.building-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.building-timeline .ts {
+  display: inline-block;
+  min-width: 70px;
+  font-family: var(--display);
+  font-weight: 800;
+  color: var(--ink-muted);
+}

@@ -52,6 +52,7 @@ export const TABS: readonly TabDef[] = [
     id: 'history',
     label: 'History',
     phase: 26,
+    // Live since Phase 26 (HistoryScreen.tsx); the stub line is never shown.
     stub: 'The chronicle in draft: named eras, notable alumni, the building timeline, and the rival saga.',
   },
 ];

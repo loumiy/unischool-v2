@@ -1,0 +1,63 @@
+{
+  "names": {
+    "founding": ["The Founding", "The First Years", "The Charter Years"],
+    "building": ["The Building of {building}", "The Scaffolding Years", "The Years of {building}"],
+    "troubles": ["The Troubles", "The Lean Years", "The Hard Winters"],
+    "receivership": ["The Receivership", "The Years Under the CFO"],
+    "rise": ["The Climb", "The Rise", "The Ascent"],
+    "decline": ["The Slide", "The Long Afternoon", "The Slow Decline"],
+    "campaign": ["The {ordinal} Campaign", "The Campaign Years"],
+    "rivalry": ["The {rival} Years", "The Rivalry"],
+    "golden": ["The Golden Age", "The High Tide", "The Good Years"],
+    "quiet": [
+      "The Quiet Years",
+      "The Middle Years",
+      "The Settled Years",
+      "The Long Peace",
+      "The Years of Routine",
+      "The Steady State"
+    ],
+    "eventful": ["{event} and After", "The Years of {event}", "After {event}"]
+  },
+  "lines": {
+    "span": "Years {from} to {to}.",
+    "spanOne": "Year {from}.",
+    "built": "{list} went up.",
+    "builtNone": "Nothing new was built.",
+    "rank": "The guide had the college {from} at the start and {to} at the end.",
+    "rankFlat": "The guide had the college {to} throughout, give or take.",
+    "money": "The books closed {net} over the era, and the endowment went from {from} to {to}.",
+    "classes": "{count} classes graduated, {distinguished} of their students distinguished.",
+    "troubles": "The board climbed to {rung} and the college spent terms in distress.",
+    "titles": "The teams won {count} titles.",
+    "tags": "The guidebooks started calling it {tags}.",
+    "demolished": "{list} came down.",
+    "historicDown": "Historic {list} came down, over the protests.",
+    "rival": "{rival} became the rival.",
+    "kept": "It kept its promise to {list}.",
+    "missed": "It missed its promise to {list}.",
+    "weathered": "It weathered {list}.",
+    "classesPlain": "{count} classes graduated."
+  },
+  "words": {
+    "title": "The chronicle",
+    "draft": "The chronicle in draft: the college's years as the historians will divide them.",
+    "eras": "The eras",
+    "timeline": "The buildings",
+    "alumni": "Notable alumni",
+    "alumniNone": "No one the game followed has distinguished themselves yet.",
+    "rival": "The rival",
+    "rivalNone": "No rival yet.",
+    "export": "Copy the chronicle",
+    "exported": "Copied.",
+    "built": "built",
+    "demolished": "demolished",
+    "historic": "declared Historic",
+    "storey": "went up a storey",
+    "sagaNamed": "{rival} became the rival in Year {year}.",
+    "sagaGames": "The teams met {count} times: {won} won, {lost} lost.",
+    "sagaTable": "In the guide, {rival} finished above the college in {above} of {years} years.",
+    "sagaPoached": "{count} of the college's faculty left for {rival}.",
+    "sagaTaunts": "{rival} said something about the college {count} times."
+  }
+}
