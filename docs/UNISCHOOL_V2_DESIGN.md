@@ -529,3 +529,11 @@ Named so they get watched, not rediscovered:
 8. **The league is reachable.** A steward that raises its programmes and names signatures ends in the top ten on most seeds and first on some; the growth college mid-table or worse; the frugal college last. A college that never renovates, advances or names a signature still ends near the bottom — which is the game telling it something.
 
 Three Phase 21 audit findings stay open as `it.fails` (src/sim/audit.phase-21.test.ts): closing every classroom for twenty-five years still costs a college little money, a campus of ruins still scores above the neutral 50 on beauty, and a campus left to fall down does not reliably cost its college money or students. They are about what demand responds to — admissions fill on price and prestige and barely on teaching or condition — and that is a model change, not a number, so it is left named rather than tuned.
+
+**The 1.1 guardrails (Phase 35).** The release playtest found the middle years too easy, so 1.1 holds them to five more guardrails, read on the same dashboard. The baseline and what each reading means are in `docs/reviews/release-playtest/BASELINE-1.1.md`.
+
+- **The money stings.** Operating cash stays between a quarter and a full year of expenses from Year 20, and the median priced choice costs 1–5% of the year's budget in every decade.
+- **Nothing saturates.** No class stands above 95 satisfaction, and a college that fields teams wins 10–25% of its seasons.
+- **Demand answers to quality.** Four years of teaching twenty points worse costs at least a tenth of the applicant pool.
+- **The clock stops for decisions.** No more than 25 calendar beats a run stop the clock with nothing to decide.
+- **Builds diverge.** No tag is earned by every archetype on the same seed.
