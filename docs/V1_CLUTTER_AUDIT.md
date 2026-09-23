@@ -31,6 +31,7 @@ This audits `loumiy/unischool` at `76a65e7` (the V1 base chosen in `MIGRATION_PL
 | `TODO` / `FIXME` / `HACK` | Zero. |
 | CSS classes never referenced in code | None found among 898. |
 | Test wiring | All 55 test files are in `npm test`, and every script points at a file that exists. |
+| Test suite | All 55 suites pass. |
 | Retired features | Removed, not disabled. There's no private/public fork, no Pace, no development slots, no gen-ed core. Nothing is behind a dead flag. |
 | Plan documents | Plans 10–13 sit beside 15–17 with the same names, but `docs/plans/README.md` marks each as "Superseded by Plan N". It's an archive, not confusion. |
 
@@ -102,7 +103,7 @@ The tests still pass, but some of them are exercising a shape the game no longer
 **The fix:**
 - Add `test/` to the sim `tsconfig`.
 - Fix the 22 errors, each one by asking what the test meant.
-- Move the runner to Vitest, as V2 uses. Today each suite bundles separately, 55 suites are chained with `&&`, and the first failure hides every later result.
+- Move the runner to Vitest, as V2 uses. Today each suite bundles separately, 55 suites are chained with `&&`, and the first failure hides every later result. The full run takes **26 minutes 40 seconds**, most of it in the balance suites, each of which runs the whole 40-year simulation. Nobody will run that before every commit. Split them into a fast suite and a slow balance suite, as V2 does.
 - The repository has **no CI** (there's no `.github/`), so none of this ran automatically. Add the same workflow V2 has.
 
 ### 3. Duplicated helpers, with visible inconsistency
@@ -181,7 +182,7 @@ After the comment trim, most of these are ordinary sizes. Don't split them for t
 
 Phase A gains a clean-up pass before any V2 system arrives. It's one PR per item, and each is testable on its own.
 
-1. **Tests typechecked and on Vitest, with CI.** This goes first, so every later step is checked.
+1. **Tests typechecked and on Vitest, split into fast and slow suites, with CI.** This goes first, so every later step is checked.
 2. **Comment trim**, file by file: history out, the what and why in. It ships with no behaviour change, and the tests prove it.
 3. **Shared `format.ts` and `math.ts`**, with one negative-money style.
 4. **Dead exports and dead save fields removed:** the 11 symbols above, plus `research.points` and `seen.candidateIds`.
