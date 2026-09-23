@@ -31,6 +31,9 @@ export type BusEvent =
   | { kind: 'yearTurned'; year: number }
   | { kind: 'beatFired'; beatId: string }
   | { kind: 'beatResolved'; beatId: string }
+  // A beat with nothing to decide, at a sound college: it passes on the
+  // ticker without holding the clock (Phase 41, DD §3.3).
+  | { kind: 'beatPassed'; beatId: string }
   | { kind: 'budgetApproved'; year: number; drawRate: number }
   | {
       kind: 'admissionsClosed';
@@ -149,6 +152,7 @@ export const BUS_KINDS: readonly BusKind[] = [
   'yearTurned',
   'beatFired',
   'beatResolved',
+  'beatPassed',
   'budgetApproved',
   'admissionsClosed',
   'classArrived',

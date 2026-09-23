@@ -38,6 +38,22 @@ export function clockAdvances(state: GameState): boolean {
   return clockRuns(state) && !clockHeld(state);
 }
 
+// WHETHER A BEAT EARNS ITS STOP (Phase 41, DD §3.3 amended). Budget &
+// Hiring and Admissions Day always ask something. The Board Meeting stops
+// the clock when the college is off a sound footing, because then the board
+// has something to say; Convocation stops it when there is a promise on the
+// table. Every beat stops at its first sitting, because that is when the
+// player meets it. Otherwise the beat passes on the ticker.
+export function beatStops(state: GameState, beatId: string): boolean {
+  const met = state.bus.some(
+    (e) => (e.kind === 'beatResolved' || e.kind === 'beatPassed') && e.beatId === beatId,
+  );
+  if (!met) return true;
+  if (beatId === 'board-meeting') return state.distress.rung > 0;
+  if (beatId === 'convocation') return state.ambitions.offered !== null;
+  return true;
+}
+
 // The action that resolves the pending beat by its stated default (DD
 // §10.1's "unresolved … time out to a stated default", applied to beats):
 // what a headless run, a test, or a future auto-delegated beat dispatches

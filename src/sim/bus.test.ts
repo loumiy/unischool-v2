@@ -135,7 +135,10 @@ describe('calendar beats (DD §3.3)', () => {
   it('cycles a year through all four beats in calendar order', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR * 2, defaultResolution);
     expect(run.state.clock).toMatchObject({ year: 3, term: 'fall', week: 1 });
-    const fired = entriesOfKind(run.state, 'beatFired').map((e) => e.beatId);
+    // A beat that passes without stopping (Phase 41) still happened.
+    const fired = run.state.bus
+      .filter((e) => e.kind === 'beatFired' || e.kind === 'beatPassed')
+      .map((e) => (e as { beatId: string }).beatId);
     // Year 1 is the founding year: the doors open in its Convocation week,
     // so the first Convocation proper is Year 2's (DD §2.4, §3.3).
     expect(fired).toEqual([
@@ -148,8 +151,11 @@ describe('calendar beats (DD §3.3)', () => {
       'budget-and-hiring',
       'convocation',
     ]);
-    expect(run.state.pendingBeat).toBe('convocation');
-    expect(run.log.filter((e) => e.action.type === 'resolveBeat')).toHaveLength(7);
+    // Every beat that held the clock was resolved, bar the one it lands on.
+    const held = entriesOfKind(run.state, 'beatFired').length;
+    expect(run.log.filter((e) => e.action.type === 'resolveBeat')).toHaveLength(
+      held - (run.state.pendingBeat === null ? 0 : 1),
+    );
   });
 
   it('reads as a coherent history', () => {
@@ -232,7 +238,9 @@ describe('calendar beats (DD §3.3)', () => {
     const run = tickRunWeeks(opened(), WEEKS_PER_YEAR * 50, defaultResolution);
     expect(run.state.clock).toMatchObject({ year: 51, term: 'fall', week: 1 });
     // Year 1 has no Convocation; Year 51's is the one the run lands on.
-    expect(entriesOfKind(run.state, 'beatFired')).toHaveLength(50 * 4);
+    expect(
+      entriesOfKind(run.state, 'beatFired').length + entriesOfKind(run.state, 'beatPassed').length,
+    ).toBe(50 * 4);
     expect(performance.now() - t0).toBeLessThan(2000);
   });
 

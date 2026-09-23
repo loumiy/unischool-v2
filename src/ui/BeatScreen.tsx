@@ -1,10 +1,13 @@
 import RivalLine from './RivalLine.tsx';
+import { YearInReview } from './PassingBeat.tsx';
+import { BEAT_WORDS } from '../content/calendarBeats.ts';
 import { useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
 import { programById } from '../content/schools.ts';
 import type { CalendarBeat } from '../content/calendarBeats.ts';
 import { EXPENSE_WORDS, READING_WORDS, REVENUE_WORDS } from '../content/treasury.ts';
 import {
+  namedOf,
   admitRate,
   availableCuts,
   boardPolicy,
@@ -462,6 +465,18 @@ function ConvocationBody({
       ) : (
         <p className="treasury-note">{PEOPLE_WORDS.noClass}</p>
       )}
+      {/* Convocation earns its screen (Phase 41): who arrived, and the
+          year in one read. */}
+      {arrived && namedOf(state, arrived.classYear).length > 0 && (
+        <p className="beat-lede">
+          {fillWords(BEAT_WORDS.among, {
+            names: namedOf(state, arrived.classYear)
+              .map((s) => s.name)
+              .join(', '),
+          })}
+        </p>
+      )}
+      <YearInReview state={state} />
       {/* The year's turn is where promises are made and read out
           (DD §10.2): what is on the table, then what is already on the
           record with the years it has left. */}

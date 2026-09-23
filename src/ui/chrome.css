@@ -4015,6 +4015,39 @@ th.figure > .figure-hint {
   line-height: 1.45;
 }
 
+/* A beat that passes without stopping the clock (Phase 41): the note
+   card's register, top-centre, where it does not sit on a note. */
+.passing-beat {
+  position: fixed;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  z-index: 59;
+  padding: 12px 14px;
+  background: var(--cream-hi);
+  border: 2px solid var(--outline);
+  border-radius: 12px;
+  box-shadow: var(--shadow-2, 0 6px 18px rgba(0, 0, 0, 0.18));
+  animation: overlay-fade 240ms ease-out;
+}
+.year-review {
+  margin: 4px 0 8px;
+  font-size: var(--text-sm);
+  line-height: 1.45;
+}
+.year-review-headline {
+  margin: 0 0 6px;
+}
+.year-review-label {
+  margin: 0;
+  font-weight: 700;
+}
+.year-review-list {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
 /* When something breaks (Phase 33): over everything, plainly. */
 .crash-backdrop {
   position: fixed;

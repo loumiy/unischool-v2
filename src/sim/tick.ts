@@ -1,5 +1,5 @@
 import { emit } from './bus.ts';
-import { beatDue, clockHeld } from './beats.ts';
+import { beatDue, beatStops, clockHeld } from './beats.ts';
 import { advanceClock } from './calendar.ts';
 import type { GameState } from './state.ts';
 import { distressWeek } from './distress.ts';
@@ -70,6 +70,14 @@ function calendarTurn(state: GameState): GameState {
 function fireBeat(state: GameState): GameState {
   const beat = beatDue(state.clock);
   if (!beat) return state;
+  // A beat with nothing to decide passes on the ticker (Phase 41). The
+  // Convocation still reads out the promises that came due; it only stops
+  // when it has one to offer. The same dice decide both paths, so a beat
+  // that stops sees the offer the quiet path would have found.
+  if (beat.id === 'board-meeting' || beat.id === 'convocation') {
+    const quiet = beat.id === 'convocation' ? convocationAmbitions(state) : state;
+    if (!beatStops(quiet, beat.id)) return emit(quiet, { kind: 'beatPassed', beatId: beat.id });
+  }
   let s = emit({ ...state, pendingBeat: beat.id }, { kind: 'beatFired', beatId: beat.id });
   // Budget & Hiring lists the summer market (DD §7.3).
   if (beat.id === 'budget-and-hiring') s = openMarket(s);
