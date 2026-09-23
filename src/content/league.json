@@ -1,0 +1,540 @@
+{
+  "schools": [
+    {
+      "id": "ashford",
+      "name": "Ashford University",
+      "short": "Ashford",
+      "mark": "A",
+      "hue": "#1f3a5f",
+      "tag": "old-money",
+      "region": "far",
+      "home": {
+        "academics": 88,
+        "research": 84,
+        "experience": 72,
+        "athletics": 60,
+        "access": 38,
+        "finance": 94
+      }
+    },
+    {
+      "id": "hartwell",
+      "name": "Hartwell Institute of Technology",
+      "short": "Hartwell Tech",
+      "mark": "H",
+      "hue": "#8a1c1c",
+      "tag": "research-powerhouse",
+      "region": "far",
+      "home": {
+        "academics": 90,
+        "research": 95,
+        "experience": 55,
+        "athletics": 40,
+        "access": 50,
+        "finance": 88
+      }
+    },
+    {
+      "id": "st-ives",
+      "name": "St Ives College",
+      "short": "St Ives",
+      "mark": "S",
+      "hue": "#2e6b4f",
+      "tag": "teaching-college",
+      "region": "far",
+      "home": {
+        "academics": 82,
+        "research": 55,
+        "experience": 86,
+        "athletics": 45,
+        "access": 60,
+        "finance": 70
+      }
+    },
+    {
+      "id": "calder",
+      "name": "Calder College",
+      "short": "Calder",
+      "mark": "C",
+      "hue": "#6b3fa0",
+      "tag": "artsy",
+      "region": "far",
+      "home": {
+        "academics": 74,
+        "research": 50,
+        "experience": 80,
+        "athletics": 30,
+        "access": 62,
+        "finance": 58
+      }
+    },
+    {
+      "id": "grayson",
+      "name": "Grayson A&M",
+      "short": "Grayson",
+      "mark": "G",
+      "hue": "#b35a00",
+      "tag": "jock-school",
+      "region": "far",
+      "home": {
+        "academics": 58,
+        "research": 52,
+        "experience": 70,
+        "athletics": 92,
+        "access": 64,
+        "finance": 60
+      }
+    },
+    {
+      "id": "northmoor",
+      "name": "Northmoor State University",
+      "short": "Northmoor State",
+      "mark": "N",
+      "hue": "#3d5a80",
+      "tag": "commuter",
+      "region": "near",
+      "home": {
+        "academics": 55,
+        "research": 48,
+        "experience": 50,
+        "athletics": 62,
+        "access": 85,
+        "finance": 45
+      }
+    },
+    {
+      "id": "halcyon",
+      "name": "Halcyon College",
+      "short": "Halcyon",
+      "mark": "Y",
+      "hue": "#c2185b",
+      "tag": "party-school",
+      "region": "far",
+      "home": {
+        "academics": 52,
+        "research": 38,
+        "experience": 84,
+        "athletics": 70,
+        "access": 50,
+        "finance": 55
+      }
+    },
+    {
+      "id": "whitlock",
+      "name": "Whitlock University",
+      "short": "Whitlock",
+      "mark": "W",
+      "hue": "#264653",
+      "tag": "pressure-cooker",
+      "region": "far",
+      "home": {
+        "academics": 86,
+        "research": 78,
+        "experience": 48,
+        "athletics": 50,
+        "access": 55,
+        "finance": 80
+      }
+    },
+    {
+      "id": "pembury",
+      "name": "Pembury College",
+      "short": "Pembury",
+      "mark": "P",
+      "hue": "#6d4c41",
+      "tag": "country-club",
+      "region": "far",
+      "home": {
+        "academics": 68,
+        "research": 40,
+        "experience": 82,
+        "athletics": 66,
+        "access": 30,
+        "finance": 85
+      }
+    },
+    {
+      "id": "lowell",
+      "name": "Lowell Polytechnic",
+      "short": "Lowell Poly",
+      "mark": "L",
+      "hue": "#455a64",
+      "tag": "research-powerhouse",
+      "region": "far",
+      "home": {
+        "academics": 72,
+        "research": 82,
+        "experience": 52,
+        "athletics": 44,
+        "access": 66,
+        "finance": 62
+      }
+    },
+    {
+      "id": "ravensworth",
+      "name": "Ravensworth College",
+      "short": "Ravensworth",
+      "mark": "R",
+      "hue": "#37474f",
+      "tag": "old-money",
+      "region": "near",
+      "home": {
+        "academics": 76,
+        "research": 60,
+        "experience": 70,
+        "athletics": 58,
+        "access": 40,
+        "finance": 82
+      }
+    },
+    {
+      "id": "marlow",
+      "name": "Marlow University",
+      "short": "Marlow",
+      "mark": "M",
+      "hue": "#00695c",
+      "tag": "teaching-college",
+      "region": "far",
+      "home": {
+        "academics": 70,
+        "research": 58,
+        "experience": 72,
+        "athletics": 54,
+        "access": 64,
+        "finance": 60
+      }
+    },
+    {
+      "id": "east-fenwick",
+      "name": "University of East Fenwick",
+      "short": "East Fenwick",
+      "mark": "E",
+      "hue": "#5d4037",
+      "tag": "the-bargain",
+      "region": "near",
+      "home": {
+        "academics": 60,
+        "research": 50,
+        "experience": 58,
+        "athletics": 48,
+        "access": 80,
+        "finance": 48
+      }
+    },
+    {
+      "id": "kingsbridge",
+      "name": "Kingsbridge College",
+      "short": "Kingsbridge",
+      "mark": "K",
+      "hue": "#1a237e",
+      "tag": "country-club",
+      "region": "far",
+      "home": {
+        "academics": 66,
+        "research": 46,
+        "experience": 78,
+        "athletics": 72,
+        "access": 34,
+        "finance": 78
+      }
+    },
+    {
+      "id": "thornbury",
+      "name": "Thornbury University",
+      "short": "Thornbury",
+      "mark": "T",
+      "hue": "#4e342e",
+      "tag": "pressure-cooker",
+      "region": "far",
+      "home": {
+        "academics": 80,
+        "research": 70,
+        "experience": 46,
+        "athletics": 42,
+        "access": 58,
+        "finance": 66
+      }
+    },
+    {
+      "id": "brightwater",
+      "name": "Brightwater University",
+      "short": "Brightwater",
+      "mark": "B",
+      "hue": "#0277bd",
+      "tag": "party-school",
+      "region": "far",
+      "home": {
+        "academics": 56,
+        "research": 44,
+        "experience": 80,
+        "athletics": 76,
+        "access": 54,
+        "finance": 52
+      }
+    },
+    {
+      "id": "merriton",
+      "name": "Merriton College",
+      "short": "Merriton",
+      "mark": "M",
+      "hue": "#7b1fa2",
+      "tag": "artsy",
+      "region": "far",
+      "home": {
+        "academics": 64,
+        "research": 42,
+        "experience": 74,
+        "athletics": 34,
+        "access": 66,
+        "finance": 50
+      }
+    },
+    {
+      "id": "stanmore",
+      "name": "Stanmore Institute",
+      "short": "Stanmore",
+      "mark": "S",
+      "hue": "#546e7a",
+      "tag": "research-powerhouse",
+      "region": "far",
+      "home": {
+        "academics": 74,
+        "research": 86,
+        "experience": 46,
+        "athletics": 36,
+        "access": 60,
+        "finance": 72
+      }
+    },
+    {
+      "id": "fairhaven",
+      "name": "Fairhaven University",
+      "short": "Fairhaven",
+      "mark": "F",
+      "hue": "#2e7d32",
+      "tag": "teaching-college",
+      "region": "far",
+      "home": {
+        "academics": 62,
+        "research": 48,
+        "experience": 70,
+        "athletics": 56,
+        "access": 70,
+        "finance": 54
+      }
+    },
+    {
+      "id": "oxley",
+      "name": "Oxley College",
+      "short": "Oxley",
+      "mark": "O",
+      "hue": "#ad1457",
+      "tag": "the-bargain",
+      "region": "far",
+      "home": {
+        "academics": 50,
+        "research": 36,
+        "experience": 56,
+        "athletics": 44,
+        "access": 84,
+        "finance": 40
+      }
+    },
+    {
+      "id": "corran",
+      "name": "Corran State",
+      "short": "Corran State",
+      "mark": "C",
+      "hue": "#e65100",
+      "tag": "jock-school",
+      "region": "far",
+      "home": {
+        "academics": 48,
+        "research": 40,
+        "experience": 62,
+        "athletics": 86,
+        "access": 72,
+        "finance": 46
+      }
+    },
+    {
+      "id": "wexley",
+      "name": "Wexley University",
+      "short": "Wexley",
+      "mark": "W",
+      "hue": "#283593",
+      "tag": "old-money",
+      "region": "far",
+      "home": {
+        "academics": 72,
+        "research": 62,
+        "experience": 68,
+        "athletics": 64,
+        "access": 36,
+        "finance": 86
+      }
+    },
+    {
+      "id": "harrowgate",
+      "name": "Harrowgate College",
+      "short": "Harrowgate",
+      "mark": "H",
+      "hue": "#558b2f",
+      "tag": "commuter",
+      "region": "far",
+      "home": {
+        "academics": 46,
+        "research": 34,
+        "experience": 48,
+        "athletics": 50,
+        "access": 82,
+        "finance": 38
+      }
+    },
+    {
+      "id": "linden-hall",
+      "name": "Linden Hall University",
+      "short": "Linden Hall",
+      "mark": "L",
+      "hue": "#8d6e63",
+      "tag": "the-bargain",
+      "region": "near",
+      "home": {
+        "academics": 54,
+        "research": 44,
+        "experience": 60,
+        "athletics": 52,
+        "access": 76,
+        "finance": 44
+      }
+    }
+  ],
+  "methodologies": [
+    {
+      "id": "classic",
+      "name": "The Classic Formula",
+      "line": "The guide ranks as it always has, and says so on the cover.",
+      "weights": {
+        "academics": 0.3,
+        "research": 0.2,
+        "experience": 0.15,
+        "athletics": 0.05,
+        "access": 0.1,
+        "finance": 0.2
+      }
+    },
+    {
+      "id": "outcomes",
+      "name": "The Outcomes Turn",
+      "line": "The guide now ranks colleges by what their graduates earn, and a dozen deans issue statements.",
+      "weights": {
+        "academics": 0.35,
+        "research": 0.1,
+        "experience": 0.15,
+        "athletics": 0.05,
+        "access": 0.1,
+        "finance": 0.25
+      }
+    },
+    {
+      "id": "research-first",
+      "name": "The Citation Index",
+      "line": "The guide has discovered citations. Every college with a lab issues a press release; every college without one issues a complaint.",
+      "weights": {
+        "academics": 0.2,
+        "research": 0.4,
+        "experience": 0.1,
+        "athletics": 0.05,
+        "access": 0.05,
+        "finance": 0.2
+      }
+    },
+    {
+      "id": "student-voice",
+      "name": "The Student Voice Survey",
+      "line": "The guide will now ask the students. Several presidents call this unscientific; the students call it overdue.",
+      "weights": {
+        "academics": 0.2,
+        "research": 0.1,
+        "experience": 0.35,
+        "athletics": 0.1,
+        "access": 0.15,
+        "finance": 0.1
+      }
+    },
+    {
+      "id": "social-mobility",
+      "name": "The Mobility Measure",
+      "line": "The guide now rewards colleges that admit people who were not already going to be fine. The old names fall three places and write letters.",
+      "weights": {
+        "academics": 0.2,
+        "research": 0.1,
+        "experience": 0.15,
+        "athletics": 0.05,
+        "access": 0.35,
+        "finance": 0.15
+      }
+    },
+    {
+      "id": "prestige-poll",
+      "name": "The Reputation Poll",
+      "line": "The guide will rank by asking presidents what they think of each other. The presidents think highly of the old names.",
+      "weights": {
+        "academics": 0.25,
+        "research": 0.25,
+        "experience": 0.1,
+        "athletics": 0.15,
+        "access": 0.05,
+        "finance": 0.2
+      }
+    }
+  ],
+  "axes": {
+    "academics": {
+      "label": "Academics",
+      "hint": "Teaching quality and the quality of the students the college admits."
+    },
+    "research": {
+      "label": "Research",
+      "hint": "The faculty's research, scaled by how many of them there are, and the buildings that house it."
+    },
+    "experience": {
+      "label": "Student experience",
+      "hint": "How the students feel about the place, averaged over every class."
+    },
+    "athletics": {
+      "label": "Athletics",
+      "hint": "The facilities, and what the teams do with them."
+    },
+    "access": {
+      "label": "Access",
+      "hint": "How far the college opens its doors: aid, how many it turns away, and whether there are beds for the ones it takes."
+    },
+    "finance": {
+      "label": "Financial strength",
+      "hint": "The endowment, the operating funds, and where the college stands with its board."
+    }
+  },
+  "words": {
+    "title": "The Guide's rankings",
+    "you": "You",
+    "methodology": "Methodology",
+    "changedIn": "Changed in Year {year}: {line}",
+    "since": "In use since Year {year}.",
+    "notYet": "The first table is published at the turn of the first year. The guide does not rank a college that has not finished a year.",
+    "rankHint": "Where the college stands in this year's table: every college's six axes, weighted by the guide's current methodology.",
+    "scoreHint": "The college's weighted score under the current methodology, 0–100.",
+    "prestigeHint": "The six axes averaged: the college's standing, which moves over years rather than terms.",
+    "axisHint": "Where the college stands on {axis}, trailing what it is doing now: the reading on the right is this year's, and the standing moves a share of the way toward it each year.",
+    "moved": {
+      "up": "up {n}",
+      "down": "down {n}",
+      "same": "no change",
+      "new": "new"
+    },
+    "region": {
+      "near": "a neighbour",
+      "far": ""
+    }
+  }
+}

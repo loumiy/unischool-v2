@@ -31,3 +31,5 @@ export * from './seats.ts';
 export * from './campaigns.ts';
 export * from './weather.ts';
 export * from './reach.ts';
+export * from './league.ts';
+export * from './prestige.ts';

@@ -138,6 +138,12 @@
     "yearClosed": {
       "text": "Year {year} closes {net} {ledger}."
     },
+    "rankingsPublished": {
+      "text": "The guide's Year {year} rankings are out: {school} is {rank} of {count}{line}."
+    },
+    "methodologyChanged": {
+      "text": "{line}"
+    },
     "mark": {
       "text": "{label}"
     },

@@ -1,0 +1,54 @@
+{
+  "tags": [
+    {
+      "id": "research-powerhouse",
+      "name": "Research Powerhouse",
+      "blurb": "The papers come out faster than the undergraduates."
+    },
+    {
+      "id": "teaching-college",
+      "name": "Teaching College",
+      "blurb": "Small classes, and professors who know your name."
+    },
+    {
+      "id": "party-school",
+      "name": "Party School",
+      "blurb": "Thursday is the weekend."
+    },
+    {
+      "id": "jock-school",
+      "name": "Jock School",
+      "blurb": "The stadium is the biggest building on campus, and everyone knows the fight song."
+    },
+    {
+      "id": "artsy",
+      "name": "Artsy",
+      "blurb": "Studios open all night and a gallery in every stairwell."
+    },
+    {
+      "id": "commuter",
+      "name": "Commuter",
+      "blurb": "Most of the students go home at five."
+    },
+    {
+      "id": "country-club",
+      "name": "Country Club",
+      "blurb": "Beautiful grounds, a long waiting list, and a lot of sailing."
+    },
+    {
+      "id": "pressure-cooker",
+      "name": "Pressure Cooker",
+      "blurb": "The library never closes, and nobody leaves it."
+    },
+    {
+      "id": "the-bargain",
+      "name": "The Bargain",
+      "blurb": "A good degree at a price a family can say out loud."
+    },
+    {
+      "id": "old-money",
+      "name": "Old Money",
+      "blurb": "Endowed before anyone alive was born, and dressed for it."
+    }
+  ]
+}

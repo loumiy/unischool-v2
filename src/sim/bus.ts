@@ -90,6 +90,15 @@ export type BusEvent =
   | { kind: 'boardLetter'; letter: string }
   | { kind: 'cutsImposed'; cuts: string[] }
   | { kind: 'yearClosed'; year: number; net: number }
+  // The league (DD §11.3): the guide's table, and the guide changing its mind.
+  | {
+      kind: 'rankingsPublished';
+      year: number;
+      rank: number;
+      previous: number | null;
+      total: number;
+    }
+  | { kind: 'methodologyChanged'; methodologyId: string }
   | { kind: 'mark'; label: string }; // the debug panel's marker
 
 export type BusKind = BusEvent['kind'];
@@ -144,6 +153,8 @@ export const BUS_KINDS: readonly BusKind[] = [
   'boardLetter',
   'cutsImposed',
   'yearClosed',
+  'rankingsPublished',
+  'methodologyChanged',
   'mark',
 ];
 

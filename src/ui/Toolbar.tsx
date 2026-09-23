@@ -7,11 +7,15 @@ import {
   netOf,
   SPEEDS,
   speedGate,
+  collegePrestige,
+  latestTable,
+  rankOf,
   type SpeedGate,
   type GameState,
   type Speed,
 } from '../sim/index.ts';
 import { rungWords } from '../content/board.ts';
+import { ordinal } from '../content/busLines.ts';
 import DayTicker from './DayTicker.tsx';
 import {
   BuildIcon,
@@ -120,6 +124,9 @@ export default function Toolbar({
   const { treasury } = state;
   const weekNet = netOf(treasury.lastWeek);
   const students = enrolled(state);
+  const table = latestTable(state);
+  const rank = table ? rankOf(table) : null;
+  const prestige = collegePrestige(state).toFixed(0);
   return (
     <div className="toolbar" ref={ref}>
       <div className="toolbar-left">
@@ -159,11 +166,27 @@ export default function Toolbar({
             <span className="stat-label">Enrolled</span>
             <span className="stat-value">{students}</span>
           </button>
-          <div className="toolbar-stat pending" title="Prestige (Phase 24)">
+          {/* The standing and the table (Phase 22): prestige, and where the
+              guide put the college last, opening the League. */}
+          <button
+            type="button"
+            className={`toolbar-stat ${active === 'league' ? 'active' : ''}`}
+            title={
+              rank === null
+                ? `Prestige ${prestige} — the guide publishes its first table at the turn of the year`
+                : `Prestige ${prestige}, ${ordinal(rank)} in the guide — opens League`
+            }
+            aria-label="Open League"
+            aria-expanded={active === 'league'}
+            onClick={() => onChangeTab(active === 'league' ? null : 'league')}
+          >
             <PrestigeIcon />
             <span className="stat-label">Prestige</span>
-            <span className="stat-value">—</span>
-          </div>
+            <span className="stat-value">
+              {prestige}
+              {rank !== null && <span className="stat-rank"> · #{rank}</span>}
+            </span>
+          </button>
         </div>
       </div>
 
