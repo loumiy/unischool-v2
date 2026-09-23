@@ -94,12 +94,12 @@ This is almost certainly where the "rewritten and overwritten" feel comes from. 
 - **A `'inProgress'` status that no longer exists:** `tab-gates.test.ts:75`.
 - **A fourth argument to a three-argument function:** `cohorts.test.ts:66, 110, 115`.
 - **A `SportDefinition.name` field that is gone:** `sport-standings.test.ts:109`.
-- **Six `Property 'type' does not exist on type 'never'`**, where a narrowing now proves the branch unreachable:
+- **Six `Property 'type' does not exist on type 'never'`.** These turned out not to be drift: TypeScript narrows `s.pendingInterrupt` to `null` after the test assigns it, not knowing that the system under test sets it again. (Corrected after Plan 22's PR A fixed them.)
   - `athletic-director.test.ts:102, 110`
   - `playoffs.test.ts:156`
   - `research-completion.test.ts:165, 175, 186`
 
-The tests still pass, but some of them are exercising a shape the game no longer has. They may be checking less than they appear to.
+The tests still pass, but the other sixteen are exercising a shape the game no longer has. They may be checking less than they appear to.
 
 **The fix:**
 
