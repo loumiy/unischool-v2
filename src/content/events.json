@@ -3268,6 +3268,2387 @@
         }
       ],
       "default": "name"
+    },
+    {
+      "id": "the-car-park",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "enrolledOver": 250,
+        "buildingsOver": 4
+      },
+      "text": "Facilities has issued three hundred and forty permits for a car park with two hundred and twelve spaces, on the reasoning that not everyone comes in at once. On the second Monday of term everyone came in at once.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "second",
+          "label": "Lay out a second car park",
+          "note": "$240k, and eleven trees",
+          "effects": {
+            "cash": -240000,
+            "trees": -11,
+            "mood": 2
+          }
+        },
+        {
+          "id": "ballot",
+          "label": "Allocate the permits by ballot",
+          "note": "Free; the unlucky drive round",
+          "effects": {
+            "mood": -2
+          }
+        },
+        {
+          "id": "charge",
+          "label": "Charge for permits",
+          "note": "Brings in $40k; nobody thanks anyone",
+          "effects": {
+            "cash": 40000,
+            "mood": -3,
+            "confidence": 1
+          }
+        }
+      ],
+      "default": "ballot",
+      "favours": ["commuter"]
+    },
+    {
+      "id": "the-burst-pipe",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "winterAtLeast": 0.6,
+        "backlogOver": 600000
+      },
+      "text": "A pipe above the second floor of {building} burst on the Saturday and ran until Monday, when the first seminar of the week found it. The ceiling tiles are drying in the corridor, stacked and numbered by somebody from the porters' lodge, which Facilities describes as the most useful thing done all weekend.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Replace the whole run of pipe",
+          "note": "$220k; the rest of it was the same age",
+          "effects": {
+            "cash": -220000,
+            "backlog": -250000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "patch",
+          "label": "Repair the burst and dry it out",
+          "note": "$18k; the rest of the run is the same age, and everybody knows it",
+          "effects": {
+            "cash": -18000,
+            "mood": -2
+          }
+        }
+      ],
+      "default": "patch"
+    },
+    {
+      "id": "the-fox-on-the-wall",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "enrolledOver": 200,
+        "beautyOver": 55
+      },
+      "text": "Somebody has painted a fox on the end wall of {building} overnight: nine feet tall, anatomically careful, and rather good. Grounds are ready with the pressure washer. The art department has asked them to wait until it has been photographed, and then, on reflection, to wait a little longer.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "clean",
+          "label": "Have it cleaned off",
+          "note": "$8k; the wall is a wall again",
+          "effects": {
+            "cash": -8000,
+            "mood": -2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave the fox where it is",
+          "note": "Free; the board will ask about it",
+          "effects": {
+            "mood": 2,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "commission",
+          "label": "Commission a proper mural beside it",
+          "note": "$40k, and the fox stays",
+          "effects": {
+            "cash": -40000,
+            "mood": 3,
+            "warmth": 1
+          }
+        }
+      ],
+      "default": "clean"
+    },
+    {
+      "id": "the-master-key",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "buildingsOver": 3,
+        "yearAtLeast": 5
+      },
+      "text": "The master key to {building} has been lost. It was last seen on a ring with nine others and a small plastic lobster, and the locksmith's estimate for changing every lock in the building runs to four pages.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "rekey",
+          "label": "Change every lock in the building",
+          "note": "$60k",
+          "effects": {
+            "cash": -60000,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "cards",
+          "label": "Move the whole campus to key cards",
+          "note": "$180k; nobody loses a lobster again",
+          "effects": {
+            "cash": -180000,
+            "backlog": -80000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "search",
+          "label": "Keep looking for it",
+          "note": "Free; whoever has it still has it",
+          "effects": {
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "search"
+    },
+    {
+      "id": "the-buckets",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "conditionUnder": 0.75,
+        "backlogOver": 500000
+      },
+      "text": "Rain has been getting into {building} along the valley gutter, and there are now nine buckets in the top-floor corridor. The porters empty them twice a day and have begun logging the volumes in a notebook, which they would like someone senior to read, because the numbers are going up.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "reroof",
+          "label": "Reroof the building",
+          "note": "$500k",
+          "effects": {
+            "cash": -500000,
+            "backlog": -450000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "gutter",
+          "label": "Reline the gutter",
+          "note": "$45k; the buckets stay out",
+          "effects": {
+            "cash": -45000,
+            "backlog": 120000
+          }
+        },
+        {
+          "id": "buckets",
+          "label": "Keep emptying the buckets",
+          "note": "Free; the notebook fills",
+          "effects": {
+            "backlog": 300000,
+            "mood": -2
+          }
+        }
+      ],
+      "default": "buckets"
+    },
+    {
+      "id": "the-lift",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "conditionUnder": 0.8,
+        "buildingsOver": 3
+      },
+      "text": "The lift in {building} has stopped between floors for the fourth time this term, most recently for fifty minutes with the Dean inside it. The Dean used the time to draft a memo about the lift, which has now arrived, and which notes that for some students the stairs are not an alternative.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Replace the lift",
+          "note": "$280k",
+          "effects": {
+            "cash": -280000,
+            "backlog": -150000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "service",
+          "label": "Service it and post a notice",
+          "note": "$12k; it will stop again",
+          "effects": {
+            "cash": -12000,
+            "backlog": 80000,
+            "mood": -2
+          }
+        }
+      ],
+      "default": "service"
+    },
+    {
+      "id": "the-listing",
+      "kind": "inline",
+      "domain": "estate",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "oldestBuildingOver": 20,
+        "beautyOver": 55
+      },
+      "text": "The county's heritage officer would like to list {building} as a building of special interest. Listing would protect it from alteration of any kind, and the officer has confirmed, when asked a second time, that this includes the repairs.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "support",
+          "label": "Support the listing",
+          "note": "Free; every repair now needs consent",
+          "effects": {
+            "warmth": 3,
+            "backlog": 250000
+          }
+        },
+        {
+          "id": "object",
+          "label": "Object to the listing",
+          "note": "$30k in advice; the alumni hear of it",
+          "effects": {
+            "cash": -30000,
+            "warmth": -2,
+            "confidence": 1
+          }
+        }
+      ],
+      "default": "support"
+    },
+    {
+      "id": "the-footnote-feud",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "facultyOver": 8,
+        "yearAtLeast": 10
+      },
+      "text": "Two senior members of {program} have not spoken for six years, since a disagreement over a footnote that neither of them now cites. The department has arranged for them to attend alternate meetings, and has asked, as a practical matter, whether a second photocopier might help.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "split",
+          "label": "Split the department in two",
+          "note": "$60k a year for a second office",
+          "effects": {
+            "adminPayroll": 60000,
+            "quality": 1,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "mediate",
+          "label": "Pay for a mediator",
+          "note": "$20k; it may take",
+          "effects": {
+            "cash": -20000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "copier",
+          "label": "Buy the second photocopier",
+          "note": "$4k; the footnote endures",
+          "effects": {
+            "cash": -4000,
+            "quality": -1
+          }
+        }
+      ],
+      "default": "copier"
+    },
+    {
+      "id": "the-timetable-clash",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "programsOver": 2,
+        "enrolledOver": 200
+      },
+      "text": "The new timetable has put the required methods course for {program} in the same hour as the only other course the program requires. Forty students cannot graduate on time without being in two rooms at once. The Registrar's office says the software did it, and the software has not commented.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "redraw",
+          "label": "Redraw the timetable",
+          "note": "$25k and a fortnight of the Registrar",
+          "effects": {
+            "cash": -25000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "evening",
+          "label": "Run an extra section in the evening",
+          "note": "$50k in teaching",
+          "effects": {
+            "cash": -50000,
+            "mood": 1,
+            "quality": 1
+          }
+        },
+        {
+          "id": "waive",
+          "label": "Waive one requirement this year",
+          "note": "Free; the degree is thinner",
+          "effects": {
+            "quality": -1,
+            "mood": -1
+          }
+        }
+      ],
+      "default": "waive"
+    },
+    {
+      "id": "the-plagiarism-software",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "enrolledOver": 250,
+        "yearAtLeast": 6
+      },
+      "text": "The plagiarism software licensed last year has flagged two first-year essays in five. One of them is an essay on academic honesty, flagged for quoting the college's own policy, correctly and with a citation.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "review",
+          "label": "Review every flagged case by hand",
+          "note": "$45k in marking time",
+          "effects": {
+            "cash": -45000,
+            "quality": 1,
+            "mood": 1
+          }
+        },
+        {
+          "id": "cancel",
+          "label": "Cancel the licence",
+          "note": "Saves $20k; the real cases go unflagged",
+          "effects": {
+            "cash": 20000,
+            "quality": -1
+          }
+        },
+        {
+          "id": "stand",
+          "label": "Let the flags stand",
+          "note": "Free; forty hearings, and letters home",
+          "effects": {
+            "mood": -3,
+            "confidence": 1
+          }
+        }
+      ],
+      "default": "stand",
+      "favours": ["pressure-cooker"]
+    },
+    {
+      "id": "the-writing-requirement",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "programsOver": 2,
+        "facultyOver": 6
+      },
+      "text": "The Curriculum Committee has met eleven times on whether first-years should take a writing course, and has approved the minutes of all eleven meetings and nothing else. The chair has asked whether the President might 'indicate a view', in a tone that suggests a request to be rescued.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "require",
+          "label": "Require the writing course",
+          "note": "$80k a year in new sections",
+          "effects": {
+            "facultyPayroll": 80000,
+            "quality": 2,
+            "mood": -1
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave it with the committee",
+          "note": "Free; the twelfth meeting is booked",
+          "effects": {
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "leave",
+      "favours": ["teaching-college"]
+    },
+    {
+      "id": "the-grade-medians",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "satisfactionOver": 60,
+        "yearAtLeast": 10
+      },
+      "text": "The median grade has risen for the ninth year running and now sits a short way below the top of the scale. A graduate school has written to ask what an A from {school} is meant to signify, in a tone that suggests it has already formed a view.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "publish",
+          "label": "Print the median beside every grade",
+          "note": "Free; the students read their own transcripts",
+          "effects": {
+            "mood": -2,
+            "quality": 1,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave the grades alone",
+          "note": "Free; the next letter will be less polite",
+          "effects": {
+            "confidence": -2,
+            "mood": 1
+          }
+        }
+      ],
+      "default": "leave",
+      "favours": ["country-club"]
+    },
+    {
+      "id": "the-lab-inspection",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "facultyOver": 5,
+        "yearAtLeast": 8
+      },
+      "text": "The safety inspector has been through the laboratories and found a fume cupboard last certified the year it was installed, a fridge marked NO FOOD with somebody's lunch in it, and an eyewash station connected to nothing. The report is polite, numbered, and gives the college twenty-eight days.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "all",
+          "label": "Put everything on the list right",
+          "note": "$150k; the report is closed",
+          "effects": {
+            "cash": -150000,
+            "backlog": -100000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "worst",
+          "label": "Fix the fume cupboard and the eyewash",
+          "note": "$55k; the rest waits for the reinspection",
+          "effects": {
+            "cash": -55000,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "close",
+          "label": "Close the laboratories until it is done",
+          "note": "Free; a term of practicals lost",
+          "effects": {
+            "quality": -2,
+            "mood": -2
+          }
+        }
+      ],
+      "default": "worst",
+      "needs": ["lab"],
+      "favours": ["research-powerhouse"]
+    },
+    {
+      "id": "the-last-lecture",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 2,
+      "cooldownYears": 6,
+      "when": {
+        "yearAtLeast": 15,
+        "facultyOver": 5
+      },
+      "text": "The longest-serving teacher in {program} retires in June, after enough years that two of the current department were once her students. The department would like a dinner, a volume of essays, and her office kept exactly as it is for a year, and has listed these in ascending order of seriousness.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "dinner",
+          "label": "Hold the dinner and fund the volume",
+          "note": "$35k",
+          "effects": {
+            "cash": -35000,
+            "warmth": 2,
+            "mood": 1
+          }
+        },
+        {
+          "id": "prize",
+          "label": "Endow a prize in her name",
+          "note": "$150k into the fund",
+          "effects": {
+            "cash": -150000,
+            "endowment": 150000,
+            "warmth": 3,
+            "mood": 1
+          }
+        },
+        {
+          "id": "card",
+          "label": "Send a card and reallocate the office",
+          "note": "Free; the department takes note",
+          "effects": {
+            "warmth": -2
+          }
+        }
+      ],
+      "default": "card"
+    },
+    {
+      "id": "the-closing-bell",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "enrolledOver": 200,
+        "yearAtLeast": 4
+      },
+      "text": "It is exam season and the library closes at midnight. At ten past, most nights, a porter walks the stacks with a torch and finds thirty or forty students who did not hear the bell, are very sorry, and would like five more minutes.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "open",
+          "label": "Open the library all night in exams",
+          "note": "$40k a year in night staff",
+          "effects": {
+            "adminPayroll": 40000,
+            "mood": 3
+          }
+        },
+        {
+          "id": "hold",
+          "label": "Keep to midnight closing",
+          "note": "Free; the porter keeps his torch",
+          "effects": {
+            "mood": -2
+          }
+        }
+      ],
+      "default": "hold",
+      "needs": ["library"],
+      "favours": ["pressure-cooker"]
+    },
+    {
+      "id": "the-laundry",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "enrolledOver": 150,
+        "yearAtLeast": 3
+      },
+      "text": "The laundry room in the residence halls has six machines, two of which work, and one of which works only if struck in a place the students have marked with tape. A rota has appeared on the door. It is fairer than anything the college has issued this year.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Replace the machines",
+          "note": "$45k",
+          "effects": {
+            "cash": -45000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "repair",
+          "label": "Repair the two that can be repaired",
+          "note": "$6k; the tape stays",
+          "effects": {
+            "cash": -6000,
+            "mood": -1
+          }
+        }
+      ],
+      "default": "repair",
+      "needs": ["residence-hall"]
+    },
+    {
+      "id": "the-vegan-counter",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "enrolledOver": 150,
+        "moodOver": 0
+      },
+      "text": "The dining hall added a vegan dish to the lunch counter this term, and it has sold out by half past twelve every day since. The catering manager would like to know whether the college intends to plan for this, or to go on being surprised by it at half past twelve.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "expand",
+          "label": "Expand the menu and retrain the kitchen",
+          "note": "$50k",
+          "effects": {
+            "cash": -50000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "mondays",
+          "label": "Make Mondays meat-free across the hall",
+          "note": "Saves $15k; the letters are mixed",
+          "effects": {
+            "cash": 15000,
+            "mood": -1,
+            "warmth": -1
+          }
+        },
+        {
+          "id": "keep",
+          "label": "Keep it to a single dish",
+          "note": "Free; it sells out at half past twelve",
+          "effects": {
+            "mood": -1
+          }
+        }
+      ],
+      "default": "keep",
+      "needs": ["dining-hall"],
+      "favours": ["artsy"]
+    },
+    {
+      "id": "the-lodge-cat",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "enrolledOver": 100,
+        "yearAtLeast": 3
+      },
+      "text": "A cat has moved into the porters' lodge. It arrived in October, has been fed by at least four people who each believed they were the only one, and now appears in more student photographs than the President does.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "adopt",
+          "label": "Adopt the cat on the college's books",
+          "note": "$2k in vet's bills and a collar",
+          "effects": {
+            "cash": -2000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "rehome",
+          "label": "Find it a home in town",
+          "note": "Free; the lodge is quieter",
+          "effects": {
+            "mood": -2
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave the arrangement as it is",
+          "note": "Free; the insurers ask one question",
+          "effects": {
+            "mood": 1,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "leave"
+    },
+    {
+      "id": "the-bike-thefts",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "enrolledOver": 250,
+        "yearAtLeast": 5
+      },
+      "text": "Forty-one bicycles have been stolen from outside {building} since the start of term. Campus security describes it as a wave. The insurer has declined to describe it as anything until it has seen the locks, and the students' union has begun selling better ones at cost.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "racks",
+          "label": "Install covered, lit racks with cameras",
+          "note": "$70k",
+          "effects": {
+            "cash": -70000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "patrol",
+          "label": "Add a night patrol",
+          "note": "$45k a year",
+          "effects": {
+            "adminPayroll": 45000,
+            "mood": 2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "advise",
+          "label": "Circulate advice on locks",
+          "note": "Free; the wave continues",
+          "effects": {
+            "mood": -2
+          }
+        }
+      ],
+      "default": "advise"
+    },
+    {
+      "id": "the-hunger-strike",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "satisfactionUnder": 55,
+        "enrolledOver": 200
+      },
+      "text": "Six students have been on hunger strike for eleven days on the steps of {building}, asking the college to publish where the endowment is invested. They are taking water and seeing the nurse each morning. The nurse has written to say that the second week is when it stops being a gesture.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "publish",
+          "label": "Publish the holdings and meet them",
+          "note": "$60k in advisers' fees; the strike ends",
+          "effects": {
+            "cash": -60000,
+            "mood": 3,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "meet",
+          "label": "Meet them and explain the policy",
+          "note": "Free; it may not be enough",
+          "effects": {
+            "mood": -1
+          }
+        },
+        {
+          "id": "wait",
+          "label": "Wait for it to end",
+          "note": "Free; everyone is watching",
+          "effects": {
+            "mood": -3,
+            "warmth": -1
+          }
+        }
+      ],
+      "default": "wait"
+    },
+    {
+      "id": "the-wrong-coach",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "enrolledOver": 150,
+        "yearAtLeast": 4
+      },
+      "text": "Orientation went wrong in its first hour, when the coaches meeting the new students at the station took them to a college with a similar name forty miles away. The other college gave them lunch and a tour, and has written, generously, to say that several of them asked about transferring.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "restart",
+          "label": "Fetch them and restart the week properly",
+          "note": "$30k; a day late and a good week",
+          "effects": {
+            "cash": -30000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "carry",
+          "label": "Carry on with the programme as printed",
+          "note": "Free; they arrive for the second half",
+          "effects": {
+            "mood": -2,
+            "enrollment": -3
+          }
+        }
+      ],
+      "default": "carry"
+    },
+    {
+      "id": "the-invited-speaker",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "enrolledOver": 300,
+        "yearAtLeast": 8
+      },
+      "text": "A student society has invited a speaker whose views half the campus finds objectionable and the other half has not yet looked up. The society has booked the largest lecture room, two other societies have booked the corridor outside it, and Security would like a decision by Wednesday.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "secure",
+          "label": "Let it go ahead and pay for security",
+          "note": "$25k",
+          "effects": {
+            "cash": -25000,
+            "confidence": 1,
+            "mood": -1
+          }
+        },
+        {
+          "id": "reply",
+          "label": "Add a reply session straight after",
+          "note": "$35k; both sides get the room",
+          "effects": {
+            "cash": -35000,
+            "mood": 2,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "cancel",
+          "label": "Cancel it on safety grounds",
+          "note": "Free; the society writes to the paper",
+          "effects": {
+            "mood": -2,
+            "confidence": -1,
+            "warmth": -1
+          }
+        }
+      ],
+      "default": "secure"
+    },
+    {
+      "id": "the-statue-donor",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "alumniOver": 400,
+        "endowmentOver": 60000000
+      },
+      "text": "A donor has offered $1.5M towards the scholarship fund, on condition that a bronze of himself be placed at the main entrance. The sculptor has already been engaged, and the maquette shows him somewhat taller than the Registrar remembers.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept the gift and the statue",
+          "note": "$1.5M to the endowment; the students name it within a week",
+          "effects": {
+            "endowment": 1500000,
+            "mood": -2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "plaque",
+          "label": "Offer a named scholarship instead",
+          "note": "$600k, if he agrees; a plaque, not a plinth",
+          "effects": {
+            "endowment": 600000,
+            "warmth": 1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline the gift",
+          "note": "Nothing, and a very long letter in reply",
+          "effects": {
+            "warmth": -2,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "plaque",
+      "favours": ["old-money"]
+    },
+    {
+      "id": "the-reunion-gift",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "alumniOver": 500,
+        "warmthOver": 22
+      },
+      "text": "The {class} has raised a reunion gift and would like it spent on a clock for the main walk, with the class year on its face. The committee has chosen the clock, the typeface, and the year, which is off by one.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "clock",
+          "label": "Install the clock as given",
+          "note": "$250k from the class; the error is cast in iron",
+          "effects": {
+            "cash": 250000,
+            "warmth": 3
+          }
+        },
+        {
+          "id": "redirect",
+          "label": "Ask them to fund bursaries instead",
+          "note": "$250k to the endowment; some of them come round",
+          "effects": {
+            "endowment": 250000,
+            "warmth": -1,
+            "mood": 1
+          }
+        }
+      ],
+      "default": "clock"
+    },
+    {
+      "id": "the-racehorse",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "alumniOver": 300,
+        "yearAtLeast": 8
+      },
+      "text": "An alumnus has given the college a racehorse, with papers, a trainer, and a stable bill already running. The horse has won twice in four starts, and the Development Office would like it minuted that it did not ask for this.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "sell",
+          "label": "Sell the horse at auction",
+          "note": "$140k, and a photograph for the annual report",
+          "effects": {
+            "cash": 140000,
+            "warmth": -1
+          }
+        },
+        {
+          "id": "race",
+          "label": "Race it for a season in the college colours",
+          "note": "$60k in fees; the students follow every start",
+          "effects": {
+            "cash": -60000,
+            "mood": 3,
+            "warmth": 2
+          }
+        }
+      ],
+      "default": "sell",
+      "favours": ["country-club"]
+    },
+    {
+      "id": "the-honorary-degree",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 10,
+        "alumniOver": 300
+      },
+      "text": "The honorary degrees committee has put forward a shipping magnate whose foundation has been generous and whose company is currently in court on three continents. The committee's paper describes this as 'a matter for the courts', twice.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "confer",
+          "label": "Confer the degree",
+          "note": "A gift of $500k is understood; the student paper is less understanding",
+          "effects": {
+            "endowment": 500000,
+            "mood": -3,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "defer",
+          "label": "Defer the nomination a year",
+          "note": "Free; the foundation notices",
+          "effects": {
+            "confidence": -1
+          }
+        },
+        {
+          "id": "withdraw",
+          "label": "Withdraw the nomination",
+          "note": "Free; the committee is embarrassed and the students approve",
+          "effects": {
+            "mood": 2,
+            "warmth": -1
+          }
+        }
+      ],
+      "default": "defer",
+      "favours": ["old-money"]
+    },
+    {
+      "id": "the-address-list",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "alumniOver": 800
+      },
+      "text": "An audit of the alumni records has found that a third of the addresses are out of date and eleven belong to the same house. The house has been receiving the annual appeal in bulk since before its current owners bought it.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "officer",
+          "label": "Hire an alumni records officer",
+          "note": "$55k a year; the appeal starts arriving",
+          "effects": {
+            "adminPayroll": 55000,
+            "warmth": 2
+          }
+        },
+        {
+          "id": "summer",
+          "label": "Pay students to clean it over the summer",
+          "note": "$20k; good for a few years",
+          "effects": {
+            "cash": -20000,
+            "warmth": 1
+          }
+        },
+        {
+          "id": "leave",
+          "label": "Leave the records as they are",
+          "note": "Free; the house keeps the letters",
+          "effects": {
+            "warmth": -1
+          }
+        }
+      ],
+      "default": "summer"
+    },
+    {
+      "id": "the-matching-challenge",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 6,
+      "when": {
+        "alumniOver": 400,
+        "yearAtLeast": 8
+      },
+      "text": "A trustee has offered to match every alumni gift dollar for dollar up to $1M, if the challenge is announced and a fifth of the alumni give. She has chosen the fifth deliberately and has not said why.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "announce",
+          "label": "Announce the challenge and campaign for it",
+          "note": "$90k in mailing and calls; about $1.6M if it lands",
+          "effects": {
+            "cash": -90000,
+            "endowment": 1600000,
+            "warmth": -1
+          }
+        },
+        {
+          "id": "outright",
+          "label": "Ask her for a smaller gift, no conditions",
+          "note": "$400k, and a slightly cooler trustee",
+          "effects": {
+            "endowment": 400000,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "outright"
+    },
+    {
+      "id": "the-divestment",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "endowmentOver": 80000000,
+        "enrolledOver": 150
+      },
+      "text": "The students have petitioned the investment committee to divest from the companies named in a nineteen-page appendix. The committee has read the appendix, found two of its own holdings, and one of its own members' employers.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "divest",
+          "label": "Divest from the named holdings",
+          "note": "About $1.2M off the endowment in fees and missed returns",
+          "effects": {
+            "endowment": -1200000,
+            "mood": 3,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "review",
+          "label": "Commission a review of the policy",
+          "note": "$40k; a report in eighteen months",
+          "effects": {
+            "cash": -40000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "hold",
+          "label": "Hold the portfolio as it is",
+          "note": "Free; the petition becomes an encampment on the lawn",
+          "effects": {
+            "mood": -3,
+            "confidence": 1
+          }
+        }
+      ],
+      "default": "review",
+      "favours": ["artsy"]
+    },
+    {
+      "id": "the-insurance-renewal",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 4,
+      "cooldownYears": 4,
+      "when": {
+        "backlogOver": 600000,
+        "buildingsOver": 3
+      },
+      "text": "The insurers have renewed the property policy at a premium forty per cent higher than last year. Their surveyor's letter lists fourteen items of concern, the ninth of which is described only as 'the smell'.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "pay",
+          "label": "Pay the higher premium",
+          "note": "$90k a year, for good",
+          "effects": {
+            "adminPayroll": 90000,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "repair",
+          "label": "Fix the list and ask for a re-survey",
+          "note": "$450k off the backlog; the premium holds",
+          "effects": {
+            "cash": -450000,
+            "backlog": -450000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "excess",
+          "label": "Raise the excess and hope",
+          "note": "Free, until something floods",
+          "effects": {
+            "backlog": 150000,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "excess"
+    },
+    {
+      "id": "the-dormant-account",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 6,
+        "cashOver": 3000000
+      },
+      "text": "The auditors have found a bank account in the college's name that nobody in the Bursar's office remembers opening. It holds $38k and a standing order, still running, to a florist.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "close",
+          "label": "Close the account and bring it on the books",
+          "note": "$38k back, and a note in the management letter",
+          "effects": {
+            "cash": 38000,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "controller",
+          "label": "Hire a controller to find the others",
+          "note": "$95k a year; the board sleeps better",
+          "effects": {
+            "adminPayroll": 95000,
+            "confidence": 3
+          }
+        }
+      ],
+      "default": "close"
+    },
+    {
+      "id": "the-pension-valuation",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 15,
+        "facultyOver": 8
+      },
+      "text": "The three-yearly valuation of the staff pension scheme shows a shortfall. The actuary's letter is courteous, and it says the gap will grow if nothing is done.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "fund",
+          "label": "Close the gap now",
+          "note": "$900k, once",
+          "effects": {
+            "cash": -900000,
+            "confidence": 3
+          }
+        },
+        {
+          "id": "spread",
+          "label": "Raise contributions over time",
+          "note": "$70k a year on the faculty payroll",
+          "effects": {
+            "facultyPayroll": 70000,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "defer",
+          "label": "Wait for the next valuation",
+          "note": "Free; the staff read the letter too",
+          "effects": {
+            "confidence": -2,
+            "mood": -1
+          }
+        }
+      ],
+      "default": "defer"
+    },
+    {
+      "id": "the-beverage-contract",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "enrolledOver": 300,
+        "cashUnder": 8000000
+      },
+      "text": "A drinks company has offered the college an exclusive pouring contract: its machines in every building, its logo on the scoreboard, its colour on the recycling bins. The draft runs to forty pages, three of which concern the bins.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "sign",
+          "label": "Sign the contract",
+          "note": "$350k up front; the students lose the other brand",
+          "effects": {
+            "cash": 350000,
+            "mood": -1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline the contract",
+          "note": "Free; the machines stay mixed",
+          "effects": {
+            "mood": 1
+          }
+        }
+      ],
+      "default": "sign",
+      "favours": ["party-school"]
+    },
+    {
+      "id": "the-land-offer",
+      "kind": "inline",
+      "domain": "money",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 10,
+        "cashUnder": 4000000
+      },
+      "text": "A developer has offered to buy the wooded strip along the college's northern edge, which the college has owned since its founding and has never once found a use for. The offer letter refers to it as 'the opportunity site'.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "sell",
+          "label": "Sell the strip",
+          "note": "$2.5M; the trees come down in spring",
+          "effects": {
+            "cash": 2500000,
+            "trees": -35,
+            "warmth": -2
+          }
+        },
+        {
+          "id": "lease",
+          "label": "Lease it for twenty years",
+          "note": "$300k now; the trees stay, for now",
+          "effects": {
+            "cash": 300000,
+            "trees": -8
+          }
+        },
+        {
+          "id": "keep",
+          "label": "Keep the land",
+          "note": "Free; the board asks what it is for",
+          "effects": {
+            "confidence": -1,
+            "warmth": 1
+          }
+        }
+      ],
+      "default": "keep"
+    },
+    {
+      "id": "the-strategic-plan",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 5,
+        "confidenceUnder": 55
+      },
+      "text": "The board has asked for a strategic plan. The last one is in the President's filing cabinet, in a binder whose spine reads 'Vision', and nobody has opened it since the year it was printed.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "commission",
+          "label": "Commission a plan from outside",
+          "note": "$180k; bound in a better binder",
+          "effects": {
+            "cash": -180000,
+            "confidence": 3
+          }
+        },
+        {
+          "id": "write",
+          "label": "Write it in-house over the summer",
+          "note": "$15k and the provost's summer",
+          "effects": {
+            "cash": -15000,
+            "confidence": 1,
+            "mood": -1
+          }
+        },
+        {
+          "id": "reissue",
+          "label": "Reissue the old plan with new dates",
+          "note": "Free; one trustee has kept a copy",
+          "effects": {
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "write"
+    },
+    {
+      "id": "the-trustee-bid",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "buildingsOver": 5,
+        "yearAtLeast": 6
+      },
+      "text": "The lowest bid for the new roofing contract has come from a firm owned by the brother-in-law of the chair of the buildings committee. The chair has declared the interest, recused himself, and asked how the vote went.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "award",
+          "label": "Award it to the lowest bid",
+          "note": "$120k saved; the auditors will ask",
+          "effects": {
+            "cash": 120000,
+            "confidence": -2
+          }
+        },
+        {
+          "id": "rebid",
+          "label": "Re-tender the contract",
+          "note": "$60k in delay and fees; clean",
+          "effects": {
+            "cash": -60000,
+            "confidence": 2
+          }
+        }
+      ],
+      "default": "rebid"
+    },
+    {
+      "id": "the-consultants-report",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 10,
+        "confidenceUnder": 50
+      },
+      "text": "The consultants have delivered their report, two hundred and twelve pages, and its central finding is that the college should 'lean into its distinctiveness'. The appendix describing the distinctiveness appears to have been written for a previous client.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "implement",
+          "label": "Implement the recommendations",
+          "note": "$80k a year for an Office of Distinctiveness",
+          "effects": {
+            "adminPayroll": 80000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "summary",
+          "label": "Adopt the executive summary only",
+          "note": "Free; the board likes the summary",
+          "effects": {
+            "confidence": 1,
+            "mood": -1
+          }
+        },
+        {
+          "id": "shelve",
+          "label": "Thank the consultants and shelve it",
+          "note": "Free; the fee is spent either way",
+          "effects": {
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "summary"
+    },
+    {
+      "id": "the-presidents-residence",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "endowmentOver": 100000000,
+        "yearAtLeast": 12
+      },
+      "text": "The board would like the President's residence refurbished before the trustees' dinner. The proposal includes a wine room, a second dining room, and a line item headed 'dignity', which is the largest.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "refurbish",
+          "label": "Approve the refurbishment",
+          "note": "$600k; the students do the arithmetic",
+          "effects": {
+            "cash": -600000,
+            "confidence": 2,
+            "mood": -2
+          }
+        },
+        {
+          "id": "modest",
+          "label": "Repaint and replace the boiler",
+          "note": "$80k",
+          "effects": {
+            "cash": -80000,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline the refurbishment",
+          "note": "Free; the dinner is held in the old dining room",
+          "effects": {
+            "confidence": -1,
+            "mood": 1
+          }
+        }
+      ],
+      "default": "modest"
+    },
+    {
+      "id": "the-board-secretary",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 3,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 20,
+        "confidenceOver": 50
+      },
+      "text": "The secretary to the board is retiring after thirty-one years. The minutes of every meeting since the founding are in her handwriting, and in a shorthand of her own devising that no one else can read.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "hire",
+          "label": "Appoint a full-time successor",
+          "note": "$70k a year; the minutes are typed",
+          "effects": {
+            "adminPayroll": 70000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "transcribe",
+          "label": "Pay her to transcribe the archive first",
+          "note": "$45k; the college keeps its memory",
+          "effects": {
+            "cash": -45000,
+            "warmth": 2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "rotate",
+          "label": "Rotate the minutes among the trustees",
+          "note": "Free; the minutes get shorter",
+          "effects": {
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "rotate"
+    },
+    {
+      "id": "the-term-limits",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 8,
+      "when": {
+        "yearAtLeast": 14,
+        "confidenceUnder": 55
+      },
+      "text": "A governance review has recommended term limits for trustees. The longest-serving trustee has been on the board for twenty-six years, chaired the committee that commissioned the review, and would like to discuss the transition arrangements.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "adopt",
+          "label": "Adopt term limits",
+          "note": "Free; three seats open over two years",
+          "effects": {
+            "confidence": -2,
+            "warmth": 2
+          }
+        },
+        {
+          "id": "grandfather",
+          "label": "Adopt them for new trustees only",
+          "note": "Free; the board is comfortable",
+          "effects": {
+            "confidence": 1,
+            "warmth": -1
+          }
+        }
+      ],
+      "default": "grandfather"
+    },
+    {
+      "id": "the-rankings-survey",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "rankAtLeast": 18,
+        "yearAtLeast": 4
+      },
+      "text": "The guide's reputation survey has arrived, asking the President to rate twenty-four other colleges from one to five. Last year's return rated {rival} a two, and the President's office would like to know whether that is still the college's position.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "brochure",
+          "label": "Send every president a glossy brochure first",
+          "note": "$60k in print and postage",
+          "effects": {
+            "cash": -60000,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "honest",
+          "label": "Fill it in honestly and send it back",
+          "note": "Free",
+          "effects": {
+            "confidence": 1
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Leave it in the in-tray",
+          "note": "Free; the guide counts the silence",
+          "effects": {
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "honest",
+      "favours": ["research-powerhouse"]
+    },
+    {
+      "id": "the-rival-film",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "rivalAtLeast": 1,
+        "yearAtLeast": 5
+      },
+      "text": "A promotional film made by {rival} has been watched more times than {rival} has living alumni. It features a rowing eight at dawn, a lecture in a meadow, and a golden retriever that does not appear to be enrolled.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "commission",
+          "label": "Commission a film of our own",
+          "note": "$120k; a few more applications",
+          "effects": {
+            "cash": -120000,
+            "enrollment": 10,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "students",
+          "label": "Let the film society make one",
+          "note": "$8k; it is stranger and better",
+          "effects": {
+            "cash": -8000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "ignore",
+          "label": "Let it pass",
+          "note": "Free; the admissions office watches it anyway",
+          "effects": {
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "students"
+    },
+    {
+      "id": "the-coach-poached",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 4,
+      "when": {
+        "varsityAtLeast": 1,
+        "rivalAtLeast": 1
+      },
+      "text": "{rival} has offered the {sport} coach a head job, a car, and a salary the athletics budget has never contemplated. The coach has told the team, the team has told the student paper, and the paper has run it above the fold.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "match",
+          "label": "Match the salary",
+          "note": "$50k a year, for good",
+          "effects": {
+            "adminPayroll": 50000,
+            "mood": 2
+          }
+        },
+        {
+          "id": "promote",
+          "label": "Promote the assistant coach",
+          "note": "$10k; the team rallies",
+          "effects": {
+            "cash": -10000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "release",
+          "label": "Let the coach go with thanks",
+          "note": "Free; the season is harder",
+          "effects": {
+            "mood": -2
+          }
+        }
+      ],
+      "default": "release",
+      "favours": ["jock-school"]
+    },
+    {
+      "id": "the-booster-club",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "varsityAtLeast": 1,
+        "alumniOver": 300
+      },
+      "text": "The booster club has offered $300k for the {sport} programme, with one request attached: a seat on the committee that appoints the coach. The club's president has put the request in the covering letter and the cheque in the same envelope.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Accept the gift and the seat",
+          "note": "$300k; the boosters stay involved",
+          "effects": {
+            "cash": 300000,
+            "confidence": -2,
+            "warmth": 2
+          }
+        },
+        {
+          "id": "unconditional",
+          "label": "Take the money, decline the seat",
+          "note": "$150k, if they agree; about half do",
+          "effects": {
+            "cash": 150000,
+            "warmth": -1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Return the cheque",
+          "note": "Nothing; the boosters are hurt",
+          "effects": {
+            "warmth": -2,
+            "confidence": 1
+          }
+        }
+      ],
+      "default": "unconditional",
+      "favours": ["jock-school"]
+    },
+    {
+      "id": "the-flood",
+      "kind": "seismic",
+      "domain": "estate",
+      "weight": 3,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 7,
+        "buildingsOver": 4
+      },
+      "title": "The river",
+      "text": "The river came over the east meadow on the Thursday and did not stop at the path, which the planning documents had assured everyone it would. By the Saturday there was water to the second step of {building} and a canoe tied to the bicycle racks, and the grounds staff had carried the ground-floor archive up a storey by hand, box by box, through the night.\n\nNobody was hurt. The loss adjuster has described the damage as 'general', which the Clerk of Works has asked him to define. The hydrologist whose report the board received and noted some years ago has written to say she is sorry to have been right.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "defend",
+          "label": "Build the flood defences",
+          "note": "$3.2M; the meadow becomes a bank",
+          "effects": {
+            "cash": -3200000,
+            "backlog": -1000000,
+            "confidence": 3,
+            "mood": 2
+          }
+        },
+        {
+          "id": "repair",
+          "label": "Dry out and repair",
+          "note": "$1.1M; the river is still there",
+          "effects": {
+            "cash": -1100000,
+            "backlog": 800000,
+            "mood": -1
+          }
+        },
+        {
+          "id": "upstairs",
+          "label": "Move teaching off the ground floors",
+          "note": "$400k; a term in borrowed rooms",
+          "effects": {
+            "cash": -400000,
+            "backlog": 1500000,
+            "mood": -4,
+            "quality": -1
+          }
+        }
+      ],
+      "default": "repair"
+    },
+    {
+      "id": "the-sickness-term",
+      "kind": "seismic",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 8,
+        "enrolledOver": 250
+      },
+      "title": "The sickness term",
+      "text": "The first cases came in the week after the autumn break, and by the end of the month a quarter of the college had been ill at once. The public health office has not ordered anything, and has said so in a letter that reads very much like a request. Lectures are running at half attendance, the kitchens are sending trays to the residences, and the chaplain has been sitting up with the students who are frightened, who are more numerous than the ones who are seriously sick.\n\nThe question in front of the college is whether to finish the term in person, finish it at a distance, or end it early and examine in the spring.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "close",
+          "label": "End the term early and examine in spring",
+          "note": "$1.4M in refunds; nobody is blamed",
+          "effects": {
+            "cash": -1400000,
+            "mood": 3,
+            "confidence": -2,
+            "quality": -1
+          }
+        },
+        {
+          "id": "distance",
+          "label": "Teach at a distance until it passes",
+          "note": "$600k; a term half-taught",
+          "effects": {
+            "cash": -600000,
+            "quality": -2,
+            "mood": -3
+          }
+        },
+        {
+          "id": "open",
+          "label": "Keep the college open as normal",
+          "note": "Free; the case count is published weekly",
+          "effects": {
+            "mood": -5,
+            "warmth": -2,
+            "confidence": -3,
+            "enrollment": -30
+          }
+        }
+      ],
+      "default": "open"
+    },
+    {
+      "id": "the-essay-ring",
+      "kind": "seismic",
+      "domain": "academic",
+      "weight": 3,
+      "cooldownYears": 15,
+      "when": {
+        "yearAtLeast": 10,
+        "enrolledOver": 300
+      },
+      "title": "The essay ring",
+      "text": "An external examiner in {program} noticed that four dissertations shared a bibliography, down to the same misspelled author. The inquiry that followed has found a paid essay service run from a flat off campus, a customer list of a hundred and forty names, and a price list the Academic Registrar describes as 'competitive'. Some of the names have already graduated.\n\nMost of the students on the list were frightened of failing, and the Dean of Students would like that to count. The Senate would like the degrees to mean what they say. Both are right, which is why it has come to the President.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "rescind",
+          "label": "Rescind the degrees and fail the rest",
+          "note": "$300k in appeals; the degrees mean it",
+          "effects": {
+            "cash": -300000,
+            "quality": 2,
+            "confidence": 4,
+            "mood": -5,
+            "enrollment": -40,
+            "warmth": -2
+          }
+        },
+        {
+          "id": "resit",
+          "label": "Require resits and note it on the record",
+          "note": "$250k in examining",
+          "effects": {
+            "cash": -250000,
+            "quality": 1,
+            "confidence": 1,
+            "mood": -2
+          }
+        },
+        {
+          "id": "quiet",
+          "label": "Close the service and move on",
+          "note": "Free; the list stays in a drawer",
+          "effects": {
+            "confidence": -4,
+            "quality": -2
+          }
+        }
+      ],
+      "default": "quiet"
+    },
+    {
+      "id": "the-grant-cut",
+      "kind": "seismic",
+      "domain": "money",
+      "weight": 3,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 10,
+        "enrolledOver": 200
+      },
+      "title": "The state grant",
+      "text": "The legislature has closed the tuition grant scheme at the end of a budget session that ran into the small hours. The letter informing {school} arrived eleven days after the vote, is a page and a half long, and describes the change as a 'transition'. Roughly one student in six held one of the grants.\n\nThe families affected have begun telephoning the Financial Aid office, which has three staff and has stopped taking lunch. The college can replace the money, some of it, or none of it, and each answer has names attached.",
+      "timeoutWeeks": 6,
+      "choices": [
+        {
+          "id": "replace",
+          "label": "Replace the grants in full",
+          "note": "$2.8M this year; nobody leaves for money",
+          "effects": {
+            "cash": -2800000,
+            "mood": 3,
+            "warmth": 2,
+            "confidence": -2
+          }
+        },
+        {
+          "id": "current",
+          "label": "Replace them for students already enrolled",
+          "note": "$1.2M; the next class pays more",
+          "effects": {
+            "cash": -1200000,
+            "enrollment": -25,
+            "mood": 1
+          }
+        },
+        {
+          "id": "lapse",
+          "label": "Let the grants lapse",
+          "note": "Free; about fifty students do not come back",
+          "effects": {
+            "enrollment": -55,
+            "mood": -5,
+            "warmth": -3
+          }
+        }
+      ],
+      "default": "lapse"
+    },
+    {
+      "id": "the-harrowgate-pledge",
+      "kind": "seismic",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 12,
+        "endowmentOver": 30000000,
+        "schoolsOver": 0
+      },
+      "title": "The Harrowgate pledge",
+      "text": "Harrowgate & Sons has gone into administration owing more than anyone outside the firm had guessed, and with it has gone the second half of Arthur Harrowgate's pledge to {school}. The first half is spent. It is in the foundations of a building that already has his name cut into the lintel in letters eleven inches high.\n\nThe administrators have written to ask whether the college regards the money received so far as a gift or as an asset of the estate, and have enclosed a form. Mr Harrowgate has written separately, by hand, to apologise.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "finish",
+          "label": "Finish the building from the endowment",
+          "note": "$3M from the fund; the name stays",
+          "effects": {
+            "endowment": -3000000,
+            "confidence": -1,
+            "warmth": 2,
+            "mood": 1
+          }
+        },
+        {
+          "id": "contest",
+          "label": "Contest the administrators' claim",
+          "note": "$500k in lawyers to keep what was given",
+          "effects": {
+            "cash": -500000,
+            "confidence": 2,
+            "warmth": -2
+          }
+        },
+        {
+          "id": "mothball",
+          "label": "Mothball the unfinished wing",
+          "note": "$250k to make safe; the backlog carries it",
+          "effects": {
+            "cash": -250000,
+            "backlog": 600000,
+            "mood": -3,
+            "confidence": -2
+          }
+        }
+      ],
+      "default": "mothball"
+    },
+    {
+      "id": "the-prospectus-case",
+      "kind": "seismic",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 12,
+        "programsOver": 5
+      },
+      "title": "The prospectus case",
+      "text": "Thirty-one graduates of {program} have filed suit over a line in the prospectus that promised 'employment in the field within six months' and gave a percentage. The percentage came from a survey of nine people, four of whom were related to the member of staff who conducted it. The line was withdrawn eight years ago, but not before it had been printed forty thousand times.\n\nCounsel's advice runs to twenty pages and concludes that the college would probably win, eventually, at a cost. The graduates' own letter is two pages long and does not mention money until the last paragraph.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "settle",
+          "label": "Settle with every graduate named",
+          "note": "$1.6M; the line was wrong",
+          "effects": {
+            "cash": -1600000,
+            "confidence": 2,
+            "warmth": 3
+          }
+        },
+        {
+          "id": "defend",
+          "label": "Defend the case",
+          "note": "$700k in fees, and two years in the papers",
+          "effects": {
+            "cash": -700000,
+            "confidence": -3,
+            "warmth": -3,
+            "enrollment": -20
+          }
+        },
+        {
+          "id": "study",
+          "label": "Offer them further study without fees",
+          "note": "$400k in places; about half accept",
+          "effects": {
+            "cash": -400000,
+            "quality": -1,
+            "warmth": 1,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "defend"
+    },
+    {
+      "id": "the-loss",
+      "kind": "seismic",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 25,
+      "when": {
+        "yearAtLeast": 6,
+        "enrolledOver": 300
+      },
+      "title": "The loss",
+      "text": "A second-year student died on the Sunday night. The coroner has not yet reported, and the college has said nothing beyond confirming it, at the family's request. Her friends have spent most of the week together in the common room, and the staff who taught her have been in and out of the Dean's office in a way the Dean has not tried to schedule.\n\nThe student paper has asked, carefully, whether the college's support was adequate. The honest answer is that the counselling service is two people with a six-week waiting list. Her parents have asked the same question in a letter that deserves a better answer than that.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "counsel",
+          "label": "Fund a proper counselling service",
+          "note": "$250k a year, for good; the waiting list goes",
+          "effects": {
+            "adminPayroll": 250000,
+            "mood": 4,
+            "warmth": 2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "review",
+          "label": "Commission an independent review",
+          "note": "$200k, with the findings published",
+          "effects": {
+            "cash": -200000,
+            "confidence": 2,
+            "mood": 1
+          }
+        },
+        {
+          "id": "memorial",
+          "label": "Hold a memorial and change nothing",
+          "note": "Free; the question stays open",
+          "effects": {
+            "mood": -4,
+            "warmth": -2
+          }
+        }
+      ],
+      "default": "memorial"
+    },
+    {
+      "id": "the-kitchen-strike",
+      "kind": "seismic",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 15,
+      "when": {
+        "yearAtLeast": 6,
+        "enrolledOver": 250
+      },
+      "title": "The kitchens",
+      "text": "The dining hall staff walked out at six on Monday morning, forty-two of them, after the third year running in which their pay was held and the faculty's was not. They are outside the service entrance with a brazier and a hand-lettered sign, and the students who stop to talk are given tea from a flask. Nobody inside has made a breakfast since.\n\nThe students are eating from the vending machines and the town's two takeaways, and a petition in support of the staff has been signed by more of them than voted in the last union election. The claim itself is modest. The precedent it sets for every other line of the payroll is not, which is the point the Bursar has made twice.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "meet",
+          "label": "Meet the claim in full",
+          "note": "$180k a year, for good; the kitchens reopen",
+          "effects": {
+            "adminPayroll": 180000,
+            "mood": 4,
+            "warmth": 2,
+            "confidence": -2
+          }
+        },
+        {
+          "id": "oneoff",
+          "label": "Offer a one-off payment and a review",
+          "note": "$300k now; the question returns",
+          "effects": {
+            "cash": -300000,
+            "mood": 1,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "contract",
+          "label": "Bring in a catering contractor",
+          "note": "$150k to end it; nobody forgets how",
+          "effects": {
+            "cash": -150000,
+            "mood": -6,
+            "warmth": -4,
+            "confidence": 2
+          }
+        }
+      ],
+      "default": "oneoff",
+      "needs": ["dining-hall"]
+    },
+    {
+      "id": "the-records",
+      "kind": "seismic",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 12,
+        "alumniOver": 500
+      },
+      "title": "The records",
+      "text": "Someone has copied the Registry's database: names, addresses, transcripts and the financial aid files of every student since the founding. The college learned of it from a message to the Registrar's inbox with a sample attached and a sum in a currency nobody in the building had heard of. The IT office is four people and a contractor, and the contractor has explained that the server in question was on the list to be replaced.\n\nThe alumni affected are all of them. None has been told yet, and how they are told will be remembered longer than the breach itself.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "tell",
+          "label": "Tell everyone and pay for protection",
+          "note": "$1.3M; every graduate gets a letter",
+          "effects": {
+            "cash": -1300000,
+            "confidence": 3,
+            "warmth": -1
+          }
+        },
+        {
+          "id": "minimum",
+          "label": "Notify only those the law requires",
+          "note": "$300k; the rest find out later",
+          "effects": {
+            "cash": -300000,
+            "warmth": -4,
+            "confidence": -2
+          }
+        },
+        {
+          "id": "pay",
+          "label": "Pay the demand",
+          "note": "$800k, and no guarantee it is the end",
+          "effects": {
+            "cash": -800000,
+            "confidence": -5,
+            "warmth": -2
+          }
+        }
+      ],
+      "default": "minimum"
+    },
+    {
+      "id": "the-sinkhole",
+      "kind": "seismic",
+      "domain": "estate",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "oldestBuildingOver": 12,
+        "buildingsOver": 4
+      },
+      "title": "The hole",
+      "text": "A hole eleven metres across opened overnight beside {building}, taking with it a bench, a length of path and a sundial that a founding benefactor gave and nobody could read. The geologists say the ground beneath the older half of the campus is limestone that has been dissolving quietly for some time, and that there are probably others. They have marked three more places with orange paint.\n\nThe building is standing, and the engineers would like it kept empty until they have drilled. The hole has been photographed from the cordon at all hours, which the Communications Office has decided to regard as engagement.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "grout",
+          "label": "Survey and grout the whole campus",
+          "note": "$3.4M; the ground is known",
+          "effects": {
+            "cash": -3400000,
+            "backlog": -500000,
+            "confidence": 3,
+            "mood": 1
+          }
+        },
+        {
+          "id": "fill",
+          "label": "Fill this one and watch the others",
+          "note": "$800k; the backlog carries the rest",
+          "effects": {
+            "cash": -800000,
+            "backlog": 1600000,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "fence",
+          "label": "Fence off the marked ground",
+          "note": "$120k, and orange fencing for years",
+          "effects": {
+            "cash": -120000,
+            "backlog": 1000000,
+            "mood": -3,
+            "warmth": -2
+          }
+        }
+      ],
+      "default": "fill"
+    },
+    {
+      "id": "the-name-on-the-prize",
+      "kind": "seismic",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "yearAtLeast": 20,
+        "alumniOver": 800
+      },
+      "title": "The name on the prize",
+      "text": "The most famous graduate of the {class}, and of the college's publicity for a generation, has been convicted of a fraud large enough to have its own documentary in preparation. His name is on the annual prize for leadership, a seminar room and the back page of the alumni magazine, where he appears shaking hands with three successive presidents. The prize was last awarded a month ago.\n\nThe people he defrauded include a pension fund and several hundred households. A number of alumni have written asking for his name to come down. A smaller number have written to say that {school} does not rewrite its history, and the largest donor among them has copied in the board.",
+      "timeoutWeeks": 5,
+      "choices": [
+        {
+          "id": "remove",
+          "label": "Take his name down everywhere",
+          "note": "$150k in signage, and a $1.5M gift withdrawn",
+          "effects": {
+            "cash": -150000,
+            "endowment": -1500000,
+            "warmth": 2,
+            "confidence": -2
+          }
+        },
+        {
+          "id": "return",
+          "label": "Give his gifts to the victims' fund",
+          "note": "$2M from the endowment; the name goes with it",
+          "effects": {
+            "endowment": -2000000,
+            "warmth": 4,
+            "confidence": 3,
+            "mood": 2
+          }
+        },
+        {
+          "id": "keep",
+          "label": "Keep the name and issue a statement",
+          "note": "Free; the photograph stops appearing",
+          "effects": {
+            "warmth": -3,
+            "mood": -2,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "keep"
+    },
+    {
+      "id": "the-merger-proposal",
+      "kind": "seismic",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 20,
+      "when": {
+        "rivalAtLeast": 1,
+        "yearAtLeast": 15
+      },
+      "title": "The merger proposal",
+      "text": "{rival} has written proposing a merger. The letter is courteous and long, and its appendix lists the savings to be had from one registry, one catalogue and one set of sports grounds, most of which would be theirs. The name of the combined institution is left blank, in a way that suggests it has been discussed.\n\nThe board received a copy directly, which is how the President learned the letter existed. Two trustees think it is the best offer the college will ever have. The rest would like to know why {rival} thinks the college needs one.",
+      "timeoutWeeks": 6,
+      "choices": [
+        {
+          "id": "decline",
+          "label": "Decline it publicly",
+          "note": "Free; the rivalry is louder for it",
+          "effects": {
+            "confidence": 2,
+            "warmth": 3,
+            "mood": 2
+          }
+        },
+        {
+          "id": "share",
+          "label": "Open talks on shared services",
+          "note": "$1.8M saved; some staff are shared out of a job",
+          "effects": {
+            "cash": 1800000,
+            "mood": -3,
+            "warmth": -2,
+            "confidence": 2
+          }
+        },
+        {
+          "id": "merge",
+          "label": "Enter merger negotiations",
+          "note": "$2.5M in transition funds; the name is on the table",
+          "effects": {
+            "cash": 2500000,
+            "mood": -5,
+            "warmth": -5,
+            "confidence": -3,
+            "enrollment": -20
+          }
+        }
+      ],
+      "default": "decline"
     }
   ],
   "readings": {

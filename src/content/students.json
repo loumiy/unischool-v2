@@ -323,6 +323,188 @@
       "stage": "adrift",
       "line": "{name} ({tag}) graduates a term late, quietly, with nobody in the seats.",
       "weight": 1
+    },
+    {
+      "id": "triples-rota",
+      "when": "triples",
+      "stage": "year",
+      "line": "{name} ({tag}) has drawn up a rota for the bottom bunk, laminated it, and pinned it to the door.",
+      "weight": 2
+    },
+    {
+      "id": "seat-early",
+      "when": "crowdedSeats",
+      "stage": "year",
+      "line": "{name} ({tag}) arrives at lectures twenty minutes early to get a seat, and now brings a book for the wait.",
+      "weight": 2
+    },
+    {
+      "id": "coat-indoors",
+      "when": "derelict",
+      "stage": "year",
+      "line": "{name} ({tag}) wears a coat to seminars, indoors, and the tutor has stopped asking them to take it off.",
+      "weight": 2
+    },
+    {
+      "id": "quad-revision",
+      "when": "hasQuad",
+      "stage": "year",
+      "line": "{name} ({tag}) has been revising on {quad} since the first warm day, and has the sunburn to show for it.",
+      "weight": 2
+    },
+    {
+      "id": "office-hours-stayed",
+      "when": "goodTeaching",
+      "stage": "year",
+      "line": "{name} ({tag}) went to office hours to ask one question and stayed for two hours.",
+      "weight": 2
+    },
+    {
+      "id": "many-teachers",
+      "when": "thinFaculty",
+      "stage": "year",
+      "line": "{name} ({tag}) has been taught {program} this term by a visitor, a doctoral student, and a very game professor from another department.",
+      "weight": 2
+    },
+    {
+      "id": "shared-textbook",
+      "when": "austerity",
+      "stage": "year",
+      "line": "{name} ({tag}) is sharing one textbook with four others, and a timetable for who has it on Sundays.",
+      "weight": 3
+    },
+    {
+      "id": "corrected-seminar",
+      "when": "strongClass",
+      "stage": "year",
+      "line": "{name} ({tag}) corrected a professor in a seminar, politely, and was right.",
+      "weight": 2
+    },
+    {
+      "id": "study-group",
+      "when": "weakClass",
+      "stage": "year",
+      "line": "{name} ({tag}) has found a study group, and the study group has found a table in the corner that nobody else wants.",
+      "weight": 2
+    },
+    {
+      "id": "one-dish",
+      "when": "always",
+      "stage": "year",
+      "line": "{name} ({tag}) has learned to cook one dish, and has cooked it for everyone on the corridor.",
+      "weight": 1
+    },
+    {
+      "id": "left-closed-programme",
+      "when": "programClosed",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has left to finish {program} somewhere it is still taught.",
+      "weight": 3
+    },
+    {
+      "id": "left-receivership",
+      "when": "receivership",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has withdrawn; their parents read about the receivership in the paper before the college wrote.",
+      "weight": 3
+    },
+    {
+      "id": "left-family",
+      "when": "always",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has gone home to help with the family business, and has promised to come back.",
+      "weight": 1
+    },
+    {
+      "id": "left-probation",
+      "when": "weakClass",
+      "stage": "leaving",
+      "line": "{name} ({tag}) has left after a second term on probation, and wrote a kind letter to their tutor on the way out.",
+      "weight": 2
+    },
+    {
+      "id": "grad-distinguished-strong-year",
+      "when": "strongClass",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates first in a strong year, which in {school} this year took some doing.",
+      "weight": 2
+    },
+    {
+      "id": "grad-distinguished-stays-on",
+      "when": "goodTeaching",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates with honours and is staying on to teach, at their tutor's quiet insistence.",
+      "weight": 2
+    },
+    {
+      "id": "grad-distinguished-cold-hall",
+      "when": "austerity",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates with the top marks in {school} in a year when the college could not heat the exam hall.",
+      "weight": 3
+    },
+    {
+      "id": "grad-distinguished-prospectus",
+      "when": "always",
+      "stage": "distinguished",
+      "line": "{name} ({tag}) graduates with distinction, and the admissions office has already asked for a photograph for the prospectus.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-town",
+      "when": "always",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates, takes a job in town, and will be on the alumni committee within the decade.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-schoolteacher",
+      "when": "goodTeaching",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates and goes into schoolteaching, with every trick borrowed from one lecturer in particular.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-second-attempt",
+      "when": "weakClass",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates on the second attempt at one paper and the first attempt at a job interview.",
+      "weight": 2
+    },
+    {
+      "id": "grad-placed-quad-photo",
+      "when": "hasQuad",
+      "stage": "placed",
+      "line": "{name} ({tag}) graduates with a post in the city and a photograph on {quad} to prove the rest happened.",
+      "weight": 2
+    },
+    {
+      "id": "grad-adrift-closed",
+      "when": "programClosed",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates in {program}, which the college no longer teaches, and finds that employers have noticed.",
+      "weight": 3
+    },
+    {
+      "id": "grad-adrift-cuts",
+      "when": "austerity",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates into the same cuts that thinned their final year, with a degree and not much else yet.",
+      "weight": 3
+    },
+    {
+      "id": "grad-adrift-no-reference",
+      "when": "thinFaculty",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates without a reference, because nobody in {program} taught them long enough to write one.",
+      "weight": 2
+    },
+    {
+      "id": "grad-adrift-home",
+      "when": "always",
+      "stage": "adrift",
+      "line": "{name} ({tag}) graduates and moves back into their childhood bedroom, to think.",
+      "weight": 2
     }
   ],
   "readings": {
