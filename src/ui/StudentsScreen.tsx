@@ -37,6 +37,10 @@ const TERMS: { key: keyof SatisfactionBreakdown; label: string; hint: string }[]
   { key: 'teaching', label: 'Teaching', hint: PEOPLE_READINGS.teachingTerm },
   { key: 'morale', label: 'Faculty quirks', hint: PEOPLE_READINGS.morale },
   { key: 'placement', label: 'Placement', hint: PEOPLE_READINGS.placement },
+  { key: 'life', label: 'Student life', hint: PEOPLE_READINGS.lifeTerm },
+  // The events term was summed into the total and never shown, so the
+  // table did not add up to the number under it (Phase 21I).
+  { key: 'events', label: 'What happened', hint: PEOPLE_READINGS.eventsTerm },
   { key: 'conditions', label: 'The ladder', hint: PEOPLE_READINGS.conditions },
 ];
 

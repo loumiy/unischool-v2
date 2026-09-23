@@ -277,6 +277,8 @@ Warmth pays out through the annual fund, week by week: a class gives by its warm
 
 Clubs, Greek life, and varsity athletics are toggled investments with facility requirements, a satisfaction contribution, an identity contribution (§11.2), and an event surface (chapter scandal, championship run). No roster management; athletics seasons resolve as periodic results influenced by facilities and an athletics budget slider.
 
+**Buildings that do something (Phase 21I).** Every building in the menu changes a number the player can find. The student centre, the health centre, the recreation centre and the fields each reach so many students — a `life` capacity in the catalogue — and student life is a term of satisfaction: its full value (six points, a first guess for Phase 31) when between them they reach every student, a share when they reach a share. The satisfaction table shows it, and now shows the events term it always summed but never printed, so the table adds up to the number under it. And the catalogue knows about enough: a building type may carry a `limit` — one administration building, one student centre, one health centre, one recreation centre, two libraries, two entrance signs, Founders Hall once — a site broken ground on counts toward it, and the build menu shows a type at its limit as standing rather than offering a second of something no university has two of. Halls, residences and dining halls are as many as the land will hold.
+
 ---
 
 ## §9. Delegation (cross-cutting)

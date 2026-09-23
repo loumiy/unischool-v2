@@ -23,7 +23,8 @@
       "door": "formal",
       "landmark": true,
       "icon": "academic",
-      "blurb": "One multi-purpose hall, the first thing on the land and the last thing anyone will agree to demolish."
+      "blurb": "One multi-purpose hall, the first thing on the land and the last thing anyone will agree to demolish.",
+      "limit": 1
     },
     {
       "id": "academic-hall",
@@ -64,7 +65,8 @@
       "storeys": 3,
       "door": "formal",
       "icon": "library",
-      "blurb": "Top-lit reading rooms behind a colonnade. The building a campus puts its name on."
+      "blurb": "Top-lit reading rooms behind a colonnade. The building a campus puts its name on.",
+      "limit": 2
     },
     {
       "id": "lab",
@@ -143,7 +145,11 @@
       "storeys": 2,
       "door": "civic",
       "icon": "life",
-      "blurb": "The union: clubs, lounges, and the noticeboard nobody reads."
+      "blurb": "The union: clubs, lounges, and the noticeboard nobody reads.",
+      "capacity": {
+        "life": 700
+      },
+      "limit": 1
     },
     {
       "id": "health-center",
@@ -161,7 +167,11 @@
       "storeys": 2,
       "door": "civic",
       "icon": "health",
-      "blurb": "Counselling and a clinic. White panel, because that is what a clinic is."
+      "blurb": "Counselling and a clinic. White panel, because that is what a clinic is.",
+      "capacity": {
+        "life": 1200
+      },
+      "limit": 1
     },
     {
       "id": "recreation-center",
@@ -179,7 +189,11 @@
       "storeys": 0,
       "door": "civic",
       "icon": "fitness",
-      "blurb": "A clear-span hall lit from a band under the eaves. Engineering, not architecture."
+      "blurb": "A clear-span hall lit from a band under the eaves. Engineering, not architecture.",
+      "capacity": {
+        "life": 900
+      },
+      "limit": 1
     },
     {
       "id": "playing-field",
@@ -198,7 +212,10 @@
       "storeys": 0,
       "door": null,
       "icon": "athletics",
-      "blurb": "A marked pitch on open ground. The stadium comes later, if it comes at all."
+      "blurb": "A marked pitch on open ground. The stadium comes later, if it comes at all.",
+      "capacity": {
+        "life": 500
+      }
     },
     {
       "id": "admin-building",
@@ -216,7 +233,8 @@
       "storeys": 2,
       "door": "civic",
       "icon": "admin",
-      "blurb": "Offices. It will need a bigger one. It will always need a bigger one."
+      "blurb": "Offices. It will need a bigger one. It will always need a bigger one.",
+      "limit": 1
     },
     {
       "id": "entrance-sign",
@@ -235,7 +253,8 @@
       "storeys": 0,
       "door": null,
       "icon": "sign",
-      "blurb": "The school's name, on a board at the road, where anyone passing can read it."
+      "blurb": "The school's name, on a board at the road, where anyone passing can read it.",
+      "limit": 2
     }
   ]
 }

@@ -304,3 +304,32 @@ describe('save migration v2 → v3', () => {
     expect(hasFoundersHall(rebuilt.campus)).toBe(true);
   });
 });
+
+describe('buildings that do something (Phase 21I)', () => {
+  it('has enough of a singular building at one', () => {
+    let s = running();
+    const admin = {
+      type: 'placeBuilding',
+      buildingId: 'admin-building',
+      col: 40,
+      row: 10,
+      rotated: false,
+    } as const;
+    const again = { ...admin, col: 40, row: 20 };
+    s = { ...s, treasury: { ...s.treasury, cash: 50_000_000 } };
+    expect(canApply(s, admin).ok).toBe(true);
+    s = applyAction(s, admin);
+    const refused = canApply(s, again);
+    expect(refused.ok).toBe(false);
+    if (!refused.ok) expect(refused.reason).toMatch(/has its administration/);
+    // A library is two at most; a residence hall is as many as the land holds.
+    expect(buildingById('library').limit).toBe(2);
+    expect(buildingById('residence-hall').limit).toBeUndefined();
+  });
+
+  it('makes every student-life building worth something to the students', () => {
+    for (const id of ['student-center', 'health-center', 'recreation-center', 'playing-field']) {
+      expect(buildingById(id).capacity?.life, id).toBeGreaterThan(0);
+    }
+  });
+});

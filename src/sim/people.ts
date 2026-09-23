@@ -29,6 +29,7 @@ import {
   SEATS_PENALTY,
   SELECTIVITY_DEFAULT,
   SELECTIVITY_STEP,
+  STUDENT_LIFE_POINTS,
   TRIPLES_OVERFLOW_SHARE,
   TRIPLES_PENALTY,
   TUITION_DEFAULT,
@@ -163,6 +164,7 @@ export interface CampusCapacity {
   beds: number;
   meals: number;
   seats: number;
+  life: number; // students the campus's student life reaches (Phase 21I)
 }
 
 export function campusCapacity(state: GameState): CampusCapacity {
@@ -181,13 +183,14 @@ export function capacityAt(state: GameState, week: number): CampusCapacity {
 }
 
 function capacityOf(placements: readonly Placement[]): CampusCapacity {
-  const cap = { beds: 0, meals: 0, seats: 0 };
+  const cap = { beds: 0, meals: 0, seats: 0, life: 0 };
   for (const p of placements) {
     const c = buildingById(p.buildingId).capacity;
     if (!c) continue;
     cap.beds += c.beds ?? 0;
     cap.meals += c.meals ?? 0;
     cap.seats += c.seats ?? 0;
+    cap.life += c.life ?? 0;
   }
   return cap;
 }
@@ -416,9 +419,21 @@ export interface SatisfactionBreakdown {
   teaching: number;
   morale: number;
   placement: number;
+  life: number;
   events: number;
   conditions: number;
   total: number; // clamped 0–100
+}
+
+// STUDENT LIFE (DD §8.3, §8.5; Phase 21I). The student centre, the health
+// centre, the recreation centre and the fields reach so many students each;
+// the term is its full value when the campus's student life reaches every
+// student, and a share of it when it reaches a share of them. Four of the
+// eleven building types cost money and changed nothing; now they change
+// the one number the students are made of.
+export function studentLifeTerm(state: GameState, total: number): number {
+  if (total <= 0) return 0;
+  return STUDENT_LIFE_POINTS * Math.min(1, campusCapacity(state).life / total);
 }
 
 export function satisfactionBreakdown(state: GameState, total: number): SatisfactionBreakdown {
@@ -433,6 +448,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     teaching: teachingSatisfaction(state),
     morale: quirkMorale(state),
     placement: placementSatisfaction(state).applied,
+    life: studentLifeTerm(state, total),
     events: state.people.mood,
     conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
   };
@@ -445,6 +461,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     b.teaching +
     b.morale +
     b.placement +
+    b.life +
     b.events +
     b.conditions;
   return { ...b, total: Number(Math.min(100, Math.max(0, sum)).toFixed(1)) };

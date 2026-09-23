@@ -82,6 +82,11 @@ export function placementAt(campus: Campus, col: number, row: number): Placement
   return campus.placements.find((p) => placementCovers(p, col, row));
 }
 
+// How many of a building type stand or are going up (Phase 21I).
+export function builtCount(campus: Campus, buildingId: string): number {
+  return campus.placements.filter((p) => p.buildingId === buildingId).length;
+}
+
 // Every tile a footprint covers.
 export function footprintTiles(col: number, row: number, w: number, h: number): string[] {
   const out: string[] = [];

@@ -71,6 +71,10 @@ export interface Capacity {
   beds?: number;
   meals?: number;
   seats?: number;
+  // Students the building's student life reaches (DD §8.3, §8.5; Phase
+  // 21I): the student centre, the health centre, the recreation centre and
+  // the fields, which until now changed no number a player could find.
+  life?: number;
 }
 
 export interface BuildingDef {
@@ -90,6 +94,9 @@ export interface BuildingDef {
   storeys: number; // 0 for a clear-span volume or open ground
   door: DoorFamily | null;
   landmark?: boolean; // carries the campus's one clock tower
+  // How many a college has, at most (Phase 21I). No university has four
+  // administration buildings; absent means as many as the land will hold.
+  limit?: number;
   icon: BuildingIcon;
   blurb?: string;
 }
@@ -109,7 +116,15 @@ const schema = obj({
       cost: int,
       upkeep: int,
       buildWeeks: int,
-      capacity: optional(obj({ beds: optional(int), meals: optional(int), seats: optional(int) })),
+      capacity: optional(
+        obj({
+          beds: optional(int),
+          meals: optional(int),
+          seats: optional(int),
+          life: optional(int),
+        }),
+      ),
+      limit: optional(int),
       beauty: optional(int),
       form: oneOf(FORMS),
       material: oneOf(MATERIAL_KEYS),
@@ -136,7 +151,8 @@ function load(): BuildingDef[] {
     if (b.cost <= 0) throw new ContentError(`${at}.cost`, 'must be > 0');
     if (b.upkeep < 0) throw new ContentError(`${at}.upkeep`, 'must be ≥ 0');
     if (b.buildWeeks < 1) throw new ContentError(`${at}.buildWeeks`, 'must be ≥ 1');
-    for (const k of ['beds', 'meals', 'seats'] as const) {
+    if (b.limit !== undefined && b.limit < 1) throw new ContentError(`${at}.limit`, 'must be ≥ 1');
+    for (const k of ['beds', 'meals', 'seats', 'life'] as const) {
       const n = b.capacity?.[k];
       if (n !== undefined && n < 0) throw new ContentError(`${at}.capacity.${k}`, 'must be ≥ 0');
     }

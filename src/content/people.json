@@ -35,7 +35,9 @@
     "campusBeauty": "Campus beauty, 0–100: greenery, landmarks and upkeep, weighted; it moves the applicant pool a little and the cohorts' mood.",
     "greenery": "Trees standing against the founding woodland: fell them for buildings and it falls, plant and it climbs.",
     "landmarks": "The buildings that are something to look at, by their marks in the catalogue, against a full set.",
-    "upkeep": "The open buildings' mean condition: backlog is ugly."
+    "upkeep": "The open buildings' mean condition: backlog is ugly.",
+    "lifeTerm": "What the student centre, the health centre, the recreation centre and the fields are worth to the students: full when between them they reach everyone, a share when they reach a share.",
+    "eventsTerm": "What the last few events left the students feeling. It fades over a couple of years."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",
