@@ -89,9 +89,9 @@ function scientist(run: Run): Faculty {
 }
 
 describe('the faculty catalogue (DD §7.3, §14)', () => {
-  it('seeds fifteen quirks, each doing something, and three ranks', () => {
-    expect(QUIRKS).toHaveLength(15);
-    expect(new Set(QUIRKS.map((q) => q.id)).size).toBe(15);
+  it('seeds forty quirks, each doing something, and three ranks', () => {
+    expect(QUIRKS).toHaveLength(40);
+    expect(new Set(QUIRKS.map((q) => q.id)).size).toBe(40);
     for (const q of QUIRKS) {
       expect(q.line.length).toBeGreaterThan(0);
       expect(Object.keys(q.effects).length).toBeGreaterThan(0);

@@ -287,6 +287,299 @@
       },
       "kept": "Thirty scholars, properly paid, and a Provost who no longer knows all the arguments.",
       "missed": "The roster did not grow into what the college said it would."
+    },
+    {
+      "id": "two-thousand-graduates",
+      "title": "Two thousand graduates on the rolls",
+      "weight": 3,
+      "deal": {
+        "alumniOver": 300,
+        "yearAtLeast": 10
+      },
+      "goal": {
+        "alumniOver": 2000
+      },
+      "years": 15,
+      "text": "The alumni register fits in a single drawer of the Development Office's cabinet, and the Director of Development has measured the drawer. The proposal is to need a second cabinet by a named year, which means graduating people rather than admitting them.",
+      "reward": {
+        "confidence": 6,
+        "warmth": 3
+      },
+      "penalty": {
+        "confidence": -4
+      },
+      "kept": "Two thousand names on the rolls, and the second cabinet bought.",
+      "missed": "The date came and the register still fitted in the drawer."
+    },
+    {
+      "id": "students-would-choose-again",
+      "title": "Students who would choose it again",
+      "weight": 4,
+      "deal": {
+        "satisfactionUnder": 58,
+        "enrolledOver": 150
+      },
+      "goal": {
+        "satisfactionOver": 64
+      },
+      "years": 10,
+      "text": "The exit survey asks whether graduates would choose {school} again, and this year the answer was a shrug with a percentage attached. The Dean of Students has proposed publishing the figure every year until it is one the college would print on the prospectus.",
+      "reward": {
+        "confidence": 6,
+        "mood": 4,
+        "warmth": 2
+      },
+      "penalty": {
+        "confidence": -5,
+        "mood": -2
+      },
+      "kept": "Asked whether they would choose it again, most of them said yes, and the prospectus says so.",
+      "missed": "The survey was published every year, as promised, and every year it said the same thing."
+    },
+    {
+      "id": "a-years-reserve",
+      "title": "Ten million in reserve",
+      "weight": 4,
+      "deal": {
+        "cashUnder": 2000000,
+        "yearAtLeast": 6
+      },
+      "goal": {
+        "cashOver": 10000000
+      },
+      "years": 8,
+      "text": "The Bursar has been meeting the payroll out of the same account the payroll goes into, which she describes as 'working' and the auditors describe differently. Her proposal is a reserve of ten million, named in public, so that the next bad year is an inconvenience rather than an event.",
+      "reward": {
+        "confidence": 7,
+        "mood": 1
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "Ten million in the reserve, and a bad year that passed as an inconvenience.",
+      "missed": "The reserve was never built, and the Bursar still meets the payroll from the same account."
+    },
+    {
+      "id": "one-fifty-million",
+      "title": "A hundred and fifty million in the fund",
+      "weight": 3,
+      "deal": {
+        "endowmentOver": 90000000,
+        "yearAtLeast": 15
+      },
+      "goal": {
+        "endowmentOver": 150000000
+      },
+      "years": 15,
+      "text": "The endowment has passed the point where it keeps {school} alive and reached the point where it could change what the college does. The Investment Committee has named the next number and would like the campaign to be judged by it.",
+      "reward": {
+        "confidence": 8,
+        "endowment": 3000000
+      },
+      "penalty": {
+        "confidence": -6
+      },
+      "kept": "A hundred and fifty million, and a college that can choose what it does next.",
+      "missed": "The fund grew, and did not grow to the number the college had printed."
+    },
+    {
+      "id": "twelve-buildings-and-a-view",
+      "title": "Twelve buildings, and still a beautiful campus",
+      "weight": 3,
+      "deal": {
+        "buildingsOver": 3,
+        "beautyUnder": 85,
+        "yearAtLeast": 5
+      },
+      "goal": {
+        "buildingsOver": 11,
+        "beautyOver": 80
+      },
+      "years": 12,
+      "text": "The master plan shows twelve buildings where there are now a handful. The landscape committee has asked that the college promise, in the same breath, that the campus will still be worth walking through when they are all built.",
+      "reward": {
+        "confidence": 6,
+        "mood": 3,
+        "warmth": 3
+      },
+      "penalty": {
+        "confidence": -4,
+        "mood": -2
+      },
+      "kept": "Twelve buildings stand, and the walk between them is still the best thing on the tour.",
+      "missed": "The buildings went up, and the campus they were meant to sit in did not come with them."
+    },
+    {
+      "id": "two-thousand-students",
+      "title": "Two thousand students",
+      "weight": 3,
+      "deal": {
+        "enrolledOver": 800,
+        "yearAtLeast": 10
+      },
+      "goal": {
+        "enrolledOver": 1800
+      },
+      "years": 15,
+      "text": "{school} is already bigger than its founders imagined, and the Registrar has stopped apologising for it. The proposal is to say how big it means to become, and to build and hire for that number rather than for the one it happens to reach.",
+      "reward": {
+        "confidence": 7,
+        "mood": 2
+      },
+      "penalty": {
+        "confidence": -5,
+        "mood": -2
+      },
+      "kept": "Two thousand of them, and a college built for the number rather than surprised by it.",
+      "missed": "The college did not grow into the number it had named, and the plans drawn for it were filed."
+    },
+    {
+      "id": "reunions-that-fill-the-hall",
+      "title": "Alumni who come back",
+      "weight": 3,
+      "deal": {
+        "alumniOver": 500,
+        "warmthUnder": 45
+      },
+      "goal": {
+        "warmthOver": 60
+      },
+      "years": 12,
+      "text": "Reunion weekend was attended by eighty graduates and a caterer who had been told to expect three hundred. The Alumni Office has proposed a decade of the slow work: letters that are not appeals, and a reason to come back that is not a building fund.",
+      "reward": {
+        "confidence": 5,
+        "warmth": 5,
+        "endowment": 1000000
+      },
+      "penalty": {
+        "confidence": -4,
+        "warmth": -2
+      },
+      "kept": "Reunion weekend has to be booked a year ahead, and the caterer has been told to expect more.",
+      "missed": "The reunions stayed small, and the caterer was told to expect fewer."
+    },
+    {
+      "id": "content-at-eight-hundred",
+      "title": "Eight hundred students, and content",
+      "weight": 3,
+      "deal": {
+        "enrolledOver": 250,
+        "enrolledUnder": 500,
+        "yearAtLeast": 6
+      },
+      "goal": {
+        "enrolledOver": 800,
+        "satisfactionOver": 55
+      },
+      "years": 12,
+      "text": "Every college that grows quickly is told it has lost something, usually by people who were there before it grew. The President has proposed a promise with two halves: eight hundred students, and those eight hundred as content as the few hundred are now.",
+      "reward": {
+        "confidence": 6,
+        "mood": 3,
+        "quality": 1
+      },
+      "penalty": {
+        "confidence": -5,
+        "mood": -2
+      },
+      "kept": "Eight hundred of them, and the survey says they would come again.",
+      "missed": "The college did not reach eight hundred students content with it by the date it had named."
+    },
+    {
+      "id": "borrowing-halved",
+      "title": "Borrowing under eight million",
+      "weight": 3,
+      "deal": {
+        "debtOver": 15000000,
+        "yearAtLeast": 5
+      },
+      "goal": {
+        "debtUnder": 8000000
+      },
+      "years": 10,
+      "text": "The construction loans were taken out in a hurry and are being paid in no hurry at all. The Finance Committee has proposed a public target for the borrowing, low enough to be felt and high enough to be believed.",
+      "reward": {
+        "confidence": 7,
+        "cash": 400000
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "The borrowing is below eight million, and the interest line fits on one page.",
+      "missed": "The debt was still above the number the college had named, and the interest line runs to two pages."
+    },
+    {
+      "id": "twenty-programmes",
+      "title": "Twenty programmes in the prospectus",
+      "weight": 3,
+      "deal": {
+        "programsOver": 8,
+        "yearAtLeast": 12
+      },
+      "goal": {
+        "programsOver": 19
+      },
+      "years": 12,
+      "text": "The prospectus has filled out and the Registrar would like it to fill out further. Twenty programmes would make {school} the college a school-leaver can choose without first deciding what to be, which the Registrar considers the point.",
+      "reward": {
+        "confidence": 6,
+        "quality": 2,
+        "mood": 2
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "Twenty programmes, and applicants who choose the college before they choose the subject.",
+      "missed": "The prospectus stopped short of twenty, and the date named for it passed."
+    },
+    {
+      "id": "teaching-worth-the-fee",
+      "title": "Teaching worth the fee",
+      "weight": 3,
+      "deal": {
+        "tuitionOver": 40000,
+        "teachingUnder": 15,
+        "facultyOver": 8
+      },
+      "goal": {
+        "teachingOver": 30
+      },
+      "years": 10,
+      "text": "A parent has written to the President to ask, courteously and with a calculator, what the fee pays for. The reply the board approved was that it pays for teaching, and that the college will show as much by a date it is willing to write down.",
+      "reward": {
+        "confidence": 7,
+        "mood": 3,
+        "quality": 2
+      },
+      "penalty": {
+        "confidence": -5,
+        "warmth": -2
+      },
+      "kept": "The fee is still high, and nobody writes to ask what it pays for.",
+      "missed": "The teaching did not become what the fee had promised, and the parent's letter is still on file."
+    },
+    {
+      "id": "five-hundred-students",
+      "title": "Five hundred students",
+      "weight": 3,
+      "deal": {
+        "enrolledUnder": 250,
+        "yearAtLeast": 10
+      },
+      "goal": {
+        "enrolledOver": 500
+      },
+      "years": 10,
+      "text": "{school} is small enough that the Registrar knows most of the students by sight and some of their parents by telephone. The proposal is to be the size the buildings were designed for: five hundred, by a year written into the minutes.",
+      "reward": {
+        "confidence": 6,
+        "mood": 2
+      },
+      "penalty": {
+        "confidence": -5
+      },
+      "kept": "Five hundred students, and the Registrar no longer knows all of them by sight.",
+      "missed": "The college stayed smaller than its buildings, past the year it had named."
     }
   ],
   "lines": {

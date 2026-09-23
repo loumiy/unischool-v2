@@ -428,7 +428,15 @@ describe('events over a long run', () => {
     // Most of the estate's failures reach the neglectful college in thirty
     // years — the pool grows with every phase, so not every one — and none
     // reaches the attentive one.
-    const failures = ['roof-goes', 'roof-slates', 'flooded-basement', 'heating-fails'];
+    const failures = [
+      'roof-goes',
+      'roof-slates',
+      'flooded-basement',
+      'heating-fails',
+      'the-buckets',
+      'the-burst-pipe',
+      'the-insurance-renewal',
+    ];
     expect(failures.filter((f) => neglectful.has(f)).length).toBeGreaterThanOrEqual(3);
     for (const failure of failures) expect(attentive).not.toContain(failure);
   });
