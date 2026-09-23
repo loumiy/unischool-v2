@@ -154,6 +154,17 @@
     "rivalTaunt": {
       "text": "{line}"
     },
+    "tagEarned": {
+      "text": "The guidebooks have started calling {school} {label}.",
+      "tone": "good"
+    },
+    "tagShed": {
+      "text": "The guidebooks no longer call {school} {label}."
+    },
+    "facultyPoached": {
+      "text": "{name} leaves for {label}.",
+      "tone": "bad"
+    },
     "mark": {
       "text": "{label}"
     },

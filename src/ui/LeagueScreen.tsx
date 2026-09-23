@@ -20,6 +20,7 @@ import {
 } from '../sim/index.ts';
 import Figure from './Figure.tsx';
 import RivalLine from './RivalLine.tsx';
+import IdentityPanel from './IdentityPanel.tsx';
 
 // THE LEAGUE SCREEN (DD §11.3): the guide's table, the college's place in
 // it, the six standings it is ranked on, and the methodology currently in
@@ -71,6 +72,8 @@ export default function LeagueScreen({ state }: { state: GameState }) {
         />
         <Figure label={LEAGUE_WORDS.methodology} value={method.name} hint={method.line} />
       </div>
+
+      <IdentityPanel state={state} />
 
       <section className="treasury-panel">
         <h3>Where {you} stands</h3>

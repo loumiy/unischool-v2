@@ -3053,6 +3053,178 @@
       ],
       "default": "decline",
       "needs": ["playing-field"]
+    },
+    {
+      "id": "the-outside-offer",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 1,
+      "cooldownYears": 1,
+      "scripted": true,
+      "when": {},
+      "text": "{suitor} has offered {faculty} a named chair and a laboratory twice the size of the one they have. They would rather stay, they say, but they would like to be asked.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "counter",
+          "label": "Match the offer",
+          "note": "Their salary rises by a quarter, for good",
+          "effects": {
+            "counter": 1,
+            "rivalry": 2,
+            "mood": 1
+          }
+        },
+        {
+          "id": "release",
+          "label": "Wish them well",
+          "note": "They go, and the college that took them is more of a rival for it",
+          "effects": {
+            "departs": 1,
+            "rivalry": 5
+          }
+        }
+      ],
+      "default": "release"
+    },
+    {
+      "id": "the-noise-complaint",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 3,
+      "favours": ["party-school"],
+      "when": {
+        "satisfactionOver": 58,
+        "enrolledOver": 300
+      },
+      "text": "The neighbours have written again about Thursday nights: the music, the singing on the walk home, and a traffic cone now on the roof of their garage. They would like a meeting, and they have copied the local paper.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "curfew",
+          "label": "Impose quiet hours",
+          "note": "The neighbours are mollified; the students are not",
+          "effects": {
+            "mood": -2,
+            "confidence": 1
+          }
+        },
+        {
+          "id": "meet",
+          "label": "Meet the neighbours and send a gift",
+          "note": "$20k of goodwill and a promise",
+          "effects": {
+            "cash": -20000,
+            "warmth": 1
+          }
+        }
+      ],
+      "default": "meet"
+    },
+    {
+      "id": "the-all-nighter",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 3,
+      "favours": ["pressure-cooker"],
+      "when": {
+        "satisfactionUnder": 55,
+        "selectivityOver": 0.4
+      },
+      "text": "The reading rooms were full at four in the morning for the third week running, and the college nurse has seen more exhaustion this term than flu. The student paper has a front page about it and a list of demands.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "close",
+          "label": "Close the reading rooms at midnight",
+          "note": "Resented, and slept on",
+          "effects": {
+            "mood": 1,
+            "quality": -1
+          }
+        },
+        {
+          "id": "counsel",
+          "label": "Fund more counselling",
+          "note": "$150k this year",
+          "effects": {
+            "cash": -150000,
+            "mood": 3
+          }
+        }
+      ],
+      "default": "close"
+    },
+    {
+      "id": "the-grant-windfall",
+      "kind": "inline",
+      "domain": "academic",
+      "weight": 2,
+      "cooldownYears": 4,
+      "favours": ["research-powerhouse"],
+      "when": {
+        "facultyOver": 12,
+        "yearAtLeast": 6
+      },
+      "text": "A national foundation has funded a centre proposal from {faculty}, and the overhead on the grant is more than the department's budget. The foundation would like to know where the centre will be housed.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "house",
+          "label": "Find the centre a home",
+          "note": "$300k of fitting out; the overhead is the college's",
+          "effects": {
+            "cash": 200000,
+            "mood": 1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Let it go to a partner college",
+          "note": "The faculty notice",
+          "effects": {
+            "mood": -2
+          }
+        }
+      ],
+      "default": "house"
+    },
+    {
+      "id": "the-legacy-question",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 2,
+      "cooldownYears": 6,
+      "favours": ["old-money", "country-club"],
+      "when": {
+        "endowmentOver": 150000000,
+        "alumniOver": 500
+      },
+      "text": "A trustee's grandson has applied, and his file is not strong. The trustee has not mentioned it, which is how everyone knows he would like it mentioned.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "admit",
+          "label": "Admit him",
+          "note": "The trustee is grateful; the admissions office is not",
+          "effects": {
+            "confidence": 2,
+            "mood": -1
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Treat the file like any other",
+          "note": "The trustee is quiet at the next meeting",
+          "effects": {
+            "confidence": -2,
+            "quality": 1
+          }
+        }
+      ],
+      "default": "decline"
     }
   ],
   "readings": {

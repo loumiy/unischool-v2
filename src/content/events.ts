@@ -1,4 +1,5 @@
 import { BUILDINGS } from './buildings.ts';
+import { TAG_IDS, type TagId } from './identityTags.ts';
 import raw from './events.json' with { type: 'json' };
 import { arr, ContentError, num, obj, oneOf, optional, str, uniqueBy, validate } from './schema.ts';
 
@@ -89,6 +90,12 @@ export const EVENT_EFFECTS = [
   'quality', // the cohorts', nudged
   'enrollment', // students gained or lost, spread over the classes
   'trees', // planted or taken, on the map itself
+  // The named subject (Phase 24): the {faculty} an outside offer is made
+  // to leaves, or is kept with a raise; the {suitor} making it is more of
+  // a rival for it.
+  'departs',
+  'counter',
+  'rivalry',
   // A STANDING COST (Phase 21H): dollars a year, forever, added to a
   // payroll line. "$120k a year, forever" used to pull `cash` exactly once;
   // this is the recurring charge the satire assumed, and the ratchet DD
@@ -138,6 +145,11 @@ export interface EventDef {
   // college without one. The `when` vocabulary is numbers; this is the
   // standing clause it could not express.
   needs: string[];
+  // Identity (Phase 24): tags whose colleges this happens to more often,
+  // and whether the engine never rolls it — a scripted event is put on
+  // the docket by a system (the league's poaching), not by the dice.
+  favours: TagId[];
+  scripted: boolean;
 }
 
 const PLACEHOLDERS = [
@@ -148,6 +160,7 @@ const PLACEHOLDERS = [
   'school',
   'rival',
   'sport',
+  'suitor',
 ] as const;
 
 const conditions = obj(
@@ -173,6 +186,11 @@ const fileSchema = obj({
       choices: arr(obj({ id: str, label: str, note: optional(str), effects })),
       default: str,
       needs: optional(arr(str)),
+      favours: optional(arr(oneOf(TAG_IDS))),
+      scripted: optional((v: unknown, p: string) => {
+        if (typeof v !== 'boolean') throw new ContentError(p, 'expected a boolean');
+        return v;
+      }),
     }),
   ),
   readings: obj({ pending: str, mood: str, history: str }),
@@ -188,7 +206,12 @@ const fileSchema = obj({
 function load() {
   const file = validate(fileSchema, raw, 'content/events.json');
   const events = uniqueBy(
-    file.events.map((e) => ({ ...e, needs: e.needs ?? [] })),
+    file.events.map((e) => ({
+      ...e,
+      needs: e.needs ?? [],
+      favours: e.favours ?? [],
+      scripted: e.scripted ?? false,
+    })),
     (e) => e.id,
     'content/events.json.events',
   ) as EventDef[];

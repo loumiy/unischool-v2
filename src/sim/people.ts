@@ -48,6 +48,8 @@ import { memoryFor, warmthFor } from './alumni.ts';
 import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import { varsityLife } from './athletics.ts';
+import { prestigePoolFactor } from './prestige.ts';
+import { tagPoolFactor, tagQualityShift } from './tags.ts';
 import {
   nameNewcomers,
   tellGraduationBeats,
@@ -341,7 +343,10 @@ export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissio
   const applicants = applicantPool(
     terms,
     state.people.aidRate,
-    placementPoolFactor(state) * buildingDrawFactor(state),
+    placementPoolFactor(state) *
+      buildingDrawFactor(state) *
+      prestigePoolFactor(state) *
+      tagPoolFactor(state),
   );
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
@@ -355,7 +360,10 @@ export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissio
     admitted,
     yieldRate: yr,
     size,
-    quality: admittedQuality(rate),
+    // What the guidebooks say shapes who applies (Phase 24).
+    quality: Number(
+      Math.min(100, Math.max(0, admittedQuality(rate) + tagQualityShift(state))).toFixed(1),
+    ),
     cap,
     capped: wanted > cap,
   };

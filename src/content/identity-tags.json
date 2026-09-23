@@ -3,52 +3,90 @@
     {
       "id": "research-powerhouse",
       "name": "Research Powerhouse",
-      "blurb": "The papers come out faster than the undergraduates."
+      "blurb": "The papers come out faster than the undergraduates.",
+      "size": 0.05,
+      "quality": 3,
+      "why": "The research is strong, and stronger than the teaching."
     },
     {
       "id": "teaching-college",
       "name": "Teaching College",
-      "blurb": "Small classes, and professors who know your name."
+      "blurb": "Small classes, and professors who know your name.",
+      "size": 0,
+      "quality": 2,
+      "why": "The teaching is strong, and stronger than the research."
     },
     {
       "id": "party-school",
       "name": "Party School",
-      "blurb": "Thursday is the weekend."
+      "blurb": "Thursday is the weekend.",
+      "size": 0.1,
+      "quality": -4,
+      "why": "The students are happy, and the classes they arrive in are not the most demanding."
     },
     {
       "id": "jock-school",
       "name": "Jock School",
-      "blurb": "The stadium is the biggest building on campus, and everyone knows the fight song."
+      "blurb": "The stadium is the biggest building on campus, and everyone knows the fight song.",
+      "size": 0.08,
+      "quality": -2,
+      "why": "The teams and their venues are what the college is known for."
     },
     {
       "id": "artsy",
       "name": "Artsy",
-      "blurb": "Studios open all night and a gallery in every stairwell."
+      "blurb": "Studios open all night and a gallery in every stairwell.",
+      "size": -0.03,
+      "quality": 1,
+      "why": "The arts: their programmes, their buildings, their share of the campus."
     },
     {
       "id": "commuter",
       "name": "Commuter",
-      "blurb": "Most of the students go home at five."
+      "blurb": "Most of the students go home at five.",
+      "size": 0.05,
+      "quality": -3,
+      "why": "Too few beds for the students: most of them go home at night."
     },
     {
       "id": "country-club",
       "name": "Country Club",
-      "blurb": "Beautiful grounds, a long waiting list, and a lot of sailing."
+      "blurb": "Beautiful grounds, a long waiting list, and a lot of sailing.",
+      "size": -0.05,
+      "quality": 2,
+      "why": "A dear sticker, little aid, and a beautiful campus."
     },
     {
       "id": "pressure-cooker",
       "name": "Pressure Cooker",
-      "blurb": "The library never closes, and nobody leaves it."
+      "blurb": "The library never closes, and nobody leaves it.",
+      "size": -0.05,
+      "quality": 4,
+      "why": "Very selective, and the students are not happy about it."
     },
     {
       "id": "the-bargain",
       "name": "The Bargain",
-      "blurb": "A good degree at a price a family can say out loud."
+      "blurb": "A good degree at a price a family can say out loud.",
+      "size": 0.12,
+      "quality": -1,
+      "why": "A net price well under the market's, for a respectable class."
     },
     {
       "id": "old-money",
       "name": "Old Money",
-      "blurb": "Endowed before anyone alive was born, and dressed for it."
+      "blurb": "Endowed before anyone alive was born, and dressed for it.",
+      "size": 0.06,
+      "quality": 3,
+      "why": "A large endowment, held a long time."
     }
-  ]
+  ],
+  "words": {
+    "title": "What the guidebooks say",
+    "none": "Nothing yet. The guidebooks wait to see what the college does for a few years before they decide what it is.",
+    "hint": "Identity is earned and shed from how the college is run, two years at a time. It shapes who applies: how many, and how good.",
+    "pool": "{size} applicants · {quality} quality",
+    "earning": "Becoming: {tags}",
+    "shedding": "Fading: {tags}"
+  }
 }

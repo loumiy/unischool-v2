@@ -11,6 +11,7 @@ import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingLeague } from './league.ts';
 import { foundingAthletics } from './athletics.ts';
+import { foundingPerception } from './tags.ts';
 import { foundingPrestige } from './prestige.ts';
 import { AXES } from '../content/league.ts';
 import { foundingAmbitions } from './ambitions.ts';
@@ -636,6 +637,16 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       state: { athletics: foundingAthletics(seed), ...state, schemaVersion: 23 },
     };
   },
+  // v23 → v24 (Phase 24): identity. An older college has earned no tags
+  // yet; the guidebooks start reading it at its next turn of the year.
+  23: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 24,
+      state: { perception: foundingPerception(), ...state, schemaVersion: 24 },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -865,6 +876,9 @@ function validateCurrent(file: Record<string, unknown>): string | null {
     typeof athletics.rivalry !== 'object'
   )
     return 'state.athletics is invalid';
+  const perception = s.perception as Record<string, unknown> | undefined;
+  if (typeof perception !== 'object' || perception === null || !Array.isArray(perception.tags))
+    return 'state.perception is invalid';
   const league = s.league as Record<string, unknown> | undefined;
   if (
     typeof league !== 'object' ||
