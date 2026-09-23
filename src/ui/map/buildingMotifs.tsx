@@ -3,6 +3,12 @@ import type { BuildingDef } from '../../content/buildings.ts';
 import type { Motif } from '../../sim/index.ts';
 import {
   ARCADE_BAY_METRES,
+  BELL_TOWER_CAP_METRES,
+  BELL_TOWER_METRES,
+  FOUNTAIN_METRES,
+  GATE_METRES,
+  OBSERVATORY_DOME_METRES,
+  STATUE_METRES,
   ARCADE_DEPTH,
   ARCADE_HEIGHT,
   ARCADE_MAX,
@@ -91,6 +97,7 @@ import {
   SIGN_POST,
   SIGN_POST_METRES,
   stoneFor,
+  styleFor,
   storeysOf,
   wallHeightOf,
   wallShadeOf,
@@ -141,6 +148,8 @@ export function labelHeightOf(def: BuildingDef, m: Motif): number {
 
 export function drawnHeightOf(def: BuildingDef, m: Motif): number {
   if (def.form === 'grounds') return 0;
+  if (def.form === 'tower') return wallHeightOf(def) + up(BELL_TOWER_CAP_METRES);
+  if (def.form === 'observatory') return wallHeightOf(def) + up(OBSERVATORY_DOME_METRES);
   return wallHeightOf(def) + ridgeOf(def, m);
 }
 
@@ -2368,9 +2377,33 @@ function BuildingMass({
   const cornerInFront = project(col + w, row + h).y > project(col + w / 2, row + h / 2).y;
   const roofTint = material.roof;
 
-  if (form === 'grounds') return <GroundField col={col} row={row} w={w} h={h} />;
+  if (form === 'grounds')
+    return <GroundField col={col} row={row} w={w} h={h} ground={def.ground} />;
   if (form === 'sign') {
     return <EntranceSign col={col} row={row} w={w} h={h} stone={stone} name={schoolName} />;
+  }
+  if (form === 'statue') return <Statue col={col} row={row} w={w} h={h} stone={stone} />;
+  if (form === 'fountain') return <Fountain col={col} row={row} w={w} h={h} stone={stone} />;
+  if (form === 'gate') {
+    return <Gate col={col} row={row} w={w} h={h} stone={stone} shape={MOTIF_GATE_SHAPE[motif]} />;
+  }
+  if (form === 'tower') {
+    return (
+      <BellTower
+        col={col}
+        row={row}
+        w={w}
+        h={h}
+        stone={stone}
+        apex={apex}
+        roof={styleFor(motif).materials.brickRed.roof}
+        shape={paneShape}
+        gilded={hasGilt(motif)}
+      />
+    );
+  }
+  if (form === 'observatory') {
+    return <Observatory col={col} row={row} w={w} h={h} pal={pal} />;
   }
 
   const H = wallHeightOf(def);
@@ -3417,6 +3450,447 @@ function EntranceSign({
           {words}
         </text>
       )}
+    </g>
+  );
+}
+
+// ---------------------------------------------------------------------
+// CAMPUS FURNITURE (Phase 21J): the statue, the fountain, the gate, the
+// bell tower, and the observatory's drum and dome. Each stands in the
+// middle of its plot at the size the thing really is.
+// ---------------------------------------------------------------------
+
+const BRONZE = '#5f6f5a';
+const WATER = '#6ba3bd';
+const JET = 'rgba(236, 244, 250, 0.85)';
+const DOME_METAL = '#dfe3e4';
+
+// Two visible walls and the lid of a box, in one stone.
+function StoneBox({ f, tone, lid = 1.02 }: { f: BoxFaces; tone: string; lid?: number }) {
+  return (
+    <>
+      {sideFaces(f, shade(tone, 0.94), shade(tone, 0.78))}
+      <polygon points={polyPoints(f.top)} fill={shade(tone, lid)} />
+    </>
+  );
+}
+
+function Statue({
+  col,
+  row,
+  w,
+  h,
+  stone,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+}) {
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const sq = (plan: number, base: number, rise: number) =>
+    boxFaces(cc - plan / 2, cr - plan / 2, plan, plan, base, rise);
+  const step = sq(across(3.6), 0, up(0.5));
+  const die = sq(across(2.4), up(0.5), up(2.6));
+  const figureBase = up(3.1);
+  const figureRise = up(STATUE_METRES - 3.1 - 0.6);
+  const body = boxFaces(
+    cc - across(0.6),
+    cr - across(0.42),
+    across(1.2),
+    across(0.84),
+    figureBase,
+    figureRise,
+  );
+  const head = lift(project(cc, cr), figureBase + figureRise + up(0.3));
+  return (
+    <g className="campus-statue">
+      <StoneBox f={step} tone={stone.towerStone} />
+      <StoneBox f={die} tone={stone.towerStone} lid={0.96} />
+      {sideFaces(body, shade(BRONZE, 1.0), shade(BRONZE, 0.78))}
+      <polygon points={polyPoints(body.top)} fill={shade(BRONZE, 1.08)} />
+      <circle cx={head.x} cy={head.y} r={Math.max(1.6, up(0.45) * heightScale())} fill={BRONZE} />
+    </g>
+  );
+}
+
+// A ring's near half, raised into a wall: the sort a basin or a drum has.
+function ringWall(cc: number, cr: number, r: number, base: number, rise: number) {
+  const centre = project(cc, cr);
+  const ring = projectedCircle(cc, cr, r, 40);
+  const front = ring.filter((p) => p.y >= centre.y - 0.01).sort((a, b) => a.x - b.x);
+  const wall = (pts: Pt[]) =>
+    polyPoints([
+      ...pts.map((p) => lift(p, base)),
+      ...[...pts].reverse().map((p) => lift(p, base + rise)),
+    ]);
+  return {
+    lit: wall(front.filter((p) => p.x <= centre.x + 0.01)),
+    dark: wall(front.filter((p) => p.x >= centre.x - 0.01)),
+    rim: polyPoints(ring.map((p) => lift(p, base + rise))),
+    ring,
+    centre,
+  };
+}
+
+function Fountain({
+  col,
+  row,
+  w,
+  h,
+  stone,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+}) {
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const basin = ringWall(cc, cr, Math.min(w, h) * 0.42, 0, up(0.6));
+  const water = projectedCircle(cc, cr, Math.min(w, h) * 0.37, 40).map((p) => lift(p, up(0.5)));
+  const stem = boxFaces(cc - across(0.5), cr - across(0.5), across(1.0), across(1.0), 0, up(1.7));
+  const bowl = ringWall(cc, cr, across(2.0), up(1.7), up(0.35));
+  const top = lift(project(cc, cr), up(FOUNTAIN_METRES));
+  const lip = lift(project(cc, cr), up(2.05));
+  const spread = across(2.0) * 32;
+  return (
+    <g className="campus-fountain">
+      <polygon points={basin.lit} fill={shade(stone.towerStone, 0.96)} />
+      <polygon points={basin.dark} fill={shade(stone.towerStone, 0.78)} />
+      <polygon points={basin.rim} fill={shade(stone.towerStone, 1.04)} />
+      <polygon points={polyPoints(water)} fill={WATER} />
+      <StoneBox f={stem} tone={stone.towerStone} />
+      <polygon points={bowl.lit} fill={shade(stone.towerStone, 0.96)} />
+      <polygon points={bowl.dark} fill={shade(stone.towerStone, 0.78)} />
+      <polygon points={bowl.rim} fill={WATER} />
+      <path
+        className="fountain-jet"
+        d={`M${lip.x.toFixed(1)},${lip.y.toFixed(1)}L${top.x.toFixed(1)},${top.y.toFixed(1)}M${top.x.toFixed(1)},${top.y.toFixed(1)}Q${(top.x - spread * 0.6).toFixed(1)},${(top.y - 2).toFixed(1)} ${(lip.x - spread).toFixed(1)},${(lip.y + 3).toFixed(1)}M${top.x.toFixed(1)},${top.y.toFixed(1)}Q${(top.x + spread * 0.6).toFixed(1)},${(top.y - 2).toFixed(1)} ${(lip.x + spread).toFixed(1)},${(lip.y + 3).toFixed(1)}`}
+        stroke={JET}
+      />
+    </g>
+  );
+}
+
+// The gate's opening, by motif: the campus's own window shape, at the
+// size of a way through.
+const MOTIF_GATE_SHAPE: Record<Motif, WindowShape> = {
+  georgian: 'arched',
+  gothic: 'lancet',
+  classical: 'arched',
+  mission: 'arched',
+  modern: 'rect',
+};
+
+function Gate({
+  col,
+  row,
+  w,
+  h,
+  stone,
+  shape,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+  shape: WindowShape;
+}) {
+  // Along the plot's long side: a pier at each end and a span between.
+  const alongW = w >= h;
+  const long = alongW ? w : h;
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const deep = across(2.4);
+  const pier = Math.min(across(3.4), long * 0.22);
+  const span = Math.min(long - pier * 2 - across(0.6), across(9));
+  const H = up(GATE_METRES);
+  const box = (from: number, length: number, base: number, rise: number) =>
+    alongW
+      ? boxFaces(cc + from, cr - deep / 2, length, deep, base, rise)
+      : boxFaces(cc - deep / 2, cr + from, deep, length, base, rise);
+  // The far pier first, the near one last: nearer is lower on screen.
+  const piers = [-span / 2 - pier, span / 2]
+    .map((from) => {
+      const at = alongW ? project(cc + from + pier / 2, cr) : project(cc, cr + from + pier / 2);
+      return { f: box(from, pier, 0, H + up(0.8)), top: lift(at, H + up(0.8)), y: at.y };
+    })
+    .sort((a, b) => a.y - b.y);
+  const arch = box(-span / 2, span, 0, H);
+  // The arch's long face, with the opening cut out of it (even-odd).
+  const longIsLeft = isRowWall(arch.dir.CD) === alongW;
+  const origin = longIsLeft ? arch.D : arch.C;
+  const along = longIsLeft ? arch.C : arch.B;
+  const outline = polyPoints([
+    facePoint(origin, along, H, 0, 0),
+    facePoint(origin, along, H, 1, 0),
+    facePoint(origin, along, H, 1, 1),
+    facePoint(origin, along, H, 0, 1),
+  ]);
+  const hole = polyPoints(
+    windowOutline(shape, 0.14, 0.86, 0, 0.72).map(([u, v]) => facePoint(origin, along, H, u, v)),
+  );
+  const d = `M${outline.replace(/ /g, 'L')}Z M${hole.replace(/ /g, 'L')}Z`;
+  const tone = longIsLeft
+    ? faceTone(arch.dir.CD, shade(stone.towerStone, 0.94), shade(stone.towerStone, 0.78))
+    : faceTone(arch.dir.BC, shade(stone.towerStone, 0.94), shade(stone.towerStone, 0.78));
+  const archPart = (
+    <g key="arch">
+      <path d={d} fill={tone} fillRule="evenodd" />
+      <polygon points={polyPoints(arch.top)} fill={shade(stone.towerStone, 1.02)} />
+    </g>
+  );
+  // The span sits between the piers in depth: draw the far pier, the span,
+  // then the near one.
+  return (
+    <g className="campus-gate">
+      <StoneBox f={piers[0]!.f} tone={stone.towerStone} />
+      {archPart}
+      <StoneBox f={piers[1]!.f} tone={stone.towerStone} />
+      {piers.map((p, i) => {
+        const tip = p.top;
+        return (
+          <circle
+            key={i}
+            cx={tip.x}
+            cy={tip.y - 2.4}
+            r={2.4}
+            fill={hasGiltStone(stone) ? stone.gilt : shade(stone.towerStone, 0.9)}
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+function hasGiltStone(stone: StonePalette): boolean {
+  return stone.gilt !== 'none';
+}
+
+// Four triangles to a point over a square: a pyramid roof or a spire.
+function Pyramid({
+  cc,
+  cr,
+  plan,
+  base,
+  rise,
+  tone,
+}: {
+  cc: number;
+  cr: number;
+  plan: number;
+  base: number;
+  rise: number;
+  tone: string;
+}) {
+  const f = boxFaces(cc - plan / 2, cr - plan / 2, plan, plan, base, 0);
+  const tip = lift(project(cc, cr), base + rise);
+  const [a, b, c, d] = f.top as [Pt, Pt, Pt, Pt];
+  const faces: [Pt, Pt][] = [
+    [a, b],
+    [b, c],
+    [c, d],
+    [d, a],
+  ];
+  // Paint back to front: the faces whose midpoints sit higher on screen
+  // first.
+  const order = faces
+    .map(([p, q]) => ({ p, q, y: (p.y + q.y) / 2, x: (p.x + q.x) / 2 }))
+    .sort((m, n) => m.y - n.y);
+  const centreX = project(cc, cr).x;
+  return (
+    <>
+      {order.map(({ p, q, x }, i) => (
+        <polygon
+          key={i}
+          points={polyPoints([p, q, tip])}
+          fill={shade(tone, x <= centreX ? 1.0 : 0.76)}
+        />
+      ))}
+    </>
+  );
+}
+
+function BellTower({
+  col,
+  row,
+  w,
+  h,
+  stone,
+  apex,
+  roof,
+  shape,
+  gilded,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  stone: StonePalette;
+  apex: ApexPart;
+  roof: string;
+  shape: WindowShape;
+  gilded: boolean;
+}) {
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const plan = Math.min(across(7.4), Math.min(w, h) * 0.86);
+  const H = up(BELL_TOWER_METRES);
+  const shaft = boxFaces(cc - plan / 2, cr - plan / 2, plan, plan, 0, H);
+  const cap = up(BELL_TOWER_CAP_METRES);
+  const belfryShape: WindowShape = shape === 'ribbon' ? 'slot' : shape;
+  const openings = [[shaft.D, shaft.C, 'l'] as const, [shaft.C, shaft.B, 'r'] as const].map(
+    ([o, a, k]) => (
+      <polygon
+        key={k}
+        className="iso-louvre"
+        points={polyPoints(
+          windowOutline(belfryShape, 0.3, 0.7, 0.78, 0.93).map(([u, v]) =>
+            facePoint(o, a, H, u, v),
+          ),
+        )}
+      />
+    ),
+  );
+  const top = lift(project(cc, cr), H);
+  const finial = (from: Pt) =>
+    gilded ? (
+      <>
+        <line
+          className="iso-finial"
+          x1={from.x}
+          y1={from.y}
+          x2={from.x}
+          y2={lift(from, TOWER_FINIAL_RISE).y}
+          stroke={stone.gilt}
+        />
+        <circle cx={from.x} cy={lift(from, TOWER_FINIAL_RISE).y} r={1.8} fill={stone.gilt} />
+      </>
+    ) : null;
+  let crown: React.ReactNode;
+  if (apex === 'spire') {
+    crown = (
+      <>
+        <Pyramid cc={cc} cr={cr} plan={plan} base={H} rise={cap * 2.2} tone={stone.towerStone} />
+        {finial(lift(top, cap * 2.2))}
+      </>
+    );
+  } else if (apex === 'dome' || apex === 'cupola') {
+    const r = (plan / 2) * 64 * 0.62;
+    const pts: string[] = [];
+    for (let i = 0; i <= 18; i++) {
+      const a = Math.PI + (i / 18) * Math.PI;
+      pts.push(
+        `${(top.x + Math.cos(a) * r).toFixed(2)},${(top.y + Math.sin(a) * cap * 0.8 * heightScale()).toFixed(2)}`,
+      );
+    }
+    crown = (
+      <>
+        <polygon
+          className="iso-dome"
+          points={pts.join(' ')}
+          fill={apex === 'dome' ? roof : shade(stone.towerStone, 0.92)}
+        />
+        {finial(lift(top, cap * 0.8))}
+      </>
+    );
+  } else if (apex === 'campanile') {
+    crown = <Pyramid cc={cc} cr={cr} plan={plan * 1.12} base={H} rise={cap * 0.5} tone={roof} />;
+  } else {
+    // The modern tower: a slab lid over an open frame.
+    const lid = boxFaces(cc - plan * 0.58, cr - plan * 0.58, plan * 1.16, plan * 1.16, H, up(0.7));
+    crown = <StoneBox f={lid} tone={stone.towerStone} />;
+  }
+  return (
+    <g className="campus-bell-tower">
+      <StoneBox f={shaft} tone={stone.towerStone} lid={0.9} />
+      <WallBand
+        origin={shaft.D}
+        along={shaft.C}
+        wallHeight={H}
+        from={H - CORNICE}
+        to={H}
+        className="iso-cornice"
+      />
+      <WallBand
+        origin={shaft.C}
+        along={shaft.B}
+        wallHeight={H}
+        from={H - CORNICE}
+        to={H}
+        className="iso-cornice"
+      />
+      {openings}
+      {crown}
+    </g>
+  );
+}
+
+function Observatory({
+  col,
+  row,
+  w,
+  h,
+  pal,
+}: {
+  col: number;
+  row: number;
+  w: number;
+  h: number;
+  pal: Palette;
+}) {
+  const cc = col + w / 2;
+  const cr = row + h / 2;
+  const r = Math.min(across(9), Math.min(w, h) * 0.4);
+  const drumRise = STOREY + up(1.2);
+  const drum = ringWall(cc, cr, r, 0, drumRise);
+  const top = lift(drum.centre, drumRise);
+  const rx = (Math.max(...drum.ring.map((p) => p.x)) - Math.min(...drum.ring.map((p) => p.x))) / 2;
+  const rise = up(OBSERVATORY_DOME_METRES) * heightScale();
+  // A hemisphere from above: the rim's near half, then the crown's arc.
+  // Split down the middle into its lit and shaded halves.
+  const rimFront = drum.ring
+    .filter((p) => p.y >= drum.centre.y - 0.01)
+    .sort((a, b) => a.x - b.x)
+    .map((p) => lift(p, drumRise));
+  const arc = (from: number, to: number) => {
+    const pts: Pt[] = [];
+    for (let i = 0; i <= 12; i++) {
+      const a = from + ((to - from) * i) / 12;
+      pts.push({ x: top.x + Math.cos(a) * rx, y: top.y + Math.sin(a) * rise });
+    }
+    return pts;
+  };
+  const litHalf = polyPoints([
+    ...rimFront.filter((p) => p.x <= top.x + 0.01),
+    ...arc(-Math.PI / 2, -Math.PI),
+  ]);
+  const darkHalf = polyPoints([
+    ...rimFront.filter((p) => p.x >= top.x - 0.01),
+    ...arc(0, -Math.PI / 2),
+  ]);
+  // The shutter: a dark slot from the crown down the lit side.
+  const slit = `M${top.x.toFixed(1)},${(top.y - rise).toFixed(1)}Q${(top.x - rx * 0.5).toFixed(1)},${(top.y - rise * 0.9).toFixed(1)} ${(top.x - rx * 0.72).toFixed(1)},${(top.y - rise * 0.35).toFixed(1)}`;
+  const door = lift(projectedCircle(cc, cr, r, 8)[2]!, 0);
+  return (
+    <g className="campus-observatory">
+      <polygon points={drum.lit} fill={pal.wallLeft} />
+      <polygon points={drum.dark} fill={pal.wallRight} />
+      <polygon className="iso-dome" points={litHalf} fill={DOME_METAL} />
+      <polygon className="iso-dome" points={darkHalf} fill={shade(DOME_METAL, 0.8)} />
+      <path className="observatory-slit" d={slit} />
+      <rect
+        x={door.x - 3}
+        y={door.y - STOREY * heightScale() * 0.7}
+        width={6}
+        height={STOREY * heightScale() * 0.7}
+        className="iso-louvre"
+      />
     </g>
   );
 }

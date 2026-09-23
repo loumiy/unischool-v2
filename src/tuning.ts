@@ -124,6 +124,11 @@ export const CONDITION_WEIGHT = 20;
 // Student life (Phase 21I): satisfaction points when the campus's student
 // centre, health centre, recreation centre and fields reach every student.
 export const STUDENT_LIFE_POINTS = 6;
+// The buildings a college shows itself off from (Phase 21J): their summed
+// draw on the applicant pool is capped at this share, and the alumni
+// house's share of giving at the next.
+export const BUILDING_DRAW_CAP = 0.15;
+export const BUILDING_GIVING_CAP = 0.15;
 // Attrition per year: a base, plus a share for every point of
 // satisfaction under the line.
 export const ATTRITION_BASE = 0.04;

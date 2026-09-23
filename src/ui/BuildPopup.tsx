@@ -8,7 +8,7 @@ import {
 } from '../content/buildings.ts';
 import { PEOPLE_READINGS } from '../content/people.ts';
 import { PLACEMENT_READINGS } from '../content/placement.ts';
-import { ESTATE_WORDS } from '../content/treasury.ts';
+import { ESTATE_WORDS, providesLine } from '../content/treasury.ts';
 import {
   beautyTerms,
   borrowingRoom,
@@ -28,7 +28,18 @@ import {
 import HelpHint from './HelpHint.tsx';
 import {
   AcademicIcon,
+  ArtsIcon,
   AthleticsIcon,
+  CafeIcon,
+  ChapelIcon,
+  FountainIcon,
+  GardenIcon,
+  GateIcon,
+  MuseumIcon,
+  ObservatoryIcon,
+  PoolIcon,
+  StatueIcon,
+  TowerIcon,
   BuildIcon,
   DemolishIcon,
   DiningIcon,
@@ -72,7 +83,7 @@ const CATEGORY_ICONS: Record<BuildingCategory, () => React.JSX.Element> = {
   life: StudentLifeIcon,
   athletics: AthleticsIcon,
   admin: BuildIcon,
-  landmark: BuildIcon,
+  landmark: StatueIcon,
 };
 
 const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
@@ -87,6 +98,17 @@ const TILE_ICONS: Record<BuildingIcon, () => React.JSX.Element> = {
   athletics: AthleticsIcon,
   admin: BuildIcon,
   sign: SignIcon,
+  arts: ArtsIcon,
+  observatory: ObservatoryIcon,
+  cafe: CafeIcon,
+  chapel: ChapelIcon,
+  museum: MuseumIcon,
+  pool: PoolIcon,
+  statue: StatueIcon,
+  fountain: FountainIcon,
+  gate: GateIcon,
+  tower: TowerIcon,
+  garden: GardenIcon,
 };
 
 const TOOLS_ID = 'campus-tools';
@@ -200,7 +222,9 @@ function BuildTile({
       disabled={!affordable}
       title={
         why ??
-        (armed ? 'Click empty ground to break ground, or click again to put it back.' : def.blurb)
+        (armed
+          ? 'Click empty ground to break ground, or click again to put it back.'
+          : `${def.blurb ?? ''}\n\n${providesLine(def)}`)
       }
       onClick={onArm}
     >
@@ -211,6 +235,7 @@ function BuildTile({
       <span className="build-tile-sub">
         {def.footprint.w}×{def.footprint.h} tiles · {def.buildWeeks} wks
       </span>
+      <span className="build-tile-gives">{providesLine(def)}</span>
       <span className="build-tile-price">{formatMoney(def.cost)}</span>
       <span className="build-tile-foot">
         {armed ? 'placing…' : affordable ? 'place' : "can't afford"}
@@ -242,13 +267,9 @@ export default function BuildPopup({
   onSetFinancing: (f: Financing) => void;
   onClose: () => void;
 }) {
-  // A landmark is a piece of campus furniture rather than a department, so
-  // it sits with the other things you do to the ground rather than earning
-  // a tab of its own (Phase 21D).
-  const categories = BUILDING_CATEGORIES.filter(
-    (c) => c !== 'landmark' && BUILDINGS.some((b) => b.category === c),
-  );
-  const landmarks = BUILDINGS.filter((b) => b.category === 'landmark');
+  // Landmarks sat with Campus Tools while there was one of them (Phase
+  // 21D); with six they are a category of their own again (Phase 21J).
+  const categories = BUILDING_CATEGORIES.filter((c) => BUILDINGS.some((b) => b.category === c));
   const [activeId, setActiveId] = useState<string>(categories[0] ?? TOOLS_ID);
   const active =
     activeId === TOOLS_ID
@@ -350,16 +371,6 @@ export default function BuildPopup({
           <div className="build-tile-row">
             {activeId === TOOLS_ID
               ? [
-                  ...landmarks.map((def) => (
-                    <BuildTile
-                      key={def.id}
-                      def={def}
-                      state={state}
-                      financing={financing}
-                      armed={placingId === def.id}
-                      onArm={() => onArmPlacement(placingId === def.id ? null : def.id)}
-                    />
-                  )),
                   ...TOOL_TILES.map(({ tool: t, label, foot, title, Icon }) => (
                     <button
                       key={t}

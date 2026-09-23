@@ -24,7 +24,8 @@
       "landmark": true,
       "icon": "academic",
       "blurb": "One multi-purpose hall, the first thing on the land and the last thing anyone will agree to demolish.",
-      "limit": 1
+      "limit": 1,
+      "housesSchool": true
     },
     {
       "id": "academic-hall",
@@ -46,7 +47,8 @@
       "storeys": 4,
       "door": "formal",
       "icon": "academic",
-      "blurb": "A teaching hall in the founding style. Schools are founded in one of these."
+      "blurb": "A teaching hall in the founding style. Schools are founded in one of these.",
+      "housesSchool": true
     },
     {
       "id": "library",
@@ -87,6 +89,166 @@
       "blurb": "Low, flat, and crowded with rooftop plant. Research runs here."
     },
     {
+      "id": "lecture-theatre",
+      "name": "Lecture Theatre",
+      "category": "academic",
+      "footprint": {
+        "w": 5,
+        "h": 5
+      },
+      "cost": 4500000,
+      "upkeep": 90000,
+      "buildWeeks": 20,
+      "capacity": {
+        "seats": 450
+      },
+      "form": "pavilion",
+      "material": "limestone",
+      "storeys": 2,
+      "door": "civic",
+      "icon": "academic",
+      "blurb": "One raked room that seats a whole first year at once, and a lobby where they wait for it."
+    },
+    {
+      "id": "arts-building",
+      "name": "Arts Building",
+      "category": "academic",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 8000000,
+      "upkeep": 150000,
+      "buildWeeks": 26,
+      "capacity": {
+        "seats": 500
+      },
+      "beauty": 1,
+      "form": "portico",
+      "material": "brickBuff",
+      "storeys": 3,
+      "door": "formal",
+      "housesSchool": true,
+      "icon": "arts",
+      "blurb": "Studios under north light over seminar rooms. A school can be founded in it."
+    },
+    {
+      "id": "science-center",
+      "name": "Science Center",
+      "category": "academic",
+      "footprint": {
+        "w": 9,
+        "h": 5
+      },
+      "cost": 14000000,
+      "upkeep": 300000,
+      "buildWeeks": 36,
+      "capacity": {
+        "seats": 500
+      },
+      "form": "block",
+      "material": "curtain",
+      "storeys": 4,
+      "door": "canopy",
+      "housesSchool": true,
+      "icon": "lab",
+      "blurb": "Labs stacked four deep round a glass atrium. A school can be founded in it, and the fume hoods cost what fume hoods cost.",
+      "limit": 2
+    },
+    {
+      "id": "engineering-building",
+      "name": "Engineering Building",
+      "category": "academic",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 11000000,
+      "upkeep": 240000,
+      "buildWeeks": 32,
+      "capacity": {
+        "seats": 450
+      },
+      "form": "works",
+      "material": "render",
+      "storeys": 3,
+      "door": "service",
+      "housesSchool": true,
+      "icon": "lab",
+      "blurb": "High bays, a crane rail and a loading door. A school can be founded in it.",
+      "limit": 2
+    },
+    {
+      "id": "conservatory",
+      "name": "Conservatory",
+      "category": "academic",
+      "footprint": {
+        "w": 5,
+        "h": 5
+      },
+      "cost": 7500000,
+      "upkeep": 140000,
+      "buildWeeks": 28,
+      "capacity": {
+        "seats": 250,
+        "life": 200
+      },
+      "beauty": 1,
+      "form": "portico",
+      "material": "limestone",
+      "storeys": 3,
+      "door": "formal",
+      "icon": "arts",
+      "blurb": "Practice rooms, a recital hall, and scales from every window after dark. It teaches, and the campus goes to its concerts.",
+      "limit": 1
+    },
+    {
+      "id": "observatory",
+      "name": "Observatory",
+      "category": "academic",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "cost": 2500000,
+      "upkeep": 50000,
+      "buildWeeks": 20,
+      "capacity": {
+        "seats": 40
+      },
+      "beauty": 2,
+      "form": "observatory",
+      "material": "limestone",
+      "storeys": 1,
+      "door": "civic",
+      "icon": "observatory",
+      "blurb": "A drum, a dome that turns, and a telescope nobody on the board has looked through.",
+      "limit": 1
+    },
+    {
+      "id": "research-institute",
+      "name": "Research Institute",
+      "category": "academic",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 12000000,
+      "upkeep": 260000,
+      "buildWeeks": 34,
+      "capacity": {
+        "seats": 150,
+        "draw": 4
+      },
+      "form": "block",
+      "material": "curtain",
+      "storeys": 5,
+      "door": "canopy",
+      "icon": "lab",
+      "blurb": "Five floors of people who do not teach much. The papers they write reach applicants who have never seen the campus.",
+      "limit": 2
+    },
+    {
       "id": "residence-hall",
       "name": "Residence Hall",
       "category": "residential",
@@ -108,6 +270,95 @@
       "blurb": "A four-storey hall of ranked windows under one long roof."
     },
     {
+      "id": "house",
+      "name": "House",
+      "category": "residential",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 3000000,
+      "upkeep": 70000,
+      "buildWeeks": 18,
+      "capacity": {
+        "beds": 90
+      },
+      "form": "residential",
+      "material": "brickRed",
+      "storeys": 3,
+      "door": "residential",
+      "icon": "housing",
+      "blurb": "Ninety beds under one roof and a tutor on the ground floor. First-years ask for these by name."
+    },
+    {
+      "id": "graduate-house",
+      "name": "Graduate House",
+      "category": "residential",
+      "footprint": {
+        "w": 5,
+        "h": 5
+      },
+      "cost": 5000000,
+      "upkeep": 100000,
+      "buildWeeks": 22,
+      "capacity": {
+        "beds": 140,
+        "meals": 60
+      },
+      "form": "residential",
+      "material": "limestone",
+      "storeys": 3,
+      "door": "residential",
+      "icon": "housing",
+      "blurb": "Quieter than the halls, with a kitchen of its own and a common room nobody books."
+    },
+    {
+      "id": "apartments",
+      "name": "Apartment Block",
+      "category": "residential",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 10000000,
+      "upkeep": 210000,
+      "buildWeeks": 30,
+      "capacity": {
+        "beds": 320
+      },
+      "form": "block",
+      "material": "brickBuff",
+      "storeys": 5,
+      "door": "residential",
+      "icon": "housing",
+      "blurb": "Kitchens and a lock on every door: housing for the upper years, and the end of the dining hall's hold on them."
+    },
+    {
+      "id": "residential-college",
+      "name": "Residential College",
+      "category": "residential",
+      "footprint": {
+        "w": 9,
+        "h": 7
+      },
+      "cost": 22000000,
+      "upkeep": 420000,
+      "buildWeeks": 44,
+      "capacity": {
+        "beds": 450,
+        "meals": 450,
+        "life": 450
+      },
+      "beauty": 2,
+      "form": "residential",
+      "material": "brickRed",
+      "storeys": 4,
+      "door": "formal",
+      "icon": "housing",
+      "blurb": "Beds, a hall to eat in and a master's lodging round one front door. The old answer to everything, at the old price.",
+      "limit": 3
+    },
+    {
       "id": "dining-hall",
       "name": "Dining Hall",
       "category": "dining",
@@ -127,6 +378,72 @@
       "door": "civic",
       "icon": "dining",
       "blurb": "A refectory. Somewhere near the residence halls is where it wants to be."
+    },
+    {
+      "id": "cafe",
+      "name": "Café",
+      "category": "dining",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "cost": 900000,
+      "upkeep": 30000,
+      "buildWeeks": 10,
+      "capacity": {
+        "meals": 120,
+        "life": 80
+      },
+      "form": "pavilion",
+      "material": "brickBuff",
+      "storeys": 1,
+      "door": "shopfront",
+      "icon": "cafe",
+      "blurb": "Coffee, a counter, and the tables where the campus actually meets."
+    },
+    {
+      "id": "food-hall",
+      "name": "Food Hall",
+      "category": "dining",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 7000000,
+      "upkeep": 160000,
+      "buildWeeks": 26,
+      "capacity": {
+        "meals": 900
+      },
+      "form": "pavilion",
+      "material": "curtain",
+      "storeys": 2,
+      "door": "canopy",
+      "icon": "dining",
+      "blurb": "Nine hundred seats and twelve counters under one glass roof. Nobody eats with their hall any more."
+    },
+    {
+      "id": "faculty-club",
+      "name": "Faculty Club",
+      "category": "dining",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 2500000,
+      "upkeep": 60000,
+      "buildWeeks": 16,
+      "capacity": {
+        "meals": 60
+      },
+      "beauty": 1,
+      "form": "pavilion",
+      "material": "limestone",
+      "storeys": 2,
+      "door": "formal",
+      "icon": "dining",
+      "blurb": "Panelled, carpeted, with a wine list. It feeds sixty and settles more arguments than the senate.",
+      "limit": 1
     },
     {
       "id": "student-center",
@@ -174,6 +491,120 @@
       "limit": 1
     },
     {
+      "id": "chapel",
+      "name": "Chapel",
+      "category": "life",
+      "footprint": {
+        "w": 5,
+        "h": 7
+      },
+      "cost": 6000000,
+      "upkeep": 90000,
+      "buildWeeks": 30,
+      "capacity": {
+        "life": 300
+      },
+      "beauty": 3,
+      "form": "hall",
+      "material": "limestone",
+      "storeys": 2,
+      "door": "formal",
+      "icon": "chapel",
+      "blurb": "Weddings, memorials, matriculation and the organ recital nobody goes to. The campus's tallest room.",
+      "limit": 1
+    },
+    {
+      "id": "performing-arts",
+      "name": "Performing Arts Center",
+      "category": "life",
+      "footprint": {
+        "w": 9,
+        "h": 7
+      },
+      "cost": 16000000,
+      "upkeep": 320000,
+      "buildWeeks": 40,
+      "capacity": {
+        "life": 900
+      },
+      "beauty": 2,
+      "form": "portico",
+      "material": "limestone",
+      "storeys": 4,
+      "door": "formal",
+      "icon": "arts",
+      "blurb": "A proscenium, a black box and a fly tower. The student musical runs three nights and sells out two.",
+      "limit": 1
+    },
+    {
+      "id": "museum",
+      "name": "Museum",
+      "category": "life",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 9000000,
+      "upkeep": 160000,
+      "buildWeeks": 30,
+      "capacity": {
+        "life": 200,
+        "draw": 3
+      },
+      "beauty": 3,
+      "form": "portico",
+      "material": "limestone",
+      "storeys": 2,
+      "door": "formal",
+      "icon": "museum",
+      "blurb": "A bequest's worth of paintings, a skeleton, and a reason for families on a campus tour to stay for lunch.",
+      "limit": 1
+    },
+    {
+      "id": "bookshop",
+      "name": "Bookshop",
+      "category": "life",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "cost": 1200000,
+      "upkeep": 35000,
+      "buildWeeks": 12,
+      "capacity": {
+        "life": 120
+      },
+      "form": "pavilion",
+      "material": "brickRed",
+      "storeys": 2,
+      "door": "shopfront",
+      "icon": "library",
+      "blurb": "Set texts, sweatshirts with the crest on, and a back room of second-hand philosophy.",
+      "limit": 2
+    },
+    {
+      "id": "counselling-center",
+      "name": "Counselling Center",
+      "category": "life",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 2000000,
+      "upkeep": 70000,
+      "buildWeeks": 14,
+      "capacity": {
+        "life": 400
+      },
+      "form": "pavilion",
+      "material": "clinical",
+      "storeys": 2,
+      "door": "civic",
+      "icon": "health",
+      "blurb": "Six rooms, a waiting list, and the thing the students' newspaper asks for every spring.",
+      "limit": 1
+    },
+    {
       "id": "recreation-center",
       "name": "Recreation Center",
       "category": "athletics",
@@ -218,6 +649,96 @@
       }
     },
     {
+      "id": "gymnasium",
+      "name": "Gymnasium",
+      "category": "athletics",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 5000000,
+      "upkeep": 110000,
+      "buildWeeks": 22,
+      "capacity": {
+        "life": 600
+      },
+      "form": "hangar",
+      "material": "brickBuff",
+      "storeys": 0,
+      "door": "civic",
+      "icon": "fitness",
+      "blurb": "A sprung floor, a balcony track and bleachers that fold into the wall."
+    },
+    {
+      "id": "natatorium",
+      "name": "Natatorium",
+      "category": "athletics",
+      "footprint": {
+        "w": 7,
+        "h": 5
+      },
+      "cost": 8000000,
+      "upkeep": 200000,
+      "buildWeeks": 28,
+      "capacity": {
+        "life": 500
+      },
+      "form": "hangar",
+      "material": "curtain",
+      "storeys": 0,
+      "door": "civic",
+      "icon": "pool",
+      "blurb": "Fifty metres, eight lanes, and the heating bill of a small town.",
+      "limit": 1
+    },
+    {
+      "id": "tennis-courts",
+      "name": "Tennis Courts",
+      "category": "athletics",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 600000,
+      "upkeep": 20000,
+      "buildWeeks": 8,
+      "capacity": {
+        "life": 150
+      },
+      "form": "grounds",
+      "material": "render",
+      "storeys": 0,
+      "door": null,
+      "ground": "courts",
+      "icon": "athletics",
+      "blurb": "Two hard courts behind a fence. Booked solid in May and empty in March."
+    },
+    {
+      "id": "stadium",
+      "name": "Stadium",
+      "category": "athletics",
+      "footprint": {
+        "w": 11,
+        "h": 7
+      },
+      "cost": 18000000,
+      "upkeep": 300000,
+      "buildWeeks": 48,
+      "capacity": {
+        "life": 1200,
+        "draw": 4
+      },
+      "beauty": 1,
+      "form": "grounds",
+      "material": "render",
+      "storeys": 0,
+      "door": null,
+      "ground": "track",
+      "icon": "athletics",
+      "blurb": "A track, a pitch inside it and raked stands down one side. Homecoming is here; so are the television cameras, eventually.",
+      "limit": 1
+    },
+    {
       "id": "admin-building",
       "name": "Administration",
       "category": "admin",
@@ -234,6 +755,73 @@
       "door": "civic",
       "icon": "admin",
       "blurb": "Offices. It will need a bigger one. It will always need a bigger one.",
+      "limit": 1
+    },
+    {
+      "id": "admissions-office",
+      "name": "Admissions Office",
+      "category": "admin",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 2000000,
+      "upkeep": 60000,
+      "buildWeeks": 14,
+      "capacity": {
+        "draw": 6
+      },
+      "form": "pavilion",
+      "material": "brickRed",
+      "storeys": 2,
+      "door": "civic",
+      "icon": "admin",
+      "blurb": "Tours leave from the front step on the hour. A college that shows itself off draws more applicants.",
+      "limit": 1
+    },
+    {
+      "id": "alumni-house",
+      "name": "Alumni House",
+      "category": "admin",
+      "footprint": {
+        "w": 5,
+        "h": 3
+      },
+      "cost": 2500000,
+      "upkeep": 60000,
+      "buildWeeks": 16,
+      "capacity": {
+        "giving": 8
+      },
+      "beauty": 1,
+      "form": "residential",
+      "material": "brickRed",
+      "storeys": 2,
+      "door": "residential",
+      "icon": "admin",
+      "blurb": "A house with the class photographs up the stairs. Graduates who have somewhere to come back to give more.",
+      "limit": 1
+    },
+    {
+      "id": "visitor-center",
+      "name": "Visitor Center",
+      "category": "admin",
+      "footprint": {
+        "w": 3,
+        "h": 3
+      },
+      "cost": 1500000,
+      "upkeep": 40000,
+      "buildWeeks": 12,
+      "capacity": {
+        "draw": 3
+      },
+      "form": "pavilion",
+      "material": "curtain",
+      "storeys": 1,
+      "door": "canopy",
+      "icon": "admin",
+      "blurb": "A map on the wall, a model under glass, and parking for the families who drove four hours to see it.",
       "limit": 1
     },
     {
@@ -255,6 +843,108 @@
       "icon": "sign",
       "blurb": "The school's name, on a board at the road, where anyone passing can read it.",
       "limit": 2
+    },
+    {
+      "id": "statue",
+      "name": "Statue",
+      "category": "landmark",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "cost": 150000,
+      "upkeep": 3000,
+      "buildWeeks": 6,
+      "beauty": 1,
+      "form": "statue",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "statue",
+      "blurb": "A founder, a benefactor or an allegory on a plinth. Students will rub its shoe for luck by the tenth year."
+    },
+    {
+      "id": "fountain",
+      "name": "Fountain",
+      "category": "landmark",
+      "footprint": {
+        "w": 2,
+        "h": 2
+      },
+      "cost": 400000,
+      "upkeep": 12000,
+      "buildWeeks": 8,
+      "beauty": 2,
+      "form": "fountain",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "fountain",
+      "blurb": "A basin, a jet and a ledge to sit on. It is drained for the winter and dyed for the rivalry game.",
+      "limit": 3
+    },
+    {
+      "id": "memorial-gate",
+      "name": "Memorial Gate",
+      "category": "landmark",
+      "footprint": {
+        "w": 3,
+        "h": 1
+      },
+      "cost": 600000,
+      "upkeep": 8000,
+      "buildWeeks": 10,
+      "beauty": 2,
+      "form": "gate",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "gate",
+      "blurb": "Two piers and an arch with the names cut in it. A path runs through it; tradition says seniors do not.",
+      "limit": 2
+    },
+    {
+      "id": "bell-tower",
+      "name": "Bell Tower",
+      "category": "landmark",
+      "footprint": {
+        "w": 1,
+        "h": 1
+      },
+      "cost": 1800000,
+      "upkeep": 20000,
+      "buildWeeks": 20,
+      "beauty": 3,
+      "form": "tower",
+      "material": "limestone",
+      "storeys": 0,
+      "door": null,
+      "icon": "tower",
+      "blurb": "A freestanding tower with a ring of bells. It marks the hour, commencement, and every win.",
+      "limit": 1
+    },
+    {
+      "id": "formal-garden",
+      "name": "Formal Garden",
+      "category": "landmark",
+      "footprint": {
+        "w": 5,
+        "h": 5
+      },
+      "cost": 300000,
+      "upkeep": 15000,
+      "buildWeeks": 8,
+      "capacity": {
+        "life": 100
+      },
+      "beauty": 2,
+      "form": "grounds",
+      "material": "render",
+      "storeys": 0,
+      "door": null,
+      "ground": "garden",
+      "icon": "garden",
+      "blurb": "Clipped hedges, gravel walks and a bench with a donor's name on it."
     }
   ]
 }

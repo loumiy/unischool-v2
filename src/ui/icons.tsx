@@ -324,6 +324,121 @@ export function SignIcon() {
   );
 }
 
+// The catalogue's newer tiles (Phase 21J).
+export function ArtsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M9 18V6l11-2v12" />
+      <circle cx="6.5" cy="18" r="2.5" />
+      <circle cx="17.5" cy="16" r="2.5" />
+    </svg>
+  );
+}
+
+export function ObservatoryIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M4 20V13a8 8 0 0 1 16 0v7Z" />
+      <line x1="3" y1="20" x2="21" y2="20" />
+      <path d="M11 5.2 13 13" />
+    </svg>
+  );
+}
+
+export function CafeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5Z" />
+      <path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16" />
+      <path d="M9 3.5c0 1.4-1 1.4-1 2.8M12.5 3.5c0 1.4-1 1.4-1 2.8" />
+    </svg>
+  );
+}
+
+export function ChapelIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M12 2v4M10.3 3.7h3.4" />
+      <path d="M7 20V11l5-5 5 5v9" />
+      <path d="M10.5 20v-3.5a1.5 1.5 0 0 1 3 0V20" />
+      <line x1="4" y1="20" x2="20" y2="20" />
+    </svg>
+  );
+}
+
+export function MuseumIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <rect x="5" y="5" width="14" height="11" />
+      <rect x="8" y="8" width="8" height="5" />
+      <line x1="9" y1="16" x2="7" y2="20" />
+      <line x1="15" y1="16" x2="17" y2="20" />
+    </svg>
+  );
+}
+
+export function PoolIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M3 15c1.5 0 1.5 1 3 1s1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1" />
+      <path d="M3 19c1.5 0 1.5 1 3 1s1.5-1 3-1 1.5 1 3 1 1.5-1 3-1 1.5 1 3 1 1.5-1 3-1" />
+      <path d="M8 12V5a2 2 0 0 1 4 0M16 12V5a2 2 0 0 0-4 0" />
+    </svg>
+  );
+}
+
+export function StatueIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <circle cx="12" cy="4.5" r="1.8" />
+      <path d="M9.5 14V8.5h5V14M10.5 14v2M13.5 14v2" />
+      <rect x="7" y="16" width="10" height="4" />
+    </svg>
+  );
+}
+
+export function FountainIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M3 16h18l-2 4H5Z" />
+      <path d="M12 16V6" />
+      <path d="M12 6c-2.5 0-4 2-4.5 5M12 6c2.5 0 4 2 4.5 5" />
+    </svg>
+  );
+}
+
+export function GateIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <rect x="3" y="6" width="4" height="14" />
+      <rect x="17" y="6" width="4" height="14" />
+      <path d="M7 20v-6a5 5 0 0 1 10 0v6" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+    </svg>
+  );
+}
+
+export function TowerIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <path d="M12 2 8 7h8Z" />
+      <rect x="8" y="7" width="8" height="13" />
+      <path d="M10.5 13v-2a1.5 1.5 0 0 1 3 0v2" />
+      <line x1="5" y1="20" x2="19" y2="20" />
+    </svg>
+  );
+}
+
+export function GardenIcon() {
+  return (
+    <svg viewBox="0 0 24 24" {...STROKE2}>
+      <rect x="3" y="3" width="18" height="18" rx="1" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v6M12 15v6M3 12h6M15 12h6" />
+    </svg>
+  );
+}
+
 export function DrawPathIcon() {
   return (
     <svg viewBox="0 0 24 24" {...STROKE2}>

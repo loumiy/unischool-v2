@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { buildingById } from '../content/buildings.ts';
 import { fillWords } from '../content/people.ts';
 import { ACADEMIC_WORDS, schoolById } from '../content/schools.ts';
-import { conditionWord, ESTATE_WORDS } from '../content/treasury.ts';
+import { conditionWord, ESTATE_WORDS, providesLine } from '../content/treasury.ts';
 import {
   affordableFinancing,
   ageYearsOf,
@@ -107,6 +107,7 @@ export default function BuildingInfoPanel({
       )}
       <dl className="building-panel-facts">
         <Fact label="Footprint" value={`${placement.w} × ${placement.h} tiles`} />
+        <Fact label="Gives" value={providesLine(def)} hint={ESTATE_WORDS.hints.provides} />
         {open && (
           <>
             <Fact label="Age" value={`${Math.floor(ageYearsOf(placement, week))} years`} />

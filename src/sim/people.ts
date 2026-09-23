@@ -38,6 +38,7 @@ import {
   TUITION_STEP,
   YIELD_BASE,
   YIELD_PRICE_ELASTICITY,
+  BUILDING_DRAW_CAP,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
@@ -165,6 +166,8 @@ export interface CampusCapacity {
   meals: number;
   seats: number;
   life: number; // students the campus's student life reaches (Phase 21I)
+  draw: number; // percentage points on the applicant pool (Phase 21J)
+  giving: number; // percentage points on alumni giving (Phase 21J)
 }
 
 export function campusCapacity(state: GameState): CampusCapacity {
@@ -183,7 +186,7 @@ export function capacityAt(state: GameState, week: number): CampusCapacity {
 }
 
 function capacityOf(placements: readonly Placement[]): CampusCapacity {
-  const cap = { beds: 0, meals: 0, seats: 0, life: 0 };
+  const cap = { beds: 0, meals: 0, seats: 0, life: 0, draw: 0, giving: 0 };
   for (const p of placements) {
     const c = buildingById(p.buildingId).capacity;
     if (!c) continue;
@@ -191,8 +194,17 @@ function capacityOf(placements: readonly Placement[]): CampusCapacity {
     cap.meals += c.meals ?? 0;
     cap.seats += c.seats ?? 0;
     cap.life += c.life ?? 0;
+    cap.draw += c.draw ?? 0;
+    cap.giving += c.giving ?? 0;
   }
   return cap;
+}
+
+// THE BUILDINGS A COLLEGE SHOWS ITSELF OFF FROM (Phase 21J): the admissions
+// office, the visitor centre, the museum, the stadium. Their draw is summed
+// and capped, and multiplies the pool beside the layout's own factor.
+export function buildingDrawFactor(state: GameState): number {
+  return 1 + Math.min(BUILDING_DRAW_CAP, campusCapacity(state).draw / 100);
 }
 
 // The absolute week of the next Convocation: Fall, Week 1 of next year.
@@ -325,7 +337,11 @@ export function inverseNormal(p: number): number {
 // The whole funnel for a set of terms, against the campus as it stands:
 // what the Admissions Day screen previews and what resolving it commits.
 export function runAdmissions(state: GameState, terms: AdmissionTerms): Admissions {
-  const applicants = applicantPool(terms, state.people.aidRate, placementPoolFactor(state));
+  const applicants = applicantPool(
+    terms,
+    state.people.aidRate,
+    placementPoolFactor(state) * buildingDrawFactor(state),
+  );
   const rate = admitRate(terms.selectivity);
   const admitted = Math.round(applicants * rate);
   const yr = yieldRate(terms, state.people.aidRate);

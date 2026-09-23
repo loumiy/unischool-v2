@@ -1,3 +1,4 @@
+import type { BuildingDef } from './buildings.ts';
 import {
   EXPENSE_CATEGORIES,
   REVENUE_CATEGORIES,
@@ -50,8 +51,20 @@ const fileSchema = obj({
       backlog: str,
       renovate: str,
       demolish: str,
+      provides: str,
     }),
     pay: obj({ cash: str, debt: str, gift: str }),
+    provides: obj({
+      beds: str,
+      meals: str,
+      seats: str,
+      life: str,
+      draw: str,
+      giving: str,
+      beauty: str,
+      school: str,
+      nothing: str,
+    }),
   }),
 });
 
@@ -65,4 +78,20 @@ export const ESTATE_WORDS = file.estate;
 // The word for a condition, from the first band it clears.
 export function conditionWord(condition: number): string {
   return ESTATE_WORDS.condition.find((b) => condition >= b.atLeast)?.word ?? 'derelict';
+}
+
+// What a building gives, in the catalogue's own numbers (Phase 21J): the
+// line the build tile and the building card both carry, so forty-odd
+// types can be told apart by what they do rather than by their names.
+export function providesLine(def: BuildingDef): string {
+  const w = ESTATE_WORDS.provides;
+  const c = def.capacity ?? {};
+  const parts: string[] = [];
+  for (const k of ['beds', 'meals', 'seats', 'life', 'draw', 'giving'] as const) {
+    const n = c[k];
+    if (n) parts.push(w[k].replace('{n}', n.toLocaleString('en-US')));
+  }
+  if (def.beauty) parts.push(w.beauty.replace('{n}', String(def.beauty)));
+  if (def.housesSchool) parts.push(w.school);
+  return parts.length ? parts.join(' · ') : w.nothing;
 }

@@ -96,12 +96,24 @@
       "condition": "How much of the building the backlog has eaten: sound at 1, derelict at 0.",
       "backlog": "Maintenance this building was owed and never got, compounding while it waits.",
       "renovate": "Pays the backlog and a contractor's fee, and closes the building for eight weeks.",
-      "demolish": "Taking it down costs a share of what it cost to put up."
+      "demolish": "Taking it down costs a share of what it cost to put up.",
+      "provides": "What the building gives the college once it is open: the beds, seats and student life it holds, what it draws, and the landmark mark it adds to campus beauty."
     },
     "pay": {
       "cash": "Pay cash",
       "debt": "Borrow",
       "gift": "From restricted funds"
+    },
+    "provides": {
+      "beds": "{n} beds",
+      "meals": "{n} dining seats",
+      "seats": "{n} teaching seats",
+      "life": "student life for {n}",
+      "draw": "+{n}% applicants",
+      "giving": "+{n}% alumni giving",
+      "beauty": "beauty +{n}",
+      "school": "a school can be founded in it",
+      "nothing": "its place in the layout"
     }
   }
 }
