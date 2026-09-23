@@ -1,19 +1,22 @@
 import { useState } from 'react';
 import { useHotkeys } from './hotkeys.ts';
 import { MenuIcon } from './icons.tsx';
-import SoundControls from './audio/SoundControls.tsx';
 
-// The top-right hamburger: Save, the hall, New Game, sound, credits. New Game's confirm is an
+// The top-right hamburger: Save, the hall, New Game, settings, the title. New Game's confirm is an
 // inline second click that turns the same button red, never a browser
 // confirm() that would look nothing like the rest of the chrome.
 export default function MainMenu({
   onSave,
   onNewGame,
   onHall,
+  onSettings,
+  onTitle,
 }: {
   onSave: () => void;
   onNewGame: () => void;
   onHall: () => void;
+  onSettings: () => void;
+  onTitle: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -87,7 +90,26 @@ export default function MainMenu({
               >
                 New Game
               </button>
-              <SoundControls />
+              <button
+                className="save-btn"
+                onClick={() => {
+                  onSettings();
+                  close();
+                }}
+                title="Sound, text size, colour and autosave."
+              >
+                Settings
+              </button>
+              <button
+                className="save-btn"
+                onClick={() => {
+                  onTitle();
+                  close();
+                }}
+                title="Back to the title: the hall, credits, and a new college."
+              >
+                Title screen
+              </button>
               <p className="main-menu-credits">
                 <strong>UniSchool</strong>
                 <br />

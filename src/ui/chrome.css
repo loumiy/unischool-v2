@@ -37,7 +37,7 @@
 .pennant-name {
   font-family: var(--display);
   font-weight: 800;
-  font-size: 22px;
+  font-size: calc(22px * var(--text-scale, 1));
   line-height: 1.1;
   letter-spacing: -0.01em;
   overflow-wrap: anywhere;
@@ -333,7 +333,7 @@
 }
 .toolbar-funds-btn .stat-value {
   font-family: var(--mono);
-  font-size: 22px;
+  font-size: calc(22px * var(--text-scale, 1));
   letter-spacing: -0.01em;
   color: var(--ink-hi);
 }
@@ -658,7 +658,7 @@
   font-family: var(--display);
   font-weight: 800;
   letter-spacing: -0.02em;
-  font-size: 32px;
+  font-size: calc(32px * var(--text-scale, 1));
   line-height: 1;
   color: var(--ink);
 }
@@ -1196,7 +1196,7 @@ button.build-tile {
   letter-spacing: -0.01em;
 }
 .figure-lg .figure-value {
-  font-size: 28px;
+  font-size: calc(28px * var(--text-scale, 1));
 }
 .figure.good .figure-value {
   color: var(--ok-on-light);
@@ -1617,7 +1617,7 @@ button.toolbar-stat.active svg {
   margin: 0 0 14px;
   font-family: var(--display);
   font-weight: 800;
-  font-size: 26px;
+  font-size: calc(26px * var(--text-scale, 1));
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
@@ -1767,7 +1767,7 @@ button.toolbar-stat.active svg {
   color: inherit;
 }
 .school-group-mark {
-  font-size: 22px;
+  font-size: calc(22px * var(--text-scale, 1));
   line-height: 1;
 }
 .school-group-hall {
@@ -3252,7 +3252,7 @@ button.toolbar-stat.active svg {
   grid-column: 2;
   grid-row: 1;
   font-family: var(--display);
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
   line-height: 1;
   font-weight: 800;
   text-transform: uppercase;
@@ -3298,7 +3298,7 @@ button.toolbar-stat.active svg {
   text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  font-size: 9px;
+  font-size: calc(9px * var(--text-scale, 1));
 }
 .faculty-bar .faculty-bar-track {
   grid-column: 1;
@@ -3503,7 +3503,7 @@ th.figure > .figure-hint {
   color: #fff;
   font-family: var(--display);
   font-weight: 800;
-  font-size: 12px;
+  font-size: calc(12px * var(--text-scale, 1));
 }
 .league-you th,
 .league-you td {
@@ -3808,7 +3808,7 @@ th.figure > .figure-hint {
 .report-mark-letter {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 72px;
+  font-size: calc(72px * var(--text-scale, 1));
   line-height: 1;
   color: var(--school-primary);
 }
@@ -3929,7 +3929,7 @@ th.figure > .figure-hint {
 .hall-mark {
   font-family: var(--display);
   font-weight: 900;
-  font-size: 28px;
+  font-size: calc(28px * var(--text-scale, 1));
   color: var(--school-primary);
 }
 .hall-title {
@@ -4033,4 +4033,156 @@ th.figure > .figure-hint {
   max-height: 160px;
   overflow: auto;
   font-family: var(--mono);
+}
+
+/* The front of the game (Phase 34): the title over the campus, and the
+   panels it opens above it. */
+.front-layer {
+  position: relative;
+  z-index: 30;
+}
+.title-screen {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--school-primary) 55%, rgba(27, 42, 74, 0.6));
+  animation: overlay-fade 180ms ease-out;
+}
+.title-card {
+  width: min(880px, 100%);
+  background: var(--cream);
+  border: 3px solid var(--outline);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
+  padding: 26px 28px 24px;
+  color: var(--ink);
+}
+.title-head {
+  margin-bottom: 18px;
+}
+.title-name {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: calc(44px * var(--text-scale, 1));
+  line-height: 1;
+  margin: 0;
+  color: var(--school-primary);
+}
+.title-tagline {
+  margin: 6px 0 0;
+  color: var(--ink-muted);
+  font-size: var(--text-lg);
+}
+.title-body {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .title-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.title-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.title-continue {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  width: 100%;
+}
+.title-sub {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  opacity: 0.85;
+}
+.title-hall-head {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-xl);
+  margin: 0 0 10px;
+}
+.title-hall-empty {
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.title-hall-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 12px;
+}
+.title-hall-entry {
+  border: 2px solid var(--outline);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--cream-hi);
+}
+.title-hall-entry .hall-portrait {
+  width: 100%;
+  height: 120px;
+}
+.title-hall-caption {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 6px;
+  padding: 6px 8px 8px;
+}
+.title-hall-title {
+  grid-column: 1 / -1;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+.settings-panel,
+.credits {
+  max-width: 460px;
+}
+.settings-group {
+  border: 0;
+  border-top: 1px solid var(--parchment-line);
+  margin: 10px 0 0;
+  padding: 8px 2px 0;
+}
+.settings-group legend {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  padding: 0 4px;
+}
+.settings-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.settings-note {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin: 8px 0 0;
+}
+.credits-list {
+  display: grid;
+  grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 10px 0;
+}
+.credits-list dt {
+  font-weight: 700;
+}
+.credits-list dd {
+  margin: 0;
 }

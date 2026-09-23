@@ -16,6 +16,10 @@ import './ui/map.css';
 import './ui/debug.css';
 import App from './ui/App.tsx';
 import { CrashBoundary } from './ui/Crash.tsx';
+import { applySettings } from './ui/settings.ts';
+
+// Text size and colour vision, before the first paint.
+applySettings();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

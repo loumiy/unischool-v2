@@ -7,7 +7,7 @@ import { readHall, type HallEntry } from './persistence.ts';
 // read again. The reason to play again; the cosmetics it unlocks are the
 // souvenir.
 
-function Portrait({ entry }: { entry: HallEntry }) {
+export function Portrait({ entry }: { entry: HallEntry }) {
   return (
     <div
       className={`hall-portrait ${entry.season}`}

@@ -25,7 +25,7 @@
   font-family: var(--display);
   font-weight: 800;
   letter-spacing: -0.02em;
-  font-size: 32px;
+  font-size: calc(32px * var(--text-scale, 1));
   margin: 6px 0 20px;
 }
 .startup-name {

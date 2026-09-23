@@ -145,3 +145,27 @@ describe('a fault stops the clock rather than the game (Phase 33)', () => {
     expect(store.getSnapshot().fault).toBeTruthy();
   });
 });
+
+describe('the term autosave (Phase 34)', () => {
+  it('tells the app when a term begins inside the year, and the year apart', () => {
+    const store = new GameStore();
+    store.newGame(7);
+    store.dispatch(FOUND);
+    store.dispatch(PLACE_HALL);
+    let terms = 0;
+    let years = 0;
+    store.onTermTurn = () => terms++;
+    store.onYearTurn = () => years++;
+    for (let i = 0; i < 40; i++) {
+      const { run } = store.getSnapshot();
+      if (run && clockHeld(run.state)) {
+        const action = defaultResolution(run.state);
+        if (action) store.dispatch(action as Action);
+        continue;
+      }
+      store.stepWeeks(1);
+    }
+    expect(terms).toBeGreaterThanOrEqual(2);
+    expect(years).toBeGreaterThanOrEqual(1);
+  });
+});

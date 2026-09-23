@@ -1,0 +1,41 @@
+name: Release
+
+# The itch.io build pipeline (Phase 34). A version tag, or a manual run,
+# checks and builds the game, zips dist/ as the HTML5 upload itch.io wants,
+# and keeps it as a workflow artifact. If the repository has a
+# BUTLER_API_KEY secret and an ITCH_TARGET variable (e.g. "you/unischool:html5"),
+# it also pushes the build to itch.io with butler; without them the job
+# stops at the artifact, which can be uploaded by hand.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+      ITCH_TARGET: ${{ vars.ITCH_TARGET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - name: Zip the HTML5 build
+        run: cd dist && zip -r ../unischool-web.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: unischool-web
+          path: unischool-web.zip
+      - name: Push to itch.io
+        if: env.BUTLER_API_KEY != '' && env.ITCH_TARGET != ''
+        run: |
+          curl -sSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default
+          unzip -q butler.zip -d butler && chmod +x butler/butler
+          ./butler/butler push dist "$ITCH_TARGET" --userversion "${GITHUB_REF_NAME}"
