@@ -1,3 +1,4 @@
+import JumpBar from './JumpBar.tsx';
 import { fillWords, PEOPLE_READINGS, PEOPLE_WORDS } from '../content/people.ts';
 import {
   attritionRate,
@@ -91,6 +92,17 @@ export default function StudentsScreen({
   const projected = next ? outcomesFor(next.quality, next.satisfaction, next.size) : null;
   return (
     <div className="students">
+      <JumpBar
+        label="Sections of the Students screen"
+        jumps={[
+          { label: 'Classes', id: 'students-classes' },
+          { label: 'Named students', id: 'students-named' },
+          { label: 'Layout', id: 'students-layout' },
+          { label: 'Admissions', id: 'students-admissions' },
+          { label: 'Alumni', id: 'students-alumni' },
+          { label: 'Campaigns', id: 'students-campaigns' },
+        ]}
+      />
       <div className="figure-row">
         <Figure label="Enrolled" value={String(total)} hint={PEOPLE_READINGS.enrolled} size="lg" />
         <Figure
@@ -149,7 +161,7 @@ export default function StudentsScreen({
         />
       </div>
 
-      <section className="treasury-panel">
+      <section className="treasury-panel" id="students-classes">
         <h3>Classes</h3>
         {sorted.length === 0 ? (
           <p className="treasury-note">{PEOPLE_WORDS.noClass}</p>
@@ -209,7 +221,7 @@ export default function StudentsScreen({
 
       <PlacementPanel state={state} />
 
-      <section className="treasury-panel">
+      <section className="treasury-panel" id="students-admissions">
         <h3>Admissions</h3>
         <div className="figure-row inner">
           <Figure

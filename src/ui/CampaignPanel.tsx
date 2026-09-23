@@ -26,7 +26,7 @@ export default function CampaignPanel({
   const restricted = state.advancement.restricted;
   const held = restricted.building + restricted.aid;
   return (
-    <section className="campaigns">
+    <section className="campaigns" id="students-campaigns">
       <h3>Advancement</h3>
       {!advancementAppointed(state) ? (
         <p className="campaign-note">{CAMPAIGN_WORDS.needsVp}</p>

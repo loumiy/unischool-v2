@@ -27,7 +27,7 @@ export default function PlacementPanel({ state }: { state: GameState }) {
   const quads = detectQuads(state.campus);
   const pairs = pairingResults(state);
   return (
-    <section className="treasury-panel placement-panel">
+    <section className="treasury-panel placement-panel" id="students-layout">
       <h3>What the layout is worth</h3>
       <div className="figure-row inner">
         <Figure

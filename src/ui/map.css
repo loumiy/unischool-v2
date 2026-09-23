@@ -713,15 +713,18 @@
 .campus-quad.selected .campus-quad-tile {
   fill: rgba(255, 252, 235, 0.2);
 }
+/* The map's one piece of type laid on grass, so it carries its own ground:
+   solid ink in a solid cream halo. It was 62% ink on a 55% halo — 2.13:1
+   against the lawn, failing even the large-text line (Phase 21G). */
 .campus-quad-name {
   font-family: var(--display);
   font-weight: 800;
   font-style: italic;
   letter-spacing: 0.04em;
-  fill: rgba(42, 56, 28, 0.62);
+  fill: #1f2a14;
   paint-order: stroke;
-  stroke: rgba(255, 252, 235, 0.55);
-  stroke-width: 3;
+  stroke: rgba(255, 252, 235, 0.94);
+  stroke-width: 5;
   stroke-linejoin: round;
   cursor: pointer;
 }
