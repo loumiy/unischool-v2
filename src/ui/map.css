@@ -112,8 +112,77 @@
 .terrain-water {
   fill: #6ba3bd;
 }
+.terrain-water-glint {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-width: 1;
+  stroke-dasharray: 3 19;
+  animation: water-glint 9s linear infinite;
+  pointer-events: none;
+}
+@keyframes water-glint {
+  to {
+    stroke-dashoffset: -220;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .terrain-water-glint {
+    animation: none;
+  }
+}
+.season-winter .terrain-water-glint {
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-dasharray: 14 10;
+  animation: none;
+}
 .terrain-road {
   fill: #8f8a80;
+}
+
+/* The ground, used (Phase 45). Deaf to the pointer: a click on a lamp is a
+   click on its tile. */
+.campus-dressing {
+  pointer-events: none;
+}
+.dressing-wear {
+  fill: none;
+  stroke: #a8925d;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.dressing-apron {
+  fill: #d9d2c0;
+  stroke: #c3b99f;
+  stroke-width: 0.8;
+}
+.dressing-parking {
+  fill: #7d7a74;
+}
+.dressing-bays {
+  stroke: rgba(255, 253, 246, 0.8);
+  stroke-width: 0.8;
+  fill: none;
+}
+.dressing-rack {
+  stroke: #6e7479;
+  stroke-width: 1;
+  fill: none;
+}
+.dressing-bin {
+  fill: #3e4a3f;
+}
+.dressing-bus-stop rect {
+  fill: rgba(169, 194, 211, 0.85);
+  stroke: #4d5a63;
+  stroke-width: 0.8;
+}
+.dressing-bus-stop line {
+  stroke: #4d5a63;
+  stroke-width: 1;
+}
+.season-winter .dressing-wear {
+  stroke: #d8d4c8;
 }
 .terrain-road-line {
   stroke: rgba(255, 253, 246, 0.55);

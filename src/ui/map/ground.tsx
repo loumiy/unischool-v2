@@ -49,6 +49,8 @@ export function TerrainLayer({ camera }: { camera: Camera }) {
   return (
     <g className="campus-terrain" aria-hidden="true">
       {d.water && <path className="terrain-water" d={d.water} />}
+      {/* The light on the water (Phase 45): a slow glint along the stream. */}
+      {d.water && <path className="terrain-water-glint" d={d.water} />}
       {d.road && <path className="terrain-road" d={d.road} />}
       {d.line && <path className="terrain-road-line" d={d.line} />}
     </g>

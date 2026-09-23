@@ -468,6 +468,18 @@ Carry forward v1's visual identity wholesale: the isometric campus map, the five
 
 Every part stays inside its footprint, so placement, shadows, depth and labels are untouched. `tools/catalogue.ts` and `tools/contactsheet.mjs` lay the whole catalogue out on one parcel and photograph it in each motif. The L-shaped and courtyard variants the plan also named are not built yet.
 
+**The ground, used (Phase 45).** The land between the buildings was lawn and whatever paths the player drew. It now shows use (ui/map/dressing.tsx):
+
+- desire lines worn into the grass along the routes between the residences and the halls, deepening with the college's years;
+- paved aprons at the busiest doors;
+- lamps and benches along the paths, placed by a per-tile hash so they are the same on every reload, with the lamps lit in the dark half of the year;
+- bike racks at the residences and bins at the dining halls;
+- a car park by the road when the students outnumber the beds;
+- a bus stop beside the entrance sign;
+- a slow glint on the stream, still in winter.
+
+It is all derived from the campus, drawn once per campus change under the buildings, and deaf to the pointer, so a click on a lamp is a click on its tile.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.
