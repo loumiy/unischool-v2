@@ -70,6 +70,7 @@ import { accessRefusal, groundRefusal } from './reach.ts';
 import { setAthleticsBudget, setVarsity, sportHasVenue, SPORTS } from './athletics.ts';
 import { extend, extensionCost, extensionRefusal } from './lateGame.ts';
 import { enterEpilogue } from './ending.ts';
+import { dismissNote } from './notes.ts';
 import { BUDGET_IDS, type AthleticsBudget } from '../content/athletics.ts';
 import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
@@ -168,6 +169,8 @@ export type Action =
   | { type: 'extend'; placementId: string; financing?: Financing }
   // The ending (DD §2.3): the report read, the run continued in Epilogue.
   | { type: 'enterEpilogue' }
+  // Onboarding (DD §13.2): a note read.
+  | { type: 'dismissNote'; id: string }
   | { type: 'setAthleticsBudget'; budget: AthleticsBudget }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
@@ -457,6 +460,8 @@ export function canApply(state: GameState, action: Action): Verdict {
     }
     case 'enterEpilogue':
       return state.ending.pending ? YES : no('the run has not ended');
+    case 'dismissNote':
+      return YES;
     case 'setAthleticsBudget':
       if (state.phase !== 'running') return no('the college is not open yet');
       return BUDGET_IDS.includes(action.budget) ? YES : no('no such budget');
@@ -693,6 +698,8 @@ export function applyAction(state: GameState, action: Action): GameState {
       return setVarsity(state, action.sportId, action.on);
     case 'enterEpilogue':
       return enterEpilogue(state);
+    case 'dismissNote':
+      return dismissNote(state, action.id);
     case 'extend': {
       const target = state.campus.placements.find((p) => p.id === action.placementId)!;
       const paid = pay(state, extensionCost(target), action.financing ?? 'cash');

@@ -38,3 +38,4 @@ export * from './tags.ts';
 export * from './lateGame.ts';
 export * from './chronicle.ts';
 export * from './ending.ts';
+export * from './notes.ts';

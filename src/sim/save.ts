@@ -13,6 +13,7 @@ import { foundingLeague } from './league.ts';
 import { foundingAthletics } from './athletics.ts';
 import { foundingPerception } from './tags.ts';
 import { foundingEnding } from './ending.ts';
+import { NOTES } from '../content/notes.ts';
 import { foundingPrestige } from './prestige.ts';
 import { AXES } from '../content/league.ts';
 import { foundingAmbitions } from './ambitions.ts';
@@ -668,6 +669,16 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
         prestige: { history: [], ...prestige },
         schemaVersion: 26,
       },
+    };
+  },
+  // v26 → v27 (Phase 29): the notes read. An older college has read all of
+  // them already, in the sense that it got this far without.
+  26: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    return {
+      ...raw,
+      version: 27,
+      state: { onboarding: { seen: NOTES.map((n) => n.id) }, ...state, schemaVersion: 27 },
     };
   },
 };
