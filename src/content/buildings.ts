@@ -153,7 +153,22 @@ export interface BuildingDef {
   project?: ProjectTerms;
   // A set of which a college builds one (Phase 43): the grand landmarks.
   group?: 'grand';
+  // The parts that say what it is for (Phase 44), drawn on the mass.
+  features?: Feature[];
 }
+
+// What the map draws on a building's mass (Phase 44, ui/map/features.tsx).
+export const FEATURES = [
+  'stacks', // a laboratory's flues
+  'readingRoom', // a library's raised, lit reading room
+  'drum', // a lecture theatre's windowless drum
+  'flytower', // a theatre's fly tower
+  'glazedEnd', // a dining hall's glass gable
+  'flagpole', // the flag over the administration
+  'stands', // seats along a pitch
+  'balconies', // a modern residence's slabs
+] as const;
+export type Feature = (typeof FEATURES)[number];
 
 export const PROJECT_AXES = ['academics', 'research', 'experience', 'athletics'] as const;
 export type ProjectAxis = (typeof PROJECT_AXES)[number];
@@ -206,6 +221,7 @@ const schema = obj({
       icon: oneOf(BUILDING_ICONS),
       blurb: optional(str),
       group: optional(oneOf(['grand'] as const)),
+      features: optional(arr(oneOf(FEATURES))),
       project: optional(
         obj({
           fromYear: int,

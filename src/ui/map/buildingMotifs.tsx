@@ -131,6 +131,7 @@ import {
 import { WALL_LIGHT, faceTone, shadowOffset } from './light.ts';
 import { METRES_PER_TILE, STOREY, across, up } from './scale.ts';
 import { mix, shade } from './tint.ts';
+import BuildingFeatures from './features.tsx';
 
 // Architectural motifs (ported from v1's buildingMotifs.tsx): what makes a
 // placed building read as a BUILDING rather than as a coloured shape with a
@@ -3969,15 +3970,20 @@ function BuildingMotif({
   // view turns; the geometry reads the camera from the projection itself.
   camera: Camera;
 }) {
+  const dressed = underSnow(material, snow);
   return (
-    <BuildingMass
-      def={def}
-      p={p}
-      material={underSnow(material, snow)}
-      motif={motif}
-      shadeSeed={shadeSeed}
-      schoolName={schoolName}
-    />
+    <>
+      <BuildingMass
+        def={def}
+        p={p}
+        material={dressed}
+        motif={motif}
+        shadeSeed={shadeSeed}
+        schoolName={schoolName}
+      />
+      {/* What it is for (Phase 44), on top of what it is. */}
+      <BuildingFeatures def={def} p={p} material={dressed} motif={motif} />
+    </>
   );
 }
 

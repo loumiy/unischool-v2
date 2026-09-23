@@ -455,6 +455,19 @@ Each completed run hangs in the **hall of fame**: campus portrait (a rendered ma
 
 Carry forward v1's visual identity wholesale: the isometric campus map, the five architectural motifs, the palette system, the cream/maroon/gold UI chrome, the startup flow (name, motif, colors — "Open the Doors"). Evolve rather than replace: richer ambient life (§6.3), seasonal tinting, weathering states for backlog, and a consistent iconography pass. The startup screen and map are the two things v1 already got right; v2's art budget goes to making the map feel _alive_ rather than making it different.
 
+**A silhouette for every building (Phase 44).** Many types shared a form and read as a box with a roof. Each type can now carry `features` in the catalogue, drawn on its mass by ui/map/features.tsx:
+
+- flues on the laboratories and the science and research buildings;
+- a raised reading room with long windows on the library, the museum and the conservatory;
+- a windowless drum on the lecture theatre;
+- a fly tower on the theatres;
+- a glazed end on the dining halls, the pool and the student centre;
+- a flag in the school's colours over the administration buildings;
+- raked stands along the pitches;
+- balconies on modern residences.
+
+Every part stays inside its footprint, so placement, shadows, depth and labels are untouched. `tools/catalogue.ts` and `tools/contactsheet.mjs` lay the whole catalogue out on one parcel and photograph it in each motif. The L-shaped and courtyard variants the plan also named are not built yet.
+
 ### §13.2 UI shell
 
 Keep v1's layout grammar: persistent bottom bar (Campus · Curriculum · Faculty · Students · Treasury · League · History · Build), top-left identity chip, top-right speed controls and date, bottom ticker with the NEXT prompt. Full-screen management overlays in v1's card style (the curriculum screen's visual language generalizes to all screens). Two additions: the ticker becomes the event-resolution surface (§10.1), and every screen obeys the **one-tooltip rule** — any number explained in one sentence on hover.

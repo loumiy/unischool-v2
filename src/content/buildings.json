@@ -68,7 +68,8 @@
       "door": "formal",
       "icon": "library",
       "blurb": "Top-lit reading rooms behind a colonnade. The building a campus puts its name on.",
-      "limit": 2
+      "limit": 2,
+      "features": ["readingRoom"]
     },
     {
       "id": "lab",
@@ -86,7 +87,8 @@
       "storeys": 2,
       "door": "service",
       "icon": "lab",
-      "blurb": "Low, flat, and crowded with rooftop plant. It adds to the college's research standing, as the science and research buildings do (three such buildings count in full), Placed beside an academic hall, it also adds a little to the students' satisfaction."
+      "blurb": "Low, flat, and crowded with rooftop plant. It adds to the college's research standing, as the science and research buildings do (three such buildings count in full), Placed beside an academic hall, it also adds a little to the students' satisfaction.",
+      "features": ["stacks"]
     },
     {
       "id": "lecture-theatre",
@@ -107,7 +109,8 @@
       "storeys": 2,
       "door": "civic",
       "icon": "academic",
-      "blurb": "One raked room that seats a whole first year at once, and a lobby where they wait for it."
+      "blurb": "One raked room that seats a whole first year at once, and a lobby where they wait for it.",
+      "features": ["drum"]
     },
     {
       "id": "arts-building",
@@ -153,7 +156,8 @@
       "housesSchool": true,
       "icon": "lab",
       "blurb": "Labs stacked four deep round a glass atrium. A school can be founded in it, and the fume hoods cost what fume hoods cost.",
-      "limit": 2
+      "limit": 2,
+      "features": ["stacks"]
     },
     {
       "id": "engineering-building",
@@ -176,7 +180,8 @@
       "housesSchool": true,
       "icon": "lab",
       "blurb": "High bays, a crane rail and a loading door. A school can be founded in it.",
-      "limit": 2
+      "limit": 2,
+      "features": ["stacks"]
     },
     {
       "id": "conservatory",
@@ -200,7 +205,8 @@
       "door": "formal",
       "icon": "arts",
       "blurb": "Practice rooms, a recital hall, and scales from every window after dark. It teaches, and the campus goes to its concerts.",
-      "limit": 1
+      "limit": 1,
+      "features": ["readingRoom"]
     },
     {
       "id": "observatory",
@@ -246,7 +252,8 @@
       "door": "canopy",
       "icon": "lab",
       "blurb": "Five floors of people who do not teach much. The papers they write reach applicants who have never seen the campus.",
-      "limit": 2
+      "limit": 2,
+      "features": ["stacks"]
     },
     {
       "id": "residence-hall",
@@ -267,7 +274,8 @@
       "storeys": 4,
       "door": "residential",
       "icon": "housing",
-      "blurb": "A four-storey hall of ranked windows under one long roof."
+      "blurb": "A four-storey hall of ranked windows under one long roof.",
+      "features": ["balconies"]
     },
     {
       "id": "house",
@@ -310,7 +318,8 @@
       "storeys": 3,
       "door": "residential",
       "icon": "housing",
-      "blurb": "Quieter than the halls, with a kitchen of its own and a common room nobody books."
+      "blurb": "Quieter than the halls, with a kitchen of its own and a common room nobody books.",
+      "features": ["balconies"]
     },
     {
       "id": "apartments",
@@ -331,7 +340,8 @@
       "storeys": 5,
       "door": "residential",
       "icon": "housing",
-      "blurb": "Kitchens and a lock on every door: housing for the upper years, and the end of the dining hall's hold on them."
+      "blurb": "Kitchens and a lock on every door: housing for the upper years, and the end of the dining hall's hold on them.",
+      "features": ["balconies"]
     },
     {
       "id": "residential-college",
@@ -377,7 +387,8 @@
       "storeys": 2,
       "door": "civic",
       "icon": "dining",
-      "blurb": "A refectory. Somewhere near the residence halls is where it wants to be."
+      "blurb": "A refectory. Somewhere near the residence halls is where it wants to be.",
+      "features": ["glazedEnd"]
     },
     {
       "id": "cafe",
@@ -420,7 +431,8 @@
       "storeys": 2,
       "door": "canopy",
       "icon": "dining",
-      "blurb": "Nine hundred seats and twelve counters under one glass roof. Nobody eats with their hall any more."
+      "blurb": "Nine hundred seats and twelve counters under one glass roof. Nobody eats with their hall any more.",
+      "features": ["glazedEnd"]
     },
     {
       "id": "faculty-club",
@@ -443,7 +455,8 @@
       "door": "formal",
       "icon": "dining",
       "blurb": "Panelled, carpeted, with a wine list. It feeds sixty and settles more arguments than the senate.",
-      "limit": 1
+      "limit": 1,
+      "features": ["glazedEnd"]
     },
     {
       "id": "student-center",
@@ -466,7 +479,8 @@
       "capacity": {
         "life": 700
       },
-      "limit": 1
+      "limit": 1,
+      "features": ["glazedEnd"]
     },
     {
       "id": "health-center",
@@ -534,7 +548,8 @@
       "door": "formal",
       "icon": "arts",
       "blurb": "A proscenium, a black box and a fly tower. The student musical runs three nights and sells out two.",
-      "limit": 1
+      "limit": 1,
+      "features": ["flytower"]
     },
     {
       "id": "museum",
@@ -558,7 +573,8 @@
       "door": "formal",
       "icon": "museum",
       "blurb": "A bequest's worth of paintings, a skeleton, and a reason for families on a campus tour to stay for lunch.",
-      "limit": 1
+      "limit": 1,
+      "features": ["readingRoom"]
     },
     {
       "id": "bookshop",
@@ -646,7 +662,8 @@
       "blurb": "A marked pitch on open ground. The stadium comes later, if it comes at all.",
       "capacity": {
         "life": 500
-      }
+      },
+      "features": ["stands"]
     },
     {
       "id": "gymnasium",
@@ -689,7 +706,8 @@
       "door": "civic",
       "icon": "pool",
       "blurb": "Fifty metres, eight lanes, and the heating bill of a small town.",
-      "limit": 1
+      "limit": 1,
+      "features": ["glazedEnd"]
     },
     {
       "id": "tennis-courts",
@@ -736,7 +754,8 @@
       "ground": "track",
       "icon": "athletics",
       "blurb": "A track, a pitch inside it and raked stands down one side. Homecoming is here; so are the television cameras, eventually.",
-      "limit": 1
+      "limit": 1,
+      "features": ["stands"]
     },
     {
       "id": "admin-building",
@@ -755,7 +774,8 @@
       "door": "civic",
       "icon": "admin",
       "blurb": "Offices. It will need a bigger one. It will always need a bigger one.",
-      "limit": 1
+      "limit": 1,
+      "features": ["flagpole"]
     },
     {
       "id": "admissions-office",
@@ -777,7 +797,8 @@
       "door": "civic",
       "icon": "admin",
       "blurb": "Tours leave from the front step on the hour. A college that shows itself off draws more applicants.",
-      "limit": 1
+      "limit": 1,
+      "features": ["flagpole"]
     },
     {
       "id": "alumni-house",
@@ -800,7 +821,8 @@
       "door": "residential",
       "icon": "admin",
       "blurb": "A house with the class photographs up the stairs. Graduates who have somewhere to come back to give more.",
-      "limit": 1
+      "limit": 1,
+      "features": ["flagpole"]
     },
     {
       "id": "visitor-center",
@@ -822,7 +844,8 @@
       "door": "canopy",
       "icon": "admin",
       "blurb": "A map on the wall, a model under glass, and parking for the families who drove four hours to see it.",
-      "limit": 1
+      "limit": 1,
+      "features": ["flagpole"]
     },
     {
       "id": "entrance-sign",
@@ -992,7 +1015,8 @@
           "research": 18
         }
       },
-      "blurb": "Four years of works and a business plan that uses the word 'ecosystem' eleven times. When it opens it adds a good deal to the research standing and draws applicants."
+      "blurb": "Four years of works and a business plan that uses the word 'ecosystem' eleven times. When it opens it adds a good deal to the research standing and draws applicants.",
+      "features": ["stacks"]
     },
     {
       "id": "medical-school",
@@ -1023,7 +1047,8 @@
           "research": 8
         }
       },
-      "blurb": "Five years of works. When it opens, the School of Medicine can be founded in it, the only place it can be, and it adds to the academic and research standings."
+      "blurb": "Five years of works. When it opens, the School of Medicine can be founded in it, the only place it can be, and it adds to the academic and research standings.",
+      "features": ["stacks", "flagpole"]
     },
     {
       "id": "great-lawn",
@@ -1084,7 +1109,8 @@
           "athletics": 18
         }
       },
-      "blurb": "Four years of works for forty thousand seats and a press box. It lifts the athletics standing, draws applicants, and gets the college booked against bigger opponents."
+      "blurb": "Four years of works for forty thousand seats and a press box. It lifts the athletics standing, draws applicants, and gets the college booked against bigger opponents.",
+      "features": ["stands"]
     },
     {
       "id": "arts-centre",
@@ -1114,7 +1140,8 @@
           "experience": 6
         }
       },
-      "blurb": "A concert hall, two theatres and a foyer with opinions about acoustics: four years of works. Student life, applicants and the experience standing all gain."
+      "blurb": "A concert hall, two theatres and a foyer with opinions about acoustics: four years of works. Student life, applicants and the experience standing all gain.",
+      "features": ["flytower"]
     },
     {
       "id": "campanile",
