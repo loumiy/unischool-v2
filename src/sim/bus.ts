@@ -99,6 +99,15 @@ export type BusEvent =
       total: number;
     }
   | { kind: 'methodologyChanged'; methodologyId: string }
+  // Athletics and the rival (DD §8.5, §11.3).
+  | { kind: 'seasonClosed'; sportId: string; wins: number; losses: number; title: boolean }
+  | { kind: 'rivalNamed'; schoolId: string }
+  | {
+      kind: 'rivalTaunt';
+      schoolId: string;
+      mood: 'ahead' | 'behind' | 'beat' | 'lost';
+      index: number;
+    }
   | { kind: 'mark'; label: string }; // the debug panel's marker
 
 export type BusKind = BusEvent['kind'];
@@ -155,6 +164,9 @@ export const BUS_KINDS: readonly BusKind[] = [
   'yearClosed',
   'rankingsPublished',
   'methodologyChanged',
+  'seasonClosed',
+  'rivalNamed',
+  'rivalTaunt',
   'mark',
 ];
 

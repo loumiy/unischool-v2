@@ -16,6 +16,7 @@ import { emit } from './bus.ts';
 import { WEEKS_PER_YEAR } from './calendar.ts';
 import { annualProgramCosts } from './academics.ts';
 import { annualGiving } from './alumni.ts';
+import { annualAthleticsCost } from './athletics.ts';
 import { boardPolicy, inReceivership, RUNG_AUSTERITY } from './distress.ts';
 import { clampFunding, projectedMaintenance, weeklyMaintenance } from './estate.ts';
 import { annualFacultyPayroll } from './faculty.ts';
@@ -198,7 +199,8 @@ export function proposeBudget(
         projectedEnrollment(state) * state.people.terms.tuition * state.people.aidRate,
       ),
       debtService: annualDebtService(t),
-      programs: annualProgramCosts(state),
+      // Programs and student life, varsity teams among them (Phase 23).
+      programs: annualProgramCosts(state) + annualAthleticsCost(state),
     },
   };
 }
@@ -286,7 +288,9 @@ export function weeklyFlows(state: GameState): Flows {
   expenses.financialAid = Math.round(annualAid(state) / WEEKS_PER_YEAR);
   expenses.facultyPayroll = Math.round(annualFacultyPayroll(state) / WEEKS_PER_YEAR);
   expenses.maintenance = weeklyMaintenance(state);
-  expenses.programs = Math.round(annualProgramCosts(state) / WEEKS_PER_YEAR);
+  expenses.programs = Math.round(
+    (annualProgramCosts(state) + annualAthleticsCost(state)) / WEEKS_PER_YEAR,
+  );
   const service = weeklyDebtService(t);
   expenses.debtService = service.interest + service.principal;
   return { revenue, expenses };

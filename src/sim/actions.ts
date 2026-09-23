@@ -66,6 +66,8 @@ import { findSeat } from '../content/seats.ts';
 import { advancementAppointed, launchable, launchCampaign } from './campaigns.ts';
 import { SEAT_SENIOR_RANKS } from '../tuning.ts';
 import { accessRefusal, groundRefusal } from './reach.ts';
+import { setAthleticsBudget, setVarsity, sportHasVenue, SPORTS } from './athletics.ts';
+import { BUDGET_IDS, type AthleticsBudget } from '../content/athletics.ts';
 import { appointCost, appointSeat, isSeated, seatFilled, setSeatPolicy } from './seats.ts';
 import { closeAdmissions } from './people.ts';
 import { quadAt } from './quads.ts';
@@ -156,6 +158,10 @@ export type Action =
   // Advancement (DD §9.3): a campaign launched against the ledger. It
   // needs a VP, and the Development Office runs one at a time.
   | { type: 'launchCampaign'; campaignId: string }
+  // Athletics-lite (DD §8.5): a varsity team fielded or stood down, and the
+  // budget the teams run on.
+  | { type: 'setVarsity'; sportId: string; on: boolean }
+  | { type: 'setAthleticsBudget'; budget: AthleticsBudget }
   | { type: 'debug/mark'; label: string }
   // Puts a named event on the docket now, for authoring and inspection.
   | { type: 'debug/fireEvent'; eventId: string };
@@ -416,6 +422,19 @@ export function canApply(state: GameState, action: Action): Verdict {
       if (!def.policies.some((p) => p.id === action.policy)) return no('not one of its policies');
       return YES;
     }
+    case 'setVarsity': {
+      if (state.phase !== 'running') return no('the college is not open yet');
+      const sport = SPORTS.find((x) => x.id === action.sportId);
+      if (!sport) return no('no such sport');
+      if (action.on && !state.athletics.varsity.includes(sport.id)) {
+        if (!sportHasVenue(state, sport)) return no(`${sport.name.toLowerCase()} needs a venue`);
+        if (frozen(state)) return no('the board has frozen new spending');
+      }
+      return YES;
+    }
+    case 'setAthleticsBudget':
+      if (state.phase !== 'running') return no('the college is not open yet');
+      return BUDGET_IDS.includes(action.budget) ? YES : no('no such budget');
     case 'launchCampaign': {
       if (state.phase !== 'running') return no('the college is not open yet');
       if (!findCampaign(action.campaignId)) return no('no such campaign');
@@ -630,6 +649,10 @@ export function applyAction(state: GameState, action: Action): GameState {
       return setSeatPolicy(state, action.seatId, action.schoolId ?? null, action.policy);
     case 'launchCampaign':
       return launchCampaign(state, action.campaignId);
+    case 'setVarsity':
+      return setVarsity(state, action.sportId, action.on);
+    case 'setAthleticsBudget':
+      return setAthleticsBudget(state, action.budget);
     case 'debug/mark':
       return emit(state, { kind: 'mark', label: action.label });
     case 'debug/fireEvent':

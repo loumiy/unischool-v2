@@ -10,6 +10,7 @@ import { foundingWoodland, tileKey } from './terrain.ts';
 import { foundingAcademics } from './academics.ts';
 import { foundingDistress } from './distress.ts';
 import { foundingLeague } from './league.ts';
+import { foundingAthletics } from './athletics.ts';
 import { foundingPrestige } from './prestige.ts';
 import { AXES } from '../content/league.ts';
 import { foundingAmbitions } from './ambitions.ts';
@@ -623,6 +624,18 @@ export const MIGRATIONS: Readonly<Record<number, Migration>> = {
       },
     };
   },
+  // v22 → v23 (Phase 23): athletics and the rival. An older college fields
+  // no teams and has no rival yet; its neighbours start where a new
+  // college's do.
+  22: (raw) => {
+    const state = (raw.state ?? {}) as Record<string, unknown>;
+    const seed = typeof state.seed === 'number' ? state.seed : 0;
+    return {
+      ...raw,
+      version: 23,
+      state: { athletics: foundingAthletics(seed), ...state, schemaVersion: 23 },
+    };
+  },
 };
 
 // An old class has no journal to read, so its memory comes from the
@@ -843,6 +856,15 @@ function validateCurrent(file: Record<string, unknown>): string | null {
   for (const a of AXES)
     if (typeof axes[a] !== 'number' || !Number.isFinite(axes[a]))
       return `state.prestige.axes.${a} is invalid`;
+  const athletics = s.athletics as Record<string, unknown> | undefined;
+  if (
+    typeof athletics !== 'object' ||
+    athletics === null ||
+    !Array.isArray(athletics.varsity) ||
+    !Array.isArray(athletics.seasons) ||
+    typeof athletics.rivalry !== 'object'
+  )
+    return 'state.athletics is invalid';
   const league = s.league as Record<string, unknown> | undefined;
   if (
     typeof league !== 'object' ||

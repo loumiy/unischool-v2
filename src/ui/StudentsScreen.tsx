@@ -20,6 +20,8 @@ import NamedStudents from './NamedStudents.tsx';
 import AlumniLedger from './AlumniLedger.tsx';
 import CampaignPanel from './CampaignPanel.tsx';
 import PlacementPanel from './PlacementPanel.tsx';
+import AthleticsPanel from './AthleticsPanel.tsx';
+import type { AthleticsBudget } from '../content/athletics.ts';
 
 // THE STUDENTS SCREEN (DD §8): the cohorts by class year, the campus's
 // capacity against them, the standing admissions terms and the last
@@ -77,10 +79,14 @@ export default function StudentsScreen({
   state,
   onReunion,
   onLaunch,
+  onVarsity,
+  onAthleticsBudget,
 }: {
   state: GameState;
   onReunion: (classYear: number) => void;
   onLaunch: (campaignId: string) => void;
+  onVarsity: (sportId: string, on: boolean) => void;
+  onAthleticsBudget: (budget: AthleticsBudget) => void;
 }) {
   const { cohorts, terms, lastAdmissions, incoming } = state.people;
   const total = enrolled(state);
@@ -105,6 +111,7 @@ export default function StudentsScreen({
           { label: 'Admissions', id: 'students-admissions' },
           { label: 'Alumni', id: 'students-alumni' },
           { label: 'Campaigns', id: 'students-campaigns' },
+          { label: 'Athletics', id: 'students-athletics' },
         ]}
       />
       <div className="figure-row">
@@ -275,6 +282,7 @@ export default function StudentsScreen({
       <AlumniLedger state={state} onReunion={onReunion} />
       {/* Campaigns sit with the ledger they are answered by (DD §9.3). */}
       <CampaignPanel state={state} onLaunch={onLaunch} />
+      <AthleticsPanel state={state} onVarsity={onVarsity} onBudget={onAthleticsBudget} />
     </div>
   );
 }

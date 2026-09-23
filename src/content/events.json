@@ -2845,6 +2845,214 @@
         }
       ],
       "default": "patch"
+    },
+    {
+      "id": "the-championship-run",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 4,
+      "cooldownYears": 2,
+      "when": {
+        "titlesAtLeast": 1
+      },
+      "text": "The {sport} team has won the title, and the campus has not slept since. The boosters would like a parade down the main walk, the athletics director would like a new scoreboard, and the provost would like to know when anyone intends to go back to class.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "parade",
+          "label": "Hold the parade",
+          "note": "$80k and a day off; the students remember it",
+          "effects": {
+            "cash": -80000,
+            "mood": 4,
+            "warmth": 1
+          }
+        },
+        {
+          "id": "boosters",
+          "label": "Let the boosters pay for the scoreboard",
+          "note": "Their money, their name on it",
+          "effects": {
+            "cash": 400000,
+            "warmth": 2,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "quiet",
+          "label": "A reception and back to work",
+          "note": "Dignified; forgotten by Friday",
+          "effects": {
+            "mood": 1
+          }
+        }
+      ],
+      "default": "quiet"
+    },
+    {
+      "id": "the-recruiting-scandal",
+      "kind": "seismic",
+      "domain": "students",
+      "weight": 2,
+      "cooldownYears": 12,
+      "when": {
+        "varsityAtLeast": 2,
+        "yearAtLeast": 6
+      },
+      "title": "The recruiting file",
+      "text": "A reporter has the {sport} programme's recruiting file, and in it a series of payments to the families of players, routed through a booster's landscaping business. The coach says he knew nothing. The booster says the coach knew everything. The league's compliance office has asked for the college's response by the end of the month.\n\nThe college can report itself and take what comes, fight it, or settle quietly and hope the reporter moves on.",
+      "timeoutWeeks": 4,
+      "choices": [
+        {
+          "id": "report",
+          "label": "Report the college and fire the coach",
+          "note": "$200k in fines; the board respects it",
+          "effects": {
+            "cash": -200000,
+            "confidence": 3,
+            "mood": -2
+          }
+        },
+        {
+          "id": "fight",
+          "label": "Fight it",
+          "note": "$600k in lawyers, and the story runs for a year",
+          "effects": {
+            "cash": -600000,
+            "confidence": -4,
+            "warmth": -2
+          }
+        },
+        {
+          "id": "settle",
+          "label": "Settle quietly",
+          "note": "$300k; the alumni hear about it anyway",
+          "effects": {
+            "cash": -300000,
+            "warmth": -3,
+            "confidence": -1
+          }
+        }
+      ],
+      "default": "report"
+    },
+    {
+      "id": "the-rival-prank",
+      "kind": "inline",
+      "domain": "students",
+      "weight": 3,
+      "cooldownYears": 3,
+      "when": {
+        "rivalAtLeast": 1
+      },
+      "text": "Students from {rival} broke into the bell tower overnight — or the tallest building, in its absence — and hung their colours from the top. The Dean of Students has a list of names, a photograph of the banner, and a request from our own students to be allowed to answer in kind.",
+      "timeoutWeeks": 2,
+      "choices": [
+        {
+          "id": "answer",
+          "label": "Look the other way while they answer",
+          "note": "The students are delighted; their president writes a letter",
+          "effects": {
+            "mood": 3,
+            "confidence": -1
+          }
+        },
+        {
+          "id": "complain",
+          "label": "Complain formally",
+          "note": "Proper, and ignored",
+          "effects": {
+            "mood": -1
+          }
+        },
+        {
+          "id": "charity",
+          "label": "Challenge them to a charity match",
+          "note": "Good press, and a cheque for the food bank",
+          "effects": {
+            "cash": -40000,
+            "warmth": 2,
+            "mood": 1
+          }
+        }
+      ],
+      "default": "complain"
+    },
+    {
+      "id": "the-rankings-slip",
+      "kind": "inline",
+      "domain": "board",
+      "weight": 3,
+      "cooldownYears": 5,
+      "when": {
+        "rankAtLeast": 20,
+        "yearAtLeast": 8
+      },
+      "text": "The board chair has brought the guide to the meeting, open at the table, with the college's line underlined twice. She would like to know what the administration intends to do about it, and has a consultant in mind.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "consultant",
+          "label": "Hire the consultant",
+          "note": "$250k for a report on the report",
+          "effects": {
+            "cash": -250000,
+            "confidence": 3
+          }
+        },
+        {
+          "id": "explain",
+          "label": "Explain the methodology to the board",
+          "note": "Correct, and unwelcome",
+          "effects": {
+            "confidence": -2
+          }
+        },
+        {
+          "id": "promise",
+          "label": "Promise a rise within five years",
+          "note": "The board writes it down",
+          "effects": {
+            "confidence": 2,
+            "mood": -1
+          }
+        }
+      ],
+      "default": "explain"
+    },
+    {
+      "id": "the-naming-rights",
+      "kind": "inline",
+      "domain": "advancement",
+      "weight": 2,
+      "cooldownYears": 10,
+      "when": {
+        "varsityAtLeast": 2,
+        "yearAtLeast": 10
+      },
+      "text": "A regional bank would like to put its name on the college's playing fields — the whole of them, and the scoreboard, and the tickets — for a gift that would pay the athletics budget for a decade. The students' paper has already drafted the editorial.",
+      "timeoutWeeks": 3,
+      "choices": [
+        {
+          "id": "accept",
+          "label": "Take the name and the money",
+          "note": "$2M to the endowment; the students notice",
+          "effects": {
+            "endowment": 2000000,
+            "mood": -3
+          }
+        },
+        {
+          "id": "decline",
+          "label": "Decline, politely",
+          "note": "The alumni are quietly pleased",
+          "effects": {
+            "warmth": 2
+          }
+        }
+      ],
+      "default": "decline",
+      "needs": ["playing-field"]
     }
   ],
   "readings": {
