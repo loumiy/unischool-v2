@@ -1,14 +1,18 @@
-import { SEAT_WORDS, seatById } from '../content/seats.ts';
-import { findSchool } from '../content/schools.ts';
+import { useState } from 'react';
+import { rankById } from '../content/faculty.ts';
+import { fillWords } from '../content/people.ts';
+import { SEAT_WORDS, seatById, type SeatDef } from '../content/seats.ts';
+import { findSchool, programById } from '../content/schools.ts';
 import {
   appointCost,
   deansAppointed,
   formatMoney,
   heldSeat,
   provostAppointed,
+  seatCandidates,
   seatPayroll,
   seatSlots,
-  seniorFaculty,
+  type Faculty,
   type FilledBy,
   type GameState,
 } from '../sim/index.ts';
@@ -22,6 +26,114 @@ import Figure from './Figure.tsx';
 // The panel's job is to make the trade legible in both directions at once:
 // the speed it buys and the payroll it costs, on the same screen.
 
+// How many of the shortlist are offered as buttons; the rest wait in a
+// list below them.
+const SHORTLIST = 3;
+
+// What promoting this person costs, in their own name (Phase 21K): the
+// salary the seat pays them, and what their programme loses.
+function candidateNote(state: GameState, def: SeatDef, f: Faculty): string {
+  const salary = formatMoney(def.internalSalary);
+  if (f.programId === null) return fillWords(SEAT_WORDS.candidateIdle, { salary });
+  const left = state.faculty.roster.filter(
+    (o) => o.id !== f.id && o.programId === f.programId,
+  ).length;
+  return fillWords(SEAT_WORDS.candidateTeaches, {
+    salary,
+    program: programById(f.programId).name,
+    left,
+  });
+}
+
+function candidateRecord(f: Faculty): string {
+  return fillWords(SEAT_WORDS.candidateRecord, {
+    rank: rankById(f.rank).name,
+    teaching: Math.round(f.teaching),
+    research: Math.round(f.research),
+  });
+}
+
+// The vacant seat's choices: an outside search, or one of the named
+// seniors free to take it — for a Dean, only their own school's.
+function VacantChoices({
+  state,
+  def,
+  schoolId,
+  onAppoint,
+}: {
+  state: GameState;
+  def: SeatDef;
+  schoolId: string | null;
+  onAppoint: (seatId: string, schoolId: string | null, from: FilledBy) => void;
+}) {
+  const shortlist = seatCandidates(state, def.id, schoolId);
+  const rest = shortlist.slice(SHORTLIST);
+  const [other, setOther] = useState<string>('');
+  const internal = (facultyId: string) =>
+    onAppoint(def.id, schoolId, { kind: 'internal', facultyId });
+  return (
+    <div className="seat-choices">
+      <button
+        type="button"
+        className="event-choice"
+        onClick={() => onAppoint(def.id, schoolId, { kind: 'outside' })}
+      >
+        <span className="event-choice-label">{SEAT_WORDS.outside}</span>
+        <span className="event-choice-note">
+          {formatMoney(def.outsideSalary)} /yr · {def.outsideLine}
+        </span>
+      </button>
+      {shortlist.length === 0 ? (
+        <p className="seat-none">
+          {def.perSchool ? SEAT_WORDS.noSchoolSenior : SEAT_WORDS.noSenior}
+        </p>
+      ) : (
+        <div className="seat-candidates" role="group" aria-label={SEAT_WORDS.internal}>
+          <span className="seat-candidates-head">{SEAT_WORDS.internal}</span>
+          {shortlist.slice(0, SHORTLIST).map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              className="event-choice seat-candidate"
+              onClick={() => internal(f.id)}
+            >
+              <span className="event-choice-label">{f.name}</span>
+              <span className="seat-candidate-record">{candidateRecord(f)}</span>
+              <span className="event-choice-note">{candidateNote(state, def, f)}</span>
+            </button>
+          ))}
+          {rest.length > 0 && (
+            <div className="seat-more">
+              <select
+                aria-label={fillWords(SEAT_WORDS.moreCandidates, { count: rest.length })}
+                value={other}
+                onChange={(e) => setOther(e.target.value)}
+              >
+                <option value="">
+                  {fillWords(SEAT_WORDS.moreCandidates, { count: rest.length })}
+                </option>
+                {rest.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.name} · {candidateRecord(f)}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="save-btn"
+                disabled={other === ''}
+                onClick={() => other && internal(other)}
+              >
+                {SEAT_WORDS.moreAppoint}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SeatsPanel({
   state,
   onAppoint,
@@ -32,11 +144,10 @@ export default function SeatsPanel({
   onPolicy: (seatId: string, schoolId: string | null, policy: string) => void;
 }) {
   const slots = seatSlots(state);
-  const senior = seniorFaculty(state);
   const deans = deansAppointed(state);
   return (
     <section className="seats" id="faculty-seats">
-      <h3>The administration</h3>
+      <h3>{SEAT_WORDS.orgChartTitle}</h3>
       <div className="figure-row">
         <Figure
           label="Seats filled"
@@ -80,34 +191,7 @@ export default function SeatsPanel({
               </div>
               <p className="seat-blurb">{def.blurb}</p>
               {held === null ? (
-                <div className="seat-choices">
-                  <button
-                    type="button"
-                    className="event-choice"
-                    onClick={() => onAppoint(def.id, schoolId, { kind: 'outside' })}
-                  >
-                    <span className="event-choice-label">{SEAT_WORDS.outside}</span>
-                    <span className="event-choice-note">
-                      {formatMoney(def.outsideSalary)} /yr · {def.outsideLine}
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    className="event-choice"
-                    disabled={senior.length === 0}
-                    onClick={() =>
-                      senior[0] &&
-                      onAppoint(def.id, schoolId, { kind: 'internal', facultyId: senior[0].id })
-                    }
-                  >
-                    <span className="event-choice-label">{SEAT_WORDS.internal}</span>
-                    <span className="event-choice-note">
-                      {senior.length === 0
-                        ? SEAT_WORDS.noSenior
-                        : `${formatMoney(def.internalSalary)} /yr · ${senior[0]!.name} stops teaching`}
-                    </span>
-                  </button>
-                </div>
+                <VacantChoices state={state} def={def} schoolId={schoolId} onAppoint={onAppoint} />
               ) : (
                 <div className="seat-policies">
                   {def.policies.map((policy) => (

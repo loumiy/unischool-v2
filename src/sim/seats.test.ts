@@ -25,6 +25,7 @@ import {
   seatFilled,
   seatPayroll,
   seatSlots,
+  seatCandidates,
   seniorFaculty,
   type Seat,
 } from './seats.ts';
@@ -177,6 +178,31 @@ describe('what a seat costs, forever (DD §5.4, §9.4)', () => {
         from: { kind: 'internal', facultyId: who.id },
       }),
     ).toMatchObject({ ok: false, reason: /already holds/ });
+  });
+
+  it('draws a Dean from their own school, best first (Phase 21K)', () => {
+    const run = played(4, 24);
+    const school = run.state.academics.schools[0]!.schoolId;
+    const shortlist = seatCandidates(run.state, 'dean', school);
+    for (const f of shortlist) expect(f.schoolId).toBe(school);
+    for (let i = 1; i < shortlist.length; i++) {
+      const [a, b] = [shortlist[i - 1]!, shortlist[i]!];
+      expect(a.teaching + a.research).toBeGreaterThanOrEqual(b.teaching + b.research);
+    }
+    // A senior from another school is refused, with the reason.
+    const stranger = seniorFaculty(run.state).find((f) => f.schoolId !== school);
+    if (stranger) {
+      expect(
+        canApply(run.state, {
+          type: 'appointSeat',
+          seatId: 'dean',
+          schoolId: school,
+          from: { kind: 'internal', facultyId: stranger.id },
+        }),
+      ).toMatchObject({ ok: false, reason: /own school/ });
+    }
+    // A standing seat takes any senior.
+    expect(seatCandidates(run.state, 'provost', null).length).toBe(seniorFaculty(run.state).length);
   });
 
   it('will not promote somebody junior', () => {

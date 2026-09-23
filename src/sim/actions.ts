@@ -392,6 +392,8 @@ export function canApply(state: GameState, action: Action): Verdict {
         if (!who) return no('no such hire');
         if (!SEAT_SENIOR_RANKS.includes(who.rank)) return no('not senior enough for a seat');
         if (isSeated(state, who.id)) return no('they already hold a seat');
+        if (def.perSchool && who.schoolId !== schoolId)
+          return no('a Dean comes from their own school');
       }
       if (!canPay(state, appointCost(def, action.from), 'cash')) return no('not enough cash');
       return YES;

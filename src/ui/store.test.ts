@@ -99,4 +99,17 @@ describe('the speed control while the clock is held', () => {
     // Nothing was running when the save was opened, so nothing starts.
     expect(store.getSnapshot().speed).toBe('paused');
   });
+
+  it('queues a speed pressed on a save loaded mid-hold, rather than lighting it', () => {
+    const source = upToHold('x2');
+    const store = new GameStore();
+    store.loadRun(source.getSnapshot().run!);
+    // The playtest: Space on a save opened at a board letter lit Play while
+    // the week stood still.
+    store.setSpeed('x1');
+    expect(store.getSnapshot().speed).toBe('paused');
+    expect(store.getSnapshot().queuedSpeed).toBe('x1');
+    resolve(store);
+    expect(store.getSnapshot().speed).toBe('x1');
+  });
 });

@@ -177,12 +177,23 @@
     "heldOutside": "Held by an outside appointment",
     "appointed": "{title} appointed: {who}.",
     "delegated": "{title} handled it: {choice}.",
-    "payrollNote": "Every seat is permanent payroll and a step of the administrative ratchet (DD §5.4).",
+    "payrollNote": "Every seat is permanent payroll and a step of the administrative ratchet: once filled, a seat is never cheaper to empty than to keep.",
     "escalated": "Too large to delegate; this one reaches the President.",
     "speedNote": "Fast time is bought with administrative capacity: 4× needs a Provost, 8× a Provost and four Deans.",
     "noSchools": "A Dean needs a school to be dean of.",
     "noSenior": "Nobody on the roster is senior enough for this.",
     "internal": "From the roster",
-    "outside": "From outside"
+    "outside": "From outside",
+    "candidateTeaches": "{salary} /yr · {program} loses a lecturer, {left} left",
+    "candidateIdle": "{salary} /yr · teaches nothing now",
+    "candidateRecord": "{rank} · teaching {teaching} · research {research}",
+    "noSchoolSenior": "Nobody in this school is senior enough yet: a Dean comes from their own faculty.",
+    "moreCandidates": "Or another of the {count}",
+    "moreAppoint": "Appoint",
+    "orgChartTitle": "The org chart",
+    "orgChartLink": "See the org chart",
+    "orgChartSummary": "Top speed {speed} · Provost {provost} · Deans {deans} of {wanted}",
+    "provostFilled": "appointed",
+    "provostVacant": "vacant"
   }
 }

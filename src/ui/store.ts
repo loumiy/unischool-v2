@@ -92,13 +92,15 @@ export class GameStore {
   // The clock runs only once Founders Hall stands (DD §2.4). Speed changes
   // before that are refused, and the sampler below stays idle.
   setSpeed(speed: Speed): void {
-    const { run, queuedSpeed } = this.snap;
+    const { run } = this.snap;
     if (!run || !clockRuns(run.state) || !speedAllowed(run.state, speed)) return;
     // DD §3.3 keeps the speed control live while a beat waits, but the week
     // is not moving and no pill may claim it is: a press during a hold sets
     // what the clock resumes at, and the control says so rather than lying
     // about now.
-    if (queuedSpeed !== null) this.set({ queuedSpeed: speed });
+    // Asked of the sim, not of the snapshot: a save loaded mid-hold has not
+    // been through a tick yet, so nothing has queued (Phase 21K).
+    if (clockHeld(run.state)) this.set({ speed: 'paused', queuedSpeed: speed });
     else this.set({ speed });
   }
 

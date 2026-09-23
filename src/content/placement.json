@@ -65,7 +65,7 @@
   ],
   "readings": {
     "placement": "Everything the layout is worth, added up and then capped: no arrangement of buildings may move an outcome more than the cap allows.",
-    "cap": "The hard cap on placement (DD §6.2): the player who ignores layout entirely must stay fully viable, so the total is clamped.",
+    "cap": "The hard cap on placement: a college that ignores its layout entirely must stay fully viable, so the total is clamped.",
     "quads": "Open spaces the buildings enclose: greener and better enclosed is worth more, and three good ones is a full mark.",
     "enclosure": "How much of this quad's edge is built wall. A doorway, water or a road bounds the space without enclosing it; paving encloses it, for less than a wall does.",
     "green": "How much of the quad is lawn and trees rather than paving.",
