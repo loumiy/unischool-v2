@@ -8,7 +8,11 @@ import {
 } from '../content/athletics.ts';
 import { LEAGUE_SCHOOLS } from '../content/league.ts';
 import {
+  ATHLETICS_BUDGET_SCHEDULE,
+  ATHLETICS_CLIMB,
+  ATHLETICS_CLIMB_FROM,
   GAMES_PER_SEASON,
+  RIVAL_MATCH,
   RIVAL_NEAR_START,
   RIVAL_NEAR_YEARLY,
   RIVAL_THRESHOLD,
@@ -129,6 +133,15 @@ export function teamStrength(state: GameState, sport: SportDef): number {
   return 30 + 0.5 * state.prestige.axes.athletics + edge + venues * 10;
 }
 
+// How much harder the schedule is than the league's own standings say: a
+// rising programme is booked against better ones, and a bigger budget
+// buys bigger games (Phase 38).
+export function scheduleClimb(state: GameState): number {
+  const standing = Math.max(0, state.prestige.axes.athletics - ATHLETICS_CLIMB_FROM);
+  const edge = Math.max(0, (budgetFactor(state.athletics.budget) - 1) * VARSITY_BUDGET_EDGE);
+  return standing * ATHLETICS_CLIMB + edge * ATHLETICS_BUDGET_SCHEDULE;
+}
+
 function playSeason(
   state: GameState,
   sport: SportDef,
@@ -152,8 +165,13 @@ function playSeason(
   let wins = 0;
   let rivalResult: Season['rivalResult'] = null;
   const met: { id: string; won: boolean }[] = [];
+  const climb = scheduleClimb(state);
   for (const opp of schedule.slice(0, GAMES_PER_SEASON)) {
-    const them = opp.axes.athletics;
+    // The schedule climbs with the college, and the rival raises its game
+    // to meet it (Phase 38): a conference won every year is a conference
+    // the college has outgrown.
+    let them = opp.axes.athletics + climb;
+    if (opp.id === state.athletics.rivalId && us > them) them += (us - them) * RIVAL_MATCH;
     const p = 1 / (1 + Math.exp(-(us - them) / 12));
     const won = rng.next() < p;
     if (won) wins++;

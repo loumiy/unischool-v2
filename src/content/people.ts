@@ -45,6 +45,8 @@ const fileSchema = obj({
     upkeep: str,
     lifeTerm: str,
     eventsTerm: str,
+    expectationsTerm: str,
+    returnsTerm: str,
     reputation: str,
     reputationReading: str,
     reputationPool: str,

@@ -39,6 +39,11 @@ import {
   YIELD_PRICE_ELASTICITY,
   BUILDING_DRAW_CAP,
   REPUTATION_START,
+  EXPECTATION_PRESTIGE_POINTS,
+  EXPECTATION_PRICE_POINTS,
+  PRESTIGE_START,
+  SATISFACTION_SOFT_FROM,
+  SATISFACTION_TOP_RETURN,
 } from '../tuning.ts';
 import { emit } from './bus.ts';
 import { classLabel, WEEKS_PER_YEAR } from './calendar.ts';
@@ -49,7 +54,7 @@ import { fadeMood } from './events.ts';
 import { placementPoolFactor, placementSatisfaction } from './placement.ts';
 import { varsityLife } from './athletics.ts';
 import { placementCapacity } from './lateGame.ts';
-import { prestigePoolFactor } from './prestige.ts';
+import { collegePrestige, prestigePoolFactor } from './prestige.ts';
 import { reputationPoolFactor, reputationYear, reputationYieldFactor } from './reputation.ts';
 import { tagPoolFactor, tagQualityShift } from './tags.ts';
 import {
@@ -457,6 +462,12 @@ export interface SatisfactionBreakdown {
   life: number;
   events: number;
   conditions: number;
+  // What they were promised (Phase 37b/38): a dear, famous college is
+  // judged harder than a cheap new one.
+  expectations: number;
+  // Near the top every point is harder won (Phase 38): what the sum lost
+  // to diminishing returns, zero or less.
+  returns: number;
   total: number; // clamped 0–100
 }
 
@@ -488,6 +499,7 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     life: studentLifeTerm(state, total),
     events: state.people.mood,
     conditions: -(RUNG_SATISFACTION_PENALTY[state.distress.rung] ?? 0),
+    expectations: expectationsTerm(state),
   };
   const sum =
     b.base +
@@ -500,8 +512,38 @@ export function satisfactionBreakdown(state: GameState, total: number): Satisfac
     b.placement +
     b.life +
     b.events +
-    b.conditions;
-  return { ...b, total: Number(Math.min(100, Math.max(0, sum)).toFixed(1)) };
+    b.conditions +
+    b.expectations;
+  const soft = diminished(sum);
+  return {
+    ...b,
+    returns: soft - sum,
+    total: Number(Math.min(100, Math.max(0, soft)).toFixed(1)),
+  };
+}
+
+// EXPECTATIONS (DD §8.3, Phase 38): students judge a college against what
+// it has promised them. Every point of prestige above a founding college's
+// raises the bar, and so does a sticker above the market's; a bargain is
+// forgiven a little.
+export function expectationsTerm(state: GameState): number {
+  const prestige = Math.max(0, collegePrestige(state) - PRESTIGE_START) / (100 - PRESTIGE_START);
+  const price = Math.min(
+    1,
+    Math.max(
+      -0.5,
+      netTuition(state.people.terms.tuition, state.people.aidRate) / marketNetTuition() - 1,
+    ),
+  );
+  return -(prestige * EXPECTATION_PRESTIGE_POINTS + price * EXPECTATION_PRICE_POINTS);
+}
+
+// Diminishing returns near the top: above the line, each point of the sum
+// counts for a share of a point.
+export function diminished(sum: number): number {
+  return sum <= SATISFACTION_SOFT_FROM
+    ? sum
+    : SATISFACTION_SOFT_FROM + (sum - SATISFACTION_SOFT_FROM) * SATISFACTION_TOP_RETURN;
 }
 
 export function satisfactionFor(state: GameState, total: number): number {

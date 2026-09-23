@@ -44,7 +44,9 @@
     "repTeaching": "The teaching the students are getting now. It counts most.",
     "repSatisfaction": "How the enrolled classes rate the place.",
     "repOutcomes": "How the last four classes turned out: distinguished graduates count in full, placed graduates count for three fifths.",
-    "repCondition": "The state of the buildings the students live and learn in."
+    "repCondition": "The state of the buildings the students live and learn in.",
+    "expectationsTerm": "What they were promised. A famous college is judged harder, and so is one whose price is above the market's. A bargain is forgiven a little.",
+    "returnsTerm": "Near the top, every point is harder to win: above 80, each further point counts for less than half a point."
   },
   "words": {
     "noClass": "No class yet. The first arrives at Convocation, after Admissions Day.",

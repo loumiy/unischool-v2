@@ -46,6 +46,8 @@ const TERMS: { key: keyof SatisfactionBreakdown; label: string; hint: string }[]
   // table did not add up to the number under it (Phase 21I).
   { key: 'events', label: 'What happened', hint: PEOPLE_READINGS.eventsTerm },
   { key: 'conditions', label: 'The ladder', hint: PEOPLE_READINGS.conditions },
+  { key: 'expectations', label: 'Expectations', hint: PEOPLE_READINGS.expectationsTerm },
+  { key: 'returns', label: 'Near the top', hint: PEOPLE_READINGS.returnsTerm },
 ];
 
 const signed = (n: number) => (n > 0 ? `+${n.toFixed(1)}` : n.toFixed(1));

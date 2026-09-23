@@ -546,3 +546,23 @@ export const REPUTATION_WEIGHTS = {
 export const REPUTATION_POOL_SWING = 2.5;
 export const REPUTATION_YIELD_SWING = 0.5;
 export const REPUTATION_POOL_FLOOR = 0.5;
+
+// NO CEILINGS YOU CAN SIT ON (Phase 38). Satisfaction: students judge the
+// college against its promise — up to EXPECTATION_PRESTIGE_POINTS off at
+// full prestige, and EXPECTATION_PRICE_POINTS off for a net price twice the
+// market's (half as much back for a bargain) — and above
+// SATISFACTION_SOFT_FROM each point of the sum counts for
+// SATISFACTION_TOP_RETURN of a point.
+export const EXPECTATION_PRESTIGE_POINTS = 10;
+export const EXPECTATION_PRICE_POINTS = 6;
+export const SATISFACTION_SOFT_FROM = 80;
+export const SATISFACTION_TOP_RETURN = 0.4;
+// Athletics: the schedule climbs with the college. Every point of its
+// athletics standing above ATHLETICS_CLIMB_FROM adds ATHLETICS_CLIMB to
+// every opponent, and a bigger budget buys a harder schedule
+// (ATHLETICS_BUDGET_SCHEDULE of the budget's own edge). The rival raises
+// its game: it closes RIVAL_MATCH of any gap to the college.
+export const ATHLETICS_CLIMB_FROM = 30;
+export const ATHLETICS_CLIMB = 0.35;
+export const ATHLETICS_BUDGET_SCHEDULE = 0.6;
+export const RIVAL_MATCH = 0.6;

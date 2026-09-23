@@ -220,7 +220,8 @@ describe('the drive, and what it leaves behind', () => {
     for (const [classYear, warmth] of warmed) {
       if (!asked.has(classYear)) continue;
       const alone = control.get(classYear);
-      if (alone === undefined) continue;
+      // A class at the top of the scale can be asked and still read full.
+      if (alone === undefined || alone >= 100) continue;
       expect(warmth).toBeLessThan(alone);
       cooled++;
     }
